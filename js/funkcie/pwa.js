@@ -74,7 +74,7 @@
 
   window.addEventListener("load", function () {
     navigator.serviceWorker
-      .register("sw.js")
+      .register("sw.js", { updateViaCache: "none" })
       .then(function (reg) {
         sledujNovu(reg);
         if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});

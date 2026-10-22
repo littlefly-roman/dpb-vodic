@@ -3,7 +3,10 @@
    - Appka (HTML/CSS/JS): najprv sieť (vždy čerstvá verzia), pri výpadku alebo slabom signáli (3,5 s) kópia z pamäte.
    - Dáta grafikonu (data/<priečinok>/...): kópia z pamäte, inak sieť a uloženie. Každý priečinok má vlastnú pamäť
      podľa obsahu, takže zmenené dáta sa stiahnu znova a staré sa zmažú. */
-importScripts("pwa-manifest.js");
+// BUILD sa prepisuje pri každom zostavení (tools/pwa-build.mjs): zmena tohto riadku je to, čo prehliadaču
+// povie, že je nová verzia, a zároveň obíde vyrovnávaciu pamäť pri sťahovaní zoznamu súborov.
+const BUILD = "97a9ae7d74df";
+importScripts("pwa-manifest.js?v=" + BUILD);
 const P = self.PWA;
 const BASE = new URL("./", self.location.href).href;
 const SHELL = "dpb-shell-" + P.version;
@@ -52,7 +55,8 @@ async function dataOdpoved(req, f) {
 
 async function appOdpoved(req) {
   const c = await caches.open(SHELL);
-  const sietou = fetch(req).then((r) => {
+  // no-cache = vždy sa opýta servera (ETag, rýchle 304), nespolieha sa na 10-minútovú pamäť hostingu
+  const sietou = fetch(req.url, { cache: "no-cache" }).then((r) => {
     if (r.ok) c.put(req, r.clone());
     return r;
   });
