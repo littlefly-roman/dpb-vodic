@@ -384,6 +384,25 @@
           } else if (vzor === "944") {
             addTitle(center, k.kurz);
             pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            // vozidlo samotnej služby 944 (záložné vozidlo); rovnaké číslo sa zlúči do jedného riadka
+            (function () {
+              var poradie = [], mapa = {};
+              (k.vozidla || []).forEach(function (v) {
+                var c = String(v.cislo);
+                if (!mapa[c]) { mapa[c] = { cislo: c, od: v.od || "", do: v.do || "" }; poradie.push(mapa[c]); }
+                else {
+                  if (v.od && (!mapa[c].od || v.od < mapa[c].od)) mapa[c].od = v.od;
+                  if (v.do && (!mapa[c].do || v.do > mapa[c].do)) mapa[c].do = v.do;
+                }
+              });
+              poradie.forEach(function (v, vi) {
+                var d = document.createElement("div");
+                d.className = "card-vehicle";
+                d.textContent = v.cislo + (poradie.length > 1 && v.od && v.do ? " • " + v.od + "–" + v.do : "");
+                if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
+                center.appendChild(d);
+              });
+            })();
             body.appendChild(head);
             var _hrad = k.hradenia || [];
             if (_hrad.length) {
