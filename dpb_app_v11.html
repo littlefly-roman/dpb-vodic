@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="img/icon-192.png" />
-    <link rel="stylesheet" href="style.css?v=66">
+    <link rel="stylesheet" href="style.css?v=67">
     <script>
       (function () {
         try {
@@ -265,6 +265,18 @@
         </div>
         <div id="burzaContent"></div>
       </div>
+      <div id="hladatView" class="hidden">
+        <input
+          type="search"
+          id="hladatVstup"
+          class="hl-vstup"
+          placeholder="Vozidlo, kolega alebo služba (4/9)"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <div id="hladatVysledky"></div>
+      </div>
       <div id="profilView" class="hidden">
         <div class="employer-card profil-card">
           <div class="profil-meno" id="profilMeno"></div>
@@ -357,6 +369,22 @@
         ></span>
         <span class="nav-label">Ces. poriadky</span>
       </button>
+      <button data-nav="hladat">
+        <span class="nav-icon"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" /></svg
+        ></span>
+        <span class="nav-label">Hľadať</span>
+      </button>
       <button data-nav="profil">
         <span class="nav-icon"
           ><svg
@@ -407,11 +435,12 @@
     <script src="js/core/cas.js"></script>
     <script src="js/data/grafikon-parsery.js?v=57"></script>
     <script src="js/data/vypravna-model.js?v=52"></script>
-    <script src="js/app/hlavna.js?v=62"></script>
+    <script src="js/app/hlavna.js?v=63"></script>
 
     <!-- Card builder + overrides -->
     <script src="js/funkcie/export.js?v=4"></script>
     <script src="js/funkcie/obrazovka.js"></script>
+    <script src="js/funkcie/hladat.js"></script>
     <script src="js/funkcie/karta-sluzby.js?v=53"></script>
 
     <!-- Patch renderCards inside app's closure via prototype trick -->

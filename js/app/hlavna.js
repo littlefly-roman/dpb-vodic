@@ -1356,6 +1356,8 @@
         function setActiveNav(id) {
           var pv = document.getElementById("profilView");
           if (pv && id !== "profil") pv.classList.add("hidden");
+          var hv = document.getElementById("hladatView");
+          if (hv && id !== "hladat") hv.classList.add("hidden");
           document
             .querySelectorAll(".bottom-nav button")
             .forEach((btn) =>
@@ -1394,6 +1396,8 @@
                     var el = document.getElementById("cpStanicaInput");
                     if (el) el.focus();
                   }, 100);
+                } else if (btn.dataset.nav === "hladat" && window.Hladat) {
+                  window.Hladat.otvor();
                 } else if (btn.dataset.nav === "profil" && window.Profil) {
                   servicesView.classList.add("hidden");
                   employerView.classList.add("hidden");
