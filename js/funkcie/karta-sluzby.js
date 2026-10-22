@@ -384,6 +384,13 @@
           } else if (vzor === "944") {
             addTitle(center, k.kurz);
             pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            if (k.stan_od && k.stan_do) {
+              const rw = document.createElement("div");
+              rw.className = "card-route-wrap";
+              rw.innerHTML = `<span class="card-route-od">${k.stan_od} –</span><wbr><span class="card-route-do">– ${k.stan_do}</span>`;
+              pridajIkonu(rw, "poloha");
+              center.appendChild(rw);
+            }
             // vozidlo 944: od prvého výskytu na 944/x po koniec posledného úseku vrátane hradení tým istým vodičom
             (function () {
               var zdroj = (k.vozidla || []).concat(

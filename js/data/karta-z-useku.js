@@ -208,6 +208,9 @@
         od_min: odM,
         do_min: doM,
         hradenia: hradenia,
+        // miesto: z vlastných úsekov 944 – odkiaľ prvý vychádza a kam posledný prichádza
+        stan_od: (cs.filter(function (u) { return u.kurz === obalKurz; })[0] || {}).stanicaOd || "",
+        stan_do: (cs.filter(function (u) { return u.kurz === obalKurz; }).slice(-1)[0] || {}).stanicaDo || "",
         // vozidlo samotnej služby 944 (záložné vozidlo) – z úsekov reťaze s kurzom 944
         vozidla: cs
           .filter(function (u) {
