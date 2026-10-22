@@ -135,7 +135,7 @@
           this.value = "";
         });
 
-        function spracuj(text, nazov, ulozit) {
+        function spracuj(text, nazov, ulozit, zostat) {
           try {
             {
               var raw = window._csv2raw(text);
@@ -179,13 +179,60 @@
                 Ulozisko.uloz({ text: text, nazov: nazov, cas: Date.now() }).catch(
                   function () {},
                 );
-              setTimeout(goToLogin, 600);
+              if (zostat) {
+                // obnova dát z Profilu: vodič ostáva prihlásený, len sa prekreslí
+                var rid = window.appState && window.appState.currentDriver;
+                var stale = rid && window.DPBData && DPBData.getDrivers().some(function (x) {
+                  return String(x.rid) === String(rid);
+                });
+                if (stale) {
+                  if (window._render) window._render();
+                } else if (window.Profil && Profil.odhlas) {
+                  Profil.odhlas();
+                }
+              } else setTimeout(goToLogin, 600);
+              return true;
             }
           } catch (ex) {
             progress.textContent = "Chyba: " + ex.message;
-              if (window.DpbIkony) DpbIkony.nacitava(false);
+            if (window.DpbIkony) DpbIkony.nacitava(false);
+            return false;
           }
         }
+
+        function dekoduj(buf) {
+          var text;
+          try {
+            text = new TextDecoder("utf-8", { fatal: true }).decode(buf);
+          } catch (encErr) {
+            text = new TextDecoder("windows-1250").decode(buf);
+          }
+          if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+          return text;
+        }
+
+        // Pre Profil: načítanie nového CSV bez odhlásenia a informácia o posledných dátach.
+        window._nacitajNoveData = function (f) {
+          return new Promise(function (ok, zle) {
+            var fr = new FileReader();
+            fr.onload = function (e) {
+              try {
+                var res = spracuj(dekoduj(e.target.result), f.name, true, true);
+                if (res) ok(f.name);
+                else zle(new Error(progress.textContent || "Súbor sa nepodarilo načítať"));
+              } catch (ex) {
+                zle(ex);
+              }
+            };
+            fr.onerror = function () { zle(new Error("Súbor sa nepodarilo prečítať")); };
+            fr.readAsArrayBuffer(f);
+          });
+        };
+        window._infoODatach = function () {
+          return Ulozisko.nacitaj().then(function (z) {
+            return z && z.text ? { nazov: z.nazov, cas: z.cas } : null;
+          });
+        };
 
         // Ak je v prehliadači uložený posledný CSV, pod výberom súboru sa objaví tlačidlo,
         // ktorým sa dá pokračovať bez opätovného načítania.

@@ -275,6 +275,20 @@
             <span>Trakcia</span><span id="profilTrakcia"></span>
           </div>
         </div>
+        <div class="employer-card profil-card" id="profilDataKarta">
+          <div class="employer-detail-row">
+            <span>Dáta</span><span id="profilDataInfo">–</span>
+          </div>
+        </div>
+        <button type="button" id="profilNacitat" class="profil-nacitat">
+          Načítať nové dáta
+        </button>
+        <input
+          type="file"
+          id="profilCsvInput"
+          accept=".csv,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel,text/plain"
+          style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden"
+        />
         <button type="button" id="profilOdhlasit" class="profil-odhlasit">
           Odhlásiť sa
         </button>
@@ -567,7 +581,7 @@
     <script src="js/data/volne-sluzby.js?v=52"></script>
     <script src="js/data/adapter-csv.js?v=52"></script>
 
-    <script src="js/funkcie/profil.js?v=53"></script>
+    <script src="js/funkcie/profil.js?v=54"></script>
     <script src="js/funkcie/ikony-dopravy.js?v=52"></script>
     <script src="js/funkcie/import-csv.js"></script>
 
