@@ -384,14 +384,29 @@
           } else if (vzor === "944") {
             addTitle(center, k.kurz);
             pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
-            // vozidlo samotnej služby 944 (záložné vozidlo) s časmi, rovnako ako pri bežnej službe
-            (k.vozidla || []).forEach(function (v, vi) {
-              var d = document.createElement("div");
-              d.className = "card-vehicle";
-              d.textContent = v.cislo + (v.od && v.do ? " • " + v.od + "–" + v.do : "");
-              if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
-              center.appendChild(d);
-            });
+            // vozidlo 944: od prvého výskytu na 944/x po koniec posledného úseku vrátane hradení tým istým vodičom
+            (function () {
+              var zdroj = (k.vozidla || []).concat(
+                (k.hradenia || []).reduce(function (a, h) { return a.concat(h.vozidla || []); }, []),
+              );
+              var poradie = [], mapa = {};
+              zdroj.forEach(function (v) {
+                var c = String(v.cislo);
+                if (!mapa[c]) { mapa[c] = { cislo: c, od: v.od || "", do: v.do || "" }; poradie.push(mapa[c]); }
+                else {
+                  if (v.od && (!mapa[c].od || v.od < mapa[c].od)) mapa[c].od = v.od;
+                  if (v.do && (!mapa[c].do || v.do > mapa[c].do)) mapa[c].do = v.do;
+                }
+              });
+              poradie.sort(function (x, y) { return (x.od || "") < (y.od || "") ? -1 : 1; });
+              poradie.forEach(function (v, vi) {
+                var d = document.createElement("div");
+                d.className = "card-vehicle";
+                d.textContent = v.cislo + (v.od && v.do ? " • " + v.od + "–" + v.do : "");
+                if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
+                center.appendChild(d);
+              });
+            })();
             body.appendChild(head);
             var _hrad = k.hradenia || [];
             if (_hrad.length) {
