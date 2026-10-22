@@ -3192,3 +3192,11 @@ body {
 .hl-den b{font-size:15px}.hl-den span{font-size:11px;color:var(--text-3);text-transform:uppercase}
 .hl-hlava{font-weight:700;font-size:15px}
 .hl-info{font-size:13px;color:var(--text-3);margin-top:2px;line-height:1.3}
+
+.hl-den-nav{display:flex;align-items:center;gap:6px;margin:10px 0 2px}
+.hl-den-nav button{border:1px solid var(--border);background:var(--surface);color:var(--text-1);border-radius:10px;font:inherit;font-size:20px;min-width:44px;min-height:44px;cursor:pointer}
+.hl-den-nav #hladatDatum{flex:1;font-size:14px;font-weight:600}
+.hl-riadok{display:flex;justify-content:space-between;align-items:flex-start}
+.hl-text{min-width:0}
+.hl-sluzba{font-size:14px;margin-top:1px}
+.hl-teraz{color:var(--red);font-size:12px;font-weight:700;white-space:nowrap;margin-left:8px}

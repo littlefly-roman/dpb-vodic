@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="img/icon-192.png" />
-    <link rel="stylesheet" href="style.css?v=67">
+    <link rel="stylesheet" href="style.css?v=68">
     <script>
       (function () {
         try {
@@ -270,11 +270,16 @@
           type="search"
           id="hladatVstup"
           class="hl-vstup"
-          placeholder="Vozidlo, kolega alebo služba (4/9)"
+          placeholder="Meno, vozidlo alebo služba (4/9)"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
         />
+        <div class="hl-den-nav">
+          <button type="button" id="hladatPred" aria-label="Predchádzajúci deň">‹</button>
+          <button type="button" id="hladatDatum" aria-label="Dnes"></button>
+          <button type="button" id="hladatDalej" aria-label="Nasledujúci deň">›</button>
+        </div>
         <div id="hladatVysledky"></div>
       </div>
       <div id="profilView" class="hidden">
