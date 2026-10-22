@@ -99,10 +99,10 @@
   function pdfMesiaca(datum) {
     var v = vodic(), rows = riadkyMesiaca(datum);
     var h = '<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>' + esc(menoSuboru(datum, "pdf").replace(/\.pdf$/, "")) + "</title><style>" +
-      "@page{size:A4 landscape;margin:10mm}body{font:11px/1.3 Arial,Helvetica,sans-serif;color:#111;margin:0}" +
+      "@page{size:A4 portrait;margin:8mm}body{font:9px/1.2 Arial,Helvetica,sans-serif;color:#111;margin:0}" +
       "h1{font-size:16px;margin:0 0 2px}.pod{color:#555;margin-bottom:8px}table{border-collapse:collapse;width:100%}" +
-      "th,td{border:1px solid #bbb;padding:3px 5px;text-align:left;vertical-align:top}th{background:#e8001a;color:#fff}" +
-      "tr.v td{background:#f0f0f0}tr.s td{background:#fde3e6}.sum{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 8px;padding:6px 8px;border:1px solid #ddd;background:#fafafa}.sum b{font-size:13px}tr.d td{border-top:1px dashed #ddd}tr{page-break-inside:avoid}" +
+      "th,td{border:1px solid #bbb;padding:1.5px 3px;text-align:left;vertical-align:top}th{background:#e8001a;color:#fff}" +
+      "td:nth-child(-n+4),td:nth-child(6){white-space:nowrap}tr.v td{background:#f0f0f0}tr.s td{background:#fde3e6}.sum{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 8px;padding:6px 8px;border:1px solid #ddd;background:#fafafa}.sum b{font-size:13px}tr.d td{border-top:1px dashed #ddd}tr{page-break-inside:avoid}" +
       ".p{color:#666;font-size:9px;margin-top:6px}</style></head><body>" +
       "<h1>Rozpis služieb – " + esc(nadpis(datum)) + "</h1><div class=\"pod\">" + esc(v.meno) + " · os. č. " + esc(v.rid) + "</div><div class=\"sum\">" + sumarText(datum).map(function (x) { return "<span>" + esc(x[0]) + ": <b>" + esc(x[1]) + "</b></span>"; }).join("") + "</div><table><thead><tr>" +
       HLAVICKA.map(function (x) { return "<th>" + esc(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
