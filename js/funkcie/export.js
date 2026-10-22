@@ -33,7 +33,7 @@
       var sv = sluzbyDna(v.rid, key) || [];
       var vikend = dt.getDay() === 0 || dt.getDay() === 6;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
-      var zakl = { datum: p2(d) + "." + p2(m + 1) + "." + y, den: DNI[dt.getDay()], volny: vikend || sviatok };
+      var zakl = { datum: p2(d) + "." + p2(m + 1) + "." + y, den: DNI[dt.getDay()], volny: vikend || sviatok, sviatok: sviatok };
       if (!sv.length) {
         out.push(Object.assign({}, zakl, { sluzba: "Voľno", cas: "", trasa: "", vozidlo: "", pred: "", nasl: "" }));
       } else {
@@ -48,6 +48,33 @@
       }
     }
     return out;
+  }
+  function minuty(t) {
+    var m = /(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/.exec(t || "");
+    if (!m) return 0;
+    var a = +m[1] * 60 + +m[2], b = +m[3] * 60 + +m[4];
+    return b <= a ? b + 1440 - a : b - a;
+  }
+  function sumar(datum) {
+    var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
+    var r = { sluzby: 0, min: 0, vikend: 0, sviatky: 0, volne: 0, nepritomnost: 0 };
+    for (var d = 1; d <= n; d++) {
+      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [];
+      var vik = dt.getDay() === 0 || dt.getDay() === 6;
+      var svi = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
+      var mal = false;
+      sv.forEach(function (s) {
+        if (jeSluzba(s)) { mal = true; r.sluzby++; r.min += minuty(s.time); if (vik) r.vikend++; if (svi) r.sviatky++; }
+        else if ((s._vzor || (s._karta && s._karta.vzor)) === "NEPRÍTOMNOSŤ") r.nepritomnost++;
+      });
+      if (!sv.length) r.volne++;
+    }
+    return r;
+  }
+  function sumarText(datum) {
+    var r = sumar(datum), h = Math.floor(r.min / 60), mm = r.min % 60;
+    return [["Počet služieb", r.sluzby], ["Hodiny v službách", h + ":" + p2(mm)], ["Služby cez víkend", r.vikend],
+      ["Služby cez sviatok", r.sviatky], ["Dni bez služby", r.volne], ["Neprítomnosti", r.nepritomnost]];
   }
   var HLAVICKA = ["Dátum", "Deň", "Služba", "Čas", "Trasa", "Vozidlo", "Preberáš od", "Odovzdáš"];
   function bunky(r) { return [r.datum, r.den, r.sluzba, r.cas, r.trasa, r.vozidlo, r.pred, r.nasl]; }
@@ -75,12 +102,12 @@
       "@page{size:A4 landscape;margin:10mm}body{font:11px/1.3 Arial,Helvetica,sans-serif;color:#111;margin:0}" +
       "h1{font-size:16px;margin:0 0 2px}.pod{color:#555;margin-bottom:8px}table{border-collapse:collapse;width:100%}" +
       "th,td{border:1px solid #bbb;padding:3px 5px;text-align:left;vertical-align:top}th{background:#e8001a;color:#fff}" +
-      "tr.v td{background:#f0f0f0}tr.d td{border-top:1px dashed #ddd}tr{page-break-inside:avoid}" +
+      "tr.v td{background:#f0f0f0}tr.s td{background:#fde3e6}.sum{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 8px;padding:6px 8px;border:1px solid #ddd;background:#fafafa}.sum b{font-size:13px}tr.d td{border-top:1px dashed #ddd}tr{page-break-inside:avoid}" +
       ".p{color:#666;font-size:9px;margin-top:6px}</style></head><body>" +
-      "<h1>Rozpis služieb – " + esc(nadpis(datum)) + "</h1><div class=\"pod\">" + esc(v.meno) + " · os. č. " + esc(v.rid) + "</div><table><thead><tr>" +
+      "<h1>Rozpis služieb – " + esc(nadpis(datum)) + "</h1><div class=\"pod\">" + esc(v.meno) + " · os. č. " + esc(v.rid) + "</div><div class=\"sum\">" + sumarText(datum).map(function (x) { return "<span>" + esc(x[0]) + ": <b>" + esc(x[1]) + "</b></span>"; }).join("") + "</div><table><thead><tr>" +
       HLAVICKA.map(function (x) { return "<th>" + esc(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
       rows.map(function (r) {
-        return '<tr class="' + (r.volny ? "v" : "") + (r.dalsia ? " d" : "") + '">' + bunky(r).map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
+        return '<tr class="' + (r.sviatok ? "s" : r.volny ? "v" : "") + (r.dalsia ? " d" : "") + '">' + bunky(r).map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
       }).join("") + "</tbody></table><div class=\"p\">Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát.</div></body></html>";
     var f = document.createElement("iframe");
     f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
@@ -123,17 +150,24 @@
     rows.forEach(function (r, ri) {
       var n = ri + 2;
       sd += '<row r="' + n + '">' + bunky(r).map(function (c, i) {
-        return '<c r="' + stlp(i) + n + '"' + (r.volny ? ' s="2"' : "") + ' t="inlineStr"><is><t xml:space="preserve">' + xmlEsc(c) + "</t></is></c>";
+        return '<c r="' + stlp(i) + n + '"' + (r.sviatok ? ' s="3"' : r.volny ? ' s="2"' : "") + ' t="inlineStr"><is><t xml:space="preserve">' + xmlEsc(c) + "</t></is></c>";
       }).join("") + "</row>";
+    });
+    var base = rows.length + 3;
+    sd += '<row r="' + base + '"><c r="A' + base + '" s="1" t="inlineStr"><is><t>Súhrn mesiaca</t></is></c></row>';
+    sumarText(datum).forEach(function (x, i) {
+      var n = base + 1 + i;
+      sd += '<row r="' + n + '"><c r="A' + n + '" t="inlineStr"><is><t>' + xmlEsc(x[0]) + '</t></is></c>' +
+        (typeof x[1] === "number" ? '<c r="C' + n + '"><v>' + x[1] + '</v></c>' : '<c r="C' + n + '" t="inlineStr"><is><t>' + xmlEsc(x[1]) + '</t></is></c>') + '</row>';
     });
     var ns = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
     var sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet ' + ns + '><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>' +
       sirky.map(function (w, i) { return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }).join("") + "</cols><sheetData>" + sd +
       '</sheetData><autoFilter ref="A1:' + stlp(HLAVICKA.length - 1) + (rows.length + 1) + '"/></worksheet>';
     var styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet ' + ns + '><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>' +
-      '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8001A"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEEEEEE"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8001A"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEEEEEE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFDE3E6"/><bgColor indexed="64"/></patternFill></fill></fills>' +
       '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
-      '<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+      '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
     var rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     return zip([
       { nazov: "[Content_Types].xml", obsah: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
@@ -146,6 +180,11 @@
   }
 
   // ---------- ICS ----------
+  function budikMin() {
+    var x = 60;
+    try { var v = parseInt(localStorage.getItem("dpb-budik-min"), 10); if (v >= 0 && v <= 600) x = v; } catch (e) {}
+    return x;
+  }
   function udalost(s, rid) {
     var m = /(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/.exec(s.time || "");
     if (!m || !s.date) return null;
@@ -163,7 +202,7 @@
     return {
       uid: "dpb-" + rid + "-" + s.date + "-" + bezDia(s.line || s.kurz || "sluzba") + "-" + od + "@dpb-vodic",
       zac: new Date(d[0], d[1] - 1, d[2], 0, od), kon: new Date(d[0], d[1] - 1, d[2], 0, do_),
-      nazov: nazov.trim(), miesto: k.stan_od || "", popis: popis.join("\n"),
+      budik: budikMin(), nazov: nazov.trim(), miesto: k.stan_od || "", popis: popis.join("\n"),
     };
   }
   function lokalny(dt) { return dt.getFullYear() + p2(dt.getMonth() + 1) + p2(dt.getDate()) + "T" + p2(dt.getHours()) + p2(dt.getMinutes()) + "00"; }
@@ -188,6 +227,7 @@
       L.push("BEGIN:VEVENT", "UID:" + u.uid, "DTSTAMP:" + stamp, "DTSTART;TZID=" + TZ + ":" + lokalny(u.zac), "DTEND;TZID=" + TZ + ":" + lokalny(u.kon), "SUMMARY:" + icsEsc(u.nazov));
       if (u.miesto) L.push("LOCATION:" + icsEsc(u.miesto));
       if (u.popis) L.push("DESCRIPTION:" + icsEsc(u.popis));
+      if (u.budik) L.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc(u.nazov), "TRIGGER:-PT" + u.budik + "M", "END:VALARM");
       L.push("END:VEVENT");
     });
     L.push("END:VCALENDAR");
