@@ -69,13 +69,13 @@
         Nahraj CSV súbor výpravy pre aktuálne dáta
       </div>
       <label
-        style="width: 100%; max-width: 320px; cursor: pointer; margin-top: 8px"
+        style="width: 100%; max-width: 320px; cursor: pointer; margin-top: 8px; position: relative; display: block"
       >
         <input
           type="file"
           id="importCsvInput"
-          accept=".csv"
-          style="display: none"
+          accept=".csv,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel,text/plain"
+          style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden"
         />
         <div
           style="
