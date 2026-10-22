@@ -17,6 +17,33 @@
     el("profilTrakcia").textContent = (k && TRAKCIE[k]) || "–";
     el("burzaView").classList.add("hidden");
     el("profilView").classList.remove("hidden");
+    obnovInfoODatach();
+  }
+
+  function pred(ms) {
+    var m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    if (m < 60) return "pred " + m + " min";
+    var h = Math.floor(m / 60);
+    if (h < 48) return "pred " + h + " h";
+    return "pred " + Math.floor(h / 24) + " dňami";
+  }
+
+  function obnovInfoODatach() {
+    var i = el("profilDataInfo");
+    if (!i) return;
+    if (!window._infoODatach) { i.textContent = "–"; return; }
+    window._infoODatach().then(function (z) {
+      if (!z) { i.textContent = "–"; return; }
+      var k = new Date(z.cas);
+      i.textContent = "";
+      var a = document.createElement("div");
+      a.textContent = k.getDate() + ". " + (k.getMonth() + 1) + ". " + String(k.getHours()).padStart(2, "0") + ":" + String(k.getMinutes()).padStart(2, "0") + " (" + pred(z.cas) + ")";
+      var b = document.createElement("div");
+      b.style.cssText = "color:var(--text-3);font-size:12px;word-break:break-all";
+      b.textContent = z.nazov;
+      i.appendChild(a);
+      i.appendChild(b);
+    }).catch(function () { i.textContent = "–"; });
   }
 
   function odhlas() {
@@ -63,6 +90,27 @@
   document.addEventListener("DOMContentLoaded", function () {
     var b = el("profilOdhlasit");
     if (b) b.addEventListener("click", odhlas);
+    var n = el("profilNacitat"), inp = el("profilCsvInput");
+    if (n && inp) {
+      n.addEventListener("click", function () { inp.click(); });
+      inp.addEventListener("change", function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        var text = n.textContent;
+        n.disabled = true;
+        n.textContent = "Načítavam…";
+        window._nacitajNoveData(f).then(function (meno) {
+          if (window._showToast) window._showToast("Dáta načítané");
+          obnovInfoODatach();
+        }).catch(function (e) {
+          if (window._showToast) window._showToast("Chyba: " + (e && e.message ? e.message : "súbor sa nepodarilo načítať"), 4000);
+        }).then(function () {
+          n.disabled = false;
+          n.textContent = text;
+          inp.value = "";
+        });
+      });
+    }
   });
 
   window.Profil = { otvor: otvor, odhlas: odhlas };
