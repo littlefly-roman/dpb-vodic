@@ -227,6 +227,13 @@
               items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             }
           }
+          if (
+            ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor) &&
+            window.DpbExport
+          ) {
+            items.push({ action: "kal_google", label: "Zapísať do kalendára" });
+            items.push({ action: "kal_ics", label: "Export do ICS" });
+          }
           if (!items.length) return;
           const menu = document.createElement("div");
           menu.className = "service-menu";
@@ -265,6 +272,8 @@
                 const act = item.dataset.action;
                 if (act === "grafikon")
                   window._openGrafikon && window._openGrafikon(service);
+                else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
+                else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
                 else if (
                   ["nepritomnost", "ine_ziadost", "zmena_sluzby"].includes(act)
                 )
