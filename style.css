@@ -3173,3 +3173,7 @@ body {
 .export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1);font:inherit;font-size:15px;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
 .export-menu button:hover{background:var(--red-soft)}
 #btnExport[hidden]{display:none}
+
+.profil-prepinac{cursor:pointer;align-items:center}
+.profil-prepinac input{width:22px;height:22px;accent-color:var(--red);flex-shrink:0}
+.profil-pozn{font-size:12px;color:var(--text-3);padding:2px 0 4px;line-height:1.3}

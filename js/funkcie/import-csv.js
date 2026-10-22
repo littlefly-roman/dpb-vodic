@@ -258,14 +258,14 @@
                 ")";
               b.style.cssText =
                 "margin-top:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;max-width:320px";
-              // Po obnovení stránky (nie po novom otvorení) pokračuj automaticky
+              // Zostaň prihlásený: pri každom otvorení appky pokračuj automaticky,
+              // kým sa vodič sám neodhlási v Profile (max. 90 dní nečinnosti).
               try {
                 var rel = JSON.parse(localStorage.getItem("dpb_relacia") || "null");
                 if (
-                  navTyp === "reload" &&
                   rel &&
                   rel.rid &&
-                  Date.now() - rel.ts < 12 * 3600 * 1000
+                  Date.now() - rel.ts < 90 * 24 * 3600 * 1000
                 ) {
                   window._autoRid = rel.rid;
                   progress.style.display = "block";
