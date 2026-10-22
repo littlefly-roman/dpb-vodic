@@ -208,6 +208,14 @@
         od_min: odM,
         do_min: doM,
         hradenia: hradenia,
+        // vozidlo samotnej služby 944 (záložné vozidlo) – z úsekov reťaze s kurzom 944
+        vozidla: cs
+          .filter(function (u) {
+            return u.kurz === obalKurz;
+          })
+          .reduce(function (a, u) {
+            return a.concat(u.vozidla || []);
+          }, []),
         segmenty: [],
         pred: pn.pred,
         nasl: pn.nasl,
