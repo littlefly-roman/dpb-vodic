@@ -3168,8 +3168,8 @@ body {
 }
 
 /* Export mesiaca */
-.export-menu{position:fixed;z-index:3000;background:var(--card,#fff);border:1px solid var(--border,#ddd);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:6px;min-width:170px}
+.export-menu{position:fixed;z-index:3000;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:6px;min-width:170px}
 .export-menu[hidden]{display:none}
-.export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1,#111);font:inherit;font-size:15px;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
-.export-menu button:hover{background:var(--red-soft,#fde)}
+.export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1);font:inherit;font-size:15px;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
+.export-menu button:hover{background:var(--red-soft)}
 #btnExport[hidden]{display:none}
