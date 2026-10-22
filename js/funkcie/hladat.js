@@ -22,7 +22,14 @@
         var k = s._karta || {}, vz = s._vzor || k.vzor || "";
         var nepr = vz === "NEPRÍTOMNOSŤ";
         if (vz === "VOLNO") return;
-        var voz = (k.vozidla || []).map(function (v) { return { c: String(v.cislo), t: v.od && v.do ? v.od + "–" + v.do : "" }; });
+        var zdroj = (k.vozidla || []).concat((k.hradenia || []).reduce(function (a, h) { return a.concat(h.vozidla || []); }, []));
+        var mapa = {}, voz = [];
+        zdroj.forEach(function (v) {
+          var c = String(v.cislo), o = v.od || "", d = v.do || "";
+          if (!mapa[c]) { mapa[c] = { c: c, od: o, do: d }; voz.push(mapa[c]); }
+          else { if (o && (!mapa[c].od || o < mapa[c].od)) mapa[c].od = o; if (d && (!mapa[c].do || d > mapa[c].do)) mapa[c].do = d; }
+        });
+        voz.forEach(function (x) { x.t = x.od && x.do ? x.od + "–" + x.do : ""; });
         if (!voz.length && s.vehicle && s.vehicle !== "—") voz = String(s.vehicle).split(/[,\s]+/).filter(Boolean).map(function (c) { return { c: c, t: "" }; });
         out.push({ rid: String(d.rid), meno: d.meno || String(d.rid), line: String(s.line || ""), time: s.time || "", voz: voz, nepr: nepr,
           route: s.route || "", od: minuty(s.time) });
