@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="img/icon-192.png" />
-    <link rel="stylesheet" href="style.css?v=65">
+    <link rel="stylesheet" href="style.css?v=66">
     <script>
       (function () {
         try {
@@ -280,6 +280,13 @@
             <span>Dáta</span><span id="profilDataInfo">–</span>
           </div>
         </div>
+        <div class="employer-card profil-card" id="profilObrazovkaKarta">
+          <label class="employer-detail-row profil-prepinac">
+            <span>Nechať obrazovku zapnutú</span>
+            <input type="checkbox" id="profilObrazovka" />
+          </label>
+          <div id="profilObrazovkaPozn" class="profil-pozn">Kým je appka otvorená, displej nezhasne. Zvyšuje spotrebu batérie.</div>
+        </div>
         <button type="button" id="profilNacitat" class="profil-nacitat">
           Načítať nové dáta
         </button>
@@ -404,6 +411,7 @@
 
     <!-- Card builder + overrides -->
     <script src="js/funkcie/export.js?v=4"></script>
+    <script src="js/funkcie/obrazovka.js"></script>
     <script src="js/funkcie/karta-sluzby.js?v=53"></script>
 
     <!-- Patch renderCards inside app's closure via prototype trick -->
