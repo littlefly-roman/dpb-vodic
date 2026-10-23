@@ -3,7 +3,7 @@
 (function () {
   var CFG = window.DPB_GOOGLE || {};
   var K_LINK = "dpb-disk-pripojeny", K_MT = "dpb-disk-mt", K_KONTROLA = "dpb-disk-kontrola";
-  var token = null, tokenDo = 0, klient = null, gsiP = null, caka = null, bezi = false, poslednyPokus = 0;
+  var K_TOK = "dpb-disk-tok", popupUz = false, token = null, tokenDo = 0, klient = null, gsiP = null, caka = null, bezi = false, poslednyPokus = 0;
 
   function el(id) { return document.getElementById(id); }
   function ls(k, v) {
@@ -23,6 +23,14 @@
     if (m < 1440) return "pred " + Math.round(m / 60) + " hod";
     return "pred " + Math.round(m / 1440) + " dň";
   }
+
+  (function () {
+    try {
+      var t = JSON.parse(ls(K_TOK) || "null");
+      if (t && t.t && t.do > Date.now() + 120000) { token = t.t; tokenDo = t.do; }
+    } catch (e) {}
+  })();
+  function platnyToken() { return !!(token && Date.now() < tokenDo - 60000); }
 
   function gsi() {
     if (window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
@@ -47,7 +55,7 @@
           callback: function (r) {
             var c = caka; caka = null;
             if (!c) return;
-            if (r && r.access_token) { token = r.access_token; tokenDo = Date.now() + (r.expires_in || 3600) * 1000; c.ok(token); }
+            if (r && r.access_token) { token = r.access_token; tokenDo = Date.now() + (r.expires_in || 3600) * 1000; ls(K_TOK, JSON.stringify({ t: token, do: tokenDo })); c.ok(token); }
             else c.zle(new Error((r && r.error) || "Prihlásenie zlyhalo"));
           },
           error_callback: function (e) {
@@ -61,7 +69,7 @@
   }
   function api(url, ako) {
     return fetch(url, { headers: { Authorization: "Bearer " + token } }).then(function (r) {
-      if (r.status === 401) { token = null; throw new Error("Prihlásenie vypršalo"); }
+      if (r.status === 401) { token = null; ls(K_TOK, null); throw new Error("Prihlásenie vypršalo"); }
       if (!r.ok) throw new Error("Disk Google: chyba " + r.status);
       return ako === "blob" ? r.blob() : r.json();
     });
@@ -127,10 +135,16 @@
     if (!nastavene() || !pripojene() || bezi) return;
     var ls_ = el("loginScreen"); if (!ls_ || !ls_.classList.contains("hidden")) return;
     if (Date.now() - poslednyPokus < 10 * 60000) return;
+    if (!platnyToken()) {
+      if (popupUz) return;
+      popupUz = true;
+    }
     skontroluj(false, true);
   }
   document.addEventListener("click", auto, { passive: true });
-  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poslednyPokus = Math.min(poslednyPokus, Date.now() - 10 * 60000); });
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && platnyToken()) { poslednyPokus = Math.min(poslednyPokus, Date.now() - 10 * 60000); setTimeout(auto, 300); }
+  });
 
   document.addEventListener("DOMContentLoaded", function () {
     var sb = el("importDiskBtn");
