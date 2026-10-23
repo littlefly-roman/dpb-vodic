@@ -157,7 +157,7 @@
                 });
                 _av.sort();
                 var _pick =
-                  _av.indexOf(_tk) >= 0
+                  (_av.indexOf(_tk) >= 0 || (_av.length && _av[0] <= _tk && _tk <= _av[_av.length - 1]))
                     ? _tk
                     : _av
                         .filter(function (d) {
