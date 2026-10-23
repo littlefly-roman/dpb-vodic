@@ -114,5 +114,5 @@
     }
   });
 
-  window.Profil = { otvor: otvor, odhlas: odhlas };
+  window.Profil = { otvor: otvor, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
