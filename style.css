@@ -3209,3 +3209,5 @@ body {
 .service-card.ma-zmenu{border-color:#ffd400;box-shadow:0 0 0 2px #ffd400}
 @keyframes zmenaDych{0%,100%{opacity:.72;transform:scale(.985)}50%{opacity:1;transform:scale(1.015)}}
 @media (prefers-reduced-motion:reduce){.zmena-pasik{animation:none}}
+
+#profilDiskKarta.hidden, #importDiskBtn.hidden { display: none !important; }
