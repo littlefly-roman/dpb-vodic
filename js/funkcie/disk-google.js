@@ -83,7 +83,7 @@
   }
 
   // hlavná funkcia: prvy = prvé pripojenie (okno s povolením); ticho = bez hlášok, ak sa nič nenašlo
-  function skontroluj(prvy, ticho) {
+  function skontroluj(prvy, ticho, start) {
     if (!nastavene() || bezi) return Promise.resolve(false);
     bezi = true; poslednyPokus = Date.now();
     var b = el("profilDiskBtn"); if (b) { b.disabled = true; }
@@ -98,6 +98,12 @@
       stav("Sťahujem…");
       return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob").then(function (blob) {
         var file = new File([blob], f.name, { type: "text/csv" });
+        if (start) {
+          var inp = el("importCsvInput"), dt = new DataTransfer();
+          dt.items.add(file); inp.files = dt.files;
+          inp.dispatchEvent(new Event("change", { bubbles: true }));
+          return true;
+        }
         return window._nacitajNoveData(file);
       }).then(function () {
         ls(K_MT, f.modifiedTime);
@@ -127,6 +133,17 @@
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poslednyPokus = Math.min(poslednyPokus, Date.now() - 10 * 60000); });
 
   document.addEventListener("DOMContentLoaded", function () {
+    var sb = el("importDiskBtn");
+    if (sb && nastavene()) {
+      sb.classList.remove("hidden");
+      sb.addEventListener("click", function () {
+        var pr = el("importProgress");
+        if (pr) pr.textContent = "Pripájam Disk Google…";
+        skontroluj(true, false, true).then(function (ok) {
+          if (!ok && pr && /Pripájam/.test(pr.textContent)) pr.textContent = "Nepodarilo sa načítať z Disku. Skús Nahrať CSV.";
+        });
+      });
+    }
     var karta = el("profilDiskKarta");
     if (!karta) return;
     if (!nastavene()) { karta.classList.add("hidden"); var bt = el("profilDiskBtn"); if (bt) bt.classList.add("hidden"); return; }
