@@ -14,7 +14,40 @@
         const state = {
           items: [],
           open: false,
+          rid: null,
         };
+
+        // Uloženie správ v telefóne (po vodičoch), aby sa po zatvorení appky nestratili
+        function uloz() {
+          if (!state.rid) return;
+          try {
+            localStorage.setItem(
+              "dpb-notif-" + state.rid,
+              JSON.stringify(
+                state.items.slice(0, 50).map((n) => ({
+                  kat: n.kat,
+                  titul: n.titul,
+                  text: n.text,
+                  cas: new Date(n.cas).toISOString(),
+                  precitana: !!n.precitana,
+                })),
+              ),
+            );
+          } catch (e) {}
+        }
+        function nastavVodica(rid) {
+          state.rid = rid || null;
+          state.items = [];
+          if (rid) {
+            try {
+              (JSON.parse(localStorage.getItem("dpb-notif-" + rid) || "[]") || []).forEach((n) => {
+                state.items.push({ id: uid(), kat: n.kat, titul: n.titul, text: n.text, cas: new Date(n.cas), precitana: !!n.precitana });
+              });
+            } catch (e) {}
+          }
+          aktualizujBadge();
+          if (state.open) renderZoznam();
+        }
 
         let nextId = 1;
         function uid() {
@@ -51,6 +84,7 @@
             precitana: false,
           });
           aktualizujBadge();
+          uloz();
           if (state.open) renderZoznam();
         }
 
@@ -112,6 +146,7 @@
               item.classList.remove("nova");
               item.classList.add("precitana");
               item.querySelector(".notif-dot-nova")?.remove();
+              uloz();
             });
             list.appendChild(item);
           });
@@ -132,6 +167,7 @@
             setTimeout(() => {
               state.items.forEach((n) => (n.precitana = true));
               aktualizujBadge();
+              uloz();
               renderZoznam();
             }, 1500);
           } else {
@@ -171,6 +207,7 @@
           aktualizujBadge();
         }
 
-        return { init, pridaj, aktualizujBadge, zavriet };
+        return { init, pridaj, aktualizujBadge, zavriet, nastavVodica };
       })();
-    
+
+window.Notif = Notif;

@@ -3200,3 +3200,12 @@ body {
 .hl-text{min-width:0}
 .hl-sluzba{font-size:14px;margin-top:1px}
 .hl-teraz{color:var(--red);font-size:12px;font-weight:700;white-space:nowrap;margin-left:8px}
+
+/* Zmena služby: výrazný pulzujúci pásik hore aj dole na karte */
+.zmena-blok{margin:0 0 8px}
+.zmena-blok:last-of-type{margin:8px 0 0}
+.zmena-pasik{display:block;text-align:center;background:#ffd400;color:#111;font-weight:800;font-size:15px;letter-spacing:.04em;line-height:1.2;padding:10px 8px;border-radius:10px;margin-bottom:6px;cursor:pointer;border:2px solid #111;animation:zmenaDych 1.6s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.zmena-pasik:last-child{margin-bottom:0}
+.service-card.ma-zmenu{border-color:#ffd400;box-shadow:0 0 0 2px #ffd400}
+@keyframes zmenaDych{0%,100%{opacity:.72;transform:scale(.985)}50%{opacity:1;transform:scale(1.015)}}
+@media (prefers-reduced-motion:reduce){.zmena-pasik{animation:none}}

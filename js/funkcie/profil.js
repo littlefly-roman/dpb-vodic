@@ -56,6 +56,7 @@
     var ov = el("modalOverlay");
     if (ov) ov.classList.remove("active");
     if (window.Notif && Notif.zavriet) Notif.zavriet();
+    if (window.Notif && Notif.nastavVodica) Notif.nastavVodica(null);
     var cal = el("calendarPanel");
     if (cal) cal.classList.add("hidden");
     var st = window.appState;
