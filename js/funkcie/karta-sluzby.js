@@ -271,18 +271,7 @@
               // Dnes: Grafikon, Zmena stavu, porucha vozidla (len ak je vozidlo), udalosť, zmena služby
               if (!prebieha)
                 items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
-              var _voz = [];
-              (k.vozidla || []).forEach(function (x) {
-                var c = String(x.cislo);
-                if (c && _voz.indexOf(c) < 0) _voz.push(c);
-              });
-              if (!_voz.length && service.vehicle && service.vehicle !== "—") _voz.push(String(service.vehicle));
-              if (_voz.length)
-                items.push({
-                  action: "porucha_vozidla",
-                  label: "Nahlásiť poruchu vozidla" + (_voz.length === 1 ? " " + _voz[0] : ""),
-                });
-              items.push({ action: "udalost", label: "Nahlásiť udalosť" });
+              items.push({ action: "nahlasit", label: "Nahlásiť" });
               if (!prebieha)
                 items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             } else if (!k.kod || k.kod === 0)
@@ -363,6 +352,8 @@
                   window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
+                else if (act === "nahlasit")
+                  window.DpbNahlasit.otvor({ date: service.date, service: service });
                 else if (act === "reklamacia")
                   window.DpbReklamacia.otvor({ date: service.date, service: service });
                 else if (act === "zmena_sluzby" || act === "ziadost_sluzba")
