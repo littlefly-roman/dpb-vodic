@@ -2986,7 +2986,6 @@ body {
       /* Neprítomnosť: všetko zosvetlené, zvýraznený je dôvod neprítomnosti */
       .service-card.je-nepritomnost .card-title,
       .service-card.je-nepritomnost .card-time,
-      .service-card.je-nepritomnost .card-menu-btn,
       .service-card.je-nepritomnost .driver-section {
         opacity: 0.4;
       }

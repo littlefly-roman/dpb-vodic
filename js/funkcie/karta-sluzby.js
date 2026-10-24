@@ -185,8 +185,8 @@
           const k = service._karta || {},
             vzor = k.vzor || "";
           const datum = service.date || "",
-            today = window.formatDateKey
-              ? window.formatDateKey(new Date())
+            today = window.DpbCas
+              ? window.DpbCas.formatDateKey(new Date())
               : "";
           const isPast = datum < today,
             isFuture = datum > today,
