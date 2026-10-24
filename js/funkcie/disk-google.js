@@ -96,6 +96,8 @@
     bezi = true; poslednyPokus = Date.now();
     var b = el("profilDiskBtn"); if (b) { b.disabled = true; }
     stav("Kontrolujem…");
+    var ik = function (z) { if (window.DpbIkony) DpbIkony.nacitava(z); };
+    ik(true);
     return dajToken(!!prvy).then(function () {
       ls(K_LINK, "1");
       return najdi();
@@ -124,6 +126,7 @@
       return false;
     }).then(function (r) {
       bezi = false;
+      if (!start || !r) ik(false);
       if (b) b.disabled = false;
       obnovStav();
       return r;
