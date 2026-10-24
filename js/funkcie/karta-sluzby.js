@@ -187,18 +187,46 @@
 
         // Živé prepínanie menu podľa času (začiatok/koniec služby)
         const _menuKarty = new Set();
+        let _menuBudik = null;
+        function _naplanujMenu() {
+          clearTimeout(_menuBudik);
+          const n = new Date();
+          const teraz = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+          const sek = function (t) {
+            const q = String(t).split(":");
+            return parseInt(q[0], 10) * 3600 + parseInt(q[1] || 0, 10) * 60;
+          };
+          let najblizsie = null;
+          _menuKarty.forEach(function (c) {
+            const kk = (c._menuSluzba && c._menuSluzba._karta) || {};
+            if (!c.isConnected || !kk.od || !kk.do) return;
+            [sek(kk.od), sek(kk.do)].forEach(function (t) {
+              if (t > teraz && (najblizsie === null || t < najblizsie)) najblizsie = t;
+            });
+          });
+          if (najblizsie === null) return;
+          // +2 s rezerva, aby čas už určite bol za hranicou
+          const ms = Math.min((najblizsie - teraz) * 1000 + 2000, 2147000000);
+          _menuBudik = setTimeout(_obnovMenu, ms);
+        }
+        let _menuCaka = false;
         function _obnovMenu() {
+          _menuCaka = false;
           _menuKarty.forEach(function (c) {
             if (!c.isConnected) return _menuKarty.delete(c);
             const m = c._menuEl;
-            if (m && m.classList.contains("active")) return; // otvorené menu nemeníme
+            if (m && m.classList.contains("active")) { _menuCaka = true; return; } // otvorené menu nemeníme
             attachMenu(c, c._menuMb, c._menuSluzba);
           });
+          _naplanujMenu();
         }
-        setInterval(_obnovMenu, 60000);
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden) _obnovMenu();
         });
+        // otvorené menu sa prepne po zatvorení, nie hneď
+        document.addEventListener("click", function () {
+          if (_menuCaka) setTimeout(_obnovMenu, 400);
+        }, true);
 
         function attachMenu(card, mb, service) {
           if (card._menuEl) {
@@ -319,6 +347,8 @@
           card._menuMb = mb;
           card._menuSluzba = service;
           _menuKarty.add(card);
+          clearTimeout(card._menuPlan);
+          card._menuPlan = setTimeout(_naplanujMenu, 0);
           cd.addEventListener("click", function (e) {
             e.stopPropagation();
             window._closeAllGlobal && window._closeAllGlobal();
