@@ -411,8 +411,84 @@
     });
   }
 
+
+  // ---------- Nahlásiť (porucha vozidla / iné) – predpríprava ----------
+  // Prvé okno: čo a komu. Ďalšie vrstvy podľa typu pribudnú neskôr.
+  function chipy(rodic, moznosti, jedna, zmena) {
+    var vyber = {};
+    var h = el("div", "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px");
+    var prvky = {};
+    function vykresli() {
+      Object.keys(prvky).forEach(function (k) {
+        var on = !!vyber[k];
+        prvky[k].style.background = on ? "var(--red)" : "var(--surface-2)";
+        prvky[k].style.color = on ? "#fff" : "var(--text-1)";
+      });
+    }
+    moznosti.forEach(function (m) {
+      var c = el("button", "padding:9px 14px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", m);
+      c.type = "button";
+      c.addEventListener("click", function () {
+        if (jedna) { var bol = vyber[m]; vyber = {}; if (!bol) vyber[m] = true; }
+        else vyber[m] = !vyber[m];
+        vykresli(); zmena && zmena(vyber);
+      });
+      prvky[m] = c; h.appendChild(c);
+    });
+    rodic.appendChild(h);
+    return function () { return Object.keys(vyber).filter(function (k) { return vyber[k]; }); };
+  }
+  function nahlasit(ctx) {
+    var sv = ctx.service || {}, k = sv._karta || {};
+    var voz = [];
+    (k.vozidla || []).forEach(function (x) { var c = String(x.cislo); if (c && voz.indexOf(c) < 0) voz.push(c); });
+    (k.kurzy || []).forEach(function (x) { var c = String(x.vozidlo || ""); if (c && voz.indexOf(c) < 0) voz.push(c); });
+    if (!voz.length && sv.vehicle && sv.vehicle !== "—") voz.push(String(sv.vehicle));
+    otvor({
+      titul: "Nahlásiť",
+      podtitul: pekne(ctx.date) + (sv.line ? " · " + sv.line : ""),
+      telo: function (t) {
+        t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
+        var co = chipy(t, ["Porucha vozidla", "Iné"], true, function (v) { vozBox.style.display = v["Porucha vozidla"] && voz.length > 1 ? "block" : "none"; });
+        var vozBox = el("div", "display:none;margin:-4px 0 12px");
+        vozBox.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
+        var vsel = el("select", VSTUP_CSS);
+        voz.forEach(function (x) { var o = el("option", "", x); o.value = x; vsel.appendChild(o); });
+        vozBox.appendChild(vsel); t.appendChild(vozBox);
+        t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:6px", "Komu hlásiš?"));
+        var komu = chipy(t, ["Dielňa", "Dispečing", "Výpravňa"], false);
+        var tx = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); tx.placeholder = "Popis (čo sa stalo)";
+        t.appendChild(tx);
+        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        t.appendChild(chyba);
+        nahlasit._z = function () {
+          var c = co(), kk = komu();
+          if (!c.length) { chyba.textContent = "Vyber, čo nahlasuješ."; return null; }
+          if (!kk.length) { chyba.textContent = "Vyber, komu hlásiš."; return null; }
+          if (!tx.value.trim()) { chyba.textContent = "Doplň popis."; return null; }
+          return { co: c[0], komu: kk, popis: tx.value.trim(), voz: c[0] === "Porucha vozidla" ? (voz.length > 1 ? vsel.value : (voz[0] || "")) : "" };
+        };
+      },
+      tlacidla: [
+        { text: "Pripraviť hlásenie", primarny: true, klik: function () {
+          var z = nahlasit._z(); if (!z) return;
+          var rid = window.appState && window.appState.currentDriver;
+          var r = ["Hlásenie: " + z.co, "Komu: " + z.komu.join(", "),
+            "Vodič: " + (menoVodica(rid) || "—") + " (os. č. " + rid + ")", "Dátum: " + kratko(ctx.date)];
+          if (sv.line) r.push("Služba: " + sv.line + (sv.time ? " · " + sv.time : ""));
+          if (z.voz) r.push("Vozidlo: " + z.voz);
+          r.push("Popis: " + z.popis);
+          zavriVsetko();
+          odosli(r.join("\n"), "Hlásenie: " + z.co);
+        } },
+        { text: "Zrušiť", klik: zavriVsetko },
+      ],
+    });
+  }
+
   window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko };
   window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText };
   window.DpbZiadostSluzby = { otvor: ziadostSluzby };
   window.DpbReklamacia = { otvor: reklamacia };
+  window.DpbNahlasit = { otvor: nahlasit };
 })();
