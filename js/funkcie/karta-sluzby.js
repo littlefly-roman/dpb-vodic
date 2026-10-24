@@ -201,7 +201,23 @@
           } else if (isToday) {
             if (vzor === "NEPRÍTOMNOSŤ")
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
-            else if (!k.kod || k.kod === 0)
+            else if (["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)) {
+              // Dnes: Grafikon, Zmena stavu, porucha vozidla (len ak je vozidlo), udalosť, zmena služby
+              items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
+              var _voz = [];
+              (k.vozidla || []).forEach(function (x) {
+                var c = String(x.cislo);
+                if (c && _voz.indexOf(c) < 0) _voz.push(c);
+              });
+              if (!_voz.length && service.vehicle && service.vehicle !== "—") _voz.push(String(service.vehicle));
+              if (_voz.length)
+                items.push({
+                  action: "porucha_vozidla",
+                  label: "Nahlásiť poruchu vozidla" + (_voz.length === 1 ? " " + _voz[0] : ""),
+                });
+              items.push({ action: "udalost", label: "Nahlásiť udalosť" });
+              items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+            } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
                 label: "Žiadosť o službu",
@@ -228,6 +244,7 @@
             }
           }
           if (
+            !isToday &&
             ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor) &&
             window.DpbExport
           ) {
@@ -274,6 +291,9 @@
                   window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
+                else if (act === "zmena_stavu_sluzba")
+                  window._showZiadostModal &&
+                    window._showZiadostModal("nepritomnost", service);
                 else if (
                   ["nepritomnost", "ine_ziadost", "zmena_sluzby"].includes(act)
                 )
