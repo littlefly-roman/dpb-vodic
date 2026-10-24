@@ -327,7 +327,92 @@
     });
   }
 
+
+  // ---------- Reklamácia (minulý deň) ----------
+  // Položky podľa typu karty; zaškrtneš, čo reklamuješ, a doplníš správnu hodnotu.
+  var STAVY = ["Služba", "Dovolenka", "PN", "Lekár", "Voľno", "Iné"];
+  function reklamacia(ctx) {
+    var sv = ctx.service || null, k = (sv && sv._karta) || {};
+    var vzor = sv ? sv._vzor : "";
+    var jeSluzba = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].indexOf(vzor) >= 0;
+    var popisKarty = !sv ? "Voľno" : (vzor === "NEPRÍTOMNOSŤ" ? (k.popis || "Neprítomnosť") : (sv.line || "") + (sv.time ? " · " + sv.time : ""));
+    var polozky = [{ k: "stav", t: "Stav", teraz: popisKarty }];
+    if (jeSluzba) {
+      polozky.push({ k: "nastup", t: "Čas nástupu", teraz: k.od ? DPBData.fmt(k.od) : "" });
+      polozky.push({ k: "ukoncenie", t: "Čas ukončenia", teraz: k.do ? DPBData.fmt(k.do) : "" });
+      polozky.push({ k: "vozidlo", t: "Vozidlo", teraz: (sv.vehicle && sv.vehicle !== "—") ? sv.vehicle : "" });
+      polozky.push({ k: "hradenie", t: "Chýbajúce hradenie", teraz: "" });
+      if (vzor !== "STRIEDAČ") polozky.push({ k: "zacvik", t: "Chýbajúci vykonaný zácvik", teraz: "" });
+    }
+    var polia = {};
+    otvor({
+      titul: "Reklamácia",
+      podtitul: pekne(ctx.date) + (popisKarty ? " · " + popisKarty : "") + " · čo reklamuješ?",
+      telo: function (t) {
+        polozky.forEach(function (p) {
+          var w = el("div", "border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px");
+          var hlav = el("label", "display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer");
+          var cb = el("input", "width:20px;height:20px;accent-color:var(--red);flex-shrink:0"); cb.type = "checkbox";
+          hlav.appendChild(cb);
+          var tx = el("div", "flex:1;min-width:0");
+          tx.appendChild(el("div", "", p.t));
+          if (p.teraz) tx.appendChild(el("div", "font-size:12px;color:var(--text-2)", "v systéme: " + p.teraz));
+          hlav.appendChild(tx);
+          w.appendChild(hlav);
+          var pole, vstup;
+          if (p.k === "stav") {
+            vstup = el("select", VSTUP_CSS);
+            vstup.appendChild(el("option", "", "— správny stav —")).value = "";
+            STAVY.forEach(function (x) { var o = el("option", "", x); o.value = x; vstup.appendChild(o); });
+          } else if (p.k === "nastup" || p.k === "ukoncenie") {
+            vstup = el("input", VSTUP_CSS); vstup.type = "time";
+          } else {
+            vstup = el("input", VSTUP_CSS); vstup.type = "text";
+            vstup.placeholder = p.k === "vozidlo" ? "Správne vozidlo (číslo)" : p.k === "hradenie" ? "Čo chýba (kurz, vozidlo, čas)" : "Kedy a kde bol zácvik";
+          }
+          pole = el("div", "display:none;margin-top:8px");
+          pole.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : "Doplň"));
+          pole.appendChild(vstup);
+          w.appendChild(pole);
+          cb.addEventListener("change", function () { pole.style.display = cb.checked ? "block" : "none"; });
+          polia[p.k] = { cb: cb, vstup: vstup, p: p };
+          t.appendChild(w);
+        });
+        var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
+        t.appendChild(pz);
+        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        t.appendChild(chyba);
+        reklamacia._z = function () {
+          var r = [];
+          for (var i = 0; i < polozky.length; i++) {
+            var q = polia[polozky[i].k];
+            if (!q.cb.checked) continue;
+            var v = q.vstup.value.trim();
+            if (!v) { chyba.textContent = "Doplň hodnotu pri: " + q.p.t; return null; }
+            r.push(q.p.t + (q.p.teraz ? ": v systéme " + q.p.teraz + ", správne " : ": ") + v);
+          }
+          if (!r.length) { chyba.textContent = "Zaškrtni, čo reklamuješ."; return null; }
+          return { r: r, poz: pz.value.trim() };
+        };
+      },
+      tlacidla: [
+        { text: "Pripraviť hlásenie", primarny: true, klik: function () {
+          var z = reklamacia._z(); if (!z) return;
+          var rid = window.appState && window.appState.currentDriver;
+          var riadky = ["Reklamácia", "Vodič: " + (menoVodica(rid) || "—") + " (os. č. " + rid + ")", "Dátum: " + kratko(ctx.date)];
+          if (popisKarty) riadky.push("Karta: " + popisKarty);
+          z.r.forEach(function (x) { riadky.push("- " + x); });
+          if (z.poz) riadky.push("Poznámka: " + z.poz);
+          zavriVsetko();
+          odosli(riadky.join("\n"), "Reklamácia");
+        } },
+        { text: "Zrušiť", klik: zavriVsetko },
+      ],
+    });
+  }
+
   window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko };
   window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText };
   window.DpbZiadostSluzby = { otvor: ziadostSluzby };
+  window.DpbReklamacia = { otvor: reklamacia };
 })();

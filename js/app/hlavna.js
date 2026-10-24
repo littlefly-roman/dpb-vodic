@@ -318,7 +318,8 @@
             d.textContent = it.t;
             d.addEventListener("click", function (e) {
               e.stopPropagation();
-              if (it.a === "ziadost_sluzba" && window.DpbZiadostSluzby) window.DpbZiadostSluzby.otvor({ date: kluc });
+              if (it.a === "reklamacia" && window.DpbReklamacia) window.DpbReklamacia.otvor({ date: kluc, volno: true });
+              else if (it.a === "ziadost_sluzba" && window.DpbZiadostSluzby) window.DpbZiadostSluzby.otvor({ date: kluc });
               else if (it.a === "zmena_stavu" && window.DpbZmenaStavu) window.DpbZmenaStavu.otvor({ date: kluc, volno: true });
               else if (window._showToast) window._showToast("Pripravuje sa");
               closeAllGlobal();

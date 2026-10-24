@@ -363,6 +363,8 @@
                   window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
+                else if (act === "reklamacia")
+                  window.DpbReklamacia.otvor({ date: service.date, service: service });
                 else if (act === "zmena_sluzby" || act === "ziadost_sluzba")
                   window.DpbZiadostSluzby.otvor({ date: service.date, service: service, zmena: act === "zmena_sluzby" });
                 else if (act === "zmena_stavu_sluzba" || act === "zmena_stavu")
