@@ -3231,3 +3231,8 @@ body {
   }
 }
 #profilDiag { font-size: 11px; color: var(--text-3); text-align: center; margin: 14px 0 6px; line-height: 1.5; }
+
+/* Voľno: menu (tri bodky vpravo hore) */
+.volno-card.volno-s-menu{position:relative}
+.volno-card .volno-menu-btn{position:absolute;top:8px;right:8px}
+.volno-card .volno-menu{text-align:left;margin-top:16px}

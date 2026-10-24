@@ -296,6 +296,49 @@
           container.style.height = "";
         }
 
+        // Menu na karte „Voľno“ (tri bodky vpravo hore): položky podľa toho, či je deň minulý, dnešný alebo budúci
+        function pridajMenuVolno(volno, kluc) {
+          const dnes = formatDateKey(new Date());
+          const polozky = [];
+          if (kluc < dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
+          else {
+            if (kluc === dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
+            polozky.push({ a: "ziadost_sluzba", t: "Žiadosť o službu" });
+            polozky.push({ a: "zmena_stavu", t: "Zmena stavu" });
+          }
+          volno.classList.add("volno-s-menu");
+          const mb = document.createElement("div");
+          mb.className = "card-menu-btn service-menu-trigger volno-menu-btn";
+          mb.innerHTML =
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+          const menu = document.createElement("div");
+          menu.className = "service-menu volno-menu";
+          polozky.forEach(function (it) {
+            const d = document.createElement("div");
+            d.className = "menu-item";
+            d.textContent = it.t;
+            d.addEventListener("click", function (e) {
+              e.stopPropagation();
+              if (window._showToast) window._showToast("Pripravuje sa");
+              closeAllGlobal();
+            });
+            menu.appendChild(d);
+          });
+          const cd = document.createElement("div");
+          cd.className = "menu-item menu-item-cancel";
+          cd.textContent = "Zrušiť";
+          cd.addEventListener("click", function (e) { e.stopPropagation(); closeAllGlobal(); });
+          menu.appendChild(cd);
+          mb.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const bolo = menu.classList.contains("active");
+            closeAllGlobal();
+            if (!bolo) { menu.classList.add("active"); mb.classList.add("open"); }
+          });
+          volno.appendChild(mb);
+          volno.appendChild(menu);
+        }
+
         function renderCards() {
           const key = formatDateKey(appState.selectedDate);
           const services = appState.servicesByDate[key] || [];
@@ -323,6 +366,7 @@
       <div class="volno-sub">${Calendar.getDayTypeLabel(appState.selectedDate)}</div>
       ${maVBurze ? `<div class="volno-burza-badge" id="volnoBurzaBadge">${burzaSluzby.length} ${burzaSluzby.length === 1 ? "služba" : burzaSluzby.length < 5 ? "služby" : "služieb"} v burze</div>` : ""}
     `;
+            pridajMenuVolno(volno, selKey);
 
             if (maVBurze) {
               // Wrapper: flex column — volno hore staticky, burza sekcia scrolluje samostatne
