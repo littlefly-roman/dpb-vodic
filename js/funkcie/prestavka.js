@@ -35,7 +35,7 @@
     var ov = document.createElement("div");
     ov.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center";
     var box = document.createElement("div");
-    box.style.cssText = "background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 40px;box-sizing:border-box;max-height:90vh;overflow:auto";
+    box.style.cssText = "background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px calc(40px + env(safe-area-inset-bottom,0px));box-sizing:border-box;max-height:90vh;overflow:auto";
     var h = document.createElement("div");
     h.style.cssText = "font-size:17px;font-weight:600;color:var(--text-1);margin-bottom:4px";
     h.textContent = "Nezabezpečená pracovná prestávka";

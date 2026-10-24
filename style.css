@@ -1909,7 +1909,7 @@
       /* Dropdown panel */
       .notif-panel {
         position: fixed;
-        top: 56px;
+        top: calc(56px + env(safe-area-inset-top, 0px));
         right: 8px;
         width: min(360px, calc(100vw - 16px));
         max-height: 70vh;
@@ -3243,3 +3243,19 @@ body {
 .prest-ik.nie{color:var(--red);background:rgba(232,0,26,.12)}
 .prest-ik.klik{cursor:pointer}
 .prest-ik.zamknute{opacity:.75}
+
+
+/* iPhone: hlavičky celoobrazovkových okien nesmú zájsť pod stavový riadok */
+.grafikon-header { padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+#cpModal .grafikon-header { padding: env(safe-area-inset-top, 0px) 0 0; }
+#loginScreen, #importScreen {
+  padding-top: calc(32px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+}
+@media (display-mode: standalone) {
+  @supports (-webkit-touch-callout: none) {
+    @supports (height: 100lvh) {
+      .grafikon-modal, #loginScreen, #importScreen { bottom: auto; height: 100lvh; }
+    }
+  }
+}
