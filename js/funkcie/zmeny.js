@@ -8,6 +8,7 @@
     striedajuci: "STRIEDAJÚCI VODIČ",
     striedany: "STRIEDANÝ VODIČ",
     vozidlo: "PRIDELENÉ VOZIDLO",
+    hradenie: "HRADENIE",
     nepritomnost: "NEPRÍTOMNOSŤ",
   };
   var DOPREDU = 60, MAX_SPRAV = 15;
@@ -40,8 +41,15 @@
     var v = [];
     zdroj.forEach(function (x) { var c = String(x.cislo); if (v.indexOf(c) < 0) v.push(c); });
     if (!v.length && s.vehicle && s.vehicle !== "—") v = [String(s.vehicle)];
+    var vw = [];
+    (k.vozidla || []).forEach(function (x) { var c = String(x.cislo); if (vw.indexOf(c) < 0) vw.push(c); });
+    var h = (k.hradenia || []).map(function (x) {
+      var fr = window.DPBData && DPBData.fmtRange ? DPBData.fmtRange(x.od, x.do) : "";
+      var vv = (x.vozidla || []).map(function (q) { return q.cislo; }).join(",");
+      return String(x.kurz) + "|" + fr + (vv ? "|" + vv : "");
+    });
     return {
-      l: String(s.line || ""), t: s.time || "", v: v.join(", "),
+      l: String(s.line || ""), t: s.time || "", v: v.join(", "), vw: vw.join(", "), h: h,
       p: s.before && s.before.name || "", n: s.after && s.after.name || "",
       a: vz === "NEPRÍTOMNOSŤ" ? 1 : 0,
     };
@@ -73,9 +81,20 @@
       var a = p[0], b = p[1], pre = (b.a ? "" : "Služba ") + b.l + ": ";
       if (a.t !== b.t) zm.push({ d: d, kat: b.a ? "nepritomnost" : "sluzba", l: b.l, text: pre + "čas " + nz(a.t) + " → " + nz(b.t),
         lab: b.a ? "Zmenila sa neprítomnosť" : "Zmenila sa služba", det: "čas " + nz(a.t) + " → " + nz(b.t) });
-      if (!b.a && a.v !== b.v) zm.push({ d: d, kat: "vozidlo", l: b.l, text: pre + "vozidlo " + nz(a.v) + " → " + nz(b.v),
-        lab: !a.v ? "Pridalo sa vozidlo" : !b.v ? "Odobralo sa vozidlo" : "Zmenilo sa vozidlo",
-        det: !a.v ? String(b.v) : !b.v ? "bolo " + a.v : a.v + " → " + b.v });
+      var nf = a.h !== undefined && a.vw !== undefined;   // nový formát snímky (vlastné vozidlá + hradenia zvlášť)
+      var av = nf ? a.vw : a.v, bv = nf ? b.vw : b.v;
+      if (!b.a && av !== bv) zm.push({ d: d, kat: "vozidlo", l: b.l, text: pre + "vozidlo " + nz(av) + " → " + nz(bv),
+        lab: !av ? "Pridalo sa vozidlo" : !bv ? "Odobralo sa vozidlo" : "Zmenilo sa vozidlo",
+        det: !av ? String(bv) : !bv ? "bolo " + av : av + " → " + bv });
+      if (!b.a && nf && JSON.stringify(a.h) !== JSON.stringify(b.h || [])) {
+        var mp = function (arr) { var o = {}; (arr || []).forEach(function (q) { var i = q.indexOf("|"); o[q.slice(0, i < 0 ? q.length : i)] = i < 0 ? "" : q.slice(i + 1).replace("|", " · "); }); return o; };
+        var ma = mp(a.h), mb = mp(b.h), pr = [], od = [], zmn = [];
+        Object.keys(mb).forEach(function (q) { if (!(q in ma)) pr.push(q + " " + mb[q]); else if (ma[q] !== mb[q]) zmn.push(q + " " + ma[q] + " → " + mb[q]); });
+        Object.keys(ma).forEach(function (q) { if (!(q in mb)) od.push(q + " " + ma[q]); });
+        var lab = pr.length && !od.length && !zmn.length ? "Pridalo sa hradenie" : od.length && !pr.length && !zmn.length ? "Odpadlo hradenie" : "Zmenilo sa hradenie";
+        var det = pr.concat(zmn, od.map(function (q) { return "zrušené " + q; })).join("; ");
+        zm.push({ d: d, kat: "hradenie", l: b.l, text: pre + lab.toLowerCase() + ": " + det, lab: lab, det: det });
+      }
       if (!b.a && a.p !== b.p) zm.push({ d: d, kat: "striedany", l: b.l, text: pre + "preberáš od: " + (a.p || "nikto") + " → " + (b.p || "nikto"),
         lab: ad(a.p, b.p) + " striedaný vodič", det: !a.p ? String(b.p) : !b.p ? "bol " + a.p : a.p + " → " + b.p });
       if (!b.a && a.n !== b.n) zm.push({ d: d, kat: "striedajuci", l: b.l, text: pre + "odovzdáš: " + (a.n || "nikto") + " → " + (b.n || "nikto"),
