@@ -196,6 +196,18 @@
             isFuture = datum > today,
             isToday = datum === today;
           const items = [];
+          // Služba práve prebieha (dnes, medzi začiatkom a koncom) -> bez zmeny stavu a zmeny služby
+          var prebieha = false;
+          if (isToday && k.od && k.do) {
+            var _m = function (t) {
+              var q = String(t).split(":");
+              return parseInt(q[0], 10) * 60 + parseInt(q[1] || 0, 10);
+            };
+            var _od = _m(k.od), _do = _m(k.do), _n = new Date();
+            var _now = _n.getHours() * 60 + _n.getMinutes();
+            if (_do <= _od) _do += 1440;
+            prebieha = _now >= _od && _now < _do;
+          }
           if (
             ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)
           )
@@ -207,7 +219,8 @@
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
             else if (["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)) {
               // Dnes: Grafikon, Zmena stavu, porucha vozidla (len ak je vozidlo), udalosť, zmena služby
-              items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
+              if (!prebieha)
+                items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
               var _voz = [];
               (k.vozidla || []).forEach(function (x) {
                 var c = String(x.cislo);
@@ -220,7 +233,8 @@
                   label: "Nahlásiť poruchu vozidla" + (_voz.length === 1 ? " " + _voz[0] : ""),
                 });
               items.push({ action: "udalost", label: "Nahlásiť udalosť" });
-              items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+              if (!prebieha)
+                items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
