@@ -1,6 +1,6 @@
 /* Zmeny v službách: porovná uložený stav s novými dátami a
    (1) pošle správy do zvončeka (Notif, kategória „zmena“),
-   (2) označí zmenenú kartu výrazným pásikom „!!! ZMENA … !!!“ hore aj dole, kým ho vodič neodklikne. */
+   (2) označí zmenenú kartu mini kartou so zmenami pod kartou, kým ho vodič neodklikne. */
 (function () {
   var DNI = ["Ne", "Po", "Ut", "St", "Št", "Pi", "So"];
   var KAT = {
@@ -68,19 +68,28 @@
       for (var q = 0; q < vo.length; q++) if (vo[q].l === vn[i].l && vo[q].a === vn[i].a) { j = q; break; }
       if (j >= 0) { pary.push([vo[j], vn[i]]); vo.splice(j, 1); vn.splice(i, 1); }
     }
+    function ad(a, b) { return !a ? "Pridal sa" : !b ? "Odpadol" : "Zmenil sa"; }
     pary.forEach(function (p) {
       var a = p[0], b = p[1], pre = (b.a ? "" : "Služba ") + b.l + ": ";
-      if (a.t !== b.t) zm.push({ d: d, kat: b.a ? "nepritomnost" : "sluzba", l: b.l, text: pre + "čas " + nz(a.t) + " → " + nz(b.t) });
-      if (!b.a && a.v !== b.v) zm.push({ d: d, kat: "vozidlo", l: b.l, text: pre + "vozidlo " + nz(a.v) + " → " + nz(b.v) });
-      if (!b.a && a.p !== b.p) zm.push({ d: d, kat: "striedany", l: b.l, text: pre + "preberáš od: " + (a.p || "nikto") + " → " + (b.p || "nikto") });
-      if (!b.a && a.n !== b.n) zm.push({ d: d, kat: "striedajuci", l: b.l, text: pre + "odovzdáš: " + (a.n || "nikto") + " → " + (b.n || "nikto") });
+      if (a.t !== b.t) zm.push({ d: d, kat: b.a ? "nepritomnost" : "sluzba", l: b.l, text: pre + "čas " + nz(a.t) + " → " + nz(b.t),
+        lab: b.a ? "Zmenila sa neprítomnosť" : "Zmenila sa služba", det: "čas " + nz(a.t) + " → " + nz(b.t) });
+      if (!b.a && a.v !== b.v) zm.push({ d: d, kat: "vozidlo", l: b.l, text: pre + "vozidlo " + nz(a.v) + " → " + nz(b.v),
+        lab: !a.v ? "Pridalo sa vozidlo" : !b.v ? "Odobralo sa vozidlo" : "Zmenilo sa vozidlo",
+        det: !a.v ? String(b.v) : !b.v ? "bolo " + a.v : a.v + " → " + b.v });
+      if (!b.a && a.p !== b.p) zm.push({ d: d, kat: "striedany", l: b.l, text: pre + "preberáš od: " + (a.p || "nikto") + " → " + (b.p || "nikto"),
+        lab: ad(a.p, b.p) + " striedaný vodič", det: !a.p ? String(b.p) : !b.p ? "bol " + a.p : a.p + " → " + b.p });
+      if (!b.a && a.n !== b.n) zm.push({ d: d, kat: "striedajuci", l: b.l, text: pre + "odovzdáš: " + (a.n || "nikto") + " → " + (b.n || "nikto"),
+        lab: ad(a.n, b.n) + " striedajúci vodič", det: !a.n ? String(b.n) : !b.n ? "bol " + a.n : a.n + " → " + b.n });
     });
     var m = Math.min(vo.length, vn.length);
     for (var k = 0; k < m; k++) {
-      zm.push({ d: d, kat: vo[k].a || vn[k].a ? "nepritomnost" : "sluzba", l: vn[k].l,
-        text: "Zmena: " + vo[k].l + " " + vo[k].t + " → " + vn[k].l + " " + vn[k].t });
+      var nep = vo[k].a || vn[k].a;
+      zm.push({ d: d, kat: nep ? "nepritomnost" : "sluzba", l: vn[k].l,
+        text: "Zmena: " + vo[k].l + " " + vo[k].t + " → " + vn[k].l + " " + vn[k].t,
+        lab: nep ? "Zmenila sa neprítomnosť" : "Zmenila sa služba", det: vo[k].l + " " + vo[k].t + " → " + vn[k].l + " " + vn[k].t });
     }
-    for (var x = m; x < vn.length; x++) zm.push({ d: d, kat: vn[x].a ? "nepritomnost" : "sluzba", l: vn[x].l, text: "Pribudlo: " + vn[x].l + " " + vn[x].t });
+    for (var x = m; x < vn.length; x++) zm.push({ d: d, kat: vn[x].a ? "nepritomnost" : "sluzba", l: vn[x].l, text: "Pribudlo: " + vn[x].l + " " + vn[x].t,
+      lab: vn[x].a ? "Pridala sa neprítomnosť" : "Pridala sa služba", det: vn[x].l + " " + vn[x].t });
     for (var y = m; y < vo.length; y++) zm.push({ d: d, kat: vo[y].a ? "nepritomnost" : "sluzba", l: "", text: "Zrušené: " + vo[y].l + " " + vo[y].t });
     return zm;
   }
@@ -144,8 +153,8 @@
       zmeny.forEach(function (z) {
         if (!z.l) return;
         vl[z.d] = vl[z.d] || {};
-        var a = vl[z.d][z.l] = vl[z.d][z.l] || [];
-        if (a.indexOf(z.kat) < 0) a.push(z.kat);
+        var a = vl[z.d][z.l] = (vl[z.d][z.l] || []).filter(function (x) { return (x && x.k || x) !== z.kat; });
+        a.push({ k: z.kat, lab: z.lab || ("Zmena: " + KAT[z.kat].toLowerCase()), det: z.det || z.text });
       });
       ulozVlajky(r, vl);
 
@@ -159,22 +168,33 @@
     });
   }
 
-  // ---- pásiky na karte ----
-  function pasik(kat, r, d, l, ozn) {
+  // ---- mini karta so zmenami pod obsahom karty ----
+  function minikarta(kat, r, d, l) {
     var b = document.createElement("div");
-    b.className = "zmena-pasik";
+    b.className = "zmena-mini";
     b.setAttribute("role", "button");
-    b.textContent = "!!! ZMENA " + KAT[kat] + " !!!";
+    kat.forEach(function (x) {
+      var o = typeof x === "string" ? { lab: "Zmena: " + (KAT[x] || x).toLowerCase(), det: "" } : x;
+      var rr = document.createElement("div");
+      rr.className = "zmena-mini-r";
+      var h = document.createElement("div"); h.className = "zmena-mini-h"; h.textContent = o.lab;
+      rr.appendChild(h);
+      if (o.det) { var t = document.createElement("div"); t.className = "zmena-mini-t"; t.textContent = o.det; rr.appendChild(t); }
+      b.appendChild(rr);
+    });
+    var hint = document.createElement("div"); hint.className = "zmena-mini-hint"; hint.textContent = "Ťuknutím potvrdíš";
+    b.appendChild(hint);
     b.addEventListener("click", function (e) {
       e.stopPropagation();
       var vl = dajVlajky(r);
-      if (vl[d] && vl[d][l]) {
-        vl[d][l] = vl[d][l].filter(function (x) { return x !== kat; });
-        if (!vl[d][l].length) delete vl[d][l];
+      if (vl[d]) {
+        delete vl[d][l];
         if (!Object.keys(vl[d]).length) delete vl[d];
         ulozVlajky(r, vl);
       }
-      ozn();
+      var card = b.parentNode;
+      b.remove();
+      if (card && card.classList) card.classList.remove("ma-zmenu");
       if (window._showToast) window._showToast("Zmena poznačená ako prečítaná");
     });
     return b;
@@ -184,24 +204,10 @@
     if (!r || !d || !card) return;
     var vl = dajVlajky(r), kat = vl[d] && vl[d][l];
     if (!kat || !kat.length) return;
-    var hore = document.createElement("div"), dole = document.createElement("div");
-    hore.className = dole.className = "zmena-blok";
-    function zrus() { hore.remove(); dole.remove(); card.classList.remove("ma-zmenu"); }
-    kat.forEach(function (k) { hore.appendChild(pasik(k, r, d, l, function () { prekresli(); })); dole.appendChild(pasik(k, r, d, l, function () { prekresli(); })); });
-    function prekresli() {
-      var vl2 = dajVlajky(r), zost = vl2[d] && vl2[d][l] || [];
-      [hore, dole].forEach(function (blk) {
-        Array.prototype.slice.call(blk.children).forEach(function (c) {
-          var t = c.textContent;
-          if (!zost.some(function (k) { return t === "!!! ZMENA " + KAT[k] + " !!!"; })) c.remove();
-        });
-      });
-      if (!zost.length) zrus();
-    }
     card.classList.add("ma-zmenu");
-    card.insertBefore(hore, card.firstChild);
+    var mk = minikarta(kat, r, d, l);
     var menu = card.querySelector(".service-menu");
-    if (menu) card.insertBefore(dole, menu); else card.appendChild(dole);
+    if (menu) card.insertBefore(mk, menu); else card.appendChild(mk);
   }
 
   window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
