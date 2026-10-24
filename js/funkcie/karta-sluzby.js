@@ -247,14 +247,7 @@
               items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             }
           }
-          if (
-            !isToday &&
-            ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor) &&
-            window.DpbExport
-          ) {
-            items.push({ action: "kal_google", label: "Zapísať do kalendára" });
-            items.push({ action: "kal_ics", label: "Export do ICS" });
-          }
+          // Export do kalendára je len zo zoznamu služieb (tlačidlo Export), nie z menu karty.
           if (!items.length) return;
           const menu = document.createElement("div");
           menu.className = "service-menu";
