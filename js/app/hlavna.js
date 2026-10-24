@@ -302,7 +302,6 @@
           const polozky = [];
           if (kluc < dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
           else {
-            if (kluc === dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
             polozky.push({ a: "ziadost_sluzba", t: "Žiadosť o službu" });
             polozky.push({ a: "zmena_stavu", t: "Zmena stavu" });
           }
