@@ -230,7 +230,11 @@
           } else if (isFuture) {
             if (vzor === "NEPRÍTOMNOSŤ")
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
-            else if (!k.kod || k.kod === 0)
+            else if (["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)) {
+              // Budúcnosť: Grafikon, Zmena stavu, Zmena služby (+ kalendár)
+              items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
+              items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+            } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
                 label: "Žiadosť o službu",
