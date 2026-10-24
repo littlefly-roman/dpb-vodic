@@ -192,9 +192,9 @@
             today = window.DpbCas
               ? window.DpbCas.formatDateKey(new Date())
               : "";
-          const isPast = datum < today,
-            isFuture = datum > today,
-            isToday = datum === today;
+          let isPast = datum < today;
+          const isFuture = datum > today;
+          let isToday = datum === today;
           const items = [];
           // Služba práve prebieha (dnes, medzi začiatkom a koncom) -> bez zmeny stavu a zmeny služby
           var prebieha = false;
@@ -207,6 +207,8 @@
             var _now = _n.getHours() * 60 + _n.getMinutes();
             if (_do <= _od) _do += 1440;
             prebieha = _now >= _od && _now < _do;
+            // Po skončení služby sa menu správa ako pre minulý deň
+            if (_now >= _do && _do > _od && _do <= 1440) { isPast = true; isToday = false; }
           }
           if (
             ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)
