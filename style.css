@@ -3252,10 +3252,3 @@ body {
   padding-top: calc(32px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
 }
-@media (display-mode: standalone) {
-  @supports (-webkit-touch-callout: none) {
-    @supports (height: 100lvh) {
-      .grafikon-modal, #loginScreen, #importScreen { bottom: auto; height: 100lvh; }
-    }
-  }
-}
