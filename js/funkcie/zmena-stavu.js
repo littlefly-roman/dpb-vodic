@@ -236,19 +236,18 @@
     var casyBox = el("div", "");
     var st = { typ: "", casy: [] };
     var chipEl = {};
-    function riadokCasov(popis) {
-      var w = el("div", "margin-bottom:8px");
+    // Dve polia: „Nástup po“ (najskôr) a „Ukončenie do“ (najneskôr)
+    var rc = el("div", "display:flex;gap:10px;margin-bottom:8px");
+    function pole(popis) {
+      var w = el("div", "flex:1;min-width:0");
       w.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", popis));
-      var r = el("div", "display:flex;align-items:center;gap:8px");
-      var a = el("input", VSTUP_CSS + ";flex:1;min-width:0;padding:10px 6px"); a.type = "time";
-      var b = el("input", VSTUP_CSS + ";flex:1;min-width:0;padding:10px 6px"); b.type = "time";
-      r.appendChild(a); r.appendChild(el("div", "color:var(--text-2)", "–")); r.appendChild(b);
-      w.appendChild(r);
-      casyBox.appendChild(w);
-      st.casy.push([a, b, popis]);
+      var a = el("input", VSTUP_CSS + ";padding:10px 6px"); a.type = "time";
+      w.appendChild(a); rc.appendChild(w);
+      st.casy.push([a, popis]);
     }
-    riadokCasov("Nástup od – do");
-    riadokCasov("Ukončenie od – do");
+    pole("Nástup po");
+    pole("Ukončenie do");
+    casyBox.appendChild(rc);
     function nastav(k) {
       st.typ = (st.typ === k) ? "" : k;
       Object.keys(chipEl).forEach(function (q) {
@@ -271,13 +270,10 @@
       zber: function () {
         var o = { typ: st.typ, linka: lin.value.trim(), casy: [] };
         for (var i = 0; i < st.casy.length; i++) {
-          var a = st.casy[i][0].value, b = st.casy[i][1].value;
-          if (a || b) {
-            if (!a || !b) return { chyba: "Pri čase zadaj od aj do." };
-            if (b < a) return { chyba: "Čas „do“ nemôže byť pred časom „od“." };
-            o.casy.push(st.casy[i][2].replace(" od – do", "") + " " + a + " – " + b);
-          }
+          if (st.casy[i][0].value) o.casy.push(st.casy[i][1].toLowerCase() + " " + st.casy[i][0].value);
         }
+        if (st.casy[0][0].value && st.casy[1][0].value && st.casy[1][0].value <= st.casy[0][0].value && st.typ !== "delena")
+          return { chyba: "Ukončenie musí byť po nástupe." };
         return o;
       },
     };
