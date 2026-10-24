@@ -97,7 +97,7 @@
 
       .app-header {
         flex-shrink: 0;
-        height: 64px;
+        height: calc(64px + env(safe-area-inset-top, 0px));
         background: var(--red);
         color: white;
         display: flex;
@@ -145,7 +145,7 @@
 
       .bottom-nav {
         flex-shrink: 0;
-        height: 64px;
+        height: calc(64px + env(safe-area-inset-bottom, 0px));
         padding-bottom: env(safe-area-inset-bottom);
         background: var(--surface);
         border-top: 1px solid var(--border);
@@ -3211,3 +3211,12 @@ body {
 @media (prefers-reduced-motion:reduce){.zmena-pasik{animation:none}}
 
 #profilDiskKarta.hidden, #importDiskBtn.hidden { display: none !important; }
+
+/* iPhone (PWA na ploche): telo vyplní celú obrazovku, bez prázdneho pásu dole */
+@media (display-mode: standalone) {
+  @supports (-webkit-touch-callout: none) {
+    html, body { height: 100%; }
+    body { position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
+  }
+}
+#profilDiag { font-size: 11px; color: var(--text-3); text-align: center; margin: 14px 0 6px; line-height: 1.5; }

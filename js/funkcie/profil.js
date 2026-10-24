@@ -18,6 +18,7 @@
     el("burzaView").classList.add("hidden");
     el("profilView").classList.remove("hidden");
     obnovInfoODatach();
+    diag();
   }
 
   function pred(ms) {
@@ -114,5 +115,17 @@
     }
   });
 
+  function diag() {
+    var d = document.getElementById("profilDiag");
+    if (!d) return;
+    var pr = document.createElement("div");
+    pr.style.cssText = "position:fixed;visibility:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0";
+    document.body.appendChild(pr);
+    var cs = getComputedStyle(pr), st = parseInt(cs.paddingTop, 10) || 0, sb = parseInt(cs.paddingBottom, 10) || 0;
+    pr.remove();
+    var sa = (window.navigator.standalone === true) || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    d.textContent = "Zobrazenie: okno " + innerWidth + "×" + innerHeight + " · obrazovka " + screen.width + "×" + screen.height +
+      " · okraje hore/dole " + st + "/" + sb + " · " + (sa ? "appka na ploche" : "prehliadač");
+  }
   window.Profil = { otvor: otvor, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
