@@ -166,6 +166,10 @@
             }
             main.appendChild(sc);
             main.appendChild(sv);
+            if (window.DpbPrestavka) {
+              var _pi = window.DpbPrestavka.ikona(service, k);
+              if (_pi) main.appendChild(_pi);
+            }
             main.addEventListener("click", () => row.classList.toggle("open"));
 
             const det = document.createElement("div");
@@ -657,6 +661,7 @@
                     vozidlo: s.vozidlo,
                     ridic: s.ridic || "",
                   })),
+                  service,
                 ),
               );
             }
