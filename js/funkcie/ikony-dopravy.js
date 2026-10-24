@@ -128,7 +128,7 @@
       // klik/ťuk na ikony = roztočí kolotoč znova (nie počas nahrávania dát)
       (function (k) {
         k.el.addEventListener("click", function () {
-          if (!k.smycka) spusti(k, { typ: "intro" });
+          if (!k.el.classList.contains("nacitava")) { k.smycka = false; spusti(k, { typ: "intro" }); }
         });
       })(k);
     }
@@ -154,7 +154,8 @@
     },
     nacitava: function (zap) {
       vsetky(function (k) {
-        if (!viditelny(k.el)) return;
+        // vypnutie platí vždy (aj keď je obrazovka práve skrytá), inak by kolotoč ostal „zaseknutý“ v slučke
+        if (zap && !viditelny(k.el)) return;
         k.el.classList.toggle("nacitava", !!zap);
         if (zap) spusti(k, { typ: "smycka" });
         else if (k.smycka) { k.smycka = false; pokoj(k); }
