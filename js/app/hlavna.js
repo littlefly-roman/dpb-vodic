@@ -318,7 +318,8 @@
             d.textContent = it.t;
             d.addEventListener("click", function (e) {
               e.stopPropagation();
-              if (window._showToast) window._showToast("Pripravuje sa");
+              if (it.a === "zmena_stavu" && window.DpbZmenaStavu) window.DpbZmenaStavu.otvor({ date: kluc, volno: true });
+              else if (window._showToast) window._showToast("Pripravuje sa");
               closeAllGlobal();
             });
             menu.appendChild(d);
