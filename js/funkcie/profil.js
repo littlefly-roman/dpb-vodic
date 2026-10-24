@@ -123,9 +123,20 @@
     document.body.appendChild(pr);
     var cs = getComputedStyle(pr), st = parseInt(cs.paddingTop, 10) || 0, sb = parseInt(cs.paddingBottom, 10) || 0;
     pr.remove();
+    function mer(css) {
+      var q = document.createElement("div");
+      q.style.cssText = "position:fixed;left:0;width:1px;visibility:hidden;pointer-events:none;" + css;
+      document.body.appendChild(q);
+      var h = Math.round(q.getBoundingClientRect().height);
+      q.remove();
+      return h;
+    }
+    var vv = window.visualViewport ? Math.round(visualViewport.height) : "?";
+    var m2 = "inset-fix " + mer("top:0;bottom:0") + " · lvh " + mer("top:0;height:100lvh") + " · svh " + mer("top:0;height:100svh") +
+      " · dvh " + mer("top:0;height:100dvh") + " · vv " + vv + " · body " + Math.round(document.body.getBoundingClientRect().height);
     var sa = (window.navigator.standalone === true) || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
     d.textContent = "Zobrazenie: okno " + innerWidth + "×" + innerHeight + " · obrazovka " + screen.width + "×" + screen.height +
-      " · okraje hore/dole " + st + "/" + sb + " · " + (sa ? "appka na ploche" : "prehliadač");
+      " · okraje hore/dole " + st + "/" + sb + " · " + (sa ? "appka na ploche" : "prehliadač") + " · " + m2;
   }
   window.Profil = { otvor: otvor, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
