@@ -185,7 +185,27 @@
           return list;
         }
 
+        // Živé prepínanie menu podľa času (začiatok/koniec služby)
+        const _menuKarty = new Set();
+        function _obnovMenu() {
+          _menuKarty.forEach(function (c) {
+            if (!c.isConnected) return _menuKarty.delete(c);
+            const m = c._menuEl;
+            if (m && m.classList.contains("active")) return; // otvorené menu nemeníme
+            attachMenu(c, c._menuMb, c._menuSluzba);
+          });
+        }
+        setInterval(_obnovMenu, 60000);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) _obnovMenu();
+        });
+
         function attachMenu(card, mb, service) {
+          if (card._menuEl) {
+            card._menuEl.remove();
+            mb.removeEventListener("click", card._menuToggle);
+            card._menuEl = null;
+          }
           const k = service._karta || {},
             vzor = k.vzor || "";
           const datum = service.date || "",
@@ -294,6 +314,11 @@
             }
           }
           mb.addEventListener("click", toggle);
+          card._menuEl = menu;
+          card._menuToggle = toggle;
+          card._menuMb = mb;
+          card._menuSluzba = service;
+          _menuKarty.add(card);
           cd.addEventListener("click", function (e) {
             e.stopPropagation();
             window._closeAllGlobal && window._closeAllGlobal();
