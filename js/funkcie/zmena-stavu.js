@@ -100,8 +100,8 @@
     var x = (window.DPBData ? DPBData.getDrivers() : []).filter(function (q) { return String(q.rid) === String(r); })[0];
     return x ? x.meno : "";
   }
-  function odosli(text) {
-    var nad = "Žiadosť o zmenu stavu";
+  function odosli(text, nad) {
+    nad = nad || "Žiadosť o zmenu stavu";
     if (navigator.share) return navigator.share({ title: nad, text: text }).catch(function () {});
     if (navigator.clipboard && navigator.clipboard.writeText)
       return navigator.clipboard.writeText(text).then(function () { toast("Hlásenie je skopírované, vlož ho do správy", 4000); }, function () { toast("Hlásenie sa nepodarilo skopírovať", 4000); });
@@ -220,6 +220,118 @@
     });
   }
 
+
+  // ---------- Žiadosť o službu / Zmena služby ----------
+  // Dve skupiny: „Chcem“ a „Nechcem“; v každej nepovinne typ služby, časy a linka.
+  var TYPY = [
+    { k: "lubovolna", t: "Ľubovoľná", casy: 0 },
+    { k: "ranna", t: "Ranná", casy: 1 },
+    { k: "odpoludnajsia", t: "Odpoludňajšia", casy: 1 },
+    { k: "delena", t: "Delená", casy: 2 },
+  ];
+  function skupina(nadpis, farba) {
+    var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px");
+    box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:8px;color:" + farba, nadpis));
+    var chips = el("div", "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px");
+    var casyBox = el("div", "");
+    var st = { typ: "", casy: [] };
+    var chipEl = {};
+    function riadokCasov(popis) {
+      var w = el("div", "margin-bottom:8px");
+      w.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", popis));
+      var r = el("div", "display:flex;align-items:center;gap:8px");
+      var a = el("input", VSTUP_CSS + ";flex:1;min-width:0;padding:10px 6px"); a.type = "time";
+      var b = el("input", VSTUP_CSS + ";flex:1;min-width:0;padding:10px 6px"); b.type = "time";
+      r.appendChild(a); r.appendChild(el("div", "color:var(--text-2)", "–")); r.appendChild(b);
+      w.appendChild(r);
+      casyBox.appendChild(w);
+      st.casy.push([a, b, popis]);
+    }
+    riadokCasov("Nástup od – do");
+    riadokCasov("Ukončenie od – do");
+    function nastav(k) {
+      st.typ = (st.typ === k) ? "" : k;
+      Object.keys(chipEl).forEach(function (q) {
+        var on = st.typ === q;
+        chipEl[q].style.background = on ? "var(--red)" : "var(--surface-2)";
+        chipEl[q].style.color = on ? "#fff" : "var(--text-1)";
+      });
+    }
+    TYPY.forEach(function (t) {
+      var c = el("button", "padding:8px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", t.t);
+      c.type = "button";
+      c.addEventListener("click", function () { nastav(t.k); });
+      chipEl[t.k] = c; chips.appendChild(c);
+    });
+    box.appendChild(chips); box.appendChild(casyBox);
+    var lin = el("input", VSTUP_CSS + ";margin-top:4px"); lin.type = "text"; lin.placeholder = "Linka (napr. 1 alebo 3, 9)";
+    box.appendChild(lin);
+    return {
+      box: box,
+      zber: function () {
+        var o = { typ: st.typ, linka: lin.value.trim(), casy: [] };
+        for (var i = 0; i < st.casy.length; i++) {
+          var a = st.casy[i][0].value, b = st.casy[i][1].value;
+          if (a || b) {
+            if (!a || !b) return { chyba: "Pri čase zadaj od aj do." };
+            if (b < a) return { chyba: "Čas „do“ nemôže byť pred časom „od“." };
+            o.casy.push(st.casy[i][2].replace(" od – do", "") + " " + a + " – " + b);
+          }
+        }
+        return o;
+      },
+    };
+  }
+  function popisSkupiny(o) {
+    var t = TYPY.filter(function (q) { return q.k === o.typ; })[0];
+    var c = [];
+    if (t) c.push(t.t.toLowerCase());
+    if (o.casy.length) c.push(o.casy.join(", "));
+    if (o.linka) c.push("linka " + o.linka);
+    return c.join(", ");
+  }
+  function ziadostSluzby(ctx) {
+    var zmena = !!ctx.zmena;
+    var nazov = zmena ? "Zmena služby" : "Žiadosť o službu";
+    var sv = ctx.service;
+    var povodna = sv && sv._vzor !== "NEPRÍTOMNOSŤ" ? (sv.line || "") + (sv.time ? " · " + sv.time : "") : "";
+    otvor({
+      titul: nazov,
+      podtitul: pekne(ctx.date) + (povodna ? " · teraz: " + povodna : ""),
+      telo: function (t) {
+        var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--red)");
+        t.appendChild(ch.box); t.appendChild(nch.box);
+        var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
+        t.appendChild(pz);
+        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        t.appendChild(chyba);
+        ziadostSluzby._z = function () {
+          var a = ch.zber(), b = nch.zber();
+          if (a.chyba || b.chyba) { chyba.textContent = a.chyba || b.chyba; return null; }
+          var pa = popisSkupiny(a), pb = popisSkupiny(b);
+          if (!pa && !pb) { chyba.textContent = "Vyplň aspoň jednu vec: čo chceš alebo nechceš."; return null; }
+          return { ch: pa, nch: pb, poz: pz.value.trim() };
+        };
+      },
+      tlacidla: [
+        { text: "Pripraviť hlásenie", primarny: true, klik: function () {
+          var z = ziadostSluzby._z(); if (!z) return;
+          var r = window.appState && window.appState.currentDriver;
+          var riadky = [nazov === "Zmena služby" ? "Žiadosť o zmenu služby" : "Žiadosť o službu",
+            "Vodič: " + (menoVodica(r) || "—") + " (os. č. " + r + ")", "Dátum: " + kratko(ctx.date)];
+          if (zmena && povodna) riadky.push("Terajšia služba: " + povodna);
+          if (z.ch) riadky.push("Chcem: " + z.ch);
+          if (z.nch) riadky.push("Nechcem: " + z.nch);
+          if (z.poz) riadky.push("Poznámka: " + z.poz);
+          zavriVsetko();
+          odosli(riadky.join("\n"), nazov === "Zmena služby" ? "Žiadosť o zmenu služby" : "Žiadosť o službu");
+        } },
+        { text: "Zrušiť", klik: zavriVsetko },
+      ],
+    });
+  }
+
   window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko };
   window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText };
+  window.DpbZiadostSluzby = { otvor: ziadostSluzby };
 })();
