@@ -363,9 +363,8 @@
                   window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
-                else if (act === "zmena_stavu_sluzba")
-                  window._showZiadostModal &&
-                    window._showZiadostModal("nepritomnost", service);
+                else if (act === "zmena_stavu_sluzba" || act === "zmena_stavu")
+                  window.DpbZmenaStavu.otvor({ date: service.date, service: service });
                 else if (
                   ["nepritomnost", "ine_ziadost", "zmena_sluzby"].includes(act)
                 )
