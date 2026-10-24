@@ -229,7 +229,7 @@
     { k: "odpoludnajsia", t: "Odpoludňajšia", casy: 1 },
     { k: "delena", t: "Delená", casy: 2 },
   ];
-  function skupina(nadpis, farba) {
+  function skupina(nadpis, farba, nechcem) {
     var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px");
     box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:8px;color:" + farba, nadpis));
     var chips = el("div", "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px");
@@ -245,8 +245,8 @@
       w.appendChild(a); rc.appendChild(w);
       st.casy.push([a, popis]);
     }
-    pole("Nástup po");
-    pole("Ukončenie do");
+    pole(nechcem ? "Nástup pred" : "Nástup po");
+    pole(nechcem ? "Ukončenie po" : "Ukončenie do");
     casyBox.appendChild(rc);
     function nastav(k) {
       st.typ = (st.typ === k) ? "" : k;
@@ -272,7 +272,7 @@
         for (var i = 0; i < st.casy.length; i++) {
           if (st.casy[i][0].value) o.casy.push(st.casy[i][1].toLowerCase() + " " + st.casy[i][0].value);
         }
-        if (st.casy[0][0].value && st.casy[1][0].value && st.casy[1][0].value <= st.casy[0][0].value && st.typ !== "delena")
+        if (st.casy[0][0].value && st.casy[1][0].value && st.casy[1][0].value <= st.casy[0][0].value && st.typ !== "delena" && !nechcem)
           return { chyba: "Ukončenie musí byť po nástupe." };
         return o;
       },
@@ -295,7 +295,7 @@
       titul: nazov,
       podtitul: pekne(ctx.date) + (povodna ? " · teraz: " + povodna : ""),
       telo: function (t) {
-        var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--red)");
+        var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--red)", true);
         t.appendChild(ch.box); t.appendChild(nch.box);
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
