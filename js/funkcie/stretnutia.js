@@ -110,6 +110,40 @@
     return najdeny || null;
   }
 
+  function cas(z) { return z.dep != null ? z.dep : z.arr; }
+  function prich(z) { return z.arr != null ? z.arr : z.dep; }
+  // Spoje (jazdy) obehu s časovým rozsahom
+  function spojeObehu(obeh) {
+    return obeh.filter(function (sp) { return sp.stops.length > 1; }).map(function (sp) {
+      return { stops: sp.stops, t0: cas(sp.stops[0]), t1: prich(sp.stops[sp.stops.length - 1]) };
+    }).filter(function (x) { return x.t0 != null && x.t1 != null; });
+  }
+  // Stretnutia dvoch spojov idúcich opačne: berú sa len ZASTÁVKY, ktoré majú oba spoje spoločné (jedna električka
+  // môže niektorú zastávku vynechať, napr. STU len v jednom smere), a úsek medzi dvoma susednými spoločnými zastávkami.
+  function stretnutiaSpojov(A, B) {
+    var res = [];
+    var bi = {};
+    B.stops.forEach(function (z, i) { if (bi[z.st] === undefined) bi[z.st] = i; });
+    var spolu = [];
+    A.stops.forEach(function (z, i) { if (bi[z.st] !== undefined) spolu.push({ z: z, i: i, j: bi[z.st] }); });
+    for (var k = 0; k + 1 < spolu.length; k++) {
+      var p = spolu[k], q = spolu[k + 1];
+      if (!(q.j < p.j)) continue;                        // B ide opačne: q pred p
+      if (p.z.st === q.z.st) continue;
+      var t1 = cas(p.z), t2 = prich(q.z);
+      var u1 = cas(B.stops[q.j]), u2 = prich(B.stops[p.j]);
+      if (t1 == null || t2 == null || u1 == null || u2 == null || t2 <= t1 || u2 <= u1) continue;
+      var z = Math.max(t1, u1), kk = Math.min(t2, u2);
+      if (z > kk) continue;
+      var a1 = 1 / (t2 - t1), b1 = -t1 / (t2 - t1);
+      var a2 = -1 / (u2 - u1), b2 = 1 + u1 / (u2 - u1);
+      var t = (b2 - b1) / (a1 - a2);
+      if (!(t >= z - 1 && t <= kk + 1)) t = (z + kk) / 2;
+      res.push({ cas: t, x: p.z.st, y: q.z.st, t1: t1, t2: t2 });
+    }
+    return res;
+  }
+
   // Hlavná funkcia: kurz = "9/28", od/do = "HH:MM" alebo sekundy služby vodiča
   async function najdi(kurz, dateKey, od, do_) {
     var d = await nacitajObehy(dateKey);
@@ -119,28 +153,18 @@
     var moj = d.obehy[kod];
     if (!moj) return { chyba: "Obeh " + kod + " sa nenašiel" };
     var odS = typeof od === "number" ? od : sek(od), doS = typeof do_ === "number" ? do_ : sek(do_);
-    var mojeUseky = useky(moj).filter(function (u) { return (odS == null || u.t2 >= odS) && (doS == null || u.t1 <= doS); });
-    // index cudzích úsekov podľa smeru
-    var idx = {};
+    var mojeSpoje = spojeObehu(moj).filter(function (x) { return (odS == null || x.t1 >= odS) && (doS == null || x.t0 <= doS); });
+    var cudzie = [];
     Object.keys(d.obehy).forEach(function (k) {
       if (k === kod) return;
       var kurzId = parseInt(k.slice(0, 3), 10) + "/" + parseInt(k.slice(3, 5), 10);
-      useky(d.obehy[k]).forEach(function (u) {
-        var key = u.x + ">" + u.y;
-        (idx[key] = idx[key] || []).push({ kurz: kurzId, t1: u.t1, t2: u.t2 });
-      });
+      spojeObehu(d.obehy[k]).forEach(function (x) { x.kurz = kurzId; cudzie.push(x); });
     });
     var vys = [];
-    mojeUseky.forEach(function (u) {
-      (idx[u.y + ">" + u.x] || []).forEach(function (o) {
-        var z = Math.max(u.t1, o.t1), k = Math.min(u.t2, o.t2);
-        if (z > k) return;
-        // poloha: ja X→Y: (t-u.t1)/(u.t2-u.t1); oproti Y→X: 1-(t-o.t1)/(o.t2-o.t1); hľadáme rovnosť
-        var a1 = 1 / (u.t2 - u.t1), b1 = -u.t1 / (u.t2 - u.t1);
-        var a2 = -1 / (o.t2 - o.t1), b2 = 1 + o.t1 / (o.t2 - o.t1);
-        var t = (b2 - b1) / (a1 - a2);
-        if (!(t >= z - 1 && t <= k + 1)) t = (z + k) / 2;
-        vys.push({ cas: t, x: u.x, y: u.y, kurz: o.kurz });
+    mojeSpoje.forEach(function (A) {
+      cudzie.forEach(function (B) {
+        if (B.t1 < A.t0 || B.t0 > A.t1) return;
+        stretnutiaSpojov(A, B).forEach(function (m) { m.kurz = B.kurz; vys.push(m); });
       });
     });
     vys.sort(function (a, b) { return a.cas - b.cas; });
@@ -163,7 +187,6 @@
       };
     });
   }
-
 
   // Poloha kurzu v čase sec: 7 zastávok (3 pred, aktuálna, 3 za) z rozbehnutého spoja (alebo najbližšieho)
   async function poloha(kurz, dateKey, sec, poSluzbe) {
