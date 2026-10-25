@@ -142,12 +142,12 @@
   }
 
   // Box Výpravňa sa dá zbaliť/rozbaliť (predvolene zbalený, voľba sa pamätá)
-  var posledneR = null, posledneDN = null, posledneM = null, posledneKluc = "", jeDnes = true, casovac = null;
+  var posledneR = null, posledneDN = null, posledneM = null, posledneKluc = "", jeDnes = true, casovac = null, casovac2 = null, mizne = false;
   var otvorene = false;
   function vykresli() {
     if (!pas || !posledneR) return;
     pas.innerHTML =
-      '<div class="vyp-box' + (otvorene ? " otvorena" : "") + '"><button type="button" class="vyp-nadpis" aria-expanded="' +
+      '<div class="vyp-box' + (otvorene ? " otvorena" : "") + (otvorene && mizne ? " mizne" : "") + '"><button type="button" class="vyp-nadpis" aria-expanded="' +
       (otvorene ? "true" : "false") +
       '"><span>VÝPRAVŇA</span><span class="vyp-sipka">▼</span></button>' +
       (otvorene
@@ -162,9 +162,15 @@
       "</div>";
     pas.querySelector(".vyp-nadpis").addEventListener("click", function () {
       otvorene = !otvorene;
-      clearTimeout(casovac);
-      // rozbalený box sa po 3 sekundách sám zbalí
-      if (otvorene) casovac = setTimeout(function () { otvorene = false; vykresli(); }, 3000);
+      clearTimeout(casovac); clearTimeout(casovac2); mizne = false;
+      // rozbalený box po 10 sekundách pomaly zmizne (posledné ~2 s je to postupné stmievanie)
+      if (otvorene) {
+        casovac2 = setTimeout(function () {
+          mizne = true;
+          var bx = pas && pas.querySelector(".vyp-box"); if (bx) bx.classList.add("mizne");
+        }, 8000);
+        casovac = setTimeout(function () { otvorene = false; mizne = false; vykresli(); }, 10000);
+      }
       vykresli();
     });
     Array.prototype.forEach.call(pas.querySelectorAll(".vyp-row"), function (b) {
