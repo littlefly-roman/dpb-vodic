@@ -223,21 +223,35 @@
 
   // ---------- Žiadosť o službu / Zmena služby ----------
   // Dve skupiny: „Chcem“ a „Nechcem“; v každej nepovinne typ služby, časy a linka.
-  var TYPY = [
-    { k: "lubovolna", t: "Ľubovoľná", casy: 0 },
-    { k: "ranna", t: "Ranná", casy: 1 },
-    { k: "odpoludnajsia", t: "Odpoludňajšia", casy: 1 },
-    { k: "delena", t: "Delená", casy: 2 },
+  // Dva krátke riadky zaškrtávacích políčok: Kedy (ranná/poobedná), Aká (špička/celodenná); Striedač je vedľa poľa Linka.
+  // Nič nezaškrtnuté alebo všetko zaškrtnuté = „je mi to jedno“. Ranná + poobedná + len špička = delená.
+  var RIADKY = [
+    { k: "kedy", t: "Kedy", m: ["Ranná", "Poobedná"] },
+    { k: "aka", t: "Aká", m: ["Špička", "Celodenná"] },
   ];
   function skupina(nadpis, farba, nechcem) {
-    var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px");
-    box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:8px;color:" + farba, nadpis));
-    var chips = el("div", "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px");
-    var casyBox = el("div", "");
-    var st = { typ: "", casy: [] };
-    var chipEl = {};
-    // Dve polia: „Nástup po“ (najskôr) a „Ukončenie do“ (najneskôr)
-    var rc = el("div", "display:flex;gap:10px;margin-bottom:8px");
+    var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px");
+    box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:6px;color:" + farba, nadpis));
+    var vyber = {};
+    RIADKY.forEach(function (r) {
+      vyber[r.k] = {};
+      var rad = el("div", "display:flex;align-items:center;gap:6px;margin-bottom:6px");
+      rad.appendChild(el("div", "width:44px;flex-shrink:0;font-size:13px;color:var(--text-2)", r.t));
+      r.m.forEach(function (m) {
+        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", m);
+        c.type = "button";
+        c.addEventListener("click", function () {
+          vyber[r.k][m] = !vyber[r.k][m];
+          c.style.background = vyber[r.k][m] ? "var(--red)" : "var(--surface-2)";
+          c.style.color = vyber[r.k][m] ? "#fff" : "var(--text-1)";
+        });
+        rad.appendChild(c);
+      });
+      box.appendChild(rad);
+    });
+    // Dve polia: „Nástup po“ (najskôr) a „Ukončenie do“ (najneskôr); pri „Nechcem“ opačne
+    var st = { casy: [] };
+    var rc = el("div", "display:flex;gap:10px;margin:4px 0 8px");
     function pole(popis) {
       var w = el("div", "flex:1;min-width:0");
       w.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", popis));
@@ -247,45 +261,55 @@
     }
     pole(nechcem ? "Nástup pred" : "Nástup po");
     pole(nechcem ? "Ukončenie po" : "Ukončenie do");
-    casyBox.appendChild(rc);
-    function nastav(k) {
-      st.typ = (st.typ === k) ? "" : k;
-      Object.keys(chipEl).forEach(function (q) {
-        var on = st.typ === q;
-        chipEl[q].style.background = on ? "var(--red)" : "var(--surface-2)";
-        chipEl[q].style.color = on ? "#fff" : "var(--text-1)";
-      });
-    }
-    TYPY.forEach(function (t) {
-      var c = el("button", "padding:8px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", t.t);
-      c.type = "button";
-      c.addEventListener("click", function () { nastav(t.k); });
-      chipEl[t.k] = c; chips.appendChild(c);
+    box.appendChild(rc);
+    var rl = el("div", "display:flex;gap:8px;align-items:center");
+    var lin = el("input", VSTUP_CSS + ";flex:1;min-width:0"); lin.type = "text"; lin.placeholder = "Linka (napr. 1 alebo 3, 9)";
+    var striedac = false;
+    var sb = el("button", "padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer;flex-shrink:0", "Striedač");
+    sb.type = "button";
+    sb.addEventListener("click", function () {
+      striedac = !striedac;
+      sb.style.background = striedac ? "var(--red)" : "var(--surface-2)";
+      sb.style.color = striedac ? "#fff" : "var(--text-1)";
     });
-    box.appendChild(chips); box.appendChild(casyBox);
-    var lin = el("input", VSTUP_CSS + ";margin-top:4px"); lin.type = "text"; lin.placeholder = "Linka (napr. 1 alebo 3, 9)";
-    box.appendChild(lin);
+    rl.appendChild(lin); rl.appendChild(sb);
+    box.appendChild(rl);
     return {
       box: box,
       zber: function () {
-        var o = { typ: st.typ, linka: lin.value.trim(), casy: [] };
+        var o = { linka: lin.value.trim(), casy: [], striedac: striedac };
+        RIADKY.forEach(function (r) {
+          var v = r.m.filter(function (m) { return vyber[r.k][m]; });
+          o[r.k] = v;
+        });
         for (var i = 0; i < st.casy.length; i++) {
           if (st.casy[i][0].value) o.casy.push(st.casy[i][1].toLowerCase() + " " + st.casy[i][0].value);
         }
-        if (st.casy[0][0].value && st.casy[1][0].value && st.casy[1][0].value <= st.casy[0][0].value && st.typ !== "delena" && !nechcem)
+        if (!nechcem && st.casy[0][0].value && st.casy[1][0].value && st.casy[1][0].value <= st.casy[0][0].value && o.aka.indexOf("Špička") < 0)
           return { chyba: "Ukončenie musí byť po nástupe." };
+        o.zaskrtnute = striedac || RIADKY.some(function (r) { return Object.keys(vyber[r.k]).some(function (m) { return vyber[r.k][m]; }); });
         return o;
       },
     };
   }
   function popisSkupiny(o) {
-    var t = TYPY.filter(function (q) { return q.k === o.typ; })[0];
     var c = [];
-    if (t) c.push(t.t.toLowerCase());
+    var ma = function (a, x) { return a.indexOf(x) >= 0; };
+    var delena = ma(o.kedy, "Ranná") && ma(o.kedy, "Poobedná") && o.aka.length === 1 && o.aka[0] === "Špička";
+    var uzko = function (a, r) { return a.length && a.length < r.m.length ? a.join(" / ").toLowerCase() : ""; };  // všetko zaškrtnuté = je to jedno
+    if (o.striedac) c.push("striedač");
+    if (delena) c.push("delená (ranná + poobedná špička)");
+    else {
+      var k = uzko(o.kedy, RIADKY[0]), a = uzko(o.aka, RIADKY[1]);
+      if (k) c.push(k);
+      if (a) c.push(a);
+    }
     if (o.casy.length) c.push(o.casy.join(", "));
     if (o.linka) c.push("linka " + o.linka);
+    if (!c.length && o.zaskrtnute) c.push("ľubovoľná");
     return c.join(", ");
   }
+
   function ziadostSluzby(ctx) {
     var zmena = !!ctx.zmena;
     var nazov = zmena ? "Zmena služby" : "Žiadosť o službu";
