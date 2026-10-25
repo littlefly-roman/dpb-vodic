@@ -51,7 +51,7 @@
       var iv = setInterval(function () {
         if (!box || !box.isConnected) { clearInterval(iv); return; }
         vykresli();
-      }, 20000);
+      }, 5000);
     }
     return sheet;
   }
@@ -61,12 +61,12 @@
     if (!window.DpbOkna || !window.DpbStretnutia) return;
     var box = null, info = null, vsetky = false, data = null;
     var n = new Date(), dnes = n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate());
-    var teraz = n.getHours() * 3600 + n.getMinutes() * 60;
     function kresli() {
       if (!box) return;
+      var nn = new Date(), teraz = nn.getHours() * 3600 + nn.getMinutes() * 60 + nn.getSeconds();
       box.innerHTML = "";
       var zoznam = data;
-      if (dateKey === dnes && !vsetky) zoznam = data.filter(function (x) { return x.sec >= teraz - 300; });
+      if (dateKey === dnes && !vsetky) zoznam = data.filter(function (x) { return x.sec >= teraz; });
       var viac = !vsetky && zoznam.length > 15;
       if (!vsetky) zoznam = zoznam.slice(0, 15);
       if (!zoznam.length) box.appendChild(el("div", "color:var(--text-2);padding:8px 0", "Nič ďalšie."));
@@ -96,8 +96,14 @@
     var r = await window.DpbStretnutia.najdi(kurz, dateKey, sek(od), sek(do_));
     if (!box || !box.isConnected) return;
     if (!r || r.chyba) { info.textContent = (r && r.chyba) || "Grafikon nie je dostupný."; return; }
-    data = r; info.textContent = "Električky idúce oproti na rovnakom úseku (" + r.length + ").";
+    data = r; info.textContent = "Električky idúce oproti na rovnakom úseku (" + r.length + "). Zoznam sa obnovuje.";
     kresli();
+    if (dateKey === dnes) {
+      var iv2 = setInterval(function () {
+        if (!box || !box.isConnected) { clearInterval(iv2); return; }
+        kresli();
+      }, 10000);
+    }
   }
 
   window.DpbMiniGrafikon = { otvor: otvor, stretnutia: stretnutia };
