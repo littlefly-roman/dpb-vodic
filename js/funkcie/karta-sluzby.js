@@ -262,6 +262,8 @@
             ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)
           )
             items.push({ action: "grafikon", label: "Grafikon" });
+          if (vzor === "SLUŽBA" && /^[1349]\//.test(k.kurz || ""))
+            items.push({ action: "stretnutia", label: "Koho stretnem" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
           } else if (isToday) {
@@ -352,6 +354,8 @@
                   window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
+                else if (act === "stretnutia")
+                  window.DpbMiniGrafikon.stretnutia(k.kurz, service.date, k.od, k.do, "");
                 else if (act === "nahlasit")
                   window.DpbNahlasit.otvor({ date: service.date, service: service });
                 else if (act === "reklamacia")
