@@ -192,11 +192,11 @@
     if (stav === "bezi") {
       for (var i = 0; i < st.length; i++) { if (cas(st[i]) <= sec) idx = i; }
     } else if (stav === "skoncil") idx = st.length - 1;
-    var zac = Math.max(0, Math.min(idx - 3, st.length - 7)), kon = Math.min(st.length, zac + 7);
     var polozky = [];
-    for (var j = zac; j < kon; j++) {
-      var t = cas(st[j]);
-      polozky.push({ nazov: nazovStanice(d.stanice, st[j].st), cas: hms(t), cur: j === idx && stav !== "caka" || (stav === "caka" && j === 0) });
+    var stred = stav === "caka" ? 0 : idx;
+    for (var j = stred - 3; j <= stred + 3; j++) {
+      if (j < 0 || j >= st.length) { polozky.push(null); continue; }
+      polozky.push({ nazov: nazovStanice(d.stanice, st[j].st), cas: hms(cas(st[j])), cur: j === stred });
     }
     var posl = st[st.length - 1];
     return { stav: stav, polozky: polozky, ciel: nazovStanice(d.stanice, posl.st), linka: ciel.sp.linka, odchodSpoja: hms(ciel.od) };
