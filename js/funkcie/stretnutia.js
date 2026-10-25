@@ -157,6 +157,10 @@
       if (!(q.j < p.j)) continue;                        // B ide opačne: q pred p
       if (p.z.st === q.z.st) continue;
       var zB = B.stops[q.j], yB = B.stops[p.j];
+      // rovnaká trasa: ak majú OBA spoje medzi týmito dvoma zastávkami ešte nejaké vlastné zastávky, idú rôznymi cestami
+      // (napr. cez Poštovú vs. cez Most SNP); jednostranné vynechanie (STU v jednom smere) je v poriadku
+      var vlA = q.i - p.i - 1, vlB = p.j - q.j - 1;
+      if ((vlA > 0 && vlB > 0) || vlA > 2 || vlB > 2) continue;
       var t1 = cas(p.z), t2 = prich(q.z);
       var u1 = cas(zB), u2 = prich(yB);
       if (t1 == null || t2 == null || u1 == null || u2 == null || t2 <= t1 || u2 <= u1) continue;
