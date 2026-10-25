@@ -47,6 +47,13 @@
     sheet.classList.add("active");
   }
 
+  function riadokPevny(g, r) {
+    var d = r.denna.length ? mena(r.denna) : "—", n = r.nocna.length ? mena(r.nocna) : "—";
+    return (
+      '<button type="button" class="vyp-row" data-vyp="' + g + '"><span class="vyp-typ">' + g +
+      '</span><span class="vyp-teraz">' + d + '</span><span class="vyp-dalsi">' + n + "</span></button>"
+    );
+  }
   function riadok(g, r) {
     var teraz = r.teraz.length ? mena(r.teraz) : "—";
     var dalsi = r.dalsi.length ? mena(r.dalsi) : "";
@@ -80,10 +87,12 @@
     var teraz = new Date();
     var min = teraz.getHours() * 60 + teraz.getMinutes();
     var kluc = window.DpbVypravna.kluc(window.appState.selectedDate);
-    var sig = kluc + "|" + min + "|" + Object.keys(window.RAW.models).length;
+    jeDnes = kluc === window.DpbVypravna.kluc(teraz);
+    var sig = kluc + "|" + (jeDnes ? min : "pevne") + "|" + Object.keys(window.RAW.models).length;
     if (sig === posledny) return;
     posledny = sig;
     var r = window.DpbVypravna.kto(window.RAW.models, window.RAW.drivers, kluc, min);
+    posledneDN = window.DpbVypravna.dennaNocna(window.RAW.models, window.RAW.drivers, kluc);
     if (disp && !disp.firstChild)
       disp.innerHTML =
         '<a class="vyp-hlavicka" href="' +
@@ -96,11 +105,8 @@
   }
 
   // Box Výpravňa sa dá zbaliť/rozbaliť (predvolene zbalený, voľba sa pamätá)
-  var posledneR = null;
+  var posledneR = null, posledneDN = null, jeDnes = true, casovac = null;
   var otvorene = false;
-  try {
-    otvorene = localStorage.getItem("vypOtvorene") === "1";
-  } catch (e) {}
   function vykresli() {
     if (!pas || !posledneR) return;
     pas.innerHTML =
@@ -108,16 +114,18 @@
       (otvorene ? "true" : "false") +
       '"><span>VÝPRAVŇA</span><span class="vyp-sipka">▼</span></button>' +
       (otvorene
-        ? '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Teraz</span><span>Nasleduje</span></div>' +
-          riadok("KR", posledneR.KR) +
-          riadok("TR", posledneR.TR)
+        ? (jeDnes
+            ? '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Teraz</span><span>Nasleduje</span></div>' +
+              riadok("KR", posledneR.KR) + riadok("TR", posledneR.TR)
+            : '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Denná</span><span>Nočná</span></div>' +
+              riadokPevny("KR", posledneDN.KR) + riadokPevny("TR", posledneDN.TR))
         : "") +
       "</div>";
     pas.querySelector(".vyp-nadpis").addEventListener("click", function () {
       otvorene = !otvorene;
-      try {
-        localStorage.setItem("vypOtvorene", otvorene ? "1" : "0");
-      } catch (e) {}
+      clearTimeout(casovac);
+      // rozbalený box sa po 3 sekundách sám zbalí
+      if (otvorene) casovac = setTimeout(function () { otvorene = false; vykresli(); }, 3000);
       vykresli();
     });
     Array.prototype.forEach.call(pas.querySelectorAll(".vyp-row"), function (b) {
