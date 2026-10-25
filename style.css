@@ -3056,6 +3056,7 @@ body {
         padding: 6px 0 6px;
         cursor: pointer;
       }
+      .vyp-box.mizne { opacity: 0; transition: opacity 2s ease-in; }
       .vyp-blk { padding: 4px 0 6px; border-top: 1px solid var(--border-2); }
       .vyp-blk-h { font-size: 10px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--red-text); padding: 2px 0 3px; }
       .vyp-det { display: flex; gap: 8px; font-size: 12px; padding: 2px 0; line-height: 1.3; }
