@@ -29,6 +29,22 @@
     var base = "data/" + folder + "/";
     var obehy = {};
     var texty = await Promise.all(LINKY.map(function (l) { return P.loadText(base + l + ".JR"); }));
+    var smTexty = await Promise.all(LINKY.map(function (l) { return P.loadText(base + l + ".SM", true); }));
+    // trasy: "L009_S03" -> [V uzla0, V uzla1, ...] (vzdialenosť od predchádzajúceho uzla v metroch)
+    var trasy = {};
+    smTexty.forEach(function (txt) {
+      if (!txt) return;
+      var kluc = null;
+      txt.split("\n").forEach(function (raw) {
+        var line = raw.replace(/\r$/, "");
+        if (!line.trim()) return;
+        if (line.charAt(0) === "L") { var h = line.split("\t"); kluc = h[0] + "_" + h[1]; trasy[kluc] = []; return; }
+        if (!kluc) return;
+        var f = line.split("\t"), v = 0;
+        for (var i = 1; i < f.length; i++) if (f[i].charAt(0) === "V" && /^V\d+$/.test(f[i])) { v = +f[i].slice(1); break; }
+        trasy[kluc].push(v);
+      });
+    });
     texty.forEach(function (txt) {
       if (!txt) return;
       var cur = null, spoj = null;
@@ -43,7 +59,7 @@
           return;
         }
         if (!cur) return;
-        if (t.charAt(0) === "L") { spoj = { linka: t.split("\t")[0], stops: [] }; cur.push(spoj); return; }
+        if (t.charAt(0) === "L") { var hh = t.split("\t"); spoj = { linka: hh[0], trasa: hh[0] + "_" + hh[1], stops: [] }; cur.push(spoj); return; }
         if (!spoj) return;
         var p = line.split("\t");
         var k = (p[0] || "").trim();
@@ -52,6 +68,16 @@
       });
     });
     var stanice = P.parseKV(await P.loadText(base + "STANICE.ZS") || "");
+    // kumulatívna vzdialenosť uzlov spoja (m), ak dĺžka trasy sedí s počtom zastávok spoja
+    Object.keys(obehy).forEach(function (k) {
+      obehy[k].forEach(function (sp) {
+        var v = trasy[sp.trasa];
+        if (v && v.length === sp.stops.length) {
+          var c = 0;
+          sp.stops.forEach(function (z, i) { if (i > 0) c += v[i]; z.d = c; });
+        }
+      });
+    });
     var vysledok = { obehy: obehy, stanice: stanice, typ: typ };
     _cache[kluc] = vysledok;
     return vysledok;
@@ -130,8 +156,13 @@
       var p = spolu[k], q = spolu[k + 1];
       if (!(q.j < p.j)) continue;                        // B ide opačne: q pred p
       if (p.z.st === q.z.st) continue;
+      // úsek musí byť FYZICKY ten istý: rovnaká dĺžka (m) oboma smermi; inak ide B inou trasou (odklon)
+      var dA = (q.z.d != null && p.z.d != null) ? q.z.d - p.z.d : null;
+      var zB = B.stops[q.j], yB = B.stops[p.j];
+      var dB = (zB.d != null && yB.d != null) ? yB.d - zB.d : null;
+      if (dA != null && dB != null && Math.abs(dA - dB) > Math.max(80, 0.12 * Math.max(dA, dB))) continue;
       var t1 = cas(p.z), t2 = prich(q.z);
-      var u1 = cas(B.stops[q.j]), u2 = prich(B.stops[p.j]);
+      var u1 = cas(zB), u2 = prich(yB);
       if (t1 == null || t2 == null || u1 == null || u2 == null || t2 <= t1 || u2 <= u1) continue;
       var z = Math.max(t1, u1), kk = Math.min(t2, u2);
       if (z > kk) continue;
@@ -139,7 +170,19 @@
       var a2 = -1 / (u2 - u1), b2 = 1 + u1 / (u2 - u1);
       var t = (b2 - b1) / (a1 - a2);
       if (!(t >= z - 1 && t <= kk + 1)) t = (z + kk) / 2;
-      res.push({ cas: t, x: p.z.st, y: q.z.st, t1: t1, t2: t2 });
+      // pomenovanie podľa ZASTÁVOK MOJHO spoja A (tie fyzicky existujú ako susedné)
+      var x = p.z.st, y = q.z.st, vz = null;
+      for (var m = p.i; m < q.i; m++) {
+        var s0 = A.stops[m], s1 = A.stops[m + 1];
+        var ta = cas(s0), tb = prich(s1);
+        if (ta != null && tb != null && t >= ta - 1 && t <= tb + 1) {
+          x = s0.st; y = s1.st;
+          if (Math.abs(t - ta) < 20) vz = s0.st;
+          else if (Math.abs(t - tb) < 20) vz = s1.st;
+          break;
+        }
+      }
+      res.push({ cas: t, x: x, y: y, vz: vz });
     }
     return res;
   }
@@ -172,17 +215,14 @@
     var zl = [];
     vys.forEach(function (v) {
       var pred = zl.filter(function (q) { return q.kurz === v.kurz && v.cas - q.cas < 180; })[0];
-      if (pred) {
-        if (pred.y === v.x) { pred.vZast = pred.y; }
-        return;
-      }
+      if (pred) { if (!pred.vz && v.vz) pred.vz = v.vz; return; }
       zl.push(v);
     });
     return zl.map(function (v) {
       var vod = vodicKurzu(dateKey, v.kurz, v.cas);
       return {
         cas: hms(v.cas), sec: v.cas,
-        kde: v.vZast ? "v zastávke " + nazovStanice(d.stanice, v.vZast) : "medzi " + nazovStanice(d.stanice, v.x) + " a " + nazovStanice(d.stanice, v.y),
+        kde: v.vz ? "v zastávke " + nazovStanice(d.stanice, v.vz) : "medzi " + nazovStanice(d.stanice, v.x) + " a " + nazovStanice(d.stanice, v.y),
         kurz: v.kurz, meno: vod ? vod.meno : "", vozidlo: vod ? vod.voz : "",
       };
     });
