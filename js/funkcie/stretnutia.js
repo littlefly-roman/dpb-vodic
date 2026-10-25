@@ -155,6 +155,17 @@
   function ekv(u, v, druhy) {
     return u === v || (druhy === SPOJ_UZOL && VETVA[u] === 1 && VETVA[v] === 1);
   }
+  var BLUM = "0080", BLUM_TOL = 20;   // tolerancia v sekundách
+  // Smer spoja v Blumentáli: linka 3 (cez Račianske mýto 0332 / Americké nám. 0003) alebo 9 (Vysoká 0473 / STU 0422 / Krížna 0173)
+  function smerBlumental(stops, i) {
+    var pr = i > 0 ? stops[i - 1].st : null, nx = i + 1 < stops.length ? stops[i + 1].st : null;
+    var vys = function (u) { return u === "0473" || u === "0422"; };
+    if (pr === "0332" && nx === "0003") return { linka: 3, dvojica: 1 };
+    if (pr === "0003" && nx === "0332") return { linka: 3, dvojica: 2 };
+    if (vys(pr) && nx === "0173") return { linka: 9, dvojica: 1 };
+    if (pr === "0173" && vys(nx)) return { linka: 9, dvojica: 2 };
+    return null;
+  }
   function stretnutiaSpojov(A, B) {
     var res = [];
     for (var i = 0; i + 1 < A.stops.length; i++) {
@@ -195,6 +206,24 @@
             res.push({ cas: t, x: x, y: y, vz: vz });
           }
         }
+      }
+    }
+    // Ručné pravidlo 2: Blumentál (0080) - trojka a deviatka sa dotýkajú len pri zastávke (úsek ~80 m).
+    //  trojka Račianske mýto > Blumentál > Americké nám.  <->  deviatka Vysoká/STU > Blumentál > Krížna
+    //  trojka Americké nám. > Blumentál > Račianske mýto  <->  deviatka Krížna > Blumentál > Vysoká/STU
+    for (var ia = 0; ia < A.stops.length; ia++) {
+      if (A.stops[ia].st !== BLUM) continue;
+      var kA = smerBlumental(A.stops, ia);
+      if (!kA) continue;
+      for (var ib = 0; ib < B.stops.length; ib++) {
+        if (B.stops[ib].st !== BLUM) continue;
+        var kB = smerBlumental(B.stops, ib);
+        if (!kB || kA.dvojica !== kB.dvojica || kA.linka === kB.linka) continue;
+        var o1 = prich(A.stops[ia]) - BLUM_TOL, o2 = cas(A.stops[ia]) + BLUM_TOL;
+        var p1 = prich(B.stops[ib]) - BLUM_TOL, p2 = cas(B.stops[ib]) + BLUM_TOL;
+        var zz = Math.max(o1, p1), kk2 = Math.min(o2, p2);
+        if (zz > kk2) continue;
+        res.push({ cas: (zz + kk2) / 2, x: BLUM, y: BLUM, vz: BLUM });
       }
     }
     return res;
