@@ -221,5 +221,5 @@
     return { stav: stav, polozky: polozky, stred: stred, ciel: nazovStanice(d.stanice, posl.st), linka: ciel.sp.linka, odchodSpoja: hms(ciel.od) };
   }
 
-  window.DpbStretnutia = { najdi: najdi, poloha: poloha };
+  window.DpbStretnutia = { najdi: najdi, poloha: poloha, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();
