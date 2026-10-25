@@ -434,8 +434,11 @@
     if (jeSluzba) {
       polozky.push({ k: "nastup", t: "Čas nástupu", teraz: k.od ? DPBData.fmt(k.od) : "" });
       polozky.push({ k: "ukoncenie", t: "Čas ukončenia", teraz: k.do ? DPBData.fmt(k.do) : "" });
-      polozky.push({ k: "vozidlo", t: "Vozidlo", teraz: (sv.vehicle && sv.vehicle !== "—") ? sv.vehicle : "" });
-      polozky.push({ k: "hradenie", t: "Chýbajúce hradenie", teraz: "" });
+      var vozy = [];
+      ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c && vozy.indexOf(String(c)) < 0) vozy.push(String(c)); });
+      if (!vozy.length && sv.vehicle && sv.vehicle !== "—") vozy.push(String(sv.vehicle));
+      polozky.push({ k: "vozidlo", t: vozy.length ? "Vozidlo (nesprávne)" : "Vozidlo (chýba)", teraz: vozy.join(", "), viac: vozy.length > 1, chyba: !vozy.length });
+      if (vzor === "944") polozky.push({ k: "hradenie", t: "Chýbajúce hradenie", teraz: "" });
       if (vzor !== "STRIEDAČ") polozky.push({ k: "zacvik", t: "Chýbajúci vykonaný zácvik", teraz: "" });
     }
     var polia = {};
@@ -462,10 +465,10 @@
             vstup = el("input", VSTUP_CSS); vstup.type = "time";
           } else {
             vstup = el("input", VSTUP_CSS); vstup.type = "text";
-            vstup.placeholder = p.k === "vozidlo" ? "Správne vozidlo (číslo)" : p.k === "hradenie" ? "Čo chýba (kurz, vozidlo, čas)" : "Kedy a kde bol zácvik";
+            vstup.placeholder = p.k === "vozidlo" ? (p.chyba ? "Číslo vozidla, ktoré si šoféroval" : p.viac ? "Ktoré vozidlo je nesprávne a aké je správne" : "Správne vozidlo (číslo)") : p.k === "hradenie" ? "Čo chýba (kurz, vozidlo, čas)" : "Kedy a kde bol zácvik";
           }
           pole = el("div", "display:none;margin-top:8px");
-          pole.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : "Doplň"));
+          pole.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : p.k === "vozidlo" ? (p.chyba ? "Vozidlo" : "Správne vozidlo") : "Doplň"));
           pole.appendChild(vstup);
           w.appendChild(pole);
           cb.addEventListener("change", function () { pole.style.display = cb.checked ? "block" : "none"; });
