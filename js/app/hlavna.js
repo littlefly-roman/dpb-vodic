@@ -1072,8 +1072,11 @@
             if (isToday(cellDate)) cell.classList.add("today");
             if (isSameDay(cellDate, appState.selectedDate))
               cell.classList.add("selected");
-            if ((appState.servicesByDate[key] || []).length > 0)
-              cell.classList.add("has-service");
+            // služby dňa načítame pre celý mesiac (nielen pre dni, ktoré si už otvoril)
+            if (!appState.servicesByDate[key] && appState.currentDriver)
+              appState.servicesByDate[key] = DPBData.getServicesForDate(appState.currentDriver, key);
+            if (window.DpbKalZnacky) DpbKalZnacky.pridaj(cell, appState.servicesByDate[key] || []);
+            else if ((appState.servicesByDate[key] || []).length > 0) cell.classList.add("has-service");
             if (Calendar.isHoliday(cellDate)) cell.classList.add("is-holiday");
             cell.addEventListener("click", () => {
               appState.selectedDate = cellDate;
