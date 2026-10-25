@@ -88,6 +88,72 @@
     return zaz;
   }
 
+  // ---------- Výber dátumu vlastným kalendárom (s čiarkami služieb) ----------
+  var MESIACE = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
+  function klucDna(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  // o: {titul, hodnota "RRRR-MM-DD", min?, rozsahOd?, nepovinne?}; hotovo(kľúč dňa alebo "")
+  function vyberDatumu(o, hotovo) {
+    var p = (o.hodnota || klucDna(new Date())).split("-");
+    var rok = +p[0], mes = +p[1] - 1;
+    var rid = window.appState && window.appState.currentDriver;
+    var telo = null;
+    function kresli() {
+      telo.innerHTML = "";
+      var hl = el("div", "display:flex;align-items:center;justify-content:space-between;margin-bottom:8px");
+      var pr = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "‹");
+      var dl = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "›");
+      pr.type = dl.type = "button";
+      pr.addEventListener("click", function () { mes--; if (mes < 0) { mes = 11; rok--; } kresli(); });
+      dl.addEventListener("click", function () { mes++; if (mes > 11) { mes = 0; rok++; } kresli(); });
+      hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:15px", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
+      telo.appendChild(hl);
+      var wd = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px");
+      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
+      telo.appendChild(wd);
+      var g = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px");
+      var zac = (new Date(rok, mes, 1).getDay() + 6) % 7, dni = new Date(rok, mes + 1, 0).getDate();
+      for (var i = 0; i < zac; i++) g.appendChild(el("div", ""));
+      var dnes = klucDna(new Date());
+      for (var d = 1; d <= dni; d++) {
+        (function (d) {
+          var dt = new Date(rok, mes, d), key = klucDna(dt);
+          var c = el("div", "", String(d));
+          c.className = "calendar-cell";
+          if (key === dnes) c.classList.add("today");
+          if (window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) c.classList.add("is-holiday");
+          var zakaz = o.min && key < o.min;
+          if (o.rozsahOd && o.hodnota && key >= o.rozsahOd && key <= o.hodnota) c.style.background = "rgba(220,40,40,.12)";
+          if (key === o.hodnota) c.classList.add("selected");
+          if (window.DpbKalZnacky) DpbKalZnacky.pridaj(c, DpbKalZnacky.nacitaj(rid, key));
+          if (zakaz) c.style.opacity = "0.3";
+          else c.addEventListener("click", function () { hotovo(key); zavriVrch(); });
+          g.appendChild(c);
+        })(d);
+      }
+      telo.appendChild(g);
+    }
+    var tl = o.nepovinne
+      ? [{ text: "Bez konca (zatiaľ neznáme)", klik: function () { hotovo(""); zavriVrch(); } }, { text: "Späť", klik: zavriVrch }]
+      : [{ text: "Späť", klik: zavriVrch }];
+    otvor({ spat: true, titul: o.titul || "Vyber dátum", telo: function (t) { telo = t; kresli(); }, tlacidla: tl });
+  }
+  // Pole podobné vstupu: ukáže dátum, po kliku otvorí kalendár. opt: {titul, prazdne, nepovinne, min(), rozsahOd(), zaklad(), zmena(v)}
+  function datumPole(init, opt) {
+    opt = opt || {};
+    var st = { v: init || "" };
+    var b = el("button", VSTUP_CSS + ";text-align:left;cursor:pointer");
+    b.type = "button";
+    function upd() { b.textContent = st.v ? pekne(st.v) : (opt.prazdne || "— nezadané —"); b.style.color = st.v ? "var(--text-1)" : "var(--text-3)"; }
+    upd();
+    b.addEventListener("click", function () {
+      vyberDatumu({
+        titul: opt.titul, hodnota: st.v || (opt.zaklad && opt.zaklad()) || klucDna(new Date()),
+        min: opt.min && opt.min(), rozsahOd: opt.rozsahOd && opt.rozsahOd(), nepovinne: opt.nepovinne,
+      }, function (v) { st.v = v; upd(); if (opt.zmena) opt.zmena(v); });
+    });
+    return { el: b, get: function () { return st.v; }, set: function (v) { st.v = v; upd(); } };
+  }
+
   // ---------- Zmena stavu ----------
   var DNI = ["nedeľa", "pondelok", "utorok", "streda", "štvrtok", "piatok", "sobota"];
   function pekne(d) {
@@ -139,10 +205,14 @@
       podtitul: "Vyber dátumy" + (v.doPovinne ? "" : " (koniec môže ostať prázdny, ak ešte nie je známy)"),
       telo: function (t) {
         var a = el("div", "font-size:13px;color:var(--text-2);margin-bottom:4px", "Od");
-        var od = el("input", VSTUP_CSS); od.type = "date"; od.value = ctx.date;
+        var dod = null;
+        var od = datumPole(ctx.date, { titul: "Od", zmena: function (x) { if (dod && dod.get() && dod.get() < x) dod.set(v.doPovinne ? x : ""); } });
         var b = el("div", "font-size:13px;color:var(--text-2);margin:12px 0 4px", "Do");
-        var dod = el("input", VSTUP_CSS); dod.type = "date"; dod.value = v.doPovinne ? ctx.date : "";
-        t.appendChild(a); t.appendChild(od); t.appendChild(b); t.appendChild(dod);
+        dod = datumPole(v.doPovinne ? ctx.date : "", {
+          titul: "Do", nepovinne: !v.doPovinne, prazdne: v.doPovinne ? "— nezadané —" : "zatiaľ neznáme",
+          min: function () { return od.get(); }, rozsahOd: function () { return od.get(); }, zaklad: function () { return od.get(); },
+        });
+        t.appendChild(a); t.appendChild(od.el); t.appendChild(b); t.appendChild(dod.el);
         var pz = null;
         if (v.poznamka) {
           t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
@@ -151,11 +221,11 @@
         var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
         t.appendChild(chyba);
         t._zber = function () {
-          if (!od.value) { chyba.textContent = "Zadaj začiatok."; return null; }
-          if (v.doPovinne && !dod.value) { chyba.textContent = "Zadaj koniec."; return null; }
-          if (dod.value && dod.value < od.value) { chyba.textContent = "Koniec nemôže byť pred začiatkom."; return null; }
+          if (!od.get()) { chyba.textContent = "Zadaj začiatok."; return null; }
+          if (v.doPovinne && !dod.get()) { chyba.textContent = "Zadaj koniec."; return null; }
+          if (dod.get() && dod.get() < od.get()) { chyba.textContent = "Koniec nemôže byť pred začiatkom."; return null; }
           if (pz && !pz.value.trim()) { chyba.textContent = "Popíš dôvod."; return null; }
-          return { kind: v.kod, nazov: v.nazov, od: od.value, do: dod.value || "", poznamka: pz ? pz.value.trim() : "" };
+          return { kind: v.kod, nazov: v.nazov, od: od.get(), do: dod.get() || "", poznamka: pz ? pz.value.trim() : "" };
         };
         formular._t = t;
       },
@@ -172,12 +242,12 @@
       titul: "Ukončiť " + popis,
       podtitul: "Od ktorého dňa sa vraciaš do práce?",
       telo: function (t) {
-        var od = el("input", VSTUP_CSS); od.type = "date"; od.value = ctx.date; t.appendChild(od);
+        var od = datumPole(ctx.date, { titul: "Od ktorého dňa" }); t.appendChild(od.el);
         koniecNepritomnosti._od = od;
       },
       tlacidla: [
         { text: "Pokračovať", primarny: true, klik: function () {
-          var d = koniecNepritomnosti._od.value;
+          var d = koniecNepritomnosti._od.get();
           if (!d) { toast("Zadaj dátum"); return; }
           otvor({
             spat: true,
