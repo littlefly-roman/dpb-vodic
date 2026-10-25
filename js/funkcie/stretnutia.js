@@ -156,11 +156,7 @@
       var p = spolu[k], q = spolu[k + 1];
       if (!(q.j < p.j)) continue;                        // B ide opačne: q pred p
       if (p.z.st === q.z.st) continue;
-      // úsek musí byť FYZICKY ten istý: rovnaká dĺžka (m) oboma smermi; inak ide B inou trasou (odklon)
-      var dA = (q.z.d != null && p.z.d != null) ? q.z.d - p.z.d : null;
       var zB = B.stops[q.j], yB = B.stops[p.j];
-      var dB = (zB.d != null && yB.d != null) ? yB.d - zB.d : null;
-      if (dA != null && dB != null && Math.abs(dA - dB) > Math.max(80, 0.12 * Math.max(dA, dB))) continue;
       var t1 = cas(p.z), t2 = prich(q.z);
       var u1 = cas(zB), u2 = prich(yB);
       if (t1 == null || t2 == null || u1 == null || u2 == null || t2 <= t1 || u2 <= u1) continue;
