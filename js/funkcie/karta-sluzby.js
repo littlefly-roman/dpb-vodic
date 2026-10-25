@@ -262,7 +262,7 @@
             ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)
           )
             items.push({ action: "grafikon", label: "Grafikon" });
-          if (vzor === "SLUŽBA" && /^[1349]\//.test(k.kurz || ""))
+          if (isToday && vzor === "SLUŽBA" && /^[1349]\//.test(k.kurz || ""))
             items.push({ action: "stretnutia", label: "Koho stretnem" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
