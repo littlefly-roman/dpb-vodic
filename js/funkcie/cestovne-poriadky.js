@@ -92,6 +92,7 @@
               });
             }
           } catch (e) {}
+          window._grafikonSpatCp = true;
           window.openGrafikonKurz &&
             window.openGrafikonKurz(
               kurzStr,

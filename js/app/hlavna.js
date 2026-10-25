@@ -1355,6 +1355,12 @@
 
         function closeGrafikon() {
           grafikonModal.classList.remove("active");
+          // Grafikon otvorený z Cestovných poriadkov: po zavretí sa vrátime do okna Cestovných poriadkov
+          if (window._grafikonSpatCp) {
+            window._grafikonSpatCp = false;
+            const cp = document.getElementById("cpModal");
+            if (cp) cp.classList.add("active");
+          }
           if (appState.grafikonInterval) {
             clearInterval(appState.grafikonInterval);
             appState.grafikonInterval = null;
@@ -1379,21 +1385,7 @@
           }
         });
 
-        let gTouchY = 0;
-        grafikonModal.addEventListener(
-          "touchstart",
-          (e) => {
-            gTouchY = e.touches[0].clientY;
-          },
-          { passive: true },
-        );
-        grafikonModal.addEventListener(
-          "touchend",
-          (e) => {
-            if (e.changedTouches[0].clientY - gTouchY > 80) closeGrafikon();
-          },
-          { passive: true },
-        );
+        // Zatváranie grafikonu potiahnutím prstom bolo zrušené (zatváralo ho aj omylom) – zatvára sa len tlačidlom Zavrieť.
 
         /* ==========================
    BOTTOM NAV
