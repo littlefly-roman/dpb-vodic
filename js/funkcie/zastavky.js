@@ -643,10 +643,31 @@
             cont.scrollTop = _staryTop;
           }
         }
+        var _zpet = null;
+        function spatNaZoznam() {
+          if (_renderInt) { clearInterval(_renderInt); _renderInt = null; }
+          staOdchody.innerHTML = "";
+          staResults.innerHTML = "";
+          if (_zpet && _zpet.childNodes.length) { staResults.appendChild(_zpet); _zpet = null; }
+          else if (window._zastavkyDomov) window._zastavkyDomov();
+        }
+        function vynuluj() {
+          if (_renderInt) { clearInterval(_renderInt); _renderInt = null; }
+          _zpet = null;
+          staInput.value = "";
+          staOdchody.innerHTML = "";
+          staResults.innerHTML = "";
+        }
+        window._zastavkyVynuluj = vynuluj;
         async function showOdchody(nazov, kodFilter, grp) {
           if (_renderInt) {
             clearInterval(_renderInt);
             _renderInt = null;
+          }
+          // zoznam, z ktorého sa zastávka otvorila (obľúbené / výsledky hľadania / zastávky v okolí), si odložíme pre „Späť“
+          if (staResults.childNodes.length) {
+            _zpet = document.createDocumentFragment();
+            while (staResults.firstChild) _zpet.appendChild(staResults.firstChild);
           }
           staResults.innerHTML = "";
           staOdchody.innerHTML =
@@ -689,7 +710,14 @@
           hdr.style.display = "flex";
           hdr.style.justifyContent = "space-between";
           hdr.style.alignItems = "center";
+          var spat = document.createElement("button");
+          spat.type = "button";
+          spat.textContent = "\u2039 Späť";
+          spat.style.cssText = "border:none;background:transparent;font-size:14px;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
+          spat.addEventListener("click", spatNaZoznam);
+          hdr.appendChild(spat);
           var hdrNaz = document.createElement("span");
+          hdrNaz.style.cssText = "flex:1;min-width:0";
           hdrNaz.textContent = nazov;
           hdr.appendChild(hdrNaz);
           var hviezda = document.createElement("button");
@@ -707,7 +735,6 @@
             nastavHviezdu();
           });
           hdr.appendChild(hviezda);
-          zapamataj(grp, nazov);
           staOdchody.appendChild(hdr);
           _fNast = {};
           _fLinka = {};
@@ -916,11 +943,8 @@
           else l.unshift({ g: g, n: n });
           lsZapis("zastObl", l.slice(0, 20));
         }
-        function zapamataj(g, n) {
-          var l = lsCitaj("zastNaposledy").filter(function (x) { return x.g !== g; });
-          l.unshift({ g: g, n: n });
-          lsZapis("zastNaposledy", l.slice(0, 6));
-        }
+        // História („Naposledy“) sa už neukladá; starý záznam sa zmaže
+        try { localStorage.removeItem("zastNaposledy"); } catch (e) {}
         function otvorZastavku(g, n) {
           showOdchody(n, function (kod) { return kod.substring(0, 4) === g; }, g);
         }
@@ -983,15 +1007,10 @@
         function ukazDomov() {
           if (staOdchody.innerHTML) return; // práve je otvorená nejaká zastávka
           staResults.innerHTML = "";
-          var obl = lsCitaj("zastObl"),
-            nap = lsCitaj("zastNaposledy").filter(function (x) { return !jeObluben(x.g); });
+          var obl = lsCitaj("zastObl");
           if (obl.length) {
             staResults.appendChild(nadpisSkupiny("\u2605 OBĽÚBENÉ"));
             obl.forEach(function (x) { staResults.appendChild(riadokVyberu(x.g, x.n)); });
-          }
-          if (nap.length) {
-            staResults.appendChild(nadpisSkupiny("NAPOSLEDY"));
-            nap.forEach(function (x) { staResults.appendChild(riadokVyberu(x.g, x.n)); });
           }
           staResults.appendChild(nadpisSkupiny("BLÍZKO"));
           var kamBlizke = document.createElement("div");
@@ -1076,10 +1095,7 @@
         var cpClose = document.getElementById("cpClose");
         if (cpClose)
           cpClose.addEventListener("click", function () {
-            if (_renderInt) {
-              clearInterval(_renderInt);
-              _renderInt = null;
-            }
+            vynuluj();
             // po zatvorení okna sa spodné menu vráti na záložku, ktorej obsah je naozaj vidieť
             var skryty = function (id) {
               var e = document.getElementById(id);
