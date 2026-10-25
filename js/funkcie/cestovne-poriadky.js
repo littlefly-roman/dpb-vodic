@@ -108,13 +108,18 @@
         }
         if (kurzGo) kurzGo.addEventListener("click", doGo);
 
-        // ---- Výber kurzu tlačidlami: typ dňa -> linka -> kurz (zoznam kurzov z OBEH/_zoznam.txt) ----
+        // ---- Výber kurzu kolieskami: Linka | Poradie | Typ dňa (zoznam kurzov z OBEH/_zoznam.txt) ----
         (function () {
           var btn = document.getElementById("cpBtnSluzobny");
           if (!btn || !sluzPanel) return;
-          var TYPY = { 1: "Pracovný deň", 2: "Sobota", 3: "Nedeľa / sviatok", 4: "Pracovný deň (prázdniny)" };
-          var box = null, zoznam = null, vyber = { typ: null, linka: null };
-          function css(e, t) { e.style.cssText = t; return e; }
+          var TYPY = { 1: "Pracovný deň", 2: "Sobota", 3: "Nedeľa", 4: "Prázdniny" };
+          var H = 44, RIADKY = 5;
+          var box = null, zoznam = null, kolesa = null, info = null, otvorBtn = null;
+          var vyber = { typ: null, trak: null, linka: null, kurz: null };
+          // Trakcia podľa čísla linky: električky 1, 3, 4, 9; trolejbusy zatiaľ nie sú zadané (doplniť); ostatné autobusy
+          var ELEKTRICKY = [1, 3, 4, 9], TROLEJBUSY = [];
+          var TRAK_NAZOV = { trolejbus: "Trolejbus", elektricka: "Električka", autobus: "Autobus" };
+          function trakcia(l) { return ELEKTRICKY.indexOf(l) >= 0 ? "elektricka" : TROLEJBUSY.indexOf(l) >= 0 ? "trolejbus" : "autobus"; }
           function mk(tag, t, text) { var e = document.createElement(tag); if (t) e.style.cssText = t; if (text != null) e.textContent = text; return e; }
           function hm(m) { m = m % 1440; return Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0"); }
           function dnes() {
@@ -136,65 +141,138 @@
             } catch (e) { zoznam = null; }
             return zoznam;
           }
-          function chip(text, on, klik, extra) {
-            var c = mk("button", "padding:7px 11px;border-radius:16px;border:1px solid var(--border);font-size:14px;cursor:pointer;" +
-              (on ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)") + (extra || ""), text);
-            c.type = "button";
-            c.addEventListener("click", klik);
-            return c;
+          // Jedno koleso: items = [text], onChange(index) po zastavení posúvania
+          function koleso(nadpis, sirka, onChange, cervene) {
+            var w = mk("div", "flex:" + sirka + ";min-width:0");
+            w.appendChild(mk("div", "text-align:center;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin-bottom:4px", nadpis));
+            var okno = mk("div", "position:relative;height:" + RIADKY * H + "px;border-radius:12px;background:" + (cervene ? "var(--red)" : "var(--surface-2)") + ";overflow:hidden");
+            var pas = mk("div", "position:absolute;left:4px;right:4px;top:" + (2 * H) + "px;height:" + H + "px;border-radius:10px;background:" + (cervene ? "rgba(255,255,255,.22)" : "rgba(220,40,40,.14)") + ";border:1px solid " + (cervene ? "#fff" : "var(--red)") + ";pointer-events:none");
+            var sc = mk("div", "position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-padding:" + (2 * H) + "px 0;padding:" + (2 * H) + "px 0;box-sizing:border-box;scrollbar-width:none;-webkit-overflow-scrolling:touch");
+            okno.appendChild(pas); okno.appendChild(sc); w.appendChild(okno);
+            var st = { items: [], idx: 0, potlac: false, t: null, riadky: [] };
+            function styl() {
+              var p = sc.scrollTop / H;
+              st.riadky.forEach(function (r, i) {
+                var d = Math.abs(p - i);
+                r.style.opacity = Math.max(0.25, 1 - d * 0.3);
+                r.style.fontWeight = d < 0.5 ? "700" : "500";
+              });
+            }
+            sc.addEventListener("scroll", function () {
+              styl();
+              clearTimeout(st.t);
+              st.t = setTimeout(function () {
+                var i = Math.max(0, Math.min(st.items.length - 1, Math.round(sc.scrollTop / H)));
+                if (i !== st.idx) { st.idx = i; if (!st.potlac) onChange(i); }
+                st.potlac = false;
+              }, 110);
+            });
+            return {
+              el: w,
+              idx: function () { return st.idx; },
+              nastav: function (items, idx) {
+                st.items = items; st.idx = idx; st.riadky = [];
+                sc.innerHTML = "";
+                items.forEach(function (t, i) {
+                  var r = mk("div", "height:" + H + "px;display:flex;align-items:center;justify-content:center;scroll-snap-align:start;font-size:17px;color:var(--text-1);cursor:pointer;white-space:nowrap");
+                  if (t && typeof t === "object") {
+                    var im = mk("img", "height:26px;max-width:46px;object-fit:contain");
+                    im.src = "img/doprava/" + t.ikona + ".png"; im.alt = t.alt || "";
+                    r.appendChild(im);
+                  } else r.textContent = t;
+                  r.addEventListener("click", function () { sc.scrollTo({ top: i * H, behavior: "smooth" }); });
+                  sc.appendChild(r); st.riadky.push(r);
+                });
+                st.potlac = true;
+                sc.scrollTop = idx * H;
+                styl();
+                setTimeout(function () { st.potlac = false; }, 200);
+              },
+            };
           }
-          function nadpis(t) { return mk("div", "font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin:14px 0 6px", t); }
-          function vykresli() {
-            if (!box || !zoznam) return;
+          function typy() {
+            var t = [];
+            zoznam.forEach(function (z) { if (t.indexOf(z.typ) < 0) t.push(z.typ); });
+            return t.sort();
+          }
+          function trakcie() {
+            var t = [];
+            zoznam.forEach(function (z) { if (z.typ === vyber.typ && t.indexOf(trakcia(z.linka)) < 0) t.push(trakcia(z.linka)); });
+            var poradie = ["elektricka", "trolejbus", "autobus"];
+            return t.sort(function (a, b) { return poradie.indexOf(a) - poradie.indexOf(b); });
+          }
+          function linky() {
+            var l = [];
+            zoznam.forEach(function (z) { if (z.typ === vyber.typ && trakcia(z.linka) === vyber.trak && l.indexOf(z.linka) < 0) l.push(z.linka); });
+            return l.sort(function (a, b) { return a - b; });
+          }
+          function kurzy() {
+            return zoznam.filter(function (z) { return z.typ === vyber.typ && z.linka === vyber.linka; })
+              .sort(function (a, b) { return a.kurz - b.kurz; });
+          }
+          function obnovInfo() {
+            var z = zoznam.filter(function (q) { return q.typ === vyber.typ && q.linka === vyber.linka && q.kurz === vyber.kurz; })[0];
+            if (!z) { info.textContent = ""; otvorBtn.disabled = true; return; }
+            info.textContent = vyber.linka + "/" + z.kurz + " · " + hm(z.od) + "–" + hm(z.do) + " · " + (TYPY[z.typ] || "typ " + z.typ);
+            otvorBtn.disabled = false;
+            otvorBtn._kod = z.kod;
+          }
+          function nastavKurzy() {
+            var k = kurzy();
+            var i = Math.max(0, k.map(function (z) { return z.kurz; }).indexOf(vyber.kurz));
+            vyber.kurz = k.length ? k[i].kurz : null;
+            kolesa.kurz.nastav(k.map(function (z) { return String(z.kurz); }), i);
+            obnovInfo();
+          }
+          function nastavTrakcie() {
+            var t = trakcie();
+            var i = Math.max(0, t.indexOf(vyber.trak));
+            vyber.trak = t.length ? t[i] : null;
+            kolesa.trak.nastav(t.map(function (x) { return { ikona: x, alt: TRAK_NAZOV[x] }; }), i);
+            nastavLinky();
+          }
+          function nastavLinky() {
+            var l = linky();
+            var i = Math.max(0, l.indexOf(vyber.linka));
+            vyber.linka = l.length ? l[i] : null;
+            kolesa.linka.nastav(l.map(String), i);
+            nastavKurzy();
+          }
+          function postav() {
             box.innerHTML = "";
-            var typy = [];
-            zoznam.forEach(function (z) { if (typy.indexOf(z.typ) < 0) typy.push(z.typ); });
-            typy.sort();
+            var t = typy();
             if (vyber.typ == null) {
               var t0 = window.Calendar ? window.Calendar.getDayType(new Date()) : 1;
-              vyber.typ = typy.indexOf(t0) >= 0 ? t0 : typy[0];
+              vyber.typ = t.indexOf(t0) >= 0 ? t0 : t[0];
             }
-            box.appendChild(nadpis("TYP DŇA"));
-            var rt = mk("div", "display:flex;flex-wrap:wrap;gap:6px");
-            typy.forEach(function (t) {
-              rt.appendChild(chip(TYPY[t] || "Typ " + t, t === vyber.typ, function () { vyber.typ = t; vyber.linka = null; vykresli(); }));
+            kolesa = {};
+            kolesa.trak = koleso("", 0.7, function (i) { vyber.trak = trakcie()[i]; nastavLinky(); }, true);
+            kolesa.linka = koleso("LINKA", 1, function (i) { vyber.linka = linky()[i]; nastavKurzy(); });
+            kolesa.kurz = koleso("PORADIE", 1, function (i) { vyber.kurz = kurzy()[i].kurz; obnovInfo(); });
+            kolesa.typ = koleso("TYP", 1.6, function (i) { vyber.typ = typy()[i]; nastavTrakcie(); });
+            var rad = mk("div", "display:flex;gap:6px;margin-top:16px");
+            rad.appendChild(kolesa.trak.el); rad.appendChild(kolesa.linka.el); rad.appendChild(kolesa.kurz.el); rad.appendChild(kolesa.typ.el);
+            box.appendChild(rad);
+            info = mk("div", "text-align:center;font-size:14px;color:var(--text-2);margin:10px 0 8px;min-height:20px");
+            box.appendChild(info);
+            otvorBtn = mk("button", "width:100%;padding:12px;border-radius:12px;border:none;background:var(--red);color:#fff;font-size:16px;font-weight:700;cursor:pointer", "Zobraziť");
+            otvorBtn.type = "button";
+            otvorBtn.addEventListener("click", function () {
+              if (!otvorBtn._kod) return;
+              kurzInput.value = otvorBtn._kod;
+              if (kurzGo) kurzGo.click();
             });
-            box.appendChild(rt);
-            var linky = [];
-            zoznam.forEach(function (z) { if (z.typ === vyber.typ && linky.indexOf(z.linka) < 0) linky.push(z.linka); });
-            linky.sort(function (a, b) { return a - b; });
-            box.appendChild(nadpis("LINKA"));
-            var rl = mk("div", "display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow-y:auto");
-            linky.forEach(function (l) {
-              rl.appendChild(chip(String(l), l === vyber.linka, function () { vyber.linka = l; vykresli(); }, ";min-width:44px"));
-            });
-            box.appendChild(rl);
-            if (vyber.linka != null) {
-              box.appendChild(nadpis("KURZ"));
-              var rk = mk("div", "display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px");
-              zoznam.filter(function (z) { return z.typ === vyber.typ && z.linka === vyber.linka; })
-                .sort(function (a, b) { return a.kurz - b.kurz; })
-                .forEach(function (z) {
-                  var b = mk("button", "padding:7px 4px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);cursor:pointer;text-align:center");
-                  b.type = "button";
-                  b.appendChild(mk("div", "font-size:15px;font-weight:700", vyber.linka + "/" + z.kurz));
-                  b.appendChild(mk("div", "font-size:11px;color:var(--text-3)", hm(z.od) + "–" + hm(z.do)));
-                  b.addEventListener("click", function () {
-                    kurzInput.value = z.kod;
-                    if (kurzGo) kurzGo.click();
-                  });
-                  rk.appendChild(b);
-                });
-              box.appendChild(rk);
-            }
+            box.appendChild(otvorBtn);
+            kolesa.typ.nastav(t.map(function (x) { return TYPY[x] || "Typ " + x; }), Math.max(0, t.indexOf(vyber.typ)));
+            nastavTrakcie();
           }
           async function otvor() {
             if (!box) { box = mk("div", ""); sluzPanel.appendChild(box); }
             await nacitaj();
-            vykresli();
+            if (zoznam && !kolesa) postav();
           }
           btn.addEventListener("click", otvor);
-          window._cpSluzobnyVyber = function () { vyber.linka = null; vyber.typ = null; if (box) vykresli(); };
+          window._cpSluzobnyVyber = function () { vyber = { typ: null, trak: null, linka: null, kurz: null }; kolesa = null; if (box) box.innerHTML = ""; };
         })();
         if (kurzInput)
           kurzInput.addEventListener("keydown", function (e) {
