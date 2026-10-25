@@ -75,6 +75,39 @@
     }
     if (r.route && !r.nepr) { var tr = document.createElement("div"); tr.className = "hl-info"; tr.textContent = r.route; t.appendChild(tr); }
     d.appendChild(t);
+    // Ťuknutie na výsledok (okrem neprítomností) otvorí pod kartou malé menu s grafikonom
+    if (!r.nepr && /^\d+\/\d+$/.test(r.line)) {
+      d.style.cursor = "pointer";
+      d.addEventListener("click", function () {
+        var ex = d.nextElementSibling;
+        var otvorene = ex && ex.classList.contains("hl-menu");
+        document.querySelectorAll(".hl-menu").forEach(function (m) { m.remove(); });
+        if (otvorene) return;
+        var m = document.createElement("div");
+        m.className = "hl-menu";
+        m.style.cssText = "margin:-4px 12px 10px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden";
+        var it = document.createElement("div");
+        it.textContent = "Grafikon";
+        it.style.cssText = "padding:12px 16px;font-size:15px;color:var(--red);font-weight:600;cursor:pointer";
+        it.addEventListener("click", function (e) {
+          e.stopPropagation();
+          window.DpbMiniGrafikon && window.DpbMiniGrafikon.otvor(r.line, kluc(den), r.meno, r.od ? [r.od[0] * 60, r.od[1] * 60] : null);
+        });
+        m.appendChild(it);
+        if (/^[1349]\//.test(r.line)) {
+          var it2 = document.createElement("div");
+          it2.textContent = "Koho stretne";
+          it2.style.cssText = "padding:12px 16px;font-size:15px;color:var(--red);font-weight:600;cursor:pointer;border-top:1px solid var(--surface-2)";
+          it2.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var hh = function (x) { return p2(Math.floor(x / 60) % 24) + ":" + p2(x % 60); };
+            window.DpbMiniGrafikon && window.DpbMiniGrafikon.stretnutia(r.line, kluc(den), r.od ? hh(r.od[0]) : null, r.od ? hh(r.od[1]) : null, r.meno);
+          });
+          m.appendChild(it2);
+        }
+        d.parentNode.insertBefore(m, d.nextSibling);
+      });
+    }
     if (bezi) { var b = document.createElement("span"); b.className = "hl-teraz"; b.textContent = "● teraz"; d.appendChild(b); }
     return d;
   }
