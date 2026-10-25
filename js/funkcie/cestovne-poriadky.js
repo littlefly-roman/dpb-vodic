@@ -31,6 +31,7 @@
             modal.classList.remove("active");
             if (kurzInput) kurzInput.value = "";
             if (kurzError) kurzError.style.display = "none";
+            if (window._cpSluzobnyVyber) window._cpSluzobnyVyber();
           });
 
         function doGo() {
@@ -106,6 +107,95 @@
             );
         }
         if (kurzGo) kurzGo.addEventListener("click", doGo);
+
+        // ---- Výber kurzu tlačidlami: typ dňa -> linka -> kurz (zoznam kurzov z OBEH/_zoznam.txt) ----
+        (function () {
+          var btn = document.getElementById("cpBtnSluzobny");
+          if (!btn || !sluzPanel) return;
+          var TYPY = { 1: "Pracovný deň", 2: "Sobota", 3: "Nedeľa / sviatok", 4: "Pracovný deň (prázdniny)" };
+          var box = null, zoznam = null, vyber = { typ: null, linka: null };
+          function css(e, t) { e.style.cssText = t; return e; }
+          function mk(tag, t, text) { var e = document.createElement(tag); if (t) e.style.cssText = t; if (text != null) e.textContent = text; return e; }
+          function hm(m) { m = m % 1440; return Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0"); }
+          function dnes() {
+            var d = new Date();
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+          }
+          async function nacitaj() {
+            if (zoznam) return zoznam;
+            try {
+              var P = window.GrafikonParsery, C = window.Calendar;
+              var folder = C && C.findDataFolder(dnes(), window._dataFolders ? window._dataFolders() : []);
+              if (!folder || !P) return null;
+              var txt = await P.loadText("data/" + folder + "/OBEH/_zoznam.txt", true);
+              if (!txt) return null;
+              zoznam = txt.split("\n").filter(Boolean).map(function (r) {
+                var f = r.split("\t");
+                return { kod: f[0], linka: parseInt(f[0].slice(0, 3), 10), kurz: parseInt(f[0].slice(3, 5), 10), typ: +f[0].slice(5), od: +f[1], do: +f[2] };
+              });
+            } catch (e) { zoznam = null; }
+            return zoznam;
+          }
+          function chip(text, on, klik, extra) {
+            var c = mk("button", "padding:7px 11px;border-radius:16px;border:1px solid var(--border);font-size:14px;cursor:pointer;" +
+              (on ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)") + (extra || ""), text);
+            c.type = "button";
+            c.addEventListener("click", klik);
+            return c;
+          }
+          function nadpis(t) { return mk("div", "font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin:14px 0 6px", t); }
+          function vykresli() {
+            if (!box || !zoznam) return;
+            box.innerHTML = "";
+            var typy = [];
+            zoznam.forEach(function (z) { if (typy.indexOf(z.typ) < 0) typy.push(z.typ); });
+            typy.sort();
+            if (vyber.typ == null) {
+              var t0 = window.Calendar ? window.Calendar.getDayType(new Date()) : 1;
+              vyber.typ = typy.indexOf(t0) >= 0 ? t0 : typy[0];
+            }
+            box.appendChild(nadpis("TYP DŇA"));
+            var rt = mk("div", "display:flex;flex-wrap:wrap;gap:6px");
+            typy.forEach(function (t) {
+              rt.appendChild(chip(TYPY[t] || "Typ " + t, t === vyber.typ, function () { vyber.typ = t; vyber.linka = null; vykresli(); }));
+            });
+            box.appendChild(rt);
+            var linky = [];
+            zoznam.forEach(function (z) { if (z.typ === vyber.typ && linky.indexOf(z.linka) < 0) linky.push(z.linka); });
+            linky.sort(function (a, b) { return a - b; });
+            box.appendChild(nadpis("LINKA"));
+            var rl = mk("div", "display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow-y:auto");
+            linky.forEach(function (l) {
+              rl.appendChild(chip(String(l), l === vyber.linka, function () { vyber.linka = l; vykresli(); }, ";min-width:44px"));
+            });
+            box.appendChild(rl);
+            if (vyber.linka != null) {
+              box.appendChild(nadpis("KURZ"));
+              var rk = mk("div", "display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px");
+              zoznam.filter(function (z) { return z.typ === vyber.typ && z.linka === vyber.linka; })
+                .sort(function (a, b) { return a.kurz - b.kurz; })
+                .forEach(function (z) {
+                  var b = mk("button", "padding:7px 4px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);cursor:pointer;text-align:center");
+                  b.type = "button";
+                  b.appendChild(mk("div", "font-size:15px;font-weight:700", vyber.linka + "/" + z.kurz));
+                  b.appendChild(mk("div", "font-size:11px;color:var(--text-3)", hm(z.od) + "–" + hm(z.do)));
+                  b.addEventListener("click", function () {
+                    kurzInput.value = z.kod;
+                    if (kurzGo) kurzGo.click();
+                  });
+                  rk.appendChild(b);
+                });
+              box.appendChild(rk);
+            }
+          }
+          async function otvor() {
+            if (!box) { box = mk("div", ""); sluzPanel.appendChild(box); }
+            await nacitaj();
+            vykresli();
+          }
+          btn.addEventListener("click", otvor);
+          window._cpSluzobnyVyber = function () { vyber.linka = null; vyber.typ = null; if (box) vykresli(); };
+        })();
         if (kurzInput)
           kurzInput.addEventListener("keydown", function (e) {
             if (e.key === "Enter") doGo();
