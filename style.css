@@ -405,6 +405,21 @@
         background: var(--red);
         display: block;
       }
+      .calendar-cell { position: relative; }
+      .cal-cz {
+        position: absolute;
+        right: 7px;
+        width: 2px;
+        height: 9px;
+        border-radius: 1px;
+        background: var(--red);
+        opacity: 0.85;
+      }
+      .cal-cz.cz-mala { height: 6px; }
+      .cal-cz.cz-hore { top: 6px; }
+      .cal-cz.cz-stred { top: 50%; transform: translateY(-50%); }
+      .cal-cz.cz-dole { bottom: 6px; }
+      .calendar-cell.selected .cal-cz { background: #fff; opacity: 0.9; }
       .calendar-cell.selected.has-service::after {
         background: rgba(255, 255, 255, 0.7);
       }
