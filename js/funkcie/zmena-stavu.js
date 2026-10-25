@@ -235,8 +235,8 @@
     var vyber = {};
     RIADKY.forEach(function (r) {
       vyber[r.k] = {};
+      if (nechcem) return;                 // v „Nechcem“ sú len časy, linka a striedač
       var rad = el("div", "display:flex;align-items:center;gap:6px;margin-bottom:6px");
-      rad.appendChild(el("div", "width:44px;flex-shrink:0;font-size:13px;color:var(--text-2)", r.t));
       r.m.forEach(function (m) {
         var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", m);
         c.type = "button";
