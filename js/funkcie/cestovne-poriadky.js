@@ -116,8 +116,8 @@
           var H = 44, RIADKY = 5;
           var box = null, zoznam = null, kolesa = null, info = null, otvorBtn = null;
           var vyber = { typ: null, trak: null, linka: null, kurz: null };
-          // Trakcia podľa čísla linky: električky 1, 3, 4, 9; trolejbusy zatiaľ nie sú zadané (doplniť); ostatné autobusy
-          var ELEKTRICKY = [1, 3, 4, 9], TROLEJBUSY = [];
+          // Trakcia podľa čísla linky: električky 1, 3, 4, 9; trolejbusy 32, 33, 40, 42, 44, 45, 47, 49, 60, 61, 71, 72; ostatné autobusy
+          var ELEKTRICKY = [1, 3, 4, 9], TROLEJBUSY = [32, 33, 40, 42, 44, 45, 47, 49, 60, 61, 71, 72];
           var TRAK_NAZOV = { trolejbus: "Trolejbus", elektricka: "Električka", autobus: "Autobus" };
           function trakcia(l) { return ELEKTRICKY.indexOf(l) >= 0 ? "elektricka" : TROLEJBUSY.indexOf(l) >= 0 ? "trolejbus" : "autobus"; }
           function mk(tag, t, text) { var e = document.createElement(tag); if (t) e.style.cssText = t; if (text != null) e.textContent = text; return e; }
