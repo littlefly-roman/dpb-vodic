@@ -3,25 +3,48 @@
 (function () {
   function el(tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text != null) e.textContent = text; return e; }
   function p2(n) { return String(n).padStart(2, "0"); }
-  // Koleso: 7 pozícií, stred (index 3) je zväčšený a zvýraznený, vzdialenejšie riadky blednú
-  function koleso(slots) {
-    var w = el("div", "");
-    var OP = [1, 0.78, 0.55, 0.32];
-    slots.forEach(function (z, i) {
-      var d = Math.abs(i - 3), st = i === 3;
-      var vys = slots.some(function (q) { return q && q.pod; }) ? 58 : 42;
-      var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + vys + "px;border-radius:12px;box-sizing:border-box;opacity:" + OP[d] + ";" +
-        (st ? "background:var(--red);color:#fff;font-weight:700;transform:scale(1.07);margin:4px 0;box-shadow:0 4px 14px rgba(232,0,26,.28)" : "color:var(--text-1)"));
-      if (z) {
-        r.appendChild(el("div", "min-width:50px;font-variant-numeric:tabular-nums;font-size:" + (st ? 18 : 15) + "px;" + (st ? "" : "color:var(--text-2)"), z.cas));
-        var t = el("div", "flex:1;min-width:0");
-        t.appendChild(el("div", "font-size:" + (st ? 17 : 15) + "px", z.nazov));
-        if (z.pod) t.appendChild(el("div", "font-size:12px;font-weight:400;" + (st ? "opacity:.9" : "color:var(--text-2)"), z.pod));
-        r.appendChild(t);
-      }
+  // Koleso: zoznam sa dá listovať prstom; riadok v strede je zväčšený a zvýraznený, ďalšie blednú.
+  // stav = { dotyk: čas posledného dotyku, top: posledná poloha } – kým sa vodič ručne posúva (20 s), sa nepresúva samo.
+  function koleso(items, stred, stav) {
+    var pod = items.some(function (q) { return q.pod; });
+    var H = pod ? 60 : 44, VIS = 7;
+    var w = el("div", "position:relative;padding:0 10px;box-sizing:border-box;height:" + (H * VIS) + "px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-snap-type:y proximity");
+    var pad = el("div", "height:" + (H * 3) + "px");
+    w.appendChild(pad);
+    var rows = items.map(function (z) {
+      var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + H + "px;box-sizing:border-box;border-radius:12px;scroll-snap-align:center;will-change:transform,opacity");
+      r.appendChild(el("div", "min-width:50px;font-variant-numeric:tabular-nums;font-size:15px", z.cas));
+      var t = el("div", "flex:1;min-width:0");
+      t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
+      if (z.pod) t.appendChild(el("div", "font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
+      r.appendChild(t);
       w.appendChild(r);
+      return r;
     });
-    return w;
+    w.appendChild(el("div", "height:" + (H * 3) + "px"));
+    function styl() {
+      var c = w.scrollTop + (H * VIS) / 2;
+      rows.forEach(function (r, i) {
+        var stredRiadku = H * 3 + i * H + H / 2;
+        var d = Math.abs(stredRiadku - c) / H;
+        var blizko = Math.max(0, 1 - d);
+        r.style.opacity = String(Math.max(0.22, 1 - d * 0.26));
+        r.style.transform = "scale(" + (1 + 0.08 * blizko) + ")";
+        var on = d < 0.5;
+        r.style.background = on ? "var(--red)" : "transparent";
+        r.style.color = on ? "#fff" : "var(--text-1)";
+        r.style.fontWeight = on ? "700" : "400";
+        r.style.boxShadow = on ? "0 4px 14px rgba(232,0,26,.25)" : "none";
+      });
+    }
+    w.addEventListener("scroll", function () { stav.top = w.scrollTop; styl(); }, { passive: true });
+    ["touchstart", "pointerdown", "wheel"].forEach(function (e) { w.addEventListener(e, function () { stav.dotyk = Date.now(); }, { passive: true }); });
+    function nastav(pevne) {
+      var ruka = !pevne && stav.dotyk && Date.now() - stav.dotyk < 20000 && stav.top != null;
+      w.scrollTop = ruka ? stav.top : Math.max(0, stred) * H;
+      styl();
+    }
+    return { el: w, nastav: nastav };
   }
 
   function otvor(kurz, dateKey, meno, okno) {
@@ -30,7 +53,7 @@
     if (!window.DpbOkna || !window.DpbStretnutia) return;
     var dnes = (function () { var n = new Date(); return n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate()); })();
     var jeDnes = dateKey === dnes;
-    var box = null, status = null;
+    var box = null, status = null, stavK = { dotyk: 0, top: null };
     function sekundy() {
       if (jeDnes) { var n = new Date(); return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(); }
       return null;
@@ -49,9 +72,9 @@
       if (r.chyba) { box.appendChild(el("div", "color:var(--text-2);padding:8px 0", r.chyba)); return true; }
       var popis = pred ? "Služba ešte nezačala – začiatok" : po ? "Služba skončila – koniec služby" : r.stav === "bezi" ? (jeDnes ? "● teraz na trase" : "") : r.stav === "caka" ? "Najbližší spoj" + (r.odchodSpoja ? " o " + r.odchodSpoja : "") : "Služba skončila";
       status.textContent = (popis ? popis + " · " : "") + "smer " + r.ciel;
-      box.appendChild(koleso(r.polozky.map(function (z) {
-        return z && { cas: z.cas, nazov: z.nazov, pod: "" };
-      })));
+      var kk = koleso(r.polozky.map(function (z) { return { cas: z.cas, nazov: z.nazov, pod: "" }; }), r.stred, stavK);
+      box.appendChild(kk.el);
+      kk.nastav(false);
       return true;
     }
     var sheet = window.DpbOkna.otvor({
@@ -77,43 +100,25 @@
   function hms(s) { return Math.floor(s / 3600) + ":" + p2(Math.floor((s % 3600) / 60)); }
   async function stretnutia(kurz, dateKey, od, do_, meno) {
     if (!window.DpbOkna || !window.DpbStretnutia) return;
-    var box = null, info = null, vsetky = false, data = null;
+    var box = null, info = null, data = null, stavS = { dotyk: 0, top: null };
     var n = new Date(), dnes = n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate());
     function kresli() {
       if (!box) return;
       var nn = new Date(), teraz = nn.getHours() * 3600 + nn.getMinutes() * 60 + nn.getSeconds();
       box.innerHTML = "";
-      var zoznam = data;
-      if (dateKey === dnes && !vsetky) {
-        var idx = data.findIndex(function (x) { return x.sec >= teraz; });
-        if (idx < 0) idx = data.length;
-        var slots = [];
-        for (var i = idx - 3; i <= idx + 3; i++) {
-          var x = data[i];
-          slots.push(x ? { cas: x.cas, nazov: x.kde, pod: "kurz " + x.kurz + (x.meno ? " · " + x.meno : "") + (x.vozidlo ? " · voz. " + x.vozidlo : "") } : null);
-        }
-        box.appendChild(koleso(slots));
-        if (idx >= data.length) box.appendChild(el("div", "color:var(--text-2);padding:8px 0;text-align:center", "Ďalšie stretnutia dnes už nie sú."));
-        var bv = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", "Zobraziť všetky (" + data.length + ")");
-        bv.addEventListener("click", function () { vsetky = true; kresli(); });
-        box.appendChild(bv);
-        return;
-      }
-      if (!zoznam.length) box.appendChild(el("div", "color:var(--text-2);padding:8px 0", "Nič ďalšie."));
-      zoznam.forEach(function (x) {
-        var r = el("div", "padding:9px 4px;border-bottom:1px solid var(--surface-2)");
-        var h = el("div", "display:flex;gap:10px;font-size:15px");
-        h.appendChild(el("div", "min-width:46px;font-weight:700;font-variant-numeric:tabular-nums", x.cas));
-        h.appendChild(el("div", "flex:1;min-width:0", x.kde));
-        r.appendChild(h);
-        r.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-left:56px", "kurz " + x.kurz + (x.meno ? " · " + x.meno : "") + (x.vozidlo ? " · voz. " + x.vozidlo : "")));
-        box.appendChild(r);
-      });
+      var idx = 0;
       if (dateKey === dnes) {
-        var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", "Späť na najbližšie");
-        bn.addEventListener("click", function () { vsetky = false; kresli(); });
-        box.appendChild(bn);
+        idx = data.findIndex(function (x) { return x.sec >= teraz; });
+        if (idx < 0) idx = data.length - 1;
       }
+      var kk = koleso(data.map(function (x) {
+        return { cas: x.cas, nazov: x.kde, pod: "kurz " + x.kurz + (x.meno ? " · " + x.meno : "") + (x.vozidlo ? " · voz. " + x.vozidlo : "") };
+      }), idx, stavS);
+      box.appendChild(kk.el);
+      kk.nastav(false);
+      var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", "Na najbližšie");
+      bn.addEventListener("click", function () { kk.nastav(true); });
+      box.appendChild(bn);
     }
     window.DpbOkna.otvor({
       titul: "Koho stretne " + kurz,

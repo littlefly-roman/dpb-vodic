@@ -192,14 +192,10 @@
     if (stav === "bezi") {
       for (var i = 0; i < st.length; i++) { if (cas(st[i]) <= sec) idx = i; }
     } else if (stav === "skoncil") idx = st.length - 1;
-    var polozky = [];
     var stred = stav === "caka" ? 0 : idx;
-    for (var j = stred - 3; j <= stred + 3; j++) {
-      if (j < 0 || j >= st.length) { polozky.push(null); continue; }
-      polozky.push({ nazov: nazovStanice(d.stanice, st[j].st), cas: hms(cas(st[j])), cur: j === stred });
-    }
+    var polozky = st.map(function (z) { return { nazov: nazovStanice(d.stanice, z.st), cas: hms(cas(z)) }; });
     var posl = st[st.length - 1];
-    return { stav: stav, polozky: polozky, ciel: nazovStanice(d.stanice, posl.st), linka: ciel.sp.linka, odchodSpoja: hms(ciel.od) };
+    return { stav: stav, polozky: polozky, stred: stred, ciel: nazovStanice(d.stanice, posl.st), linka: ciel.sp.linka, odchodSpoja: hms(ciel.od) };
   }
 
   window.DpbStretnutia = { najdi: najdi, poloha: poloha };
