@@ -144,45 +144,58 @@
       return { stops: sp.stops, t0: cas(sp.stops[0]), t1: prich(sp.stops[sp.stops.length - 1]) };
     }).filter(function (x) { return x.t0 != null && x.t1 != null; });
   }
-  // Stretnutia dvoch spojov idúcich opačne: berú sa len ZASTÁVKY, ktoré majú oba spoje spoločné (jedna električka
-  // môže niektorú zastávku vynechať, napr. STU len v jednom smere), a úsek medzi dvoma susednými spoločnými zastávkami.
+  // Stretnutia dvoch spojov: ÚSEK = dvojica susedných zastávok jazdy (X -> Y).
+  // Stretnete sa, ak druhý spoj má opačný úsek (Y -> X) v prekrývajúcom sa čase.
+  // Ak jeden spoj vynechá zastávku (napr. STU v jednom smere), jeho dlhší úsek platí za všetky úseky, ktoré pokrýva.
+  // Ručné pravidlo: pred Kráľovským údolím (0281) sa koľaje od Kapucínskej (0141) a od Chatam Sófer (0439) spájajú
+  // do jednej, takže úseky 0141<->0281 a 0439<->0281 sa považujú za ten istý úsek.
+  var VETVA = { "0141": 1, "0439": 1 };
+  var SPOJ_UZOL = "0281";
+  var MAX_SKOK = 3;
+  function ekv(u, v, druhy) {
+    return u === v || (druhy === SPOJ_UZOL && VETVA[u] === 1 && VETVA[v] === 1);
+  }
   function stretnutiaSpojov(A, B) {
     var res = [];
-    var bi = {};
-    B.stops.forEach(function (z, i) { if (bi[z.st] === undefined) bi[z.st] = i; });
-    var spolu = [];
-    A.stops.forEach(function (z, i) { if (bi[z.st] !== undefined) spolu.push({ z: z, i: i, j: bi[z.st] }); });
-    for (var k = 0; k + 1 < spolu.length; k++) {
-      var p = spolu[k], q = spolu[k + 1];
-      if (!(q.j < p.j)) continue;                        // B ide opačne: q pred p
-      if (p.z.st === q.z.st) continue;
-      var zB = B.stops[q.j], yB = B.stops[p.j];
-      // rovnaká trasa: ak majú OBA spoje medzi týmito dvoma zastávkami ešte nejaké vlastné zastávky, idú rôznymi cestami
-      // (napr. cez Poštovú vs. cez Most SNP); jednostranné vynechanie (STU v jednom smere) je v poriadku
-      var vlA = q.i - p.i - 1, vlB = p.j - q.j - 1;
-      if ((vlA > 0 && vlB > 0) || vlA > 2 || vlB > 2) continue;
-      var t1 = cas(p.z), t2 = prich(q.z);
-      var u1 = cas(zB), u2 = prich(yB);
-      if (t1 == null || t2 == null || u1 == null || u2 == null || t2 <= t1 || u2 <= u1) continue;
-      var z = Math.max(t1, u1), kk = Math.min(t2, u2);
-      if (z > kk) continue;
-      var a1 = 1 / (t2 - t1), b1 = -t1 / (t2 - t1);
-      var a2 = -1 / (u2 - u1), b2 = 1 + u1 / (u2 - u1);
-      var t = (b2 - b1) / (a1 - a2);
-      if (!(t >= z - 1 && t <= kk + 1)) t = (z + kk) / 2;
-      // pomenovanie podľa ZASTÁVOK MOJHO spoja A (tie fyzicky existujú ako susedné)
-      var x = p.z.st, y = q.z.st, vz = null;
-      for (var m = p.i; m < q.i; m++) {
-        var s0 = A.stops[m], s1 = A.stops[m + 1];
-        var ta = cas(s0), tb = prich(s1);
-        if (ta != null && tb != null && t >= ta - 1 && t <= tb + 1) {
-          x = s0.st; y = s1.st;
-          if (Math.abs(t - ta) < 20) vz = s0.st;
-          else if (Math.abs(t - tb) < 20) vz = s1.st;
-          break;
+    for (var i = 0; i + 1 < A.stops.length; i++) {
+      for (var a = 1; a <= MAX_SKOK && i + a < A.stops.length; a++) {
+        var X = A.stops[i].st, Y = A.stops[i + a].st;
+        if (X === Y) continue;
+        var tA1 = cas(A.stops[i]), tA2 = prich(A.stops[i + a]);
+        if (tA1 == null || tA2 == null || tA2 < tA1) continue;
+        for (var j = 0; j + 1 < B.stops.length; j++) {
+          if (!ekv(B.stops[j].st, Y, X)) continue;
+          for (var bb = 1; bb <= MAX_SKOK && j + bb < B.stops.length; bb++) {
+            if (a > 1 && bb > 1) continue;                 // len jedna strana smie vynechať zastávky
+            if (!ekv(B.stops[j + bb].st, X, Y)) continue;
+            var tB1 = cas(B.stops[j]), tB2 = prich(B.stops[j + bb]);
+            if (tB1 == null || tB2 == null || tB2 < tB1) continue;
+            var z = Math.max(tA1, tB1), kk = Math.min(tA2, tB2);
+            if (z > kk) continue;
+            // čas stretnutia (len na zoradenie): priesečník dvoch lineárnych pohybov po úseku
+            var t = (z + kk) / 2;
+            if (tA2 > tA1 && tB2 > tB1) {
+              var a1 = 1 / (tA2 - tA1), b1 = -tA1 / (tA2 - tA1);
+              var a2 = -1 / (tB2 - tB1), b2 = 1 + tB1 / (tB2 - tB1);
+              var tt = (b2 - b1) / (a1 - a2);
+              if (tt >= z - 1 && tt <= kk + 1) t = tt;
+            }
+            // pomenovanie podľa susedných zastávok MOJHO spoja
+            var x = X, y = Y, vz = null;
+            for (var m = i; m < i + a; m++) {
+              var s0 = A.stops[m], s1 = A.stops[m + 1];
+              var ta = cas(s0), tb = prich(s1);
+              if (ta != null && tb != null && t >= ta - 1 && t <= tb + 1) {
+                x = s0.st; y = s1.st;
+                if (Math.abs(t - ta) < 20) vz = s0.st;
+                else if (Math.abs(t - tb) < 20) vz = s1.st;
+                break;
+              }
+            }
+            res.push({ cas: t, x: x, y: y, vz: vz });
+          }
         }
       }
-      res.push({ cas: t, x: x, y: y, vz: vz });
     }
     return res;
   }
