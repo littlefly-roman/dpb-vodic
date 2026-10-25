@@ -94,17 +94,6 @@
           window.DpbMiniGrafikon && window.DpbMiniGrafikon.otvor(r.line, kluc(den), r.meno, r.od ? [r.od[0] * 60, r.od[1] * 60] : null);
         });
         m.appendChild(it);
-        if (/^[1349]\//.test(r.line)) {
-          var it2 = document.createElement("div");
-          it2.textContent = "Koho stretne";
-          it2.style.cssText = "padding:12px 16px;font-size:15px;color:var(--red);font-weight:600;cursor:pointer;border-top:1px solid var(--surface-2)";
-          it2.addEventListener("click", function (e) {
-            e.stopPropagation();
-            var hh = function (x) { return p2(Math.floor(x / 60) % 24) + ":" + p2(x % 60); };
-            window.DpbMiniGrafikon && window.DpbMiniGrafikon.stretnutia(r.line, kluc(den), r.od ? hh(r.od[0]) : null, r.od ? hh(r.od[1]) : null, r.meno);
-          });
-          m.appendChild(it2);
-        }
         d.parentNode.insertBefore(m, d.nextSibling);
       });
     }
