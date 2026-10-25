@@ -54,6 +54,41 @@
       '</span><span class="vyp-teraz">' + d + '</span><span class="vyp-dalsi">' + n + "</span></button>"
     );
   }
+  // Ak mám v zvolený deň službu na výpravni: ukáž obe výpravne (moju prvú) – výpravca danej zmeny
+  // a sedavé zálohy v plnej dĺžke ich služby.
+  function moja(kluc) {
+    var rid = window.appState.currentDriver, ms = (window.RAW.models || {})[rid] || [];
+    for (var i = 0; i < ms.length; i++) {
+      if (ms[i].datum !== kluc) continue;
+      var ks = ms[i].karty || [];
+      for (var j = 0; j < ks.length; j++) {
+        if (ks[j].vzor !== "TRKR") continue;
+        var g = window.DpbVypravna.skupina(ks[j].kurz);
+        if (g) return { g: g, noc: /^no/i.test(String(ks[j].kurz).trim()), od: ks[j].od_min != null ? ks[j].od_min : null, do: ks[j].do_min != null ? ks[j].do_min : null };
+      }
+    }
+    return null;
+  }
+  var MIESTO = { KR: "Krasňany", TR: "Trnávka" };
+  function podrobne(kluc, m) {
+    var dn = window.DpbVypravna.dennaNocna(window.RAW.models, window.RAW.drivers, kluc);
+    var poradie = [m.g, m.g === "KR" ? "TR" : "KR"], h = "";
+    poradie.forEach(function (g) {
+      var vyp = dn[g][m.noc ? "nocna" : "denna"];
+      var od = m.od, do_ = m.do;
+      if (vyp.length) { od = vyp[0].od; do_ = vyp[0].do; }
+      var sed = od != null && do_ > od ? window.DpbVypravna.sedava(window.RAW.models, window.RAW.drivers, kluc, g, od, do_) : [];
+      h += '<div class="vyp-blk"><div class="vyp-blk-h">' + MIESTO[g] + (g === m.g ? " · moja výpravňa" : "") + "</div>";
+      if (g !== m.g) h += '<div class="vyp-det"><span class="vyp-det-r">' + (m.noc ? "Nočný" : "Denný") + " výpravca</span><span class=\"vyp-det-m\">" + (vyp.length ? vyp.map(function (x) { return x.meno + " (" + x.odTxt + "–" + x.doTxt + ")"; }).join(", ") : "—") + "</span></div>";
+      if (!sed.length) h += '<div class="vyp-det"><span class="vyp-det-r">Sedavá záloha</span><span class="vyp-det-m">—</span></div>';
+      sed.forEach(function (x) {
+        h += '<div class="vyp-det"><span class="vyp-det-r">Sedavá záloha</span><span class="vyp-det-m">' + x.meno + " (" + x.odTxt + "–" + x.doTxt + ")</span></div>";
+      });
+      h += "</div>";
+    });
+    return h;
+  }
+
   function riadok(g, r) {
     var teraz = r.teraz.length ? mena(r.teraz) : "—";
     var dalsi = r.dalsi.length ? mena(r.dalsi) : "";
@@ -88,10 +123,12 @@
     var min = teraz.getHours() * 60 + teraz.getMinutes();
     var kluc = window.DpbVypravna.kluc(window.appState.selectedDate);
     jeDnes = kluc === window.DpbVypravna.kluc(teraz);
-    var sig = kluc + "|" + (jeDnes ? min : "pevne") + "|" + Object.keys(window.RAW.models).length;
+    var sig = kluc + "|" + (jeDnes ? min : "pevne") + "|" + Object.keys(window.RAW.models).length + "|" + window.appState.currentDriver;
     if (sig === posledny) return;
     posledny = sig;
     var r = window.DpbVypravna.kto(window.RAW.models, window.RAW.drivers, kluc, min);
+    posledneKluc = kluc;
+    posledneM = moja(kluc);
     posledneDN = window.DpbVypravna.dennaNocna(window.RAW.models, window.RAW.drivers, kluc);
     if (disp && !disp.firstChild)
       disp.innerHTML =
@@ -105,7 +142,7 @@
   }
 
   // Box Výpravňa sa dá zbaliť/rozbaliť (predvolene zbalený, voľba sa pamätá)
-  var posledneR = null, posledneDN = null, jeDnes = true, casovac = null;
+  var posledneR = null, posledneDN = null, posledneM = null, posledneKluc = "", jeDnes = true, casovac = null;
   var otvorene = false;
   function vykresli() {
     if (!pas || !posledneR) return;
@@ -114,7 +151,9 @@
       (otvorene ? "true" : "false") +
       '"><span>VÝPRAVŇA</span><span class="vyp-sipka">▼</span></button>' +
       (otvorene
-        ? (jeDnes
+        ? (posledneM
+            ? podrobne(posledneKluc, posledneM)
+            : jeDnes
             ? '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Teraz</span><span>Nasleduje</span></div>' +
               riadok("KR", posledneR.KR) + riadok("TR", posledneR.TR)
             : '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Denná</span><span>Nočná</span></div>' +

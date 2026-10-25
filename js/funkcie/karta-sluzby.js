@@ -817,27 +817,8 @@
             }
           }
           card.appendChild(body);
-          if (vzor === "TRKR" && window.DpbVypravna && window.RAW) {
-            // Dolný pás výpravcu: kto je počas jeho služby na sedavej zálohe (E1 = Trnávka, E2 = Krasňany)
-            try {
-              const g = window.DpbVypravna.skupina(k.kurz);
-              const od = k.od_min != null ? k.od_min : 0, do_ = k.do_min != null ? k.do_min : 0;
-              const dk = service.date || k.datum;
-              if (g && dk && do_ > od) {
-                const ls = window.DpbVypravna.sedava(window.RAW.models, window.RAW.drivers, dk, g, od, do_);
-                const fm = function (m) { m = ((m % 1440) + 1440) % 1440; return Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0"); };
-                if (!ls.length) {
-                  const r0 = driverRow({ name: "Sedavá záloha: nikto" }, "after"); if (r0) card.appendChild(r0);
-                } else ls.forEach(function (x) {
-                  const t = ls.length > 1 ? " (" + fm(Math.max(x.od, od)) + "–" + fm(Math.min(x.do, do_)) + ")" : "";
-                  const r1 = driverRow({ name: "Sedavá záloha: " + x.meno + t }, "after"); if (r1) card.appendChild(r1);
-                });
-              }
-            } catch (e) {}
-          } else {
-            const aft = driverRow(service.after, "after");
-            if (aft) card.appendChild(aft);
-          }
+          const aft = driverRow(service.after, "after");
+          if (aft) card.appendChild(aft);
           attachMenu(card, mb, service);
           return card;
         };
