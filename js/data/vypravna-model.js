@@ -89,7 +89,7 @@
           var g = skupina(k.kurz);
           if (!g) return;
           var noc = /^no/i.test(String(k.kurz || "").trim());
-          out[g][noc ? "nocna" : "denna"].push({ rid: rid, meno: (drivers && drivers[rid]) || rid });
+          out[g][noc ? "nocna" : "denna"].push({ rid: rid, meno: (drivers && drivers[rid]) || rid, odTxt: k.od, doTxt: k.do, od: k.od_min != null ? k.od_min : toMin(k.od), do: k.do_min != null ? k.do_min : toMin(k.do), noc: noc });
         });
       });
     });
