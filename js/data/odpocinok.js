@@ -37,13 +37,19 @@
     var P = prace.filter(function (x) { return x.do > x.od; });
     // prekrytie s inou prácou
     if (P.some(function (x) { return x.od < k.do && x.do > k.od; })) return { ok: false, dovod: "prekrýva sa s inou službou", skrateny: null };
-    // denný odpočinok pred a po
+    // Práca v ten istý deň = jedna delená zmena (kandidát je jej ďalšia časť): odpočinok sa počíta pred celou zmenou a po nej
+    var den = Math.floor(k.od / 1440);
+    var rovnakyDen = P.filter(function (x) { return Math.floor(x.od / 1440) === den; });
+    var zOd = k.od, zDo = k.do;
+    rovnakyDen.forEach(function (x) { zOd = Math.min(zOd, x.od); zDo = Math.max(zDo, x.do); });
+    res.delena = rovnakyDen.length > 0;
     var pred = null, po = null;
     P.forEach(function (x) {
-      if (x.do <= k.od && (pred === null || x.do > pred)) pred = x.do;
-      if (x.od >= k.do && (po === null || x.od < po)) po = x.od;
+      if (Math.floor(x.od / 1440) === den) return;
+      if (x.do <= zOd && (pred === null || x.do > pred)) pred = x.do;
+      if (x.od >= zDo && (po === null || x.od < po)) po = x.od;
     });
-    var restPred = pred === null ? Infinity : k.od - pred, restPo = po === null ? Infinity : po - k.do;
+    var restPred = pred === null ? Infinity : zOd - pred, restPo = po === null ? Infinity : po - zDo;
     var najmenej = Math.min(restPred, restPo);
     if (najmenej < DEN_MIN) return { ok: false, dovod: "odpočinok kratší ako 6 h", skrateny: null };
     if (najmenej < DEN_OK) res.skrateny = { pred: restPred, po: restPo, min: najmenej };
@@ -56,7 +62,7 @@
         if (med >= DEN_MIN && med < DEN_OK) dni.push(Math.floor(S[q + 1].od / 1440));
       }
       var mojeD = [];
-      if (restPred < DEN_OK) mojeD.push(Math.floor(k.od / 1440));
+      if (restPred < DEN_OK) mojeD.push(Math.floor(zOd / 1440));
       if (restPo < DEN_OK) mojeD.push(Math.floor(po / 1440));
       for (var m = 0; m < mojeD.length; m++) {
         var dm = mojeD[m];
