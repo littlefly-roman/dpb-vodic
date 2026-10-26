@@ -3293,3 +3293,10 @@ body {
   .dispecing-pas .vyp-hl-nazov { font-size: 13px; letter-spacing: 0; }
   .dispecing-pas .vyp-hl-cislo { font-size: 15px; }
 }
+
+/* Široké displeje (rozložená skladačka, tablet, počítač): klasické rozloženie telefónu v stĺpci na stred.
+   transform robí z tela „obal“ aj pre pevne umiestnené prvky (menu, okná, bodky), takže zostanú v stĺpci. */
+@media (min-width: 560px) {
+  html { background: var(--border); }
+  body { width: 100%; max-width: 480px; margin: 0 auto; transform: translateZ(0); box-shadow: 0 0 0 1px var(--border-2), 0 0 40px rgba(0,0,0,.15); }
+}
