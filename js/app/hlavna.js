@@ -366,16 +366,17 @@
       <div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
       <div class="volno-text">Voľno</div>
       <div class="volno-sub">${Calendar.getDayTypeLabel(appState.selectedDate)}</div>
-      ${maVBurze ? `<div class="volno-burza-badge" id="volnoBurzaBadge">${burzaSluzby.length} ${burzaSluzby.length === 1 ? "služba" : burzaSluzby.length < 5 ? "služby" : "služieb"} v burze</div>` : ""}
     `;
             pridajMenuVolno(volno, selKey);
 
             container.appendChild(volno);
             if (maVBurze) {
-              volno.querySelector(".volno-burza-badge").addEventListener("click", (e) => {
-                e.stopPropagation();
-                otvorBurzuPreDen(selKey);
-              });
+              const r = document.createElement("button");
+              r.type = "button";
+              r.className = "burza-link-row";
+              r.textContent = "Z burzy sa dá pridať: " + burzaSluzby.length + " " + (burzaSluzby.length === 1 ? "služba" : burzaSluzby.length < 5 ? "služby" : "služieb") + "  ›";
+              r.addEventListener("click", () => otvorBurzuPreDen(selKey));
+              container.appendChild(r);
             }
             return;
           }
