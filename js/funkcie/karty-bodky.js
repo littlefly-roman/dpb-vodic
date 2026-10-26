@@ -31,7 +31,7 @@
     kontajner = document.getElementById("servicesContainer");
     wrap = document.getElementById("swipeWrapper");
     if (!kontajner || !wrap) return;
-    karty = Array.prototype.slice.call(kontajner.querySelectorAll(".service-card"));
+    karty = Array.prototype.slice.call(kontajner.querySelectorAll(".service-card:not(.burza-row)"));
     if (!box) {
       box = document.createElement("div");
       box.className = "karty-bodky";
