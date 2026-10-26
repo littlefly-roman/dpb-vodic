@@ -5,7 +5,7 @@
 //    nepretržitý odpočinok >= 35 h (vypočítané presne cez intervaly, nie vzorkovaním)
 // Čas mimo známych dát sa berie ako voľný.
 (function (root) {
-  var DEN_OK = 11 * 60, DEN_MIN = 6 * 60, TYD = 35 * 60, OKNO = 7 * 24 * 60;
+  var DEN_OK = 11 * 60, DEN_MIN = 6 * 60, PRACA_MAX = 12 * 60, TYD = 35 * 60, OKNO = 7 * 24 * 60;
 
   function abs(dateKey, min) {
     var p = String(dateKey).split("-").map(Number);
@@ -32,7 +32,7 @@
     return b - cur >= TYD;
   }
   // prace: [{od,do}] v absolútnych minútach (už bez kandidáta); k: {od,do}
-  function skontroluj(prace, k) {
+  function skontroluj(prace, k, bezVykonu) {
     var res = { ok: true, dovod: "", skrateny: null };
     var P = prace.filter(function (x) { return x.do > x.od; });
     // prekrytie s inou prácou
@@ -43,6 +43,11 @@
     var zOd = k.od, zDo = k.do;
     rovnakyDen.forEach(function (x) { zOd = Math.min(zOd, x.od); zDo = Math.max(zDo, x.do); });
     res.delena = rovnakyDen.length > 0;
+    // Denný výkon najviac 12 h (Zákonník práce § 87 ods. 4: pracovný čas v priebehu 24 hodín najviac 12 hodín):
+    // súčet práce dňa nástupu vrátane delených častí; čas od–do, prestávky sa neodpočítavajú.
+    var vykon = k.do - k.od;
+    rovnakyDen.forEach(function (x) { vykon += x.do - x.od; });
+    if (!bezVykonu && vykon > PRACA_MAX) return { ok: false, dovod: "viac ako 12 h práce za deň", skrateny: null };
     var pred = null, po = null;
     P.forEach(function (x) {
       if (Math.floor(x.od / 1440) === den) return;
@@ -127,7 +132,7 @@
     var bmax = o.ukoncenieDo != null ? Math.min(1440, o.ukoncenieDo) : 1440;
     var res = { nastupPo: o.nastupPo, ukoncenieDo: o.ukoncenieDo, plny: false, nemozne: false, poobedna: null, ranna: null };
     if (bmax - amin < 60) { res.nemozne = true; return res; }
-    function ok(a, b) { return skontroluj(prace, { od: d0 + a, do: d0 + b }).ok; }
+    function ok(a, b) { return skontroluj(prace, { od: d0 + a, do: d0 + b }, true).ok; }
     if (ok(amin, bmax)) { res.plny = true; return res; }
     // podmienky nie sú vždy monotónne (týždenný odpočinok sa môže posunúť s koncom), preto sa skúša každá minúta
     for (var b1 = bmax; b1 >= amin + 60; b1--) if (ok(amin, b1)) { res.ranna = { do: b1 }; break; }
@@ -140,5 +145,5 @@
     return res;
   }
 
-  root.DpbOdpocinok = { casKarty: casKarty, okno2: okno2, praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
+  root.DpbOdpocinok = { casKarty: casKarty, okno2: okno2, praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, PRACA_MAX: PRACA_MAX, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
 })(typeof window !== "undefined" ? window : globalThis);
