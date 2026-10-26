@@ -489,7 +489,6 @@
               "Dátum: " + (dk.length === 3 ? parseInt(dk[2], 10) + ". " + parseInt(dk[1], 10) + ". " + dk[0] : (sluzba.datum || "")),
               "Služba: " + (sluzba.nazov || sluzba.line) + (sluzba.podnazov ? " (" + sluzba.podnazov + ")" : ""),
               sluzba.cas ? "Čas: " + sluzba.cas : "",
-              sluzba.od || sluzba.kam ? "Trasa: " + trasaText(sluzba.od, sluzba.kam) : "",
             ].filter(Boolean);
             if (window.DpbZmenaStavu && window.DpbZmenaStavu.ukaz) window.DpbZmenaStavu.ukaz(riadky.join("\n"), "Žiadosť o službu z burzy");
           } catch (e) {}
