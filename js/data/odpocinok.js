@@ -108,5 +108,35 @@
     return r;
   }
 
-  root.DpbOdpocinok = { praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
+  // Ako okno(), ale aj s týždenným odpočinkom 35 h a limitmi skrátenia (presne cez skontroluj).
+  // Vráti {nastupPo, ukoncenieDo, plny, nemozne, poobedna:{od}|null, ranna:{do}|null}:
+  //  plny = celý rozsah nastupPo–ukoncenieDo je v poriadku; inak je týždenný odpočinok obmedzením a platí
+  //  poobedna.od (najskorší nástup, služba až do konca rozsahu) alebo ranna.do (najneskorší koniec, služba od začiatku rozsahu).
+  function okno2(prace, dateKey) {
+    var o = okno(prace, dateKey), d0 = abs(dateKey, 0);
+    var amin = o.nastupPo != null ? Math.max(0, o.nastupPo) : 0;
+    var bmax = o.ukoncenieDo != null ? Math.min(1440, o.ukoncenieDo) : 1440;
+    var res = { nastupPo: o.nastupPo, ukoncenieDo: o.ukoncenieDo, plny: false, nemozne: false, poobedna: null, ranna: null };
+    if (bmax - amin < 60) { res.nemozne = true; return res; }
+    function ok(a, b) { return skontroluj(prace, { od: d0 + a, do: d0 + b }).ok; }
+    if (ok(amin, bmax)) { res.plny = true; return res; }
+    var nejake = false;
+    for (var x = amin; x + 60 <= bmax; x += 1) if (ok(x, x + 60)) { nejake = true; break; }
+    if (!nejake) { res.nemozne = true; return res; }
+    // poobedná: najmenšie a také, že [a,bmax] je ok (monotónne)
+    if (ok(bmax - 60, bmax)) {
+      var lo = amin, hi = bmax - 60;
+      while (lo < hi) { var m = Math.floor((lo + hi) / 2); if (ok(m, bmax)) hi = m; else lo = m + 1; }
+      res.poobedna = { od: lo };
+    }
+    // ranná: najväčšie b také, že [amin,b] je ok
+    if (ok(amin, amin + 60)) {
+      var l2 = amin + 60, h2 = bmax;
+      while (l2 < h2) { var m2 = Math.ceil((l2 + h2) / 2); if (ok(amin, m2)) l2 = m2; else h2 = m2 - 1; }
+      res.ranna = { do: l2 };
+    }
+    return res;
+  }
+
+  root.DpbOdpocinok = { okno2: okno2, praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
 })(typeof window !== "undefined" ? window : globalThis);
