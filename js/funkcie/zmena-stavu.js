@@ -419,14 +419,27 @@
         // Voľný deň: z odpočinkov (min. 6 h) predvyplň „Nástup po“, „Ukončenie do“ a Rannú/Poobednú
         if (!povodna && window.DpbOdpocinok && window.RAW && window.appState) {
           try {
-            var ok = window.DpbOdpocinok.okno(window.DpbOdpocinok.praceVodica(window.RAW.models, window.appState.currentDriver), ctx.date);
+            var ok = window.DpbOdpocinok.okno2(window.DpbOdpocinok.praceVodica(window.RAW.models, window.appState.currentDriver), ctx.date);
             var hm = function (m) { return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
-            var vyp = [];
-            if (ok.nastupPo != null && ok.nastupPo > 0 && ok.nastupPo < 1440) { ch.cas(0, hm(ok.nastupPo)); vyp.push("nástup po " + hm(ok.nastupPo).replace(/^0/, "")); }
-            if (ok.ukoncenieDo != null && ok.ukoncenieDo > 0 && ok.ukoncenieDo < 1440) { ch.cas(1, hm(ok.ukoncenieDo)); vyp.push("ukončenie do " + hm(ok.ukoncenieDo).replace(/^0/, "")); }
-            if (ok.nastupPo != null && ok.nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
-            else if (ok.ukoncenieDo != null && ok.ukoncenieDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
-            if (vyp.length) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Predvyplnené podľa odpočinku: " + vyp.join(", ")), ch.box.children[1]);
+            var hh = function (m) { return hm(m).replace(/^0/, ""); };
+            var vyp = [], poznamka = "";
+            var nastupPo = ok.nastupPo != null && ok.nastupPo > 0 && ok.nastupPo < 1440 ? ok.nastupPo : null;
+            var koncDo = ok.ukoncenieDo != null && ok.ukoncenieDo > 0 && ok.ukoncenieDo < 1440 ? ok.ukoncenieDo : null;
+            if (ok.nemozne) poznamka = "V tento deň sa služba nedá: nebol by splnený odpočinok (denný alebo týždenných 35 h).";
+            else if (ok.plny) { /* len denný odpočinok, nižšie */ }
+            else if (ok.poobedna && ok.ranna) {
+              poznamka = "Kvôli týždennému odpočinku 35 h: ranná najneskôr do " + hh(ok.ranna.do) + ", alebo poobedná najskôr od " + hh(ok.poobedna.od) + ".";
+              nastupPo = null; koncDo = null;
+            } else if (ok.poobedna) { nastupPo = ok.poobedna.od; poznamka = "Kvôli týždennému odpočinku 35 h je možná len poobedná, nástup najskôr o " + hh(ok.poobedna.od) + "."; }
+            else if (ok.ranna) { koncDo = ok.ranna.do; nastupPo = ok.nastupPo > 0 ? ok.nastupPo : null; poznamka = "Kvôli týždennému odpočinku 35 h je možná len ranná, koniec najneskôr o " + hh(ok.ranna.do) + "."; }
+            if (!ok.nemozne) {
+              if (nastupPo != null) { ch.cas(0, hm(nastupPo)); vyp.push("nástup po " + hh(nastupPo)); }
+              if (koncDo != null) { ch.cas(1, hm(koncDo)); vyp.push("ukončenie do " + hh(koncDo)); }
+              if (nastupPo != null && nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
+              else if (koncDo != null && koncDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
+            }
+            var text = (vyp.length ? "Predvyplnené podľa odpočinku: " + vyp.join(", ") + ". " : "") + poznamka;
+            if (text) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", text), ch.box.children[1]);
           } catch (e) {}
         }
         t.appendChild(ch.box); t.appendChild(nch.box);
