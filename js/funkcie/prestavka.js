@@ -108,6 +108,7 @@
     ].filter(Boolean).join("\n");
   }
   function odosli(text) {
+    if (window.DpbZmenaStavu && window.DpbZmenaStavu.ukaz) return window.DpbZmenaStavu.ukaz(text, "Hlásenie o nezabezpečenej pracovnej prestávke");
     if (navigator.share) {
       return navigator.share({ title: "Hlásenie o nezabezpečenej pracovnej prestávke", text: text }).catch(function () {});
     }

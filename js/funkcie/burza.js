@@ -471,6 +471,22 @@
           closeDetail(sluzbaId);
           render();
 
+          // Kým nie je server: ukáž text hlásenia (dá sa upraviť), nič sa neposiela
+          try {
+            const rid = window.appState && window.appState.currentDriver;
+            const meno = (window.RAW && window.RAW.drivers && window.RAW.drivers[rid]) || "—";
+            const dk = String(sluzba.dateKey || "").split("-");
+            const riadky = [
+              "Žiadosť o službu z burzy",
+              "Vodič: " + meno + " (os. č. " + rid + ")",
+              "Dátum: " + (dk.length === 3 ? parseInt(dk[2], 10) + ". " + parseInt(dk[1], 10) + ". " + dk[0] : (sluzba.datum || "")),
+              "Služba: " + (sluzba.nazov || sluzba.line) + (sluzba.podnazov ? " (" + sluzba.podnazov + ")" : ""),
+              sluzba.cas ? "Čas: " + sluzba.cas : "",
+              sluzba.od || sluzba.kam ? "Trasa: " + (sluzba.od || "") + " – " + (sluzba.kam || "") : "",
+            ].filter(Boolean);
+            if (window.DpbZmenaStavu && window.DpbZmenaStavu.ukaz) window.DpbZmenaStavu.ukaz(riadky.join("\n"), "Žiadosť o službu z burzy");
+          } catch (e) {}
+
           simulujSchvalenie(rez.id);
         }
 

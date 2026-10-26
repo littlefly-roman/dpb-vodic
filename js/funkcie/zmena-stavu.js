@@ -166,8 +166,27 @@
     var x = (window.DPBData ? DPBData.getDrivers() : []).filter(function (q) { return String(q.rid) === String(r); })[0];
     return x ? x.meno : "";
   }
+  // Náhľad hlásenia: kým nie je server, hlásenie sa najprv zobrazí (dá sa upraviť), až potom skopíruje/zdieľa.
   function odosli(text, nad) {
     nad = nad || "Žiadosť o zmenu stavu";
+    otvor({
+      titul: "Hlásenie – náhľad",
+      podtitul: nad + " · zatiaľ sa nikam neodosiela, text môžeš upraviť",
+      telo: function (t) {
+        var ta = el("textarea", VSTUP_CSS + ";resize:none;font-size:15px;line-height:1.45;min-height:200px");
+        ta.value = text;
+        t.appendChild(ta);
+        setTimeout(function () { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight + 4, window.innerHeight * 0.5) + "px"; }, 0);
+        odosli._ta = ta;
+      },
+      tlacidla: [
+        { text: "Skopírovať / zdieľať", primarny: true, klik: function () { poslatText(odosli._ta.value, nad); } },
+        { text: "Zavrieť", klik: zavriVsetko },
+      ],
+    });
+    return Promise.resolve();
+  }
+  function poslatText(text, nad) {
     if (navigator.share) return navigator.share({ title: nad, text: text }).catch(function () {});
     if (navigator.clipboard && navigator.clipboard.writeText)
       return navigator.clipboard.writeText(text).then(function () { toast("Hlásenie je skopírované, vlož ho do správy", 4000); }, function () { toast("Hlásenie sa nepodarilo skopírovať", 4000); });
@@ -584,7 +603,7 @@
   }
 
   window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko };
-  window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText };
+  window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText, ukaz: odosli };
   window.DpbZiadostSluzby = { otvor: ziadostSluzby };
   window.DpbReklamacia = { otvor: reklamacia };
   window.DpbNahlasit = { otvor: nahlasit };
