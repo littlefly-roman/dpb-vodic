@@ -85,6 +85,16 @@
           return "autobus";
         }
 
+        // Časy „od – do“ zarovnané podľa pomlčky: začiatok doprava, koniec doľava (riadky pod sebou)
+        function zarovnajCas(el, txt) {
+          var p = String(txt || "").split(/\s*[–-]\s*/);
+          if (p.length !== 2) { el.textContent = txt; return; }
+          var a = document.createElement("span"); a.className = "cas-od"; a.textContent = p[0];
+          var m = document.createElement("span"); m.className = "cas-pom"; m.textContent = "–";
+          var b = document.createElement("span"); b.className = "cas-do"; b.textContent = p[1];
+          el.textContent = ""; el.appendChild(a); el.appendChild(m); el.appendChild(b);
+        }
+
         function buildSegList(segs) {
           const wrap = document.createElement("div");
           wrap.className = "seg-section";
@@ -107,7 +117,7 @@
             });
             const c = document.createElement("span");
             c.className = "seg-cas";
-            c.textContent = s.cas;
+            zarovnajCas(c, s.cas);
             row.appendChild(k);
             row.appendChild(c);
             if (s.voz) {
@@ -148,8 +158,7 @@
 
             const sc = document.createElement("span");
             sc.className = "str-cas";
-            sc.textContent =
-              DPBData.fmt(k.prebera) + " – " + DPBData.fmt(k.odovzdava);
+            zarovnajCas(sc, DPBData.fmt(k.prebera) + " – " + DPBData.fmt(k.odovzdava));
 
             const sv = document.createElement("span");
             sv.className = "str-chevron";
@@ -800,7 +809,7 @@
                 row.className = "card-prs-row";
                 var cas = document.createElement("span");
                 cas.className = "prs-cas";
-                cas.textContent = p.prebera + "–" + p.odovzdava;
+                zarovnajCas(cas, p.prebera + "–" + p.odovzdava);
                 row.appendChild(cas);
                 var meno = document.createElement("span");
                 meno.className = "prs-meno";
