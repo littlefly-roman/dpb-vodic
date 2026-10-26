@@ -264,7 +264,7 @@
       var vod = vodicKurzu(dateKey, v.kurz, v.cas);
       return {
         cas: hms(v.cas), sec: v.cas,
-        kde: v.vz ? "v zastávke " + nazovStanice(d.stanice, v.vz) : "medzi " + nazovStanice(d.stanice, v.x) + " a " + nazovStanice(d.stanice, v.y),
+        kde: v.vz ? nazovStanice(d.stanice, v.vz) : nazovStanice(d.stanice, v.x) + " – " + nazovStanice(d.stanice, v.y),
         kurz: v.kurz, meno: vod ? vod.meno : "", vozidlo: vod ? vod.voz : "",
       };
     });

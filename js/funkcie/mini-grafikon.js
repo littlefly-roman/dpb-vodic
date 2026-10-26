@@ -13,9 +13,9 @@
     w.appendChild(pad);
     var rows = items.map(function (z) {
       var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + H + "px;box-sizing:border-box;border-radius:12px;scroll-snap-align:center;will-change:transform,opacity");
-      r.appendChild(el("div", "min-width:50px;font-variant-numeric:tabular-nums;font-size:15px", z.cas));
+      r.appendChild(el("div", "min-width:58px;font-variant-numeric:tabular-nums;font-size:18px", z.cas));
       var t = el("div", "flex:1;min-width:0");
-      t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
+      t.appendChild(el("div", "font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
       if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
       r.appendChild(t);
       w.appendChild(r);
@@ -112,7 +112,7 @@
         if (idx < 0) idx = data.length - 1;
       }
       var kk = koleso(data.map(function (x) {
-        return { cas: x.cas, nazov: x.kde, pod: "kurz " + x.kurz + (x.meno ? " · " + x.meno : "") + (x.vozidlo ? " · voz. " + x.vozidlo : "") };
+        return { cas: x.cas, nazov: x.kde, pod: [x.kurz, x.meno, x.vozidlo].filter(Boolean).join("\u2003") };
       }), idx, stavS);
       box.appendChild(kk.el);
       kk.nastav(false);
