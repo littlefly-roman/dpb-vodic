@@ -439,7 +439,7 @@
               if (nastupPo != null && nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
               else if (koncDo != null && koncDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
             }
-            var text = (vyp.length ? "Predvyplnené podľa odpočinku: " + vyp.join(", ") + ". " : "") + poznamka;
+            var text = (vyp.length ? "Predvyplnené podľa odpočinku: " + vyp.join(", ") + " (služba najviac 12 h). " : "") + poznamka;
             if (text) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", text), ch.box.children[1]);
           } catch (e) {}
         }
