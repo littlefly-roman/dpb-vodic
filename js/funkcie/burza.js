@@ -76,17 +76,7 @@
         function kontrolaOdpocinku(rid, s) {
           const O = window.DpbOdpocinok;
           if (!O) return { ok: true, skrateny: null };
-          const prace = [];
-          const ms = (window.RAW && window.RAW.models && window.RAW.models[rid]) || [];
-          const PRACA = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"];
-          ms.forEach((den) => {
-            (den.karty || []).forEach((k) => {
-              if (PRACA.indexOf(k.vzor) < 0) return;
-              const od = k.od_min != null ? k.od_min : null, do_ = k.do_min != null ? k.do_min : null;
-              if (od == null || do_ == null || do_ <= od) return;
-              prace.push({ od: O.abs(den.datum, od), do: O.abs(den.datum, do_) });
-            });
-          });
+          const prace = O.praceVodica(window.RAW && window.RAW.models, rid);
           state.rezervacie.forEach((r) => {
             if (r.stav !== "odoslana" && r.stav !== "riesenie" && r.stav !== "schvalena") return;
             const q = state.sluzby.find((x) => x.id === r.sluzbaId);

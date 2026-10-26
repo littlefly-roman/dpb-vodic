@@ -84,12 +84,21 @@
 
   // Práca vodiča z modelov (RAW.models[rid]) v absolútnych minútach
   var PRACA = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"];
+  // Čas karty v minútach dňa: z od_min/do_min, inak z textu od/do (STRIEDAČ ich nemá); cez polnoc do += 1440
+  function casKarty(k) {
+    function hm(t) { var m = /^(\d{1,2}):(\d{2})/.exec(String(t == null ? "" : t)); return m ? (+m[1]) * 60 + (+m[2]) : null; }
+    var a = k.od_min != null ? k.od_min : hm(k.od), b = k.do_min != null ? k.do_min : hm(k.do);
+    if (a == null || b == null) return null;
+    if (b <= a && k.do_min == null) b += 1440;
+    return b > a ? { od: a, do: b } : null;
+  }
   function praceVodica(models, rid) {
     var out = [];
     ((models && models[rid]) || []).forEach(function (den) {
       (den.karty || []).forEach(function (k) {
-        if (PRACA.indexOf(k.vzor) < 0 || k.od_min == null || k.do_min == null || k.do_min <= k.od_min) return;
-        out.push({ od: abs(den.datum, k.od_min), do: abs(den.datum, k.do_min) });
+        if (PRACA.indexOf(k.vzor) < 0) return;
+        var c = casKarty(k);
+        if (c) out.push({ od: abs(den.datum, c.od), do: abs(den.datum, c.do) });
       });
     });
     return out;
@@ -120,23 +129,16 @@
     if (bmax - amin < 60) { res.nemozne = true; return res; }
     function ok(a, b) { return skontroluj(prace, { od: d0 + a, do: d0 + b }).ok; }
     if (ok(amin, bmax)) { res.plny = true; return res; }
-    var nejake = false;
-    for (var x = amin; x + 60 <= bmax; x += 1) if (ok(x, x + 60)) { nejake = true; break; }
-    if (!nejake) { res.nemozne = true; return res; }
-    // poobedná: najmenšie a také, že [a,bmax] je ok (monotónne)
-    if (ok(bmax - 60, bmax)) {
-      var lo = amin, hi = bmax - 60;
-      while (lo < hi) { var m = Math.floor((lo + hi) / 2); if (ok(m, bmax)) hi = m; else lo = m + 1; }
-      res.poobedna = { od: lo };
-    }
-    // ranná: najväčšie b také, že [amin,b] je ok
-    if (ok(amin, amin + 60)) {
-      var l2 = amin + 60, h2 = bmax;
-      while (l2 < h2) { var m2 = Math.ceil((l2 + h2) / 2); if (ok(amin, m2)) l2 = m2; else h2 = m2 - 1; }
-      res.ranna = { do: l2 };
+    // podmienky nie sú vždy monotónne (týždenný odpočinok sa môže posunúť s koncom), preto sa skúša každá minúta
+    for (var b1 = bmax; b1 >= amin + 60; b1--) if (ok(amin, b1)) { res.ranna = { do: b1 }; break; }
+    for (var a1 = amin; a1 + 60 <= bmax; a1++) if (ok(a1, bmax)) { res.poobedna = { od: a1 }; break; }
+    if (!res.ranna && !res.poobedna) {
+      for (var a2 = amin; a2 + 60 <= bmax && !res.ina; a2 += 15)
+        for (var b2 = a2 + 60; b2 <= bmax; b2 += 15) if (ok(a2, b2)) { res.ina = { od: a2, do: b2 }; break; }
+      if (!res.ina) res.nemozne = true;
     }
     return res;
   }
 
-  root.DpbOdpocinok = { okno2: okno2, praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
+  root.DpbOdpocinok = { casKarty: casKarty, okno2: okno2, praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
 })(typeof window !== "undefined" ? window : globalThis);
