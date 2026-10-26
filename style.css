@@ -1826,6 +1826,23 @@
         transform: scale(1.03);
       }
 
+      /* Odkaz do Burzy pod kartou dňa */
+      .burza-link-row {
+        display: block;
+        width: 100%;
+        margin: 10px 0 0;
+        padding: 12px 16px;
+        font: inherit;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--red);
+        background: var(--card-bg, #fff);
+        border: 1.5px solid var(--red);
+        border-radius: 14px;
+        cursor: pointer;
+        text-align: center;
+      }
+
       /* Filter hlavička — zobrazenie pre konkrétny deň */
       .burza-filter-hdr {
         display: flex;
