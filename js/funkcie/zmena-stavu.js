@@ -321,7 +321,7 @@
   function skupina(nadpis, farba, nechcem) {
     var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px");
     box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:6px;color:" + farba, nadpis));
-    var vyber = {};
+    var vyber = {}, cipy = {};
     RIADKY.forEach(function (r) {
       vyber[r.k] = {};
       if (nechcem) return;                 // v „Nechcem“ sú len časy, linka a striedač
@@ -329,6 +329,7 @@
       r.m.forEach(function (m) {
         var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", m);
         c.type = "button";
+        cipy[r.k + "|" + m] = c;
         c.addEventListener("click", function () {
           vyber[r.k][m] = !vyber[r.k][m];
           c.style.background = vyber[r.k][m] ? "var(--red)" : "var(--surface-2)";
@@ -365,6 +366,12 @@
     box.appendChild(rl);
     return {
       box: box,
+      // predvyplnenie: cas(0|1, "HH:MM"), zaskrtni(riadok, volba)
+      cas: function (i, v) { st.casy[i][0].value = v; },
+      zaskrtni: function (rk, m) {
+        var c = cipy[rk + "|" + m]; if (!c) return;
+        vyber[rk][m] = true; c.style.background = "var(--red)"; c.style.color = "#fff";
+      },
       zber: function () {
         var o = { linka: lin.value.trim(), casy: [], striedac: striedac };
         RIADKY.forEach(function (r) {
@@ -409,6 +416,19 @@
       podtitul: pekne(ctx.date) + (povodna ? " · teraz: " + povodna : ""),
       telo: function (t) {
         var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--red)", true);
+        // Voľný deň: z odpočinkov (min. 6 h) predvyplň „Nástup po“, „Ukončenie do“ a Rannú/Poobednú
+        if (!povodna && window.DpbOdpocinok && window.RAW && window.appState) {
+          try {
+            var ok = window.DpbOdpocinok.okno(window.DpbOdpocinok.praceVodica(window.RAW.models, window.appState.currentDriver), ctx.date);
+            var hm = function (m) { return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
+            var vyp = [];
+            if (ok.nastupPo != null && ok.nastupPo > 0 && ok.nastupPo < 1440) { ch.cas(0, hm(ok.nastupPo)); vyp.push("nástup po " + hm(ok.nastupPo).replace(/^0/, "")); }
+            if (ok.ukoncenieDo != null && ok.ukoncenieDo > 0 && ok.ukoncenieDo < 1440) { ch.cas(1, hm(ok.ukoncenieDo)); vyp.push("ukončenie do " + hm(ok.ukoncenieDo).replace(/^0/, "")); }
+            if (ok.nastupPo != null && ok.nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
+            else if (ok.ukoncenieDo != null && ok.ukoncenieDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
+            if (vyp.length) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Predvyplnené podľa odpočinku: " + vyp.join(", ")), ch.box.children[1]);
+          } catch (e) {}
+        }
         t.appendChild(ch.box); t.appendChild(nch.box);
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
