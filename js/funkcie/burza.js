@@ -737,7 +737,7 @@
               "dec",
             ];
             hdr.innerHTML = `
-      <button class="burza-filter-back" id="burzaFilterBack">← Späť</button>
+      <button class="burza-filter-back" id="burzaFilterBack">← Späť na kartu dňa</button>
       <span>Služby: <strong>${DNI2[d.getDay()]} ${d.getDate()}. ${MES2[d.getMonth()]}</strong></span>
       <button class="burza-filter-clear" id="burzaFilterClear">Všetky</button>
     `;

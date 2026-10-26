@@ -370,93 +370,12 @@
     `;
             pridajMenuVolno(volno, selKey);
 
+            container.appendChild(volno);
             if (maVBurze) {
-              // Wrapper: flex column — volno hore staticky, burza sekcia scrolluje samostatne
-              const pageWrap = document.createElement("div");
-              pageWrap.style.cssText = "display:flex;flex-direction:column;height:100%";
-              pageWrap.appendChild(volno);
-
-              // Burza sekcia — skrytá, toggleuje sa
-              const hdr = document.createElement("div");
-              hdr.style.cssText = "font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase;padding:8px 2px 6px;flex-shrink:0";
-              hdr.textContent = "Voľné služby v burze";
-
-              const burzaSection = document.createElement("div");
-              burzaSection.className = "volno-inline-burza";
-              burzaSection.style.cssText = "display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;margin-top:0";
-
-              const cardsWrap = document.createElement("div");
-              cardsWrap.style.cssText = "display:flex;flex-direction:column;gap:6px;padding-bottom:8px";
-
-              burzaSluzby.forEach(function(s) {
-                const rezervovana = typeof Burza !== "undefined" && Burza.getStav(s.id);
-                const row = document.createElement("div");
-                row.className = "burza-row service-card" + (rezervovana ? " rezervovana" : "");
-                row.dataset.id = s.id;
-                row.innerHTML = `
-                  <div class="burza-row-main">
-                    <div class="burza-row-left">
-                      <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
-                      <span class="burza-cas"><svg class="burza-ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${s.cas}</span>
-                    </div>
-                    <div class="burza-row-right burza-row-actions">
-                      ${rezervovana
-                        ? `<span class="burza-stav-badge">v riešení</span>`
-                        : `<button class="burza-btn-rez">Rezervovať</button>`}
-                    </div>
-                  </div>
-                  <div class="burza-row-detail hidden" id="vi-detail-${s.id}">
-                    ${[s.od, s.kam].filter(Boolean).length ? `<div class="burza-trasa"><svg class="burza-ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="burza-trasa-val">${[s.od, s.kam].filter(Boolean).join(" \u2013 ")}</span></div>` : ""}
-                    <div class="burza-detail-btns">
-                      ${!rezervovana ? `<button class="burza-btn-rez-detail">Rezervovať</button>` : ""}
-                    </div>
-                  </div>`;
-
-                row.querySelector(".burza-row-main").addEventListener("click", (ev) => {
-                  if (ev.target.closest(".burza-btn-rez")) return;
-                  const det = row.querySelector(".burza-row-detail");
-                  const isOpen = !det.classList.contains("hidden");
-                  cardsWrap.querySelectorAll(".burza-row-detail").forEach(d => d.classList.add("hidden"));
-                  cardsWrap.querySelectorAll(".burza-row").forEach(r => r.classList.remove("expanded"));
-                  if (!isOpen) {
-                    det.classList.remove("hidden");
-                    row.classList.add("expanded");
-                    // Scroll do view
-                    setTimeout(() => row.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
-                  }
-                });
-
-                const doRez = () => { if (typeof Burza !== "undefined") Burza.rezervuj(s.id); };
-                const btnRez = row.querySelector(".burza-btn-rez");
-                if (btnRez) btnRez.addEventListener("click", (ev) => { ev.stopPropagation(); doRez(); });
-                const btnRezDet = row.querySelector(".burza-btn-rez-detail");
-                if (btnRezDet) btnRezDet.addEventListener("click", (ev) => { ev.stopPropagation(); doRez(); });
-
-                cardsWrap.appendChild(row);
-              });
-
-              burzaSection.appendChild(cardsWrap);
-
-              // Pevný nadpis + scrollovateľná sekcia zabalené do jedného wrapperu
-              const burzaOuter = document.createElement("div");
-              burzaOuter.style.cssText = "display:none;flex-direction:column;flex:1;overflow:hidden;margin-top:8px";
-              burzaOuter.appendChild(hdr);
-              burzaOuter.appendChild(burzaSection);
-              pageWrap.appendChild(burzaOuter);
-
-              // Toggle
               volno.querySelector(".volno-burza-badge").addEventListener("click", (e) => {
                 e.stopPropagation();
-                const isOpen = burzaOuter.style.display !== "none";
-                burzaOuter.style.display = isOpen ? "none" : "flex";
-                burzaSection.style.display = isOpen ? "none" : "flex";
+                otvorBurzuPreDen(selKey);
               });
-
-              // Prepíš container na flex column aby volno ostalo hore
-              container.style.cssText = "display:flex;flex-direction:column;height:100%";
-              container.appendChild(pageWrap);
-            } else {
-              container.appendChild(volno);
             }
             return;
           }
@@ -613,6 +532,17 @@
           });
 
           container.appendChild(fragment);
+          (function () {
+            if (!(appState.selectedDate > new Date())) return;
+            var bs = getBurzaSluzbyPreDen(key);
+            if (!bs.length) return;
+            var r = document.createElement("button");
+            r.type = "button";
+            r.className = "burza-link-row";
+            r.textContent = "Z burzy sa dá pridať: " + bs.length + " " + (bs.length === 1 ? "služba" : bs.length < 5 ? "služby" : "služieb") + "  ›";
+            r.addEventListener("click", function () { otvorBurzuPreDen(key); });
+            container.appendChild(r);
+          })();
         }
 
         /* ==========================
@@ -1393,6 +1323,14 @@
         /* ==========================
    BOTTOM NAV
 ========================== */
+
+        function otvorBurzuPreDen(dateKey) {
+          setActiveNav("burza");
+          servicesView.classList.add("hidden");
+          employerView.classList.add("hidden");
+          document.getElementById("burzaView").classList.remove("hidden");
+          Burza.init(dateKey);
+        }
 
         function setActiveNav(id) {
           var pv = document.getElementById("profilView");
