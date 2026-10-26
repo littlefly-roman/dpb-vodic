@@ -47,6 +47,27 @@
     var najmenej = Math.min(restPred, restPo);
     if (najmenej < DEN_MIN) return { ok: false, dovod: "odpočinok kratší ako 6 h", skrateny: null };
     if (najmenej < DEN_OK) res.skrateny = { pred: restPred, po: restPo, min: najmenej };
+    // Limity skrátenia (§ 28 a § 5 ods. 3): skrátený odpočinok (6–11 h) najviac 3× v týždni a nie dva dni po sebe.
+    // Skrátený odpočinok patrí do dňa nástupu, ktorý po ňom nasleduje. Náhrada skrátenia do konca nasledujúceho týždňa sa zatiaľ nekontroluje.
+    if (res.skrateny) {
+      var S = spoj(P.concat([{ od: k.od, do: k.do }])), dni = [];
+      for (var q = 0; q + 1 < S.length; q++) {
+        var med = S[q + 1].od - S[q].do;
+        if (med >= DEN_MIN && med < DEN_OK) dni.push(Math.floor(S[q + 1].od / 1440));
+      }
+      var mojeD = [];
+      if (restPred < DEN_OK) mojeD.push(Math.floor(k.od / 1440));
+      if (restPo < DEN_OK) mojeD.push(Math.floor(po / 1440));
+      for (var m = 0; m < mojeD.length; m++) {
+        var dm = mojeD[m];
+        var pocet = function (d) { return dni.filter(function (x) { return x === d; }).length; };
+        if (pocet(dm - 1) > 0 || pocet(dm + 1) > 0) return { ok: false, dovod: "skrátený odpočinok dva dni po sebe", skrateny: null };
+        for (var z = dm - 6; z <= dm; z++) {
+          var c = dni.filter(function (x) { return x >= z && x <= z + 6; }).length;
+          if (c > 3) return { ok: false, dovod: "viac ako 3 skrátené odpočinky v týždni", skrateny: null };
+        }
+      }
+    }
     // týždenný odpočinok: 7 dní PRED nástupom (okno končí nástupom) aj 7 dní PO konci služby (okno začína koncom)
     // musí obsahovať aspoň jeden nepretržitý odpočinok >= 35 h (presne na minúty, odpočinok orezaný oknom)
     var B = spoj(P.concat([{ od: k.od, do: k.do }]));
