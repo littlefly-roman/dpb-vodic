@@ -237,9 +237,16 @@
 
         const IK_POLOHA = '<svg class="burza-ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
 
+        // Text trasy: rovnaký začiatok a koniec sa píše len raz, „striedač“ len raz
+        function trasaText(od, kam) {
+          if (od && kam && od === kam) return od;
+          const pre = /^striedač\s+/i;
+          if (od && kam && pre.test(od) && pre.test(kam)) kam = kam.replace(pre, "");
+          return [od, kam].filter(Boolean).join(" \u2013 ");
+        }
         function trasaHtml(od, kam) {
 
-          const t = [od, kam].filter(Boolean).join(" \u2013 ");
+          const t = trasaText(od, kam);
 
           return t ? `<div class="burza-trasa">${IK_POLOHA}<span class="burza-trasa-val">${t}</span></div>` : "";
 
@@ -482,7 +489,7 @@
               "Dátum: " + (dk.length === 3 ? parseInt(dk[2], 10) + ". " + parseInt(dk[1], 10) + ". " + dk[0] : (sluzba.datum || "")),
               "Služba: " + (sluzba.nazov || sluzba.line) + (sluzba.podnazov ? " (" + sluzba.podnazov + ")" : ""),
               sluzba.cas ? "Čas: " + sluzba.cas : "",
-              sluzba.od || sluzba.kam ? "Trasa: " + (sluzba.od || "") + " – " + (sluzba.kam || "") : "",
+              sluzba.od || sluzba.kam ? "Trasa: " + trasaText(sluzba.od, sluzba.kam) : "",
             ].filter(Boolean);
             if (window.DpbZmenaStavu && window.DpbZmenaStavu.ukaz) window.DpbZmenaStavu.ukaz(riadky.join("\n"), "Žiadosť o službu z burzy");
           } catch (e) {}
