@@ -82,5 +82,31 @@
     return res;
   }
 
-  root.DpbOdpocinok = { skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
+  // Práca vodiča z modelov (RAW.models[rid]) v absolútnych minútach
+  var PRACA = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"];
+  function praceVodica(models, rid) {
+    var out = [];
+    ((models && models[rid]) || []).forEach(function (den) {
+      (den.karty || []).forEach(function (k) {
+        if (PRACA.indexOf(k.vzor) < 0 || k.od_min == null || k.do_min == null || k.do_min <= k.od_min) return;
+        out.push({ od: abs(den.datum, k.od_min), do: abs(den.datum, k.do_min) });
+      });
+    });
+    return out;
+  }
+  // Čo dovoľuje odpočinok (min. 6 h) v DEŇ bez práce: {nastupPo, ukoncenieDo} v minútach dňa, alebo null pri neznámom
+  // (nastupPo = koniec poslednej práce pred dňom + 6 h; ukoncenieDo = nástup prvej práce po dni − 6 h)
+  function okno(prace, dateKey) {
+    var d0 = abs(dateKey, 0), d1 = d0 + 1440, pred = null, po = null;
+    prace.forEach(function (x) {
+      if (x.od < d0 && (pred === null || x.do > pred)) pred = x.do;
+      if (x.od >= d1 && (po === null || x.od < po)) po = x.od;
+    });
+    var r = { nastupPo: null, ukoncenieDo: null };
+    if (pred !== null && pred + DEN_MIN > d0) r.nastupPo = pred + DEN_MIN - d0;
+    if (po !== null && po - DEN_MIN < d1) r.ukoncenieDo = po - DEN_MIN - d0;
+    return r;
+  }
+
+  root.DpbOdpocinok = { praceVodica: praceVodica, okno: okno, skontroluj: skontroluj, abs: abs, DEN_OK: DEN_OK, DEN_MIN: DEN_MIN, TYD: TYD, OKNO: OKNO };
 })(typeof window !== "undefined" ? window : globalThis);
