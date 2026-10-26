@@ -427,6 +427,7 @@
             var koncDo = ok.ukoncenieDo != null && ok.ukoncenieDo > 0 && ok.ukoncenieDo < 1440 ? ok.ukoncenieDo : null;
             if (ok.nemozne) poznamka = "V tento deň sa služba nedá: nebol by splnený odpočinok (denný alebo týždenných 35 h).";
             else if (ok.plny) { /* len denný odpočinok, nižšie */ }
+            else if (ok.ina) { poznamka = "Kvôli odpočinku (aj týždenných 35 h) je možná len kratšia služba, napr. od " + hh(ok.ina.od) + " do " + hh(ok.ina.do) + "."; nastupPo = null; koncDo = null; }
             else if (ok.poobedna && ok.ranna) {
               poznamka = "Kvôli týždennému odpočinku 35 h: ranná najneskôr do " + hh(ok.ranna.do) + ", alebo poobedná najskôr od " + hh(ok.poobedna.od) + ".";
               nastupPo = null; koncDo = null;
