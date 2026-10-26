@@ -400,7 +400,6 @@
           <div class="burza-row-left">
             <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
             <span class="burza-cas">${IK_CAS}${s.cas}</span>
-            ${s.delena ? `<span class="burza-delena">Delená služba (v ten deň máš aj inú časť)</span>` : ""}
             ${s.upozornenie ? `<span class="burza-upoz">${s.upozornenie}</span>` : ""}
           </div>
           <div class="burza-row-right burza-row-actions">
