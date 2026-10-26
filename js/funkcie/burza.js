@@ -100,7 +100,7 @@
             const b = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? "po " + f(r.skrateny.po) : "";
             skr = "Skrátený odpočinok: " + [a, b].filter(Boolean).join(", ");
           }
-          return { ok: r.ok, skrateny: skr };
+          return { ok: r.ok, skrateny: skr, delena: r.delena };
         }
 
         function dostupna(s) {
@@ -111,10 +111,12 @@
           if (rid && typeof DPBData !== "undefined") {
             const tr = DPBData.getTrakciaKod ? DPBData.getTrakciaKod(rid) : null;
             if (tr && s.trakcia && tr !== s.trakcia) return false;
-            if (DPBData.getServicesForDate(rid, s.dateKey).length) return false;
+            // neprítomnosť (dovolenka, PN…) v ten deň = nie; iná služba v ten deň je v poriadku (delená zmena), ak sa neprekrýva
+            if (DPBData.getServicesForDate(rid, s.dateKey).some((x) => x._vzor === "NEPRÍTOMNOSŤ")) return false;
             // Odpočinok (zákon 462/2007): denný 11 h (skrátený 6–11 h sa ukáže s upozornením) a týždenný 35 h
             const o = kontrolaOdpocinku(rid, s);
             s.upozornenie = o.skrateny || null;
+            s.delena = !!o.delena;
             if (!o.ok) return false;
           }
           return true;
@@ -398,6 +400,7 @@
           <div class="burza-row-left">
             <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
             <span class="burza-cas">${IK_CAS}${s.cas}</span>
+            ${s.delena ? `<span class="burza-delena">Delená služba (v ten deň máš aj inú časť)</span>` : ""}
             ${s.upozornenie ? `<span class="burza-upoz">${s.upozornenie}</span>` : ""}
           </div>
           <div class="burza-row-right burza-row-actions">

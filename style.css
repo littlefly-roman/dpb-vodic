@@ -3302,3 +3302,4 @@ body {
 }
 
 .burza-upoz { display: block; font-size: 15px; color: var(--orange, #c26a00); margin-top: 4px; font-weight: 600; }
+.burza-delena { display: block; font-size: 15px; color: var(--text-2); margin-top: 4px; }
