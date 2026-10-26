@@ -58,6 +58,8 @@
               podnazov: x.podnazov || "",
               pohotovost: !!x.pohotovost,
               cas: x.cas,
+              odMin: x.odMin,
+              doMin: x.doMin,
               startH: x.odMin / 60,
               startMs: x.startMs,
               od: x.stanicaOd || "",
@@ -70,6 +72,37 @@
           state.sluzby.sort((a, b) => a.startMs - b.startMs);
         }
 
+        // Práca vodiča (všetky karty s časom okrem neprítomnosti) + jeho vlastné aktívne rezervácie z burzy
+        function kontrolaOdpocinku(rid, s) {
+          const O = window.DpbOdpocinok;
+          if (!O) return { ok: true, skrateny: null };
+          const prace = [];
+          const ms = (window.RAW && window.RAW.models && window.RAW.models[rid]) || [];
+          const PRACA = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"];
+          ms.forEach((den) => {
+            (den.karty || []).forEach((k) => {
+              if (PRACA.indexOf(k.vzor) < 0) return;
+              const od = k.od_min != null ? k.od_min : null, do_ = k.do_min != null ? k.do_min : null;
+              if (od == null || do_ == null || do_ <= od) return;
+              prace.push({ od: O.abs(den.datum, od), do: O.abs(den.datum, do_) });
+            });
+          });
+          state.rezervacie.forEach((r) => {
+            if (r.stav !== "odoslana" && r.stav !== "riesenie" && r.stav !== "schvalena") return;
+            const q = state.sluzby.find((x) => x.id === r.sluzbaId);
+            if (q && q.id !== s.id && q.doMin > q.odMin) prace.push({ od: O.abs(q.dateKey, q.odMin), do: O.abs(q.dateKey, q.doMin) });
+          });
+          const r = O.skontroluj(prace, { od: O.abs(s.dateKey, s.odMin), do: O.abs(s.dateKey, s.doMin) });
+          let skr = null;
+          if (r.skrateny) {
+            const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + " h " + String(Math.round(m % 60)).padStart(2, "0") + " min");
+            const a = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? "pred " + f(r.skrateny.pred) : "";
+            const b = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? "po " + f(r.skrateny.po) : "";
+            skr = "Skrátený odpočinok: " + [a, b].filter(Boolean).join(", ");
+          }
+          return { ok: r.ok, skrateny: skr };
+        }
+
         function dostupna(s) {
           if (s.stav === "obsadena") return false;
           if (s.stav === "rezervovana") return true; // vlastná rezervácia ostáva vidieť
@@ -79,6 +112,10 @@
             const tr = DPBData.getTrakciaKod ? DPBData.getTrakciaKod(rid) : null;
             if (tr && s.trakcia && tr !== s.trakcia) return false;
             if (DPBData.getServicesForDate(rid, s.dateKey).length) return false;
+            // Odpočinok (zákon 462/2007): denný 11 h (skrátený 6–11 h sa ukáže s upozornením) a týždenný 35 h
+            const o = kontrolaOdpocinku(rid, s);
+            s.upozornenie = o.skrateny || null;
+            if (!o.ok) return false;
           }
           return true;
         }
@@ -361,6 +398,7 @@
           <div class="burza-row-left">
             <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
             <span class="burza-cas">${IK_CAS}${s.cas}</span>
+            ${s.upozornenie ? `<span class="burza-upoz">${s.upozornenie}</span>` : ""}
           </div>
           <div class="burza-row-right burza-row-actions">
             ${
@@ -374,6 +412,7 @@
         </div>
         <div class="burza-row-detail hidden" id="detail-${s.id}">
           ${trasaHtml(s.od, s.kam)}
+          ${s.upozornenie ? `<div class="burza-upoz">${s.upozornenie}</div>` : ""}
           <div class="burza-detail-btns">
             <button class="burza-btn-close">Zavrieť</button>
             ${mozeRezervovat ? `<button class="burza-btn-rez-detail">Rezervovať</button>` : ""}
