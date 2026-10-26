@@ -3287,3 +3287,9 @@ body {
 .cas-od { text-align: right; }
 .cas-do { text-align: left; }
 .cas-pom { display: inline-block; padding: 0 2px; }
+
+/* Úzke displeje (≤350 px): dispečing sa zmestí na jeden riadok */
+@media (max-width: 350px) {
+  .dispecing-pas .vyp-hl-nazov { font-size: 13px; letter-spacing: 0; }
+  .dispecing-pas .vyp-hl-cislo { font-size: 15px; }
+}
