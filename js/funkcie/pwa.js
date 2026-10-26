@@ -9,7 +9,7 @@
     d.id = "pwaLista";
     d.setAttribute("role", "status");
     d.style.cssText =
-      "position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:9999;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--red);color:#fff;font-size:14px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3)";
+      "position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:9999;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--red);color:#fff;font-size:15px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3)";
     var t = document.createElement("span");
     t.style.flex = "1";
     t.textContent = text;

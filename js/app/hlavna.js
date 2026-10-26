@@ -231,7 +231,7 @@
           if (!contacts.length)
             content.insertAdjacentHTML(
               "beforeend",
-              '<div style="color:var(--text-3);font-size:14px;padding:12px 2px">Kontakty sa pripravujú.</div>',
+              '<div style="color:var(--text-3);font-size:15px;padding:12px 2px">Kontakty sa pripravujú.</div>',
             );
 
           contacts.forEach((p) => {
@@ -378,7 +378,7 @@
 
               // Burza sekcia — skrytá, toggleuje sa
               const hdr = document.createElement("div");
-              hdr.style.cssText = "font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase;padding:8px 2px 6px;flex-shrink:0";
+              hdr.style.cssText = "font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase;padding:8px 2px 6px;flex-shrink:0";
               hdr.textContent = "Voľné služby v burze";
 
               const burzaSection = document.createElement("div");
