@@ -257,7 +257,7 @@
                 String(kedy.getMinutes()).padStart(2, "0") +
                 ")";
               b.style.cssText =
-                "margin-top:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;max-width:320px";
+                "margin-top:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:15px;font-weight:600;cursor:pointer;max-width:320px";
               // Zostaň prihlásený: pri každom otvorení appky pokračuj automaticky,
               // kým sa vodič sám neodhlási v Profile (max. 90 dní nečinnosti).
               try {

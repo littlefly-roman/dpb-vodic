@@ -67,7 +67,7 @@
     }
     hl.appendChild(el("div", "font-size:17px;font-weight:600;flex:1", o.titul || ""));
     s.appendChild(hl);
-    if (o.podtitul) s.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:12px", o.podtitul));
+    if (o.podtitul) s.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:12px", o.podtitul));
     else s.appendChild(el("div", "height:10px"));
     var telo = el("div", "");
     s.appendChild(telo);
@@ -108,7 +108,7 @@
       hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:15px", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
       telo.appendChild(hl);
       var wd = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px");
-      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
+      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:15px;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
       telo.appendChild(wd);
       var g = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px");
       var zac = (new Date(rok, mes, 1).getDay() + 6) % 7, dni = new Date(rok, mes + 1, 0).getDate();
@@ -204,10 +204,10 @@
       titul: v.nazov,
       podtitul: "Vyber dátumy" + (v.doPovinne ? "" : " (koniec môže ostať prázdny, ak ešte nie je známy)"),
       telo: function (t) {
-        var a = el("div", "font-size:13px;color:var(--text-2);margin-bottom:4px", "Od");
+        var a = el("div", "font-size:15px;color:var(--text-2);margin-bottom:4px", "Od");
         var dod = null;
         var od = datumPole(ctx.date, { titul: "Od", zmena: function (x) { if (dod && dod.get() && dod.get() < x) dod.set(v.doPovinne ? x : ""); } });
-        var b = el("div", "font-size:13px;color:var(--text-2);margin:12px 0 4px", "Do");
+        var b = el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Do");
         dod = datumPole(v.doPovinne ? ctx.date : "", {
           titul: "Do", nepovinne: !v.doPovinne, prazdne: v.doPovinne ? "— nezadané —" : "zatiaľ neznáme",
           min: function () { return od.get(); }, rozsahOd: function () { return od.get(); }, zaklad: function () { return od.get(); },
@@ -215,10 +215,10 @@
         t.appendChild(a); t.appendChild(od.el); t.appendChild(b); t.appendChild(dod.el);
         var pz = null;
         if (v.poznamka) {
-          t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
+          t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
           pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); t.appendChild(pz);
         }
-        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
         t.appendChild(chyba);
         t._zber = function () {
           if (!od.get()) { chyba.textContent = "Zadaj začiatok."; return null; }
@@ -308,7 +308,7 @@
       if (nechcem) return;                 // v „Nechcem“ sú len časy, linka a striedač
       var rad = el("div", "display:flex;align-items:center;gap:6px;margin-bottom:6px");
       r.m.forEach(function (m) {
-        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", m);
+        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", m);
         c.type = "button";
         c.addEventListener("click", function () {
           vyber[r.k][m] = !vyber[r.k][m];
@@ -324,7 +324,7 @@
     var rc = el("div", "display:flex;gap:10px;margin:4px 0 8px");
     function pole(popis) {
       var w = el("div", "flex:1;min-width:0");
-      w.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", popis));
+      w.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", popis));
       var a = el("input", VSTUP_CSS + ";padding:10px 6px"); a.type = "time";
       w.appendChild(a); rc.appendChild(w);
       st.casy.push([a, popis]);
@@ -335,7 +335,7 @@
     var rl = el("div", "display:flex;gap:8px;align-items:center");
     var lin = el("input", VSTUP_CSS + ";flex:1;min-width:0"); lin.type = "text"; lin.placeholder = "Linka (napr. 1 alebo 3, 9)";
     var striedac = false;
-    var sb = el("button", "padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer;flex-shrink:0", "Striedač");
+    var sb = el("button", "padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer;flex-shrink:0", "Striedač");
     sb.type = "button";
     sb.addEventListener("click", function () {
       striedac = !striedac;
@@ -393,7 +393,7 @@
         t.appendChild(ch.box); t.appendChild(nch.box);
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
-        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
         t.appendChild(chyba);
         ziadostSluzby._z = function () {
           var a = ch.zber(), b = nch.zber();
@@ -453,7 +453,7 @@
           hlav.appendChild(cb);
           var tx = el("div", "flex:1;min-width:0");
           tx.appendChild(el("div", "", p.t));
-          if (p.teraz) tx.appendChild(el("div", "font-size:12px;color:var(--text-2)", "v systéme: " + p.teraz));
+          if (p.teraz) tx.appendChild(el("div", "font-size:15px;color:var(--text-2)", "v systéme: " + p.teraz));
           hlav.appendChild(tx);
           w.appendChild(hlav);
           var pole, vstup;
@@ -468,7 +468,7 @@
             vstup.placeholder = p.k === "vozidlo" ? (p.chyba ? "Číslo vozidla, ktoré si šoféroval" : p.viac ? "Ktoré vozidlo je nesprávne a aké je správne" : "Správne vozidlo (číslo)") : p.k === "hradenie" ? "Čo chýba (kurz, vozidlo, čas)" : "Kedy a kde bol zácvik";
           }
           pole = el("div", "display:none;margin-top:8px");
-          pole.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : p.k === "vozidlo" ? (p.chyba ? "Vozidlo" : "Správne vozidlo") : "Doplň"));
+          pole.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : p.k === "vozidlo" ? (p.chyba ? "Vozidlo" : "Správne vozidlo") : "Doplň"));
           pole.appendChild(vstup);
           w.appendChild(pole);
           cb.addEventListener("change", function () { pole.style.display = cb.checked ? "block" : "none"; });
@@ -477,7 +477,7 @@
         });
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
-        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
         t.appendChild(chyba);
         reklamacia._z = function () {
           var r = [];
@@ -523,7 +523,7 @@
       });
     }
     moznosti.forEach(function (m) {
-      var c = el("button", "padding:9px 14px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", m);
+      var c = el("button", "padding:9px 14px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", m);
       c.type = "button";
       c.addEventListener("click", function () {
         if (jedna) { var bol = vyber[m]; vyber = {}; if (!bol) vyber[m] = true; }
@@ -545,18 +545,18 @@
       titul: "Nahlásiť",
       podtitul: pekne(ctx.date) + (sv.line ? " · " + sv.line : ""),
       telo: function (t) {
-        t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
+        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
         var co = chipy(t, ["Porucha vozidla", "Iné"], true, function (v) { vozBox.style.display = v["Porucha vozidla"] && voz.length > 1 ? "block" : "none"; });
         var vozBox = el("div", "display:none;margin:-4px 0 12px");
-        vozBox.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
+        vozBox.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
         var vsel = el("select", VSTUP_CSS);
         voz.forEach(function (x) { var o = el("option", "", x); o.value = x; vsel.appendChild(o); });
         vozBox.appendChild(vsel); t.appendChild(vozBox);
-        t.appendChild(el("div", "font-size:13px;color:var(--text-2);margin-bottom:6px", "Komu hlásiš?"));
+        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:6px", "Komu hlásiš?"));
         var komu = chipy(t, ["Dielňa", "Dispečing", "Výpravňa"], false);
         var tx = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); tx.placeholder = "Popis (čo sa stalo)";
         t.appendChild(tx);
-        var chyba = el("div", "color:var(--red);font-size:13px;margin-top:8px;min-height:16px");
+        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
         t.appendChild(chyba);
         nahlasit._z = function () {
           var c = co(), kk = komu();

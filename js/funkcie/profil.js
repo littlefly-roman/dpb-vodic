@@ -40,7 +40,7 @@
       var a = document.createElement("div");
       a.textContent = k.getDate() + ". " + (k.getMonth() + 1) + ". " + String(k.getHours()).padStart(2, "0") + ":" + String(k.getMinutes()).padStart(2, "0") + " (" + pred(z.cas) + ")";
       var b = document.createElement("div");
-      b.style.cssText = "color:var(--text-3);font-size:12px;word-break:break-all";
+      b.style.cssText = "color:var(--text-3);font-size:15px;word-break:break-all";
       b.textContent = z.nazov;
       i.appendChild(a);
       i.appendChild(b);

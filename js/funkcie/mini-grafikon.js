@@ -16,7 +16,7 @@
       r.appendChild(el("div", "min-width:50px;font-variant-numeric:tabular-nums;font-size:15px", z.cas));
       var t = el("div", "flex:1;min-width:0");
       t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
-      if (z.pod) t.appendChild(el("div", "font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
+      if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
       r.appendChild(t);
       w.appendChild(r);
       return r;
@@ -81,7 +81,7 @@
       titul: "Grafikon " + kurz,
       podtitul: (meno ? meno + " · " : "") + dateKey.split("-").reverse().join("."),
       telo: function (t) {
-        status = el("div", "font-size:13px;color:var(--text-2);margin-bottom:8px", "Načítavam…");
+        status = el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Načítavam…");
         box = el("div", "");
         t.appendChild(status); t.appendChild(box);
       },
@@ -116,14 +116,14 @@
       }), idx, stavS);
       box.appendChild(kk.el);
       kk.nastav(false);
-      var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:14px;cursor:pointer", "Na najbližšie");
+      var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", "Na najbližšie");
       bn.addEventListener("click", function () { kk.nastav(true); });
       box.appendChild(bn);
     }
     window.DpbOkna.otvor({
       titul: "Koho stretne " + kurz,
       podtitul: (meno ? meno + " · " : "") + dateKey.split("-").reverse().join(".") + " · plánované podľa grafikonu",
-      telo: function (t) { info = el("div", "font-size:13px;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); },
+      telo: function (t) { info = el("div", "font-size:15px;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); },
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: window.DpbOkna.zavriVsetko }],
     });
     var sek = function (x) { if (x == null) return null; if (typeof x === "number") return x; var q = String(x).split(":"); return (+q[0]) * 3600 + (+q[1] || 0) * 60; };

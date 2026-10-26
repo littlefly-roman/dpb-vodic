@@ -40,7 +40,7 @@
     h.style.cssText = "font-size:17px;font-weight:600;color:var(--text-1);margin-bottom:4px";
     h.textContent = "Nezabezpečená pracovná prestávka";
     var sub = document.createElement("div");
-    sub.style.cssText = "font-size:13px;color:var(--text-3);margin-bottom:14px";
+    sub.style.cssText = "font-size:15px;color:var(--text-3);margin-bottom:14px";
     sub.textContent = podnadpis;
     box.appendChild(h); box.appendChild(sub);
     var vyber = "";

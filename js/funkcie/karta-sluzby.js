@@ -499,7 +499,7 @@
               poradie.forEach(function (v, vi) {
                 var d = document.createElement("div");
                 d.className = "card-vehicle";
-                d.textContent = v.cislo + (v.od && v.do ? " • " + v.od + "–" + v.do : "");
+                d.textContent = v.cislo + (v.od && v.do ? " • " + String(v.od).replace(/^0(\d:)/, "$1") + "–" + String(v.do).replace(/^0(\d:)/, "$1") : "");
                 if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
                 center.appendChild(d);
               });
@@ -755,7 +755,7 @@
               const d = document.createElement("div");
               d.className = "card-vehicle";
               d.textContent =
-                v.cislo + (v.od && v.do ? " • " + v.od + "–" + v.do : "");
+                v.cislo + (v.od && v.do ? " • " + String(v.od).replace(/^0(\d:)/, "$1") + "–" + String(v.do).replace(/^0(\d:)/, "$1") : "");
               if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
               center.appendChild(d);
             });

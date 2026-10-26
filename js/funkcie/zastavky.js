@@ -553,7 +553,7 @@
           cont._dalsi = null;
           if (!vis.length) {
             cont.innerHTML =
-              '<div style="color:var(--text-3);font-size:13px;padding:8px 0">Žiadne odchody</div>';
+              '<div style="color:var(--text-3);font-size:15px;padding:8px 0">Žiadne odchody</div>';
             return;
           }
           // nástupište sa ukáže, len ak je v zozname viac ako jedno
@@ -589,7 +589,7 @@
             var cp = o.cas.split(":");
             var cas = document.createElement("span");
             cas.style.cssText =
-              "font-size:14px;min-width:52px;font-variant-numeric:tabular-nums;color:" +
+              "font-size:15px;min-width:52px;font-variant-numeric:tabular-nums;color:" +
               (isNext ? "var(--red-text)" : "var(--text-1)") +
               (isNext ? ";font-weight:600" : "");
             cas.textContent = cp[0] + ":" + (cp[1] || "00");
@@ -597,14 +597,14 @@
             if (viacNast) {
               var nast = document.createElement("span");
               nast.style.cssText =
-                "font-size:13px;font-weight:600;min-width:20px;text-align:center;color:var(--text-2)";
+                "font-size:15px;font-weight:600;min-width:20px;text-align:center;color:var(--text-2)";
               nast.textContent = nastLabel(o.nast);
               row.appendChild(nast);
             }
             var c = casti(o);
             var lnk = document.createElement("span");
             lnk.style.cssText =
-              "display:inline-flex;flex:none;font-size:13px;font-weight:600;color:var(--text-1);white-space:nowrap;font-variant-numeric:tabular-nums";
+              "display:inline-flex;flex:none;font-size:15px;font-weight:600;color:var(--text-1);white-space:nowrap;font-variant-numeric:tabular-nums";
             var l1 = document.createElement("span");
             l1.style.cssText = "min-width:" + sirL + "ch;text-align:right";
             l1.textContent = c[0];
@@ -623,12 +623,12 @@
             if (maVoz) {
               var voz = document.createElement("span");
               voz.style.cssText =
-                "flex:none;min-width:4ch;margin-left:6px;font-size:13px;font-variant-numeric:tabular-nums;color:var(--text-2);text-align:right";
+                "flex:none;min-width:4ch;margin-left:6px;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text-2);text-align:right";
               voz.textContent = vozMapa.get(o) || "";
               row.appendChild(voz);
             }
             var ciel = document.createElement("span");
-            ciel.style.cssText = "font-size:13px;color:var(--text-2);flex:1;margin-left:10px";
+            ciel.style.cssText = "font-size:15px;color:var(--text-2);flex:1;margin-left:10px";
             ciel.textContent = "\u2192 " + (o.ciel || "");
             row.appendChild(ciel);
             cont.appendChild(row);
@@ -671,7 +671,7 @@
           }
           staResults.innerHTML = "";
           staOdchody.innerHTML =
-            '<div style="color:var(--text-3);font-size:13px;padding:8px 0">Načítavam...</div>';
+            '<div style="color:var(--text-3);font-size:15px;padding:8px 0">Načítavam...</div>';
           _vozIdx = {}; // vozidlá sa načítajú nanovo (nová výprava)
           var nastSlub = nacitajNast(grp); // súbežne s odchodmi
           var smerSlub = nacitajSmer(grp);
@@ -682,13 +682,13 @@
             var chyba = document.createElement("div");
             chyba.style.cssText = "padding:14px 0;text-align:center";
             chyba.innerHTML =
-              '<div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:4px">Odchody sa nepodarilo načítať</div>' +
-              '<div style="font-size:13px;color:var(--text-3);margin-bottom:12px">Skontroluj pripojenie na internet.</div>';
+              '<div style="font-size:15px;font-weight:600;color:var(--text-1);margin-bottom:4px">Odchody sa nepodarilo načítať</div>' +
+              '<div style="font-size:15px;color:var(--text-3);margin-bottom:12px">Skontroluj pripojenie na internet.</div>';
             var znova = document.createElement("button");
             znova.type = "button";
             znova.textContent = "Skúsiť znova";
             znova.style.cssText =
-              "height:38px;padding:0 20px;border-radius:19px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--red);background:var(--red);color:#fff";
+              "height:38px;padding:0 20px;border-radius:19px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--red);background:var(--red);color:#fff";
             znova.addEventListener("click", function () {
               showOdchody(nazov, kodFilter, grp);
             });
@@ -706,14 +706,14 @@
           staOdchody.innerHTML = "";
           var hdr = document.createElement("div");
           hdr.style.cssText =
-            "font-size:14px;font-weight:600;color:var(--text-1);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px";
+            "font-size:15px;font-weight:600;color:var(--text-1);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px";
           hdr.style.display = "flex";
           hdr.style.justifyContent = "space-between";
           hdr.style.alignItems = "center";
           var spat = document.createElement("button");
           spat.type = "button";
           spat.textContent = "\u2039 Späť";
-          spat.style.cssText = "border:none;background:transparent;font-size:14px;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
+          spat.style.cssText = "border:none;background:transparent;font-size:15px;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
           spat.addEventListener("click", spatNaZoznam);
           hdr.appendChild(spat);
           var hdrNaz = document.createElement("span");
@@ -832,7 +832,7 @@
               "display:flex;align-items:center;gap:8px;flex-wrap:nowrap;padding:6px 0 2px";
             var lbl = document.createElement("span");
             lbl.style.cssText =
-              "font-size:12px;color:var(--text-3);min-width:68px;flex:none";
+              "font-size:15px;color:var(--text-3);min-width:68px;flex:none";
             lbl.textContent = popis;
             wrap.appendChild(lbl);
             var scr = document.createElement("div");
@@ -849,7 +849,7 @@
               var btn = document.createElement("button");
               btn.type = "button";
               btn.style.cssText =
-                "flex:none;min-width:44px;height:34px;padding:0 14px;border-radius:17px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid " +
+                "flex:none;min-width:44px;height:34px;padding:0 14px;border-radius:17px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid " +
                 (on ? "var(--red)" : "var(--border)") +
                 ";background:" +
                 (on ? (vsetko ? "var(--red-soft)" : "var(--red)") : "transparent") +
@@ -899,7 +899,7 @@
             b.type = "button";
             b.textContent = text;
             b.style.cssText =
-              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:13px;font-weight:600;cursor:pointer";
+              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
             b.addEventListener("click", krok);
             return b;
           }
@@ -957,7 +957,7 @@
           div.appendChild(a);
           if (vedlajsi) {
             var b = document.createElement("span");
-            b.style.cssText = "font-size:12px;color:var(--text-3);flex:none;align-self:center";
+            b.style.cssText = "font-size:15px;color:var(--text-3);flex:none;align-self:center";
             b.textContent = vedlajsi;
             div.appendChild(b);
           }
@@ -966,7 +966,7 @@
         }
         function nadpisSkupiny(t) {
           var h = document.createElement("div");
-          h.style.cssText = "font-size:10px;font-weight:800;letter-spacing:1px;color:var(--text-3);padding:12px 0 2px";
+          h.style.cssText = "font-size:15px;font-weight:800;letter-spacing:1px;color:var(--text-3);padding:12px 0 2px";
           h.textContent = t;
           return h;
         }
@@ -976,9 +976,9 @@
           return Math.hypot(dx, dy);
         }
         async function ukazBlizke(kam) {
-          kam.innerHTML = '<div style="color:var(--text-3);font-size:13px;padding:6px 0">Zisťujem polohu...</div>';
+          kam.innerHTML = '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Zisťujem polohu...</div>';
           if (!navigator.geolocation) {
-            kam.innerHTML = '<div style="color:var(--text-3);font-size:13px;padding:6px 0">Poloha nie je v tomto zariadení dostupná.</div>';
+            kam.innerHTML = '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Poloha nie je v tomto zariadení dostupná.</div>';
             return;
           }
           navigator.geolocation.getCurrentPosition(
@@ -998,7 +998,7 @@
             },
             function () {
               kam.innerHTML =
-                '<div style="color:var(--text-3);font-size:13px;padding:6px 0">Polohu sa nepodarilo zistiť (povoľ ju v prehliadači; v nezabezpečenom spojení http ju prehliadač nedovolí).</div>';
+                '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Polohu sa nepodarilo zistiť (povoľ ju v prehliadači; v nezabezpečenom spojení http ju prehliadač nedovolí).</div>';
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
           );
@@ -1018,7 +1018,7 @@
           tl.type = "button";
           tl.textContent = "Zastávky v okolí";
           tl.style.cssText =
-            "width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:13px;font-weight:600;cursor:pointer";
+            "width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
           tl.addEventListener("click", function () {
             ukazBlizke(kamBlizke);
             tl.style.display = "none";
@@ -1029,7 +1029,7 @@
         window._zastavkyDomov = ukazDomov;
         async function doSearch(val) {
           staResults.innerHTML =
-            '<div style="color:var(--text-3);font-size:13px">Hľadám...</div>';
+            '<div style="color:var(--text-3);font-size:15px">Hľadám...</div>';
           staOdchody.innerHTML = "";
           if (_renderInt) {
             clearInterval(_renderInt);
@@ -1038,7 +1038,7 @@
           var sta = await getStanice();
           if (!sta) {
             staResults.innerHTML =
-              '<div style="color:var(--red);font-size:13px">Chyba</div>';
+              '<div style="color:var(--red);font-size:15px">Chyba</div>';
             return;
           }
           var q = stripDia(val);
@@ -1051,7 +1051,7 @@
             });
           if (!matches.length) {
             staResults.innerHTML =
-              '<div style="color:var(--text-3);font-size:13px;padding:4px 0">Nič nenájdené</div>';
+              '<div style="color:var(--text-3);font-size:15px;padding:4px 0">Nič nenájdené</div>';
             return;
           }
           staResults.innerHTML = "";

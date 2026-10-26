@@ -144,7 +144,7 @@
           // Jedno koleso: items = [text], onChange(index) po zastavení posúvania
           function koleso(nadpis, sirka, onChange, cervene) {
             var w = mk("div", "flex:" + sirka + ";min-width:0");
-            w.appendChild(mk("div", "text-align:center;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin-bottom:4px", nadpis));
+            w.appendChild(mk("div", "text-align:center;font-size:15px;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin-bottom:4px", nadpis));
             var okno = mk("div", "position:relative;height:" + RIADKY * H + "px;border-radius:12px;background:" + (cervene ? "var(--red)" : "var(--surface-2)") + ";overflow:hidden");
             var pas = mk("div", "position:absolute;left:4px;right:4px;top:" + (2 * H) + "px;height:" + H + "px;border-radius:10px;background:" + (cervene ? "rgba(255,255,255,.22)" : "rgba(220,40,40,.14)") + ";border:1px solid " + (cervene ? "#fff" : "var(--red)") + ";pointer-events:none");
             var sc = mk("div", "position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-padding:" + (2 * H) + "px 0;padding:" + (2 * H) + "px 0;box-sizing:border-box;scrollbar-width:none;-webkit-overflow-scrolling:touch");
@@ -244,7 +244,7 @@
             var rad = mk("div", "display:flex;gap:6px;margin-top:16px");
             rad.appendChild(kolesa.linka.el); rad.appendChild(kolesa.kurz.el); rad.appendChild(kolesa.typ.el);
             box.appendChild(rad);
-            info = mk("div", "text-align:center;font-size:14px;color:var(--text-2);margin:10px 0 8px;min-height:20px");
+            info = mk("div", "text-align:center;font-size:15px;color:var(--text-2);margin:10px 0 8px;min-height:20px");
             box.appendChild(info);
             otvorBtn = mk("button", "width:100%;padding:12px;border-radius:12px;border:none;background:var(--red);color:#fff;font-size:16px;font-weight:700;cursor:pointer", "Zobraziť");
             otvorBtn.type = "button";

@@ -61,7 +61,7 @@
       if (!najdene.length) {
         var n = document.createElement("div");
         n.textContent = "Nikto taký";
-        n.style.cssText = "padding:12px 16px;font-size:14px;color:var(--text-3)";
+        n.style.cssText = "padding:12px 16px;font-size:15px;color:var(--text-3)";
         list.appendChild(n);
       } else {
         najdene.slice(0, 8).forEach(function (o) {
@@ -73,7 +73,7 @@
           m.textContent = o.textContent;
           var c = document.createElement("span");
           c.textContent = o.value;
-          c.style.cssText = "font-weight:500;font-size:13px;color:var(--text-3)";
+          c.style.cssText = "font-weight:500;font-size:15px;color:var(--text-3)";
           r.appendChild(m);
           r.appendChild(c);
           r.addEventListener("click", function () { vyber(o); });
@@ -82,7 +82,7 @@
         if (najdene.length > 8) {
           var d = document.createElement("div");
           d.textContent = "…a ďalších " + (najdene.length - 8) + ", spresni hľadanie";
-          d.style.cssText = "padding:10px 16px;font-size:13px;color:var(--text-3)";
+          d.style.cssText = "padding:10px 16px;font-size:15px;color:var(--text-3)";
           list.appendChild(d);
         }
       }
