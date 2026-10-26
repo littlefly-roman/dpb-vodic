@@ -3300,3 +3300,5 @@ body {
   html { background: var(--border); }
   body { width: 100%; max-width: 480px; margin: 0 auto; transform: translateZ(0); box-shadow: 0 0 0 1px var(--border-2), 0 0 40px rgba(0,0,0,.15); }
 }
+
+.burza-upoz { display: block; font-size: 15px; color: var(--orange, #c26a00); margin-top: 4px; font-weight: 600; }
