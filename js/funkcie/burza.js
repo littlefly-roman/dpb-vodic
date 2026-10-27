@@ -267,15 +267,16 @@
         const IK_POLOHA = '<svg class="burza-ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
 
         // Text trasy: rovnaký začiatok a koniec sa píše len raz, „striedač“ len raz
-        function trasaText(od, kam) {
-          if (od && kam && od === kam) return od;
+        // Pohotovosť (sedavá záloha) má len miesto nástupu; ostatné služby miesto nástupu aj ukončenia
+        function trasaText(od, kam, pohotovost) {
+          if (pohotovost) return od || kam || "";
           const pre = /^striedač\s+/i;
           if (od && kam && pre.test(od) && pre.test(kam)) kam = kam.replace(pre, "");
           return [od, kam].filter(Boolean).join(" \u2013 ");
         }
-        function trasaHtml(od, kam) {
+        function trasaHtml(od, kam, pohotovost) {
 
-          const t = trasaText(od, kam);
+          const t = trasaText(od, kam, pohotovost);
 
           return t ? `<div class="burza-trasa">${IK_POLOHA}<span class="burza-trasa-val">${t}</span></div>` : "";
 
@@ -403,7 +404,7 @@
           </div>
         </div>
         <div class="burza-row-detail hidden" id="detail-${s.id}">
-          ${trasaHtml(s.od, s.kam)}
+          ${trasaHtml(s.od, s.kam, s.pohotovost)}
           ${s.upozornenie ? `<div class="burza-upoz">${s.upozornenie}</div>` : ""}
           <div class="burza-detail-btns">
             <button class="burza-btn-close">Zavrieť</button>
@@ -590,7 +591,7 @@
         </div>
       </div>
       <div class="burza-rez-detail ${isOpen ? "" : "hidden"}">
-        ${trasaHtml(rez.od, rez.kam)}
+        ${trasaHtml(rez.od, rez.kam, rez.pohotovost)}
         <div class="burza-timeline">
           <div class="burza-tl-item">
             <span class="burza-tl-dot stav-odoslana"></span>
@@ -737,9 +738,8 @@
               "dec",
             ];
             hdr.innerHTML = `
-      <button class="burza-filter-back" id="burzaFilterBack">← Späť na kartu dňa</button>
+      <button class="burza-filter-back" id="burzaFilterBack">← Späť na dátum</button>
       <span>Služby: <strong>${DNI2[d.getDay()]} ${d.getDate()}. ${MES2[d.getMonth()]}</strong></span>
-      <button class="burza-filter-clear" id="burzaFilterClear">Všetky</button>
     `;
             document
               .getElementById("burzaFilterBack")
@@ -754,13 +754,6 @@
                   .querySelectorAll(".bottom-nav button")
                   .forEach((b) => b.classList.remove("active"));
                 document.getElementById("btnToday").classList.add("active");
-              });
-            document
-              .getElementById("burzaFilterClear")
-              .addEventListener("click", () => {
-                state.denFilter = null;
-                document.getElementById("burza-filter-hdr").remove();
-                render();
               });
           } else {
             const hdr = document.getElementById("burza-filter-hdr");
