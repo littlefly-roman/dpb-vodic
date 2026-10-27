@@ -183,6 +183,14 @@
 
             const det = document.createElement("div");
             det.className = "str-detail" + (k.trasa ? " hrad" : "");
+            if (k.trasa && (k.grafOd || k.grafDo) && window.DpbStretnutia && window.DpbStretnutia.miesto && k.datum) {
+              window.DpbStretnutia.miesto(k.kurz, k.datum, k.prebera, k.odovzdava).then(function (m) {
+                if (!m) return;
+                var t = det.querySelector(".str-detail-voz");
+                if (!t) return;
+                t.textContent = [k.grafOd && m.od ? m.od : k.stanOd, k.grafDo && m.do ? m.do : k.stanDo].filter(Boolean).join(" – ");
+              }).catch(function () {});
+            }
             det.innerHTML =
               (k.trasa ? '<span class="str-detail-voz">' + k.trasa + "</span>" : "") +
               '<span class="str-detail-meno">' +
@@ -553,6 +561,8 @@
                     vozidlo: h.vozidla && h.vozidla.length ? h.vozidla[0].cislo : null,
                     ridic: _kto(h),
                     trasa: [h.stan_od, h.stan_do].filter(Boolean).join(" – "),
+                    grafOd: !!h.graf_od, grafDo: !!h.graf_do, stanOd: h.stan_od, stanDo: h.stan_do,
+                    datum: service.date,
                   };
                 }),
                 service,
@@ -787,6 +797,15 @@
               rw.innerHTML = `<span class="card-route-od">${k.stan_od} –</span><wbr><span class="card-route-do">– ${k.stan_do}</span>`;
               pridajIkonu(rw, "poloha");
               center.appendChild(rw);
+              // Vodič robil len časť úseku: miesto podľa grafikonu v čase karty (export má stanice celého úseku)
+              if ((k.graf_od || k.graf_do) && /^\d+\/\d+$/.test(k.kurz || "") && window.DpbStretnutia && window.DpbStretnutia.miesto && service.date) {
+                window.DpbStretnutia.miesto(k.kurz, service.date, k.od, k.do).then(function (m) {
+                  if (!m) return;
+                  var o = rw.querySelector(".card-route-od"), d = rw.querySelector(".card-route-do");
+                  if (o && k.graf_od && m.od) o.textContent = m.od + " –";
+                  if (d && k.graf_do && m.do) d.textContent = "– " + m.do;
+                }).catch(function () {});
+              }
             }
             (
               k.vozidla ||

@@ -26,6 +26,10 @@
       trideni: u.trideni,
       stan_od: u.stanicaOd,
       stan_do: u.stanicaDo,
+      // Stanice v exporte patria celému plánovanému úseku (nástup–koniec). Ak je skutočný začiatok/koniec iný
+      // (vodič robil len časť), miesto sa má dohľadať z grafikonu v čase karty.
+      graf_od: !!(u.nastup && u.od !== u.nastup),
+      graf_do: !!(u.konec && u.do !== u.konec),
       vozidla: u.vozidla,
       od_min: u.odMin,
       do_min: u.doMin,
@@ -154,7 +158,7 @@
           return u.kurz !== obalKurz;
         })
         .map(function (u) {
-          return { kurz: u.kurz, od: u.od, do: u.do, vozidla: u.vozidla, stan_od: u.stanicaOd || "", stan_do: u.stanicaDo || "", segmenty: [] };
+          return { kurz: u.kurz, od: u.od, do: u.do, vozidla: u.vozidla, stan_od: u.stanicaOd || "", stan_do: u.stanicaDo || "", graf_od: !!(u.nastup && u.od !== u.nastup), graf_do: !!(u.konec && u.do !== u.konec), segmenty: [] };
         });
       var pn = predNasl(cs[0].zdroj);
       if (!pn.nasl && cs.length > 1) pn.nasl = predNasl(cs[cs.length - 1].zdroj).nasl;
