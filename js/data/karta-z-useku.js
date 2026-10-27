@@ -72,53 +72,11 @@
     ].concat(other);
   }
 
-  // Pohotovosť je primárna služba: úsek inej služby, ktorý sa celý odohráva počas pohotovosti,
-  // sa vnorí do pohotovosti ako zásk (segment is_poh=false) namiesto samostatnej karty – ale len
-  // ak pohotovosť pred ním aj po ňom pokračuje (vodič z nej naozaj len vyskočil).
-  // pohUseky = úseky pohotovosti toho istého vodiča a dňa.
+  // Pohotovosť tvorí „obálku“ (od najskoršieho začiatku po najneskorší koniec úsekov). Úseky inej služby, ktoré vodič
+  // z pohotovosti odrobil, zostávajú SAMOSTATNÝMI kartami (od v27: už sa nevnárajú do karty pohotovosti ako zásky).
+  // Čo je v obálke, nie je samostatný výkon; presah mimo obálku je ďalší výkon. Funkcia zostáva kvôli zhode rozhrania.
   function vnorDoPohotovosti(karty, pohUseky) {
-    var poh = karty.filter(function (k) {
-      return k.vzor === "POHOTOVOS\u0164";
-    });
-    if (poh.length !== 1 || !poh[0].od || !poh[0].do) return karty;
-    var p = poh[0],
-      out = [];
-    var pieces = pohUseky.map(function (u) {
-      return [u.odMin, u.doMin];
-    });
-    function pokracuje(k) {
-      var pred = pieces.some(function (x) {
-        return Math.abs(x[1] - k.od_min) <= 1;
-      });
-      var po = pieces.some(function (x) {
-        return Math.abs(x[0] - k.do_min) <= 1;
-      });
-      return pred && po;
-    }
-    karty.forEach(function (k) {
-      if (
-        k === p ||
-        k.vzor !== "SLU\u017dBA" ||
-        !k.od ||
-        !k.do ||
-        !(k.od_min >= p.od_min && k.do_min <= p.do_min) ||
-        !pokracuje(k)
-      ) {
-        out.push(k);
-        return;
-      }
-      p.segmenty = (p.segmenty || []).concat([
-        {
-          kurz: k.kurz,
-          od: k.od,
-          do: k.do,
-          vozidlo: k.vozidla && k.vozidla.length ? k.vozidla[0].cislo : null,
-          is_poh: false,
-        },
-      ]);
-      out.push(null);
-    });
-    return out.filter(Boolean);
+    return karty;
   }
 
   // --- Záložné vozidlo 944 ----------------------------------------------------------------

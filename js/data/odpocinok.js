@@ -45,8 +45,8 @@
     res.delena = rovnakyDen.length > 0;
     // Denný výkon najviac 12 h (Zákonník práce § 87 ods. 4: pracovný čas v priebehu 24 hodín najviac 12 hodín):
     // súčet práce dňa nástupu vrátane delených častí; čas od–do, prestávky sa neodpočítavajú.
-    var vykon = k.do - k.od;
-    rovnakyDen.forEach(function (x) { vykon += x.do - x.od; });
+    // Čo leží v obálke pohotovosti (prekrývajúci sa čas) nie je samostatný výkon: počíta sa zjednotenie intervalov.
+    var vykon = spoj(rovnakyDen.concat([k])).reduce(function (a, x) { return a + (x.do - x.od); }, 0);
     if (!bezVykonu && vykon > PRACA_MAX) return { ok: false, dovod: "viac ako 12 h práce za deň", skrateny: null };
     var pred = null, po = null;
     P.forEach(function (x) {
