@@ -2480,6 +2480,14 @@
       .str-row.open .str-detail {
         display: flex;
       }
+      .str-detail.hrad {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .str-detail.hrad .str-detail-voz {
+        white-space: normal;
+      }
       .str-detail-voz {
         font-size: 15px;
         font-weight: 400;

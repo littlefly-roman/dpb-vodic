@@ -154,7 +154,7 @@
           return u.kurz !== obalKurz;
         })
         .map(function (u) {
-          return { kurz: u.kurz, od: u.od, do: u.do, vozidla: u.vozidla, segmenty: [] };
+          return { kurz: u.kurz, od: u.od, do: u.do, vozidla: u.vozidla, stan_od: u.stanicaOd || "", stan_do: u.stanicaDo || "", segmenty: [] };
         });
       var pn = predNasl(cs[0].zdroj);
       if (!pn.nasl && cs.length > 1) pn.nasl = predNasl(cs[cs.length - 1].zdroj).nasl;

@@ -175,15 +175,16 @@
             }
             main.appendChild(sc);
             main.appendChild(sv);
-            if (window.DpbPrestavka) {
+            if (window.DpbPrestavka && !k.trasa) {
               var _pi = window.DpbPrestavka.ikona(service, k);
               if (_pi) main.appendChild(_pi);
             }
             main.addEventListener("click", () => row.classList.toggle("open"));
 
             const det = document.createElement("div");
-            det.className = "str-detail";
+            det.className = "str-detail" + (k.trasa ? " hrad" : "");
             det.innerHTML =
+              (k.trasa ? '<span class="str-detail-voz">' + k.trasa + "</span>" : "") +
               '<span class="str-detail-meno">' +
               (k.ridic || "—") +
               "</span>";
@@ -522,18 +523,39 @@
               hh.className = "card-prs-hdr";
               hh.textContent = "HRADENIA";
               hb.appendChild(hh);
-              var hList = buildSegList(
+              // Mená vodičov, ktorí mali ten istý kurz v čase hradenia (iní vodiči toho istého dňa)
+              var _mm = function (t) { var q = String(t || "").split(":"); return parseInt(q[0] || 0, 10) * 60 + parseInt(q[1] || 0, 10); };
+              var _kto = function (h) {
+                var a = _mm(h.od), b = _mm(h.do);
+                if (b <= a) b += 1440;
+                var me = window.appState && window.appState.currentDriver, out = [];
+                if (!window.RAW || !window.RAW.models) return "";
+                Object.keys(window.RAW.models).forEach(function (rid) {
+                  if (String(rid) === String(me)) return;
+                  (window.RAW.models[rid] || []).forEach(function (d) {
+                    if (d.datum !== service.date) return;
+                    (d.karty || []).forEach(function (kk) {
+                      if ((kk.vzor !== "SLUŽBA" && kk.vzor !== "STRIEDAČ") || kk.kurz !== h.kurz) return;
+                      var x = _mm(kk.od), y = _mm(kk.do);
+                      if (y <= x) y += 1440;
+                      if (x < b && y > a) { var n = window.RAW.drivers[rid] || ""; if (n && out.indexOf(n) < 0) out.push(n); }
+                    });
+                  });
+                });
+                return out.join("<br>");
+              };
+              var hList = buildStrList(
                 _hrad.map(function (h) {
-                  var voz =
-                    h.vozidla && h.vozidla.length ? h.vozidla[0].cislo : null;
                   return {
                     kurz: h.kurz,
-                    cas: DPBData.fmtRange(h.od, h.do),
-                    voz: voz,
-                    od: h.od,
-                    do_: h.do,
+                    prebera: h.od,
+                    odovzdava: h.do,
+                    vozidlo: h.vozidla && h.vozidla.length ? h.vozidla[0].cislo : null,
+                    ridic: _kto(h),
+                    trasa: [h.stan_od, h.stan_do].filter(Boolean).join(" – "),
                   };
                 }),
+                service,
               );
               hb.appendChild(hList);
               body.appendChild(hb);
