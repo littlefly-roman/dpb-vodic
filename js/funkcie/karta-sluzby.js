@@ -653,7 +653,16 @@
                     // Zastávka z PDF (slot.z) má prednosť pred RAW hodnotou
                     if (_slot && _slot.z) k.zastávka = _slot.z;
                     if (!_slot) return [];
-                    return (_slot.k || []).map(function (kz) {
+                    // Len hradenia v rozsahu služby tohto vodiča (ak robil len časť striedača); ak by nezostalo nič, celý zoznam
+                    var _mm = function (t) { var p = (t || "").split(":"); return parseInt(p[0] || 0) * 60 + parseInt(p[1] || 0); };
+                    var _kOd = _mm(k.od), _kDo = _mm(k.do);
+                    if (_kDo <= _kOd) _kDo += 1440;
+                    var _vRozsahu = (_slot.k || []).filter(function (kz) {
+                      var a = _mm(kz.prebera), b = _mm(kz.odovzdava);
+                      if (b <= a) b += 1440;
+                      return a < _kDo && b > _kOd;
+                    });
+                    return (_vRozsahu.length ? _vRozsahu : _slot.k || []).map(function (kz) {
                       var _pm = (function (t) {
                         var p = (t || "").split(":");
                         return parseInt(p[0] || 0) * 60 + parseInt(p[1] || 0);
