@@ -346,6 +346,7 @@
           const services = appState.servicesByDate[key] || [];
 
           dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
+          dateHeader.classList.toggle("je-dnes", formatDateKey(appState.selectedDate) === formatDateKey(new Date()));
           container.innerHTML = "";
           resetContainerLayout();
 
@@ -365,7 +366,6 @@
             volno.innerHTML = `
       <div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
       <div class="volno-text">Voľno</div>
-      <div class="volno-sub">${Calendar.getDayTypeLabel(appState.selectedDate)}</div>
     `;
             pridajMenuVolno(volno, selKey);
 
@@ -742,9 +742,7 @@
               const v = document.createElement("div");
               v.className = "volno-card";
               v.innerHTML =
-                '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div><div class="volno-text">Voľno</div><div class="volno-sub">' +
-                Calendar.getDayTypeLabel(d) +
-                "</div>";
+                '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div><div class="volno-text">Voľno</div>';
               ghost.appendChild(v);
             } else {
               services.forEach((s) => {

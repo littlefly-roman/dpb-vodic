@@ -256,6 +256,18 @@
         background: rgba(47, 108, 176, 0.07);
       }
 
+      /* Aktuálny deň (dnes): názov dňa aj dátum zelenou a najtučnejšie */
+      .je-dnes .date-day,
+      .je-dnes .date-date {
+        color: #16a34a;
+        font-weight: 900;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .je-dnes .date-day,
+        :root:not([data-theme="light"]) .je-dnes .date-date { color: #4ade80; }
+      }
+      :root[data-theme="dark"] .je-dnes .date-day,
+      :root[data-theme="dark"] .je-dnes .date-date { color: #4ade80; }
       .date-day {
         font-size: 19px;
         font-weight: 700;
@@ -2398,7 +2410,7 @@
       .str-zastávka {
         width: 100%;
         margin-top: 4px;
-        font-size: 15px;
+        font-size: 18px;
         font-weight: 400;
         color: var(--text-2);
         display: flex;
@@ -2407,8 +2419,8 @@
         gap: 6px;
       }
       .str-zastávka svg {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         flex-shrink: 0;
         color: var(--text-3);
       }
@@ -2486,7 +2498,7 @@
         gap: 4px;
       }
       .str-detail.hrad .str-detail-voz {
-        white-space: normal;
+        white-space: pre-line;
       }
       .str-detail-voz {
         font-size: 15px;
@@ -2509,13 +2521,9 @@
         color: var(--text-2);
         line-height: 1.4;
       }
-      .card-route-od {
-        display: inline;
-        white-space: nowrap;
-      }
+      .card-route-od,
       .card-route-do {
-        display: inline;
-        white-space: nowrap;
+        display: block;
       }
       .card-prs-blk {
         align-self: stretch;
