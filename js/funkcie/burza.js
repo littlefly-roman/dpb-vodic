@@ -694,6 +694,8 @@
 -------------------------- */
 
         function init(dateKey) {
+          // Zobrazenie Burzy označí správy o Burze vo zvončeku ako prečítané
+          if (window.Notif && Notif.precitajKat) Notif.precitajKat("burza");
           // Nastav filter ak bol zadaný
           state.denFilter = dateKey || null;
           state.aktZalozka = "volne";

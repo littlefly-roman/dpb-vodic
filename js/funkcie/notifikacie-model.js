@@ -30,6 +30,7 @@
                   text: n.text,
                   cas: new Date(n.cas).toISOString(),
                   precitana: !!n.precitana,
+                  ciel: n.ciel || null,
                 })),
               ),
             );
@@ -41,7 +42,7 @@
           if (rid) {
             try {
               (JSON.parse(localStorage.getItem("dpb-notif-" + rid) || "[]") || []).forEach((n) => {
-                state.items.push({ id: uid(), kat: n.kat, titul: n.titul, text: n.text, cas: new Date(n.cas), precitana: !!n.precitana });
+                state.items.push({ id: uid(), kat: n.kat, titul: n.titul, text: n.text, cas: new Date(n.cas), precitana: !!n.precitana, ciel: n.ciel || null });
               });
             } catch (e) {}
           }
@@ -74,7 +75,8 @@
         }
 
         // ── PUBLIC: pridaj notifikáciu (volá burza.js) ──────────────
-        function pridaj(titul, text, kat = "burza") {
+        // ciel (nepovinné): { typ: "den", d: "2026-10-28", l: "linka/kurz", k: "vozidlo" } alebo { typ: "burza", d: "2026-10-28" }
+        function pridaj(titul, text, kat = "burza", ciel = null) {
           state.items.unshift({
             id: uid(),
             kat,
@@ -82,6 +84,7 @@
             text,
             cas: new Date(),
             precitana: false,
+            ciel,
           });
           aktualizujBadge();
           uloz();
@@ -147,9 +150,50 @@
               item.classList.add("precitana");
               item.querySelector(".notif-dot-nova")?.remove();
               uloz();
+              ideNaCiel(n);
             });
             list.appendChild(item);
           });
+        }
+
+        // ── PRESKOK na miesto upozornenia ────────────────────────────
+        function ideNaCiel(n) {
+          const c = n.ciel;
+          if (!c) return;
+          try {
+            if (c.typ === "den" && c.d) {
+              // zmena odklikne mini kartu na tom dni a otvorí kartu dňa
+              if (window.DpbZmeny && DpbZmeny.odklikni) DpbZmeny.odklikni(c.d, c.l, c.k);
+              zavriet();
+              if (window._otvorDen) window._otvorDen(c.d);
+            } else if (c.typ === "burza") {
+              zavriet();
+              if (window._otvorBurzu) window._otvorBurzu(c.d || undefined);
+            }
+          } catch (e) {}
+        }
+
+        // ── PUBLIC: označ ako prečítané (volá zmeny.js a burza.js) ────
+        function oznacPrecitane(pred) {
+          let zmena = false;
+          state.items.forEach((n) => {
+            if (!n.precitana && pred(n)) {
+              n.precitana = true;
+              zmena = true;
+            }
+          });
+          if (!zmena) return;
+          aktualizujBadge();
+          uloz();
+          if (state.open) renderZoznam();
+        }
+        // všetky neprečítané zmeny pre konkrétny deň a kartu (linku/kurz)
+        function precitajDen(d, l) {
+          oznacPrecitane((n) => n.ciel && n.ciel.typ === "den" && n.ciel.d === d && (n.ciel.l || "") === (l || ""));
+        }
+        // celá kategória (napr. burza – stačí, že sa Burza zobrazí)
+        function precitajKat(kat) {
+          oznacPrecitane((n) => n.kat === kat);
         }
 
         // ── TOGGLE dropdown ──────────────────────────────────────────
@@ -163,13 +207,7 @@
             panel.classList.remove("hidden");
             btn.classList.add("active");
             renderZoznam();
-            // Označ všetky ako prečítané po 1.5s
-            setTimeout(() => {
-              state.items.forEach((n) => (n.precitana = true));
-              aktualizujBadge();
-              uloz();
-              renderZoznam();
-            }, 1500);
+            // Prečítané sa označí až ťuknutím na konkrétnu správu (alebo odklikom zmeny / otvorením Burzy).
           } else {
             panel.classList.add("hidden");
             btn.classList.remove("active");
@@ -207,7 +245,7 @@
           aktualizujBadge();
         }
 
-        return { init, pridaj, aktualizujBadge, zavriet, nastavVodica };
+        return { init, pridaj, aktualizujBadge, zavriet, nastavVodica, precitajDen, precitajKat };
       })();
 
 window.Notif = Notif;

@@ -143,8 +143,8 @@
     var nove = cur.filter(function (x) { return !mam[x.id]; });
     if (!nove.length || !window.Notif || !Notif.pridaj) return 0;
     function riadok(x) { return menoDna(x.dateKey) + " " + x.nazov + " " + x.cas + (x.stanicaOd ? " (" + x.stanicaOd + (x.stanicaDo ? " – " + x.stanicaDo : "") + ")" : ""); }
-    if (nove.length > 5) Notif.pridaj("Nové voľné služby v Burze", nove.length + " nových služieb. Najbližšie: " + nove.slice(0, 3).map(riadok).join("; "), "burza");
-    else nove.slice().reverse().forEach(function (x) { Notif.pridaj("Nová voľná služba v Burze", riadok(x), "burza"); });
+    if (nove.length > 5) Notif.pridaj("Nové voľné služby v Burze", nove.length + " nových služieb. Najbližšie: " + nove.slice(0, 3).map(riadok).join("; "), "burza", { typ: "burza" });
+    else nove.slice().reverse().forEach(function (x) { Notif.pridaj("Nová voľná služba v Burze", riadok(x), "burza", { typ: "burza", d: x.dateKey }); });
     return nove.length;
   }
 
@@ -180,7 +180,7 @@
       // zvonček
       if (window.Notif && Notif.pridaj) {
         if (zmeny.length > MAX_SPRAV) Notif.pridaj("Veľa zmien naraz", "Zmenilo sa " + zmeny.length + " vecí v tvojom rozpise. Skontroluj ho.", "zmena");
-        else zmeny.slice().reverse().forEach(function (z) { Notif.pridaj(menoDna(z.d) + " – zmena " + KAT[z.kat].toLowerCase(), z.text, "zmena"); });
+        else zmeny.slice().reverse().forEach(function (z) { Notif.pridaj(menoDna(z.d) + " – zmena " + KAT[z.kat].toLowerCase(), z.text, "zmena", z.l ? { typ: "den", d: z.d, l: z.l, k: z.kat } : null); });
       }
       if (window._render) window._render();
       return true;
@@ -211,12 +211,28 @@
         if (!Object.keys(vl[d]).length) delete vl[d];
         ulozVlajky(r, vl);
       }
+      if (window.Notif && Notif.precitajDen) Notif.precitajDen(d, l);
       var card = b.parentNode;
       b.remove();
       if (card && card.classList) card.classList.remove("ma-zmenu");
       if (window._showToast) window._showToast("Zmena poznačená ako prečítaná");
     });
     return b;
+  }
+  // odklik jednej zmeny (druhu k) na karte dňa d / linky l – volá zvonček po ťuknutí na správu
+  function odklikni(d, l, k) {
+    var r = rid();
+    if (!r || !d) return;
+    var vl = dajVlajky(r);
+    if (!vl[d]) return;
+    l = l || "";
+    if (vl[d][l]) {
+      if (k) vl[d][l] = vl[d][l].filter(function (x) { return (x && x.k || x) !== k; });
+      else vl[d][l] = [];
+      if (!vl[d][l].length) delete vl[d][l];
+    }
+    if (!Object.keys(vl[d]).length) delete vl[d];
+    ulozVlajky(r, vl);
   }
   function ozn(card, s) {
     var r = rid(), d = s && s.date, l = String(s && s.line || "");
@@ -229,7 +245,7 @@
     if (menu) card.insertBefore(mk, menu); else card.appendChild(mk);
   }
 
-  window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
+  window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, odklikni: odklikni, _porovnaj: porovnaj, _snimka: snimka };
 
   // všetky karty prechádzajú cez window.buildNewCard
   var pov = window.buildNewCard;
