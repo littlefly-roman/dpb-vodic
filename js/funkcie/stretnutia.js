@@ -303,5 +303,39 @@
     return { stav: stav, polozky: polozky, stred: stred, ciel: nazovStanice(d.stanice, posl.st), linka: ciel.sp.linka, odchodSpoja: hms(ciel.od) };
   }
 
-  window.DpbStretnutia = { najdi: najdi, poloha: poloha, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
+  // Miesto kurzu v čase (sekundy): zastávka, v ktorej alebo pri ktorej (±2,5 min) kurz v tom čase je, inak prázdne.
+  // Vráti { od: "Názov", do: "Názov" } pre začiatok a koniec úseku kurzu, alebo null (bez grafikonu).
+  async function miesto(kurz, dateKey, od, do_) {
+    var d = await nacitajObehy(dateKey);
+    if (!d) return null;
+    var p = String(kurz).split("/");
+    if (!p[1]) return null;
+    var kod = String(p[0]).padStart(3, "0") + String(p[1]).padStart(2, "0") + d.typ;
+    var obeh = d.obehy[kod];
+    if (!obeh) return null;
+    var zast = [];
+    obeh.forEach(function (sp) {
+      sp.stops.forEach(function (z) {
+        var a = z.arr != null ? z.arr : z.dep, b = z.dep != null ? z.dep : z.arr;
+        if (a != null) zast.push({ st: z.st, a: a, b: b });
+      });
+    });
+    if (!zast.length) return null;
+    function kde(sec) {
+      if (sec == null) return "";
+      var best = null, bd = 1e12;
+      zast.forEach(function (z) {
+        var dist = sec < z.a ? z.a - sec : (sec > z.b ? sec - z.b : 0);
+        if (dist < bd) { bd = dist; best = z; }
+      });
+      // bez zastávky v blízkosti času (±2,5 min) sa miesto neurčuje (napr. presun do depa mimo grafikonu)
+      return best && bd <= 150 ? nazovStanice(d.stanice, best.st) : "";
+    }
+    var odS = typeof od === "number" ? od : sek(od), doS = typeof do_ === "number" ? do_ : sek(do_);
+    if (odS != null && doS != null && doS <= odS) doS += 86400;
+    var fmt = function (n) { return String(n).replace(/^Dp /, "Dp. "); };
+    return { od: fmt(kde(odS)), do: fmt(kde(doS)) };
+  }
+
+  window.DpbStretnutia = { najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();
