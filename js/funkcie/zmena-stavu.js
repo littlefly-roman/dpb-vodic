@@ -636,7 +636,7 @@
     });
   }
 
-  window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko };
+  window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko, pocet: function () { return okna.length; } };
   window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText, ukaz: odosli };
   window.DpbZiadostSluzby = { otvor: ziadostSluzby };
   window.DpbReklamacia = { otvor: reklamacia };
