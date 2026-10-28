@@ -1243,6 +1243,10 @@
 
           if (nearestEl) {
             nearestEl.classList.add("highlight");
+            // hlavička spoja, do ktorého aktuálny riadok patrí, je výrazná (čierna)
+            for (let _p = nearestEl.previousElementSibling; _p; _p = _p.previousElementSibling) {
+              if (_p.classList && _p.classList.contains("grafikon-direction")) { _p.classList.add("aktualny"); break; }
+            }
             nearestEl.innerHTML += '<div class="g-badge">Teraz ›</div>';
             if (appState.grafikonFollow !== false) setTimeout(() => {
               const offset =

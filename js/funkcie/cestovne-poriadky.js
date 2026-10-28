@@ -48,6 +48,8 @@
             typ = parseInt(raw.slice(-1));
           } else if (/^\d+\/\d+$/.test(raw)) {
             kurzStr = raw;
+            // linka/poradie bez typu dňa: berie sa typ dnešného dňa
+            typ = window.Calendar ? window.Calendar.getDayType(new Date()) : 1;
           }
           if (!kurzStr) {
             if (kurzError) kurzError.style.display = "";
@@ -258,7 +260,7 @@
             nastavLinky();
           }
           async function otvor() {
-            if (!box) { box = mk("div", ""); sluzPanel.appendChild(box); }
+            if (!box) { box = mk("div", ""); sluzPanel.insertBefore(box, sluzPanel.firstChild); }
             await nacitaj();
             if (zoznam && !kolesa) postav();
           }
