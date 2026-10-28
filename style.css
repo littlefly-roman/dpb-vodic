@@ -961,9 +961,15 @@
         color: var(--surface);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        background: var(--text-1);
+        background: #5f6671;
+        color: #fff;
         border-bottom: 1px solid var(--border);
         margin-top: 4px;
+      }
+      /* hlavička spoja je čierna (dominantná) až keď je ten spoj aktuálny */
+      .grafikon-direction.aktualny {
+        background: var(--text-1);
+        color: var(--surface);
       }
       /* spoj bez cestujúcich (služobná jazda) alebo neverejný (školský): jemnejšia inverzia */
       .grafikon-direction.np {
@@ -1038,7 +1044,9 @@
       }
       .grafikon-row.highlight {
         background: var(--red-soft);
-        border-left: 3px solid var(--red);
+        border: 2px solid var(--red);
+        border-radius: 8px;
+        margin: 2px 6px;
       }
       .grafikon-row.highlight .g-time {
         color: var(--red-text);
@@ -3350,3 +3358,8 @@ body {
 
 .burza-upoz { display: block; font-size: 15px; color: var(--orange, #c26a00); margin-top: 4px; font-weight: 600; }
 .burza-delena { display: block; font-size: 15px; color: var(--text-2); margin-top: 4px; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .grafikon-direction:not(.np):not(.noc):not(.aktualny) { background: #3a404a; color: #e5e7eb; }
+}
+:root[data-theme="dark"] .grafikon-direction:not(.np):not(.noc):not(.aktualny) { background: #3a404a; color: #e5e7eb; }
