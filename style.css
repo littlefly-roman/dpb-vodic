@@ -2716,10 +2716,11 @@
   position: absolute;
   left: 50%;
   bottom: 0;
-  height: var(--h);
-  aspect-ratio: var(--ik-pomer, 0.74);
-  transform: translateX(-50%);
-  will-change: transform, height;
+  margin-left: calc(var(--w, 40px) / -2);
+  transform-origin: 50% 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .mod-ikona.druh-trolejbus { --ik-pomer: 171/231; }
 .mod-ikona.druh-elektricka { --ik-pomer: 142/231; }

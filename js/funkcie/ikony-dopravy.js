@@ -29,6 +29,9 @@
     var s = document.createElement("span");
     s.className = "mod-ikona druh-" + druh;
     s.setAttribute("role", "img");
+    s.style.height = V_PREDNA + "px";
+    s.style.width = (V_PREDNA * POMER[druh]).toFixed(2) + "px";
+    s.style.setProperty("--w", (V_PREDNA * POMER[druh]).toFixed(2) + "px");
     s.setAttribute("aria-label", NAZVY[druh]);
     s.style.setProperty("--ik", "url(img/doprava/" + druh + ".png)");
     s.style.setProperty("--ik-podklad", "url(img/doprava/" + druh + "-podklad.png)");
@@ -49,10 +52,10 @@
       var h = V_ZADNA + (V_PREDNA - V_ZADNA) * t;
       var x = POLOMER * Math.sin(a);
       var st = it.el.style;
-      st.setProperty("--h", h.toFixed(2) + "px");
+      // veľkosť sa mení len cez scale (iPhone/Safari neprekresľuje masky pri zmene výšky)
       st.setProperty("--op", (0.6 + 0.4 * t).toFixed(3));
       st.zIndex = String(Math.round(t * 20));
-      st.transform = "translateX(calc(-50% + " + x.toFixed(2) + "px))";
+      st.transform = "translate3d(" + x.toFixed(2) + "px,0,0) scale(" + (h / V_PREDNA).toFixed(4) + ")";
     });
   }
 
