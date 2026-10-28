@@ -25,17 +25,30 @@
 
   var kolotoce = []; // {el, items:[{el,druh,base}], off, ...}
 
-  function ikona(druh) {
-    var s = document.createElement("span");
-    s.className = "mod-ikona druh-" + druh;
-    s.setAttribute("role", "img");
-    s.style.height = V_PREDNA + "px";
-    s.style.width = (V_PREDNA * POMER[druh]).toFixed(2) + "px";
-    s.style.setProperty("--w", (V_PREDNA * POMER[druh]).toFixed(2) + "px");
-    s.setAttribute("aria-label", NAZVY[druh]);
-    s.style.setProperty("--ik", "url(img/doprava/" + druh + ".png)");
-    s.style.setProperty("--ik-podklad", "url(img/doprava/" + druh + "-podklad.png)");
-    return s;
+  // Kreslenie do <canvas>: iPhone (Safari) pri animácii CSS masiek ikony zahadzoval, canvas je spoľahlivý
+  var obr = {}, obarvene = {};
+  function nacitaj(url) {
+    if (obr[url]) return obr[url];
+    var im = new Image();
+    im.onload = function () { vsetky(function (k) { poloz(k); }); };
+    im.src = url;
+    obr[url] = im;
+    return im;
+  }
+  function obarvi(url, farba) {
+    var im = nacitaj(url);
+    if (!im.complete || !im.naturalWidth) return null;
+    var kl = url + "|" + farba;
+    if (obarvene[kl]) return obarvene[kl];
+    var c = document.createElement("canvas");
+    c.width = im.naturalWidth; c.height = im.naturalHeight;
+    var g = c.getContext("2d");
+    g.drawImage(im, 0, 0);
+    g.globalCompositeOperation = "source-in";
+    g.fillStyle = farba;
+    g.fillRect(0, 0, c.width, c.height);
+    obarvene[kl] = c;
+    return c;
   }
 
   // Uhly v pokoji: vybraný druh = 0° (vpredu v strede), ostatné ±120°
@@ -46,26 +59,43 @@
   }
 
   function poloz(k) {
-    k.items.forEach(function (it) {
+    var cv = k.cv; if (!cv) return;
+    var dpr = window.devicePixelRatio || 1;
+    var W = k.el.clientWidth || 220, H = k.el.clientHeight || 92;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    var g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    var cs = getComputedStyle(k.el);
+    var bg = (cs.getPropertyValue("--bg") || "#fff").trim() || "#fff";
+    var red = (cs.getPropertyValue("--red") || "#e8001a").trim() || "#e8001a";
+    var pole = k.items.map(function (it) {
       var a = ((it.base + k.off) * Math.PI) / 180;
-      var t = (Math.cos(a) + 1) / 2; // 1 = celkom vpredu, 0 = celkom vzadu
-      var h = V_ZADNA + (V_PREDNA - V_ZADNA) * t;
-      var x = POLOMER * Math.sin(a);
-      var st = it.el.style;
-      // veľkosť sa mení len cez scale (iPhone/Safari neprekresľuje masky pri zmene výšky)
-      st.setProperty("--op", (0.6 + 0.4 * t).toFixed(3));
-      st.zIndex = String(Math.round(t * 20));
-      st.transform = "translate3d(" + x.toFixed(2) + "px,0,0) scale(" + (h / V_PREDNA).toFixed(4) + ")";
+      var t = (Math.cos(a) + 1) / 2;
+      return { it: it, t: t, x: POLOMER * Math.sin(a) };
+    }).sort(function (p, q) { return p.t - q.t; });
+    pole.forEach(function (o) {
+      var h = V_ZADNA + (V_PREDNA - V_ZADNA) * o.t;
+      var w = h * POMER[o.it.druh];
+      var cx = W / 2 + o.x, y0 = H - h;
+      var pod = obarvi("img/doprava/" + o.it.druh + "-podklad.png", bg);
+      var ik = obarvi("img/doprava/" + o.it.druh + ".png", red);
+      if (pod) { g.globalAlpha = 1; g.drawImage(pod, cx - w * 1.04 / 2, H - h / 2 - h * 1.04 / 2, w * 1.04, h * 1.04); }
+      if (ik) { g.globalAlpha = 0.6 + 0.4 * o.t; g.drawImage(ik, cx - w / 2, y0, w, h); }
     });
+    g.globalAlpha = 1;
   }
 
   function vykresli(k) {
     k.el.innerHTML = "";
     k.el.setAttribute("data-mod", mod);
+    var cv = document.createElement("canvas");
+    cv.style.cssText = "position:absolute;inset:0;width:100%;height:100%";
+    k.el.appendChild(cv);
+    k.cv = cv;
     k.items = PORADIE.map(function (d) {
-      var e = ikona(d);
-      k.el.appendChild(e);
-      return { el: e, druh: d, base: zaklad(d) };
+      nacitaj("img/doprava/" + d + ".png"); nacitaj("img/doprava/" + d + "-podklad.png");
+      return { druh: d, base: zaklad(d) };
     });
     poloz(k);
   }
@@ -138,6 +168,12 @@
     // úvodné roztočenie na obrazovke, ktorá je práve vidieť
     vsetky(function (k) { if (viditelny(k.el)) spusti(k, { typ: "intro" }); });
   }
+
+  // zmena témy (svetlá/tmavá) = prekresliť
+  try {
+    new MutationObserver(function () { vsetky(poloz); }).observe(document.documentElement, { attributes: true });
+    if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { vsetky(poloz); });
+  } catch (e) {}
 
   window.DpbIkony = {
     nastavMod: function (m) {
