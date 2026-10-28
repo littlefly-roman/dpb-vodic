@@ -1343,24 +1343,6 @@
             );
         }
 
-        // Preskok zo zvončeka: karta konkrétneho dňa / Burza (na deň)
-        window._otvorDen = function (key) {
-          const p = String(key).split("-").map(Number);
-          if (p.length < 3 || !p[0]) return;
-          appState.selectedDate = new Date(p[0], p[1] - 1, p[2]);
-          appState.viewMode = "cards";
-          setActiveNav("today");
-          document.getElementById("burzaView").classList.add("hidden");
-          employerView.classList.add("hidden");
-          servicesView.classList.remove("hidden");
-          dpbToggle.classList.remove("active-view");
-          appState.mainView = "services";
-          render();
-        };
-        window._otvorBurzu = function (key) {
-          otvorBurzuPreDen(key);
-        };
-
         btnToday.addEventListener("click", () => {
           appState.selectedDate = new Date();
           appState.viewMode = "cards";

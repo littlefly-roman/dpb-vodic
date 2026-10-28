@@ -1248,6 +1248,19 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
       }
+      /* Tmavý režim: --text-1 je svetlá, preto toast (stavové hlásenie) dostane tmavo-šedé pozadie a svetlé písmo */
+      :root[data-theme="dark"] .toast {
+        background: #3a3f4c;
+        color: #eef0f4;
+        border: 1px solid #4a5060;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .toast {
+          background: #3a3f4c;
+          color: #eef0f4;
+          border: 1px solid #4a5060;
+        }
+      }
 
       /* ==========================
    OVERLAY
