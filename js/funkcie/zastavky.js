@@ -523,6 +523,47 @@
           for (var j = 0; j < iv.length; j++) if (iv[j].o <= t && t <= iv[j].d) return iv[j].cislo; // koniec intervalu (výmena)
           return "";
         }
+        // Vodiči kurzov dňa: { "3/12": [{o,d,meno}] } – z karty SLUŽBA a z kurzov striedača (minúty)
+        var _vodIdx = {}, _vsetciVodici = false, _vodOtv = {};
+        function vodiciDna(posun) {
+          if (_vodIdx[posun]) return _vodIdx[posun];
+          var idx = {};
+          var d = new Date();
+          d.setDate(d.getDate() + posun);
+          var kl =
+            d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+          var drv = {};
+          try { (window.DPBData ? DPBData.getDrivers() : []).forEach(function (x) { drv[String(x.rid)] = x.meno; }); } catch (e) {}
+          var modely = (window.RAW && window.RAW.models) || {};
+          Object.keys(modely).forEach(function (rid) {
+            (modely[rid] || []).forEach(function (den) {
+              if (den.datum !== kl) return;
+              (den.karty || []).forEach(function (k) {
+                var pridaj = function (kurz, od, do_, typ) {
+                  if (!kurz || !od || !do_) return;
+                  var o = minut(od), dd = minut(do_);
+                  if (dd < o) dd += 1440;
+                  (idx[kurz] = idx[kurz] || []).push({ o: o, d: dd, meno: drv[String(rid)] || String(rid), typ: typ });
+                };
+                if (k.vzor === "SLUŽBA") pridaj(k.kurz, k.od, k.do, "sluzba");
+                else if (k.vzor === "STRIEDAČ") (k.kurzy || []).forEach(function (r) { pridaj(r.kurz, r.prebera, r.odovzdava, "striedac"); });
+              });
+            });
+          });
+          return (_vodIdx[posun] = idx);
+        }
+        // vodič odchodu: len pre dnešný deň; vráti { meno } alebo null
+        function vodicOdchodu(o) {
+          if (o.den !== 0) return null;
+          var kurz = (o.sluz || o.lraw || o.linka) + "/" + o.kurz;
+          var iv = vodiciDna(o.sd)[kurz];
+          if (!iv) return null;
+          var t = Math.floor(o.casN / 60) + (o.casN < ZACIATOK_DNA ? 1440 : 0);
+          var najdi = function (typ, strict) {
+            return iv.filter(function (x) { return x.typ === typ && x.o <= t && (strict ? t < x.d : t <= x.d); })[0];
+          };
+          return najdi("striedac", true) || najdi("sluzba", true) || najdi("striedac", false) || najdi("sluzba", false) || null;
+        }
         function renderRows(rezim) {
           var cont = document.getElementById("_zastavkyRows");
           if (!cont) return;
@@ -631,8 +672,33 @@
             ciel.style.cssText = "font-size:15px;color:var(--text-2);flex:1;margin-left:10px";
             ciel.textContent = "\u2192 " + (o.ciel || "");
             row.appendChild(ciel);
-            cont.appendChild(row);
-            if (isNext) cont._dalsi = row;
+            // šípka na konci riadku: rozbalí meno vodiča
+            var vod = vodicOdchodu(o);
+            var kl = o.typ + "|" + o.linka + "|" + o.kurz + "|" + o.cas + "|" + o.den;
+            var otvorene = _vsetciVodici || _vodOtv[kl];
+            var sip = document.createElement("button");
+            sip.type = "button";
+            sip.setAttribute("aria-label", "Vodič");
+            sip.setAttribute("aria-expanded", otvorene ? "true" : "false");
+            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 2px 4px 6px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;transform:rotate(" + (otvorene ? "90deg" : "0deg") + ")";
+            sip.textContent = "\u203A";
+            row.appendChild(sip);
+            var wrap = document.createElement("div");
+            wrap.appendChild(row);
+            var det = document.createElement("div");
+            det.style.cssText = "display:" + (otvorene ? "block" : "none") + ";padding:2px 0 8px 62px;font-size:15px;color:var(--text-2);border-bottom:1px solid var(--border);" + (isPast ? "opacity:0.6" : "");
+            det.textContent = vod ? "Vodič: " + vod.meno : (o.den === 0 ? "Vodič nie je známy" : "Vodič je známy len pre dnešný deň");
+            wrap.appendChild(det);
+            row.addEventListener("click", function () {
+              _vodOtv[kl] = !_vodOtv[kl];
+              var ot = _vsetciVodici || _vodOtv[kl];
+              det.style.display = ot ? "block" : "none";
+              sip.style.transform = "rotate(" + (ot ? "90deg" : "0deg") + ")";
+              sip.setAttribute("aria-expanded", ot ? "true" : "false");
+            });
+            row.style.cursor = "pointer";
+            cont.appendChild(wrap);
+            if (isNext) cont._dalsi = wrap;
           });
           if (rezim === "zamer") {
             var d = cont._dalsi;
@@ -673,6 +739,7 @@
           staOdchody.innerHTML =
             '<div style="color:var(--text-3);font-size:15px;padding:8px 0">Načítavam...</div>';
           _vozIdx = {}; // vozidlá sa načítajú nanovo (nová výprava)
+          _vodIdx = {}; _vsetciVodici = false; _vodOtv = {};
           var nastSlub = nacitajNast(grp); // súbežne s odchodmi
           var smerSlub = nacitajSmer(grp);
           try {
@@ -734,6 +801,15 @@
             prepniObluben(grp, nazov);
             nastavHviezdu();
           });
+          var vodLab = document.createElement("label");
+          vodLab.style.cssText = "display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:500;color:var(--text-2);margin-right:6px;cursor:pointer;flex:none";
+          var vodCb = document.createElement("input");
+          vodCb.type = "checkbox";
+          vodCb.checked = _vsetciVodici;
+          vodCb.addEventListener("change", function () { _vsetciVodici = vodCb.checked; renderRows(""); });
+          vodLab.appendChild(vodCb);
+          vodLab.appendChild(document.createTextNode("Vodiči"));
+          hdr.appendChild(vodLab);
           hdr.appendChild(hviezda);
           staOdchody.appendChild(hdr);
           _fNast = {};
