@@ -22,8 +22,7 @@
     if (cal && !cal.classList.contains("hidden")) { cal.classList.add("hidden"); return true; }
     var n = $("notifPanel");
     if (n && !n.classList.contains("hidden")) { if (window.Notif && Notif.zavriet) Notif.zavriet(); else n.classList.add("hidden"); return true; }
-    var bf = $("burzaFilterBack");
-    if (bf && viditelne(bf)) { bf.click(); return true; }
+    if (typeof Burza !== "undefined" && Burza.zrusFilter && Burza.zrusFilter()) return true;
     var t = $("btnToday");
     if (t && !t.classList.contains("active")) { t.click(); return true; }
     return false;

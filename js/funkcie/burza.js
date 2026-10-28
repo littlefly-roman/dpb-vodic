@@ -738,29 +738,27 @@
               "dec",
             ];
             hdr.innerHTML = `
-      <button class="burza-filter-back" id="burzaFilterBack">← Späť na dátum</button>
       <span>Služby: <strong>${DNI2[d.getDay()]} ${d.getDate()}. ${MES2[d.getMonth()]}</strong></span>
     `;
-            document
-              .getElementById("burzaFilterBack")
-              .addEventListener("click", () => {
-                state.denFilter = null;
-                document.getElementById("burza-filter-hdr").remove();
-                document.getElementById("burzaView").classList.add("hidden");
-                document
-                  .getElementById("servicesView")
-                  .classList.remove("hidden");
-                document
-                  .querySelectorAll(".bottom-nav button")
-                  .forEach((b) => b.classList.remove("active"));
-                document.getElementById("btnToday").classList.add("active");
-              });
           } else {
             const hdr = document.getElementById("burza-filter-hdr");
             if (hdr) hdr.remove();
           }
 
           render();
+        }
+
+        // Gesto späť: ak je Burza otvorená s filtrom dňa, vráti na zoznam služieb dňa
+        function zrusFilter() {
+          if (!state.denFilter) return false;
+          state.denFilter = null;
+          const h = document.getElementById("burza-filter-hdr");
+          if (h) h.remove();
+          document.getElementById("burzaView").classList.add("hidden");
+          document.getElementById("servicesView").classList.remove("hidden");
+          document.querySelectorAll(".bottom-nav button").forEach((b) => b.classList.remove("active"));
+          document.getElementById("btnToday").classList.add("active");
+          return true;
         }
 
         function getVolnePreDen(dateKey) {
@@ -770,6 +768,6 @@
           );
         }
 
-        return { init, render, getVolnePreDen, rezervuj, getStav: (id) => state.rezervacie.find(r => r.sluzbaId === id && ["odoslana","riesenie","schvalena"].includes(r.stav)) || null };
+        return { init, render, zrusFilter, getVolnePreDen, rezervuj, getStav: (id) => state.rezervacie.find(r => r.sluzbaId === id && ["odoslana","riesenie","schvalena"].includes(r.stav)) || null };
       })();
     
