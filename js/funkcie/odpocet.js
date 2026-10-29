@@ -190,17 +190,16 @@
   }
 
   // Upozornenie na čas z riadku (dlhé podržanie). Platí jedno naraz; nový výber prepíše predchádzajúci.
+  // Vráti true, ak je upozornenie nastavené (nové alebo to isté) – vtedy sa otvorí okno s odpočtom.
   function nastav(info) {
-    var toast = function (t) { if (window._showToast) window._showToast(t, 3500); };
-    if (akt && akt.key === info.key) { toast("Upozornenie na " + akt.cas + " už je nastavené"); return; }
-    if (zostava(sekHms(info.cas)) <= 0) { toast("Tento čas už prešiel"); return; }
-    var pred = akt;
+    if (akt && akt.key === info.key) return true;
+    if (zostava(sekHms(info.cas)) <= 0) { if (window._showToast) window._showToast("Tento čas už prešiel", 3500); return false; }
     zapni(info);
-    toast(pred ? "Upozornenie zmenené z " + pred.cas + " na " + akt.cas : "Upozornenie nastavené na " + akt.cas);
+    return true;
   }
 
   (function dlhePodrzanie() {
-    var CAS = 550, tm = null, x0 = 0, y0 = 0, potlac = 0;
+    var CAS = 550, tm = null, x0 = 0, y0 = 0, potlac = 0, cakaOtvor = false;
     function cielEl(e) { return e.target && e.target.closest ? e.target.closest("[data-odp-cas]") : null; }
     function zrus() { if (tm) { clearTimeout(tm); tm = null; } }
     document.addEventListener("pointerdown", function (e) {
@@ -211,13 +210,19 @@
         tm = null;
         potlac = Date.now();
         if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
-        nastav({ key: el.getAttribute("data-odp-key"), cas: el.getAttribute("data-odp-cas"), nazov: el.getAttribute("data-odp-nazov") || "" });
+        cakaOtvor = nastav({ key: el.getAttribute("data-odp-key"), cas: el.getAttribute("data-odp-cas"), nazov: el.getAttribute("data-odp-nazov") || "" });
       }, CAS);
     }, true);
     document.addEventListener("pointermove", function (e) {
       if (tm && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) zrus();
     }, true);
     ["pointerup", "pointercancel", "scroll"].forEach(function (n) { document.addEventListener(n, zrus, true); });
+    // okno s odpočtom sa otvorí po pustení prsta (nie pod prstom)
+    ["pointerup", "pointercancel"].forEach(function (n) {
+      document.addEventListener(n, function () {
+        if (cakaOtvor) { cakaOtvor = false; setTimeout(otvorOkno, 0); }
+      }, true);
+    });
     // po dlhom podržaní nesmie nasledovať obyčajné ťuknutie (napr. rozbalenie riadku)
     document.addEventListener("click", function (e) {
       if (potlac && Date.now() - potlac < 800 && cielEl(e)) { e.stopPropagation(); e.preventDefault(); potlac = 0; }
