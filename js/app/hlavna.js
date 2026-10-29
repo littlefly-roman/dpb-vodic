@@ -1365,6 +1365,24 @@
           Burza.init(dateKey);
         }
 
+        // skok z notifikácie: {den:"YYYY-MM-DD"} = karta dňa, {burza:"YYYY-MM-DD"|true} = Burza
+        window.DpbIdiNa = function (cil) {
+          if (!cil) return;
+          if (cil.burza) { otvorBurzuPreDen(cil.burza === true ? undefined : cil.burza); return; }
+          if (cil.den) {
+            var p = cil.den.split("-").map(Number);
+            appState.selectedDate = new Date(p[0], p[1] - 1, p[2]);
+            appState.viewMode = "cards";
+            setActiveNav("today");
+            document.getElementById("burzaView").classList.add("hidden");
+            employerView.classList.add("hidden");
+            servicesView.classList.remove("hidden");
+            dpbToggle.classList.remove("active-view");
+            appState.mainView = "services";
+            render();
+          }
+        };
+
         function setActiveNav(id) {
           // Cestovné poriadky sú „obrazovka“ nad obsahom: iná záložka ich zatvorí
           var cpm = document.getElementById("cpModal");
