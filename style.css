@@ -204,9 +204,10 @@
         height: 22px;
       }
       .nav-label {
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
-        letter-spacing: 0.1px;
+        letter-spacing: 0;
+        white-space: nowrap;
       }
 
       /* ==========================
@@ -473,9 +474,11 @@
         margin-bottom: 8px;
       }
       .volno-card .volno-text {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--text-2);
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1;
+        color: var(--text-1);
       }
       .volno-card .volno-sub {
         font-size: 15px;
@@ -1174,7 +1177,8 @@
       }
       .list-day-group.is-weekend .list-date,
       .list-day-group.is-holiday .list-date {
-        color: var(--red);
+        color: var(--red-text);
+        font-weight: 800;
       }
       .list-day-name {
         width: 26px;
@@ -2302,8 +2306,9 @@
       .card-menu-btn {
         color: var(--text-3);
         cursor: pointer;
-        width: 36px;
-        height: 36px;
+        width: 44px;
+        height: 44px;
+        margin: -4px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2783,10 +2788,11 @@ body {
   width: 100%;
   margin-top: 8px;
   padding: 14px;
+  min-height: 48px;
   border-radius: 12px;
   border: 1px solid var(--red);
   background: transparent;
-  color: var(--red);
+  color: var(--red-text);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -2796,6 +2802,8 @@ body {
   width: 100%;
   margin-top: 8px;
   padding: 14px;
+  min-height: 48px;
+  border: 1px solid var(--red);
   border-radius: 12px;
   border: 0;
   background: var(--red);
@@ -3252,14 +3260,15 @@ body {
 #btnExport[hidden]{display:none}
 
 .profil-prepinac{cursor:pointer;align-items:center}
-.profil-prepinac input{width:22px;height:22px;accent-color:var(--red);flex-shrink:0}
+.profil-prepinac{min-height:48px}
+.profil-prepinac input{width:26px;height:26px;accent-color:var(--red);flex-shrink:0}
 .profil-pozn{font-size: 15px;color:var(--text-3);padding:2px 0 4px;line-height:1.3}
 
 /* Hľadať */
 #hladatView{flex:1;overflow-y:auto;padding:12px 14px 16px}
 #hladatView.hidden{display:none}
 .hl-vstup{width:100%;box-sizing:border-box;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-1);font:inherit;font-size: 18px}
-.hl-vstup:focus{outline:2px solid var(--red);outline-offset:-1px}
+.hl-vstup:focus{outline:none;border-color:var(--text-3)}
 .hl-pozn{color:var(--text-3);font-size: 18px;padding:18px 4px;line-height:1.4}
 .hl-sek{font-size: 18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);padding:16px 4px 6px}
 .hl-riadok{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text-1);border-radius:12px;padding:10px 12px;margin-bottom:6px;font:inherit;cursor:pointer;min-height:56px}
@@ -3356,10 +3365,15 @@ body {
   body { width: 100%; max-width: 480px; margin: 0 auto; transform: translateZ(0); box-shadow: 0 0 0 1px var(--border-2), 0 0 40px rgba(0,0,0,.15); }
 }
 
-.burza-upoz { display: block; font-size: 15px; color: var(--orange, #c26a00); margin-top: 4px; font-weight: 600; }
+.burza-upoz { display: block; font-size: 15px; color: var(--orange, #a35a00); margin-top: 4px; font-weight: 500; }
 .burza-delena { display: block; font-size: 15px; color: var(--text-2); margin-top: 4px; }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .grafikon-direction:not(.np):not(.noc):not(.aktualny) { background: #3a404a; color: #e5e7eb; }
 }
 :root[data-theme="dark"] .grafikon-direction:not(.np):not(.noc):not(.aktualny) { background: #3a404a; color: #e5e7eb; }
+
+/* Cestovné poriadky sú súčasťou appky: spodné menu ostáva viditeľné, vlastné „Zavrieť“ netreba */
+#cpModal { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+#cpModal .grafikon-footer { display: none; }
+#cpModal:not(.active) { transform: translateY(calc(100% + 120px)); pointer-events: none; }

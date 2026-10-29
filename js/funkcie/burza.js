@@ -85,10 +85,10 @@
           const r = O.skontroluj(prace, { od: O.abs(s.dateKey, s.odMin), do: O.abs(s.dateKey, s.doMin) });
           let skr = null;
           if (r.skrateny) {
-            const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + " h " + String(Math.round(m % 60)).padStart(2, "0") + " min");
-            const a = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? "pred " + f(r.skrateny.pred) : "";
-            const b = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? "po " + f(r.skrateny.po) : "";
-            skr = "Skrátený odpočinok: " + [a, b].filter(Boolean).join(", ");
+            const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + "\u00a0h\u00a0" + String(Math.round(m % 60)).padStart(2, "0") + "\u00a0min");
+            const a = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? "pred\u00a0" + f(r.skrateny.pred) : "";
+            const b = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? "po\u00a0" + f(r.skrateny.po) : "";
+            skr = "Odpočinok iba: " + [a, b].filter(Boolean).join(", ");
           }
           return { ok: r.ok, skrateny: skr, delena: r.delena };
         }
