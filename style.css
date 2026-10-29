@@ -3393,3 +3393,15 @@ body {
 [data-odp-cas]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .odp-riadok{box-shadow:inset 3px 0 0 var(--red)}
 .odp-rt{flex:none;margin-left:auto;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--red-text, var(--red));padding:12px 6px 12px 10px;cursor:pointer;-webkit-user-select:none;user-select:none}
+
+/* v178: nastavenia upozornenia (prilepený panel v okne odpočtu) */
+.odp-nast{position:absolute;top:8px;right:8px;width:44px;height:44px;border:none;border-radius:22px;background:transparent;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.odp-nast svg{transition:transform .25s}
+.odp-nast-otv svg{transform:rotate(180deg)}
+.odp-panel{max-height:0;overflow:hidden;transition:max-height .25s ease;background:var(--surface);color:var(--text-1);border-radius:0 0 20px 20px;border-top:1px solid var(--border)}
+.odp-panel-in{padding:16px 20px 18px}
+.odp-panel-t{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:left}
+.odp-panel-h{font-size:13px;color:var(--text-3);margin-top:12px;text-align:left}
+.odp-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.odp-chip{min-height:48px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.odp-chip-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
