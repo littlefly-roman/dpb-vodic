@@ -1,6 +1,6 @@
 /* Odpočet do odchodu z konečnej (zvonček v pruhu spoja v grafikone kurzu).
    Ťuknutie na zvonček otvorí okno s odpočtom, zapne zvuk a zapnutú obrazovku. Zatvorenie okna odpočet nevypne –
-   v pruhu spoja ostane zvonček so živým časom. Stupne: 2 min, 1 min, 30 s, čas odchodu (zvuk + vibrácia).
+   v pruhu spoja ostane zvonček so živým časom. Stupne: 2:00 (1 pípnutie), 1:30 (2), 1:00 (3), 0:30 (4), čas odchodu (poplach) (zvuk + vibrácia).
    Funguje len pri otvorenej appke so zapnutou obrazovkou; čas je podľa grafikonu (bez meškania). */
 (function () {
   "use strict";
@@ -49,13 +49,18 @@
     o.connect(g); g.connect(c.destination);
     o.start(a); o.stop(a + dur + 0.05);
   }
+  // Stupne podľa počtu pípnutí: 2:00 → 1, 1:30 → 2, 1:00 → 3, 0:30 → 4, odchod → poplach
+  function pipni(n, f, vol) {
+    return function () { for (var k = 0; k < n; k++) tón(f, k * 0.4, 0.25, vol); };
+  }
+  function vibrN(n) {
+    var a = []; for (var k = 0; k < n; k++) { if (k) a.push(110); a.push(200); } return a;
+  }
   var STUPNE = {
-    // 2 min: dve krátke pípnutia
-    120: { zvuk: function () { tón(1800, 0, 0.25, 0.7); tón(1800, 0.4, 0.25, 0.7); }, vibr: [200, 120, 200] },
-    // 1 min: tri pípnutia, vyšší tón
-    60: { zvuk: function () { tón(2000, 0, 0.3, 0.85); tón(2000, 0.42, 0.3, 0.85); tón(2000, 0.84, 0.3, 0.85); }, vibr: [250, 120, 250, 120, 250] },
-    // 30 s: rýchla séria striedavých tónov
-    30: { zvuk: function () { for (var k = 0; k < 6; k++) tón(k % 2 ? 2600 : 2000, k * 0.2, 0.17, 1); }, vibr: [200, 80, 200, 80, 200, 80, 200] },
+    120: { zvuk: pipni(1, 1800, 0.8), vibr: vibrN(1) },
+    90: { zvuk: pipni(2, 1900, 0.85), vibr: vibrN(2) },
+    60: { zvuk: pipni(3, 2000, 0.9), vibr: vibrN(3) },
+    30: { zvuk: pipni(4, 2200, 1), vibr: vibrN(4) },
     // odchod: dlhý poplašný signál (striedavé tóny ~2 s)
     0: { zvuk: function () { for (var k = 0; k < 8; k++) tón(k % 2 ? 2200 : 1500, k * 0.26, 0.24, 1); }, vibr: [800, 150, 800, 150, 800] }
   };
@@ -79,7 +84,7 @@
   function tikni() {
     if (!akt) return;
     var z = zostava(akt.dep);
-    [120, 60, 30].forEach(function (st) {
+    [120, 90, 60, 30].forEach(function (st) {
       if (z <= st && !akt.spustene[st]) { akt.spustene[st] = 1; if (z > st - 5) spusti(st); }
     });
     if (z <= 0 && !akt.spustene[0]) { akt.spustene[0] = 1; spusti(0); setTimeout(vypni, 4000); }
@@ -104,7 +109,7 @@
     var dep = sekHms(info.cas);
     var z = zostava(dep);
     akt = { key: info.key, dep: dep, nazov: info.nazov, cas: info.cas.slice(0, 5), spustene: {} };
-    [120, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
+    [120, 90, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
     if (tik) clearInterval(tik);
     tik = setInterval(tikni, 250);
     zapniObrazovku();
