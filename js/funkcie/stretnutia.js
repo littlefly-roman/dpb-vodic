@@ -117,7 +117,9 @@
           var k = s._karta || {};
           var add = function (kurzId, od, do_, typ, voz) {
             if (!kurzId) return;
-            (c[kurzId] = c[kurzId] || []).push({ rid: d.rid, meno: d.meno, od: sek(od), do: sek(do_), typ: typ, voz: voz || "" });
+            var o = sek(od), dd = sek(do_);
+            if (o != null && dd != null && dd <= o) dd += 86400; // služba cez polnoc
+            (c[kurzId] = c[kurzId] || []).push({ rid: d.rid, meno: d.meno, od: o, do: dd, typ: typ, voz: voz || "" });
           };
           if (s._vzor === "SLUŽBA") {
             var v = (k.vozidla && k.vozidla[0] && k.vozidla[0].cislo) || "";
@@ -131,8 +133,9 @@
       return c;
     })();
     var l = m[kurz] || [];
-    var najdeny = l.filter(function (x) { return x.typ === "striedac" && x.od != null && x.od <= t && t <= x.do; })[0] ||
-                  l.filter(function (x) { return x.typ === "sluzba" && x.od != null && x.od <= t && t <= x.do; })[0];
+    var v = function (x) { return x.od != null && ((x.od <= t && t <= x.do) || (x.od <= t + 86400 && t + 86400 <= x.do)); };
+    var najdeny = l.filter(function (x) { return x.typ === "striedac" && v(x); })[0] ||
+                  l.filter(function (x) { return x.typ === "sluzba" && v(x); })[0];
     return najdeny || null;
   }
 
