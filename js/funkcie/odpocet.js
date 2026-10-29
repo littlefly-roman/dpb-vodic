@@ -4,8 +4,21 @@
    Funguje len pri otvorenej appke so zapnutou obrazovkou; čas je podľa grafikonu (bez meškania). */
 (function () {
   "use strict";
-  var NAST = { zvuk: true, vibr: true };
-  try { var u = JSON.parse(localStorage.getItem("dpb-odpocet") || "null"); if (u) { NAST.zvuk = u.zvuk !== false; NAST.vibr = u.vibr !== false; } } catch (e) {}
+  // Predstih (sekundy pred časom), po typoch upozornenia: konečná (zvonček), prestávka, ostatné (dlhé podržanie riadku)
+  var DEF_PREDSTIH = { konecna: [180, 120, 90, 60, 30, 0], prestavka: [120, 60, 30], ostatne: [60] };
+  var NAST = { zvuk: true, vibr: false, predstih: {} };   // predvolene len zvuk
+  Object.keys(DEF_PREDSTIH).forEach(function (k) { NAST.predstih[k] = DEF_PREDSTIH[k].slice(); });
+  try {
+    var u = JSON.parse(localStorage.getItem("dpb-odpocet") || "null");
+    if (u) {
+      if (typeof u.zvuk === "boolean") NAST.zvuk = u.zvuk;
+      if (typeof u.vibr === "boolean") NAST.vibr = u.vibr;
+      if (u.predstih) Object.keys(DEF_PREDSTIH).forEach(function (k) {
+        if (Array.isArray(u.predstih[k])) NAST.predstih[k] = u.predstih[k].filter(function (x) { return typeof x === "number"; });
+      });
+    }
+  } catch (e) {}
+  var TYP_NAZOV = { konecna: "Odchod z konečnej", prestavka: "Prestávka", ostatne: "Ostatné časy" };
   function uloz() { try { localStorage.setItem("dpb-odpocet", JSON.stringify(NAST)); } catch (e) {} }
 
   var akt = null;          // { key, dep (s od polnoci), nazov, cas, spustene:{120,60,30,0} }
@@ -58,6 +71,7 @@
     var a = []; for (var k = 0; k < n; k++) { if (k) a.push(110); a.push(200); } return a;
   }
   var STUPNE = {
+    180: { zvuk: pipni(1, 1600, 0.8), vibr: vibrN(1) },
     120: { zvuk: pipni(1, 1800, 0.8), vibr: vibrN(1) },
     90: { zvuk: pipni(2, 1900, 0.85), vibr: vibrN(2) },
     60: { zvuk: pipni(3, 2000, 0.9), vibr: vibrN(3) },
@@ -85,10 +99,16 @@
   function tikni() {
     if (!akt) return;
     var z = zostava(akt.dep);
-    [120, 90, 60, 30].forEach(function (st) {
-      if (z <= st && !akt.spustene[st]) { akt.spustene[st] = 1; if (z > st - 5) spusti(st); }
+    var set = NAST.predstih[akt.typ] || [];
+    [180, 120, 90, 60, 30].forEach(function (st) {
+      if (z <= st && !akt.spustene[st]) { akt.spustene[st] = 1; if (z > st - 5 && set.indexOf(st) >= 0) spusti(st); }
     });
-    if (z <= 0 && !akt.spustene[0]) { akt.spustene[0] = 1; spusti(0); setTimeout(vypni, 4000); }
+    if (z <= 0 && !akt.spustene[0]) {
+      akt.spustene[0] = 1;
+      var zv = set.indexOf(0) >= 0;
+      if (zv) spusti(0);
+      setTimeout(vypni, zv ? 4000 : 300);
+    }
     obnov();
   }
   function obnov() {
@@ -126,8 +146,8 @@
     var dep = sekHms(info.cas);
     var z = zostava(dep);
     var _pc = String(info.cas).split(":");
-    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: _pc[0] + ":" + (_pc[1] || "00"), spustene: {} };
-    [120, 90, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
+    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: _pc[0] + ":" + (_pc[1] || "00"), typ: info.typ || "konecna", spustene: {} };
+    [180, 120, 90, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
     if (tik) clearInterval(tik);
     tik = setInterval(tikni, 250);
     zapniObrazovku();
@@ -148,36 +168,67 @@
     ov = document.createElement("div");
     ov.setAttribute("data-spat-prekryv", "1");
     ov.style.cssText = "position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box";
+    var wrap = document.createElement("div");
+    wrap.style.cssText = "width:100%;max-width:440px;display:flex;flex-direction:column";
     var box = document.createElement("div");
-    box.style.cssText = "background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;max-width:440px;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
+    box.style.cssText = "position:relative;background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
+      '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>' +
       '<div style="font-size:15px;color:var(--text-3)">Odchod o ' + akt.cas + '</div>' +
-      '<div style="font-size:17px;font-weight:700;margin:2px 0 6px">' + akt.nazov + '</div>' +
+      '<div style="font-size:17px;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
       '<div class="odp-cislo" style="font-size:72px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
-      '<div style="display:flex;gap:10px;margin-bottom:14px">' +
-      '<button type="button" class="odp-pre" data-p="zvuk"></button><button type="button" class="odp-pre" data-p="vibr"></button></div>' +
       '<button type="button" class="odp-vyp">Vypnúť odpočet</button>' +
       '<button type="button" class="odp-zat">Zavrieť (odpočet beží ďalej)</button>';
-    ov.appendChild(box);
-    document.body.appendChild(ov);
+    var panel = document.createElement("div");
+    panel.className = "odp-panel";
+    var CHIPS = [[180, "3 min"], [120, "2 min"], [90, "1,5 min"], [60, "1 min"], [30, "30 s"], [0, "V čase"]];
     function pre() {
-      box.querySelectorAll(".odp-pre").forEach(function (b) {
+      var set = NAST.predstih[akt.typ] || [];
+      panel.innerHTML =
+        '<div class="odp-panel-in">' +
+        '<div class="odp-panel-t">Nastavenia · ' + (TYP_NAZOV[akt.typ] || "") + '</div>' +
+        '<div style="display:flex;gap:10px;margin-bottom:14px">' +
+        '<button type="button" class="odp-pre" data-p="zvuk"></button><button type="button" class="odp-pre" data-p="vibr"></button></div>' +
+        '<div class="odp-panel-t">Upozorniť pred časom</div>' +
+        '<div class="odp-chips">' + CHIPS.map(function (c) {
+          return '<button type="button" class="odp-chip' + (set.indexOf(c[0]) >= 0 ? " odp-chip-on" : "") + '" data-st="' + c[0] + '" aria-pressed="' + (set.indexOf(c[0]) >= 0) + '">' + c[1] + '</button>';
+        }).join("") + '</div>' +
+        '<div class="odp-panel-h">Platí pre všetky upozornenia tohto typu.</div></div>';
+      panel.querySelectorAll(".odp-pre").forEach(function (b) {
         var k = b.getAttribute("data-p");
         b.textContent = (k === "zvuk" ? "Zvuk: " : "Vibrácia: ") + (NAST[k] ? "zap." : "vyp.");
         b.classList.toggle("odp-pre-on", !!NAST[k]);
         if (k === "vibr" && !navigator.vibrate) { b.textContent = "Vibrácia: nedostupná"; b.disabled = true; }
+        b.addEventListener("click", function () {
+          NAST[k] = !NAST[k]; uloz(); pre();
+          if (k === "zvuk" && NAST.zvuk) { audio(); STUPNE[60].zvuk(); }
+          if (k === "vibr" && NAST.vibr && navigator.vibrate) navigator.vibrate(150);
+        });
       });
+      panel.querySelectorAll(".odp-chip").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var st = +b.getAttribute("data-st"), a = NAST.predstih[akt.typ] || (NAST.predstih[akt.typ] = []);
+          var i = a.indexOf(st);
+          if (i >= 0) a.splice(i, 1); else { a.push(st); a.sort(function (x, y) { return y - x; }); if (NAST.zvuk) { audio(); STUPNE[st].zvuk(); } if (NAST.vibr && navigator.vibrate) navigator.vibrate(STUPNE[st].vibr); }
+          uloz(); pre();
+        });
+      });
+      if (panel.style.maxHeight && panel.style.maxHeight !== "0px") panel.style.maxHeight = panel.scrollHeight + "px";
     }
     pre();
-    box.querySelectorAll(".odp-pre").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var k = b.getAttribute("data-p"); NAST[k] = !NAST[k]; uloz(); pre();
-        if (k === "zvuk" && NAST.zvuk) { audio(); STUPNE[60].zvuk(); }
-        if (k === "vibr" && NAST.vibr && navigator.vibrate) navigator.vibrate(150);
-      });
+    var otv = false;
+    box.querySelector(".odp-nast").addEventListener("click", function () {
+      otv = !otv;
+      this.setAttribute("aria-expanded", otv ? "true" : "false");
+      this.classList.toggle("odp-nast-otv", otv);
+      box.style.borderRadius = otv ? "20px 20px 0 0" : "20px";
+      panel.style.maxHeight = otv ? panel.scrollHeight + "px" : "0px";
     });
     box.querySelector(".odp-vyp").addEventListener("click", vypni);
     box.querySelector(".odp-zat").addEventListener("click", zavriOkno);
+    wrap.appendChild(box); wrap.appendChild(panel);
+    ov.appendChild(wrap);
+    document.body.appendChild(ov);
     ov.addEventListener("click", function (e) { if (e.target === ov) zavriOkno(); });
     obnov();
   }
@@ -199,6 +250,21 @@
     return b;
   }
 
+  // Typ upozornenia podľa času riadku: ak sa zhoduje s prebratím/odovzdaním prestávky v dnešnej službe vodiča, je to „prestávka“
+  function minHm(t) { var p = String(t || "").split(":"); return (+p[0] || 0) * 60 + (+p[1] || 0); }
+  function typPodlaCasu(cas) {
+    try {
+      var r = window.appState && window.appState.currentDriver;
+      var d = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
+      if (!r || !d || !window.DPBData) return "ostatne";
+      var m = minHm(cas), sv = DPBData.getServicesForDate(r, d) || [];
+      for (var i = 0; i < sv.length; i++) {
+        var pr = (sv[i]._karta && sv[i]._karta["prestávka"]) || [];
+        for (var j = 0; j < pr.length; j++) if (minHm(pr[j].prebera) === m || minHm(pr[j].odovzdava) === m) return "prestavka";
+      }
+    } catch (e) {}
+    return "ostatne";
+  }
   // Upozornenie na čas z riadku (dlhé podržanie). Platí jedno naraz; nový výber prepíše predchádzajúci.
   // Vráti true, ak je upozornenie nastavené (nové alebo to isté) – vtedy sa otvorí okno s odpočtom.
   function nastav(info) {
@@ -220,7 +286,7 @@
         tm = null;
         potlac = Date.now();
         if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
-        cakaOtvor = nastav({ key: el.getAttribute("data-odp-key"), cas: el.getAttribute("data-odp-cas"), nazov: el.getAttribute("data-odp-nazov") || "" });
+        cakaOtvor = nastav({ key: el.getAttribute("data-odp-key"), cas: el.getAttribute("data-odp-cas"), nazov: el.getAttribute("data-odp-nazov") || "", typ: typPodlaCasu(el.getAttribute("data-odp-cas")) });
       }, CAS);
     }, true);
     document.addEventListener("pointermove", function (e) {
