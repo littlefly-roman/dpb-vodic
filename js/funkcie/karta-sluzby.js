@@ -870,6 +870,10 @@
                 kurz.className = "prs-kurz";
                 kurz.textContent = p.str_kurz ? "(" + p.str_kurz + ")" : "";
                 row.appendChild(kurz);
+                if (window.DpbPrestavka && window.DpbPrestavka.ikonaPrs) {
+                  var _pk = window.DpbPrestavka.ikonaPrs(service, k, p);
+                  if (_pk) row.appendChild(_pk);
+                }
                 pb.appendChild(row);
               });
               body.appendChild(pb);

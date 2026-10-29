@@ -627,6 +627,11 @@
             row.style.cssText =
               "display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);" +
               (isPast ? "opacity:0.6" : "");
+            if (o.den === 0 && !isPast) {
+              row.setAttribute("data-odp-cas", o.cas);
+              row.setAttribute("data-odp-key", "zast|" + o.typ + "|" + o.linka + "|" + o.kurz + "|" + o.cas);
+              row.setAttribute("data-odp-nazov", "Odchod " + o.linka + "/" + o.kurz + (o.ciel ? " \u2192 " + o.ciel : ""));
+            }
             var cp = o.cas.split(":");
             var cas = document.createElement("span");
             cas.style.cssText =
