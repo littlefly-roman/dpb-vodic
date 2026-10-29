@@ -36,21 +36,28 @@
     if (ctx && ctx.state === "suspended") ctx.resume();
     return ctx;
   }
+  // Hlasný signál: pravouhlá vlna (veľa energie v oblasti 1–3 kHz, kde sú malé reproduktory najsilnejšie), plná hlasitosť
   function tón(f, t0, dur, vol) {
     var c = audio(); if (!c) return;
     var o = c.createOscillator(), g = c.createGain();
-    o.type = "sine"; o.frequency.value = f;
-    g.gain.setValueAtTime(0.0001, c.currentTime + t0);
-    g.gain.exponentialRampToValueAtTime(vol, c.currentTime + t0 + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t0 + dur);
+    o.type = "square"; o.frequency.value = f;
+    var a = c.currentTime + t0;
+    g.gain.setValueAtTime(0.0001, a);
+    g.gain.linearRampToValueAtTime(vol, a + 0.01);
+    g.gain.setValueAtTime(vol, a + Math.max(0.02, dur - 0.03));
+    g.gain.linearRampToValueAtTime(0.0001, a + dur);
     o.connect(g); g.connect(c.destination);
-    o.start(c.currentTime + t0); o.stop(c.currentTime + t0 + dur + 0.05);
+    o.start(a); o.stop(a + dur + 0.05);
   }
   var STUPNE = {
-    120: { zvuk: function () { tón(880, 0, 0.35, 0.25); }, vibr: [150] },
-    60: { zvuk: function () { tón(880, 0, 0.3, 0.45); tón(1100, 0.4, 0.3, 0.45); }, vibr: [200, 120, 200] },
-    30: { zvuk: function () { tón(1000, 0, 0.18, 0.7); tón(1000, 0.28, 0.18, 0.7); tón(1000, 0.56, 0.18, 0.7); }, vibr: [250, 100, 250, 100, 250] },
-    0: { zvuk: function () { tón(784, 0, 0.25, 0.9); tón(988, 0.28, 0.25, 0.9); tón(1319, 0.56, 0.6, 0.9); }, vibr: [600, 150, 600] }
+    // 2 min: dve krátke pípnutia
+    120: { zvuk: function () { tón(1800, 0, 0.25, 0.7); tón(1800, 0.4, 0.25, 0.7); }, vibr: [200, 120, 200] },
+    // 1 min: tri pípnutia, vyšší tón
+    60: { zvuk: function () { tón(2000, 0, 0.3, 0.85); tón(2000, 0.42, 0.3, 0.85); tón(2000, 0.84, 0.3, 0.85); }, vibr: [250, 120, 250, 120, 250] },
+    // 30 s: rýchla séria striedavých tónov
+    30: { zvuk: function () { for (var k = 0; k < 6; k++) tón(k % 2 ? 2600 : 2000, k * 0.2, 0.17, 1); }, vibr: [200, 80, 200, 80, 200, 80, 200] },
+    // odchod: dlhý poplašný signál (striedavé tóny ~2 s)
+    0: { zvuk: function () { for (var k = 0; k < 8; k++) tón(k % 2 ? 2200 : 1500, k * 0.26, 0.24, 1); }, vibr: [800, 150, 800, 150, 800] }
   };
   function spusti(st) {
     var s = STUPNE[st];
@@ -117,9 +124,9 @@
     if (!akt || ov) return;
     ov = document.createElement("div");
     ov.setAttribute("data-spat-prekryv", "1");
-    ov.style.cssText = "position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center";
+    ov.style.cssText = "position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box";
     var box = document.createElement("div");
-    box.style.cssText = "background:var(--surface);color:var(--text-1);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;text-align:center";
+    box.style.cssText = "background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;max-width:440px;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
       '<div style="font-size:15px;color:var(--text-3)">Odchod o ' + akt.cas + '</div>' +
       '<div style="font-size:17px;font-weight:700;margin:2px 0 6px">' + akt.nazov + '</div>' +
@@ -142,7 +149,7 @@
     box.querySelectorAll(".odp-pre").forEach(function (b) {
       b.addEventListener("click", function () {
         var k = b.getAttribute("data-p"); NAST[k] = !NAST[k]; uloz(); pre();
-        if (k === "zvuk" && NAST.zvuk) { audio(); STUPNE[120].zvuk(); }
+        if (k === "zvuk" && NAST.zvuk) { audio(); STUPNE[60].zvuk(); }
         if (k === "vibr" && NAST.vibr && navigator.vibrate) navigator.vibrate(150);
       });
     });
