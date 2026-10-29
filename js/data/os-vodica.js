@@ -27,7 +27,7 @@
   }
   function cleanKurz(lk) {
     lk = (lk || "").trim();
-    if (!/\d+\/\d+/.test(lk)) return lk;
+    if (!/\d+\/\d+/.test(lk) && !/^[A-Za-zÀ-ž]+\/\d+/.test(lk)) return lk;
     var parts = lk.split("+"),
       res = [],
       lin = null;
