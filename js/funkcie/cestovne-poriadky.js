@@ -32,6 +32,12 @@
             if (kurzInput) kurzInput.value = "";
             if (kurzError) kurzError.style.display = "none";
             if (window._cpSluzobnyVyber) window._cpSluzobnyVyber();
+            // pri ďalšom otvorení sa začína na Zastávkovom (rolety Službového sa po zatvorení zrušia)
+            document.querySelectorAll(".cp-type-btn").forEach(function (b) {
+              b.classList.toggle("cp-type-active", b.id === "cpBtnZastavkovyRoz");
+            });
+            if (sluzPanel) sluzPanel.style.display = "none";
+            if (zastPanel) zastPanel.style.display = "";
           });
 
         function doGo() {
