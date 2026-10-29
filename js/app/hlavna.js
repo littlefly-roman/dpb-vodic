@@ -915,6 +915,23 @@
    KALENDÁR
 ========================== */
 
+        // Swipe vľavo/vpravo v rozbalenom kalendári prepne mesiac
+        (function () {
+          let sx = 0, sy = 0, aktivny = false;
+          calendarPanel.addEventListener("touchstart", (e) => {
+            if (e.touches.length !== 1) { aktivny = false; return; }
+            sx = e.touches[0].clientX; sy = e.touches[0].clientY; aktivny = true;
+          }, { passive: true });
+          calendarPanel.addEventListener("touchend", (e) => {
+            if (!aktivny) return;
+            aktivny = false;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - sx, dy = t.clientY - sy;
+            if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+            const b = calendarPanel.querySelector('[data-kal="' + (dx < 0 ? "next" : "prev") + '"]');
+            if (b) b.click();
+          }, { passive: true });
+        })();
         let calendarMonth = appState.selectedDate.getMonth();
         let calendarYear = appState.selectedDate.getFullYear();
 
@@ -938,6 +955,7 @@
 
           const prev = document.createElement("button");
           prev.textContent = "‹";
+          prev.dataset.kal = "prev";
           prev.addEventListener("click", () => {
             calendarMonth--;
             if (calendarMonth < 0) {
@@ -957,6 +975,7 @@
 
           const next = document.createElement("button");
           next.textContent = "›";
+          next.dataset.kal = "next";
           next.addEventListener("click", () => {
             calendarMonth++;
             if (calendarMonth > 11) {
@@ -1336,6 +1355,12 @@
         }
 
         function setActiveNav(id) {
+          // Cestovné poriadky sú „obrazovka“ nad obsahom: iná záložka ich zatvorí
+          var cpm = document.getElementById("cpModal");
+          if (id !== "prehlad" && cpm && cpm.classList.contains("active")) {
+            var cpc = document.getElementById("cpClose");
+            if (cpc) cpc.click(); else cpm.classList.remove("active");
+          }
           var pv = document.getElementById("profilView");
           if (pv && id !== "profil") pv.classList.add("hidden");
           var hv = document.getElementById("hladatView");
