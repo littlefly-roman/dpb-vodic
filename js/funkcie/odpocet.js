@@ -5,7 +5,7 @@
 (function () {
   "use strict";
   // Predstih (sekundy pred časom), po typoch upozornenia: konečná (zvonček), prestávka, ostatné (dlhé podržanie riadku)
-  var DEF_PREDSTIH = { konecna: [180, 120, 90, 60, 30, 0], prestavka: [120, 60, 30], ostatne: [60] };
+  var DEF_PREDSTIH = { konecna: [180, 120, 90, 60, 30, 0], prestavka: [120, 60, 30], striedanie: [120, 60], ostatne: [60] };
   var NAST = { zvuk: true, vibr: false, predstih: {} };   // predvolene len zvuk
   Object.keys(DEF_PREDSTIH).forEach(function (k) { NAST.predstih[k] = DEF_PREDSTIH[k].slice(); });
   try {
@@ -18,9 +18,11 @@
       });
     }
   } catch (e) {}
-  var TYP_NAZOV = { konecna: "Odchod z konečnej", prestavka: "Prestávka", ostatne: "Ostatné časy" };
+  var TYP_NAZOV = { konecna: "Odchod z konečnej", prestavka: "Prestávka", striedanie: "Striedanie", ostatne: "Ostatné časy" };
   function uloz() { try { localStorage.setItem("dpb-odpocet", JSON.stringify(NAST)); } catch (e) {} }
 
+  var plan = null;         // plán dňa: { d, items:[{cas,nazov,typ,pop,kind}], skip:{} }
+  var planTik = null;
   var akt = null;          // { key, dep (s od polnoci), nazov, cas, spustene:{120,60,30,0} }
   var tik = null, wl = null, ctx = null, ov = null;
 
@@ -93,7 +95,7 @@
     }).catch(function () {});
   }
   function vypniObrazovku() { if (wl) { try { wl.release(); } catch (e) {} wl = null; } }
-  document.addEventListener("visibilitychange", function () { if (akt && document.visibilityState === "visible") zapniObrazovku(); });
+  document.addEventListener("visibilitychange", function () { if ((akt || plan) && document.visibilityState === "visible") zapniObrazovku(); });
 
   // ── beh odpočtu ──
   function tikni() {
@@ -101,12 +103,12 @@
     var z = zostava(akt.dep);
     var set = NAST.predstih[akt.typ] || [];
     [180, 120, 90, 60, 30].forEach(function (st) {
-      if (z <= st && !akt.spustene[st]) { akt.spustene[st] = 1; if (z > st - 5 && set.indexOf(st) >= 0) spusti(st); }
+      if (z <= st && !akt.spustene[st]) { akt.spustene[st] = 1; if (z > st - 5 && set.indexOf(st) >= 0) { spusti(st); if (akt.plan) otvorOkno(); } }
     });
     if (z <= 0 && !akt.spustene[0]) {
       akt.spustene[0] = 1;
       var zv = set.indexOf(0) >= 0;
-      if (zv) spusti(0);
+      if (zv) { spusti(0); if (akt.plan) otvorOkno(); }
       setTimeout(vypni, zv ? 4000 : 300);
     }
     obnov();
@@ -120,6 +122,16 @@
       b.classList.toggle("odp-blizko", !!je && z <= 60);
       var s = b.querySelector(".odp-t");
       if (s) s.textContent = je ? t : "";
+    });
+    document.querySelectorAll(".odp-plan").forEach(function (b) {
+      var kind = b.getAttribute("data-kind"), on = planJe(kind), sp = b.querySelector(".odp-pt");
+      b.classList.toggle("odp-plan-on", on);
+      if (!sp) return;
+      if (!on) { sp.textContent = "Upozorniť"; return; }
+      var n = planDalsi(kind);
+      if (!n) { sp.textContent = "Hotovo"; return; }
+      var m = Math.ceil(n.z / 60);
+      sp.textContent = "Ďalšie " + n.item.cas.split(":").slice(0, 2).join(":") + " · " + (n.z < 60 ? "o <1 min" : "o " + m + " min");
     });
     // riadky cestovného poriadku s nastaveným upozornením (dlhé podržanie)
     document.querySelectorAll("[data-odp-key]").forEach(function (r) {
@@ -146,7 +158,7 @@
     var dep = sekHms(info.cas);
     var z = zostava(dep);
     var _pc = String(info.cas).split(":");
-    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: _pc[0] + ":" + (_pc[1] || "00"), typ: info.typ || "konecna", spustene: {} };
+    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: _pc[0] + ":" + (_pc[1] || "00"), typ: info.typ || "konecna", pop: info.pop || "", spustene: {} };
     [180, 120, 90, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
     if (tik) clearInterval(tik);
     tik = setInterval(tikni, 250);
@@ -154,9 +166,10 @@
     tikni();
   }
   function vypni() {
+    if (akt && akt.plan && plan) { plan.skip[akt.planCas + "|" + akt.plan] = 1; planUloz(); }
     akt = null;
     if (tik) { clearInterval(tik); tik = null; }
-    vypniObrazovku();
+    if (!plan) vypniObrazovku();
     zavriOkno();
     obnov();
   }
@@ -174,10 +187,10 @@
     box.style.cssText = "position:relative;background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
       '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-      '<div style="font-size:15px;color:var(--text-3)">Odchod o ' + akt.cas + '</div>' +
+      '<div style="font-size:15px;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
       '<div style="font-size:17px;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
       '<div class="odp-cislo" style="font-size:72px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
-      '<button type="button" class="odp-vyp">Vypnúť odpočet</button>' +
+      '<button type="button" class="odp-vyp">' + (akt.plan ? "Preskočiť toto upozornenie" : "Vypnúť odpočet") + '</button>' +
       '<button type="button" class="odp-zat">Zavrieť (odpočet beží ďalej)</button>';
     var panel = document.createElement("div");
     panel.className = "odp-panel";
@@ -313,7 +326,83 @@
     document.addEventListener("contextmenu", function (e) { if (cielEl(e)) e.preventDefault(); }, true);
   })();
 
+  // ── plán dňa (zvonček na karte): viac časov, appka vždy hlási najbližší ──
+  function dnesKey() { return window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : new Date().toISOString().slice(0, 10); }
+  function planUloz() { try { if (plan) localStorage.setItem("dpb-odpocet-plan", JSON.stringify(plan)); else localStorage.removeItem("dpb-odpocet-plan"); } catch (e) {} }
+  function planDalsi(kind) {
+    if (!plan) return null;
+    var best = null, bz = Infinity;
+    plan.items.forEach(function (i) {
+      if (kind && i.kind !== kind) return;
+      if (plan.skip[i.cas + "|" + i.kind]) return;
+      var z = zostava(sekHms(i.cas));
+      if (z > 0 && z < bz) { best = i; bz = z; }
+    });
+    return best ? { item: best, z: bz } : null;
+  }
+  function planTikni() {
+    if (!plan) return;
+    if (plan.d !== dnesKey()) { plan = null; planUloz(); if (planTik) { clearInterval(planTik); planTik = null; } if (!akt) vypniObrazovku(); obnov(); return; }
+    if (!akt) {
+      var n = planDalsi();
+      if (n) {
+        zapni({ key: "plan|" + n.item.kind + "|" + n.item.cas, cas: n.item.cas, nazov: n.item.nazov, typ: n.item.typ, pop: n.item.pop });
+        akt.plan = n.item.kind; akt.planCas = n.item.cas;
+      }
+    }
+    obnov();
+  }
+  function planStart() {
+    if (!planTik) planTik = setInterval(planTikni, 1000);
+    zapniObrazovku();
+    planTikni();
+  }
+  function planKonci() {
+    if (planTik) { clearInterval(planTik); planTik = null; }
+    if (!akt) vypniObrazovku();
+  }
+  function planJe(kind) { return !!(plan && plan.items.some(function (i) { return i.kind === kind; })); }
+  function planPrepni(kind, items, typ, pop) {
+    var toast = function (t) { if (window._showToast) window._showToast(t, 3500); };
+    if (planJe(kind)) {
+      plan.items = plan.items.filter(function (i) { return i.kind !== kind; });
+      if (akt && akt.plan === kind) { var tmp = plan; plan = null; vypni(); plan = tmp; }
+      if (!plan.items.length) { plan = null; planKonci(); }
+      planUloz(); obnov();
+      toast("Upozornenia vypnuté");
+      return;
+    }
+    var buduce = items.filter(function (i) { return zostava(sekHms(i.cas)) > 0; });
+    if (!buduce.length) { toast("Dnes už nie je žiadny čas, na ktorý by sa dalo upozorniť"); return; }
+    if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
+    audio();
+    buduce.forEach(function (i) { plan.items.push({ cas: i.cas, nazov: i.nazov, typ: typ, pop: pop, kind: kind }); });
+    planUloz(); planStart();
+    toast("Upozornenia zapnuté (" + buduce.length + "). Obrazovka ostane zapnutá.");
+  }
+  // Zvonček do hlavičky bloku na karte. items = [{ cas:"HH:MM", nazov }]
+  var IK_PLAN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/></svg>';
+  function planTlacidlo(kind, items, typ, pop) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "odp-plan";
+    b.setAttribute("data-kind", kind);
+    b.setAttribute("aria-label", "Upozornenia");
+    b.innerHTML = IK_PLAN + '<span class="odp-pt">Upozorniť</span>';
+    b.addEventListener("click", function (e) { e.stopPropagation(); planPrepni(kind, items, typ, pop); });
+    setTimeout(obnov, 0);
+    return b;
+  }
+  (function planObnov() {
+    try {
+      var u = JSON.parse(localStorage.getItem("dpb-odpocet-plan") || "null");
+      if (u && u.d === dnesKey() && u.items && u.items.length) { plan = u; plan.skip = plan.skip || {}; planStart(); }
+      else localStorage.removeItem("dpb-odpocet-plan");
+    } catch (e) {}
+  })();
+
   window.DpbOdpocet = {
+    planTlacidlo: planTlacidlo,
     nastav: nastav,
     obnov: obnov, tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };
 })();
