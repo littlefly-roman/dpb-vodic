@@ -1203,7 +1203,18 @@
             const _smerEl = document.createElement("span");
             _smerEl.className = "g-ciel";
             _smerEl.textContent = "→ " + cielNazov;
-            dir.appendChild(_kurzEl);
+            // zvonček: odpočet do odchodu z prvej zastávky spoja (len pre dnešný deň)
+            const _lav = document.createElement("span");
+            _lav.style.cssText = "display:inline-flex;align-items:center;gap:8px;min-width:0";
+            _lav.appendChild(_kurzEl);
+            if (window.DpbOdpocet && spoj.zastavky.length && formatDateKey(appState.selectedDate) === formatDateKey(new Date())) {
+              _lav.appendChild(window.DpbOdpocet.tlacidlo({
+                key: String(linka) + "/" + String(kurz) + "|" + spoj.zastavky[0].time,
+                cas: spoj.zastavky[0].time,
+                nazov: (_smerPovodu ? _smerPovodu + " \u2192 " : "") + cielNazov,
+              }));
+            }
+            dir.appendChild(_lav);
             dir.appendChild(_smerEl);
             fragment.appendChild(dir);
 
