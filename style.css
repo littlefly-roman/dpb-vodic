@@ -3388,3 +3388,8 @@ body {
 .odp-pre-on { border-color:var(--text-3); background:var(--surface-2, var(--surface)); }
 .odp-vyp { margin-bottom:8px; background:var(--red); border-color:var(--red); color:#fff; }
 .odp-zat { color:var(--text-2); font-weight:500; }
+
+/* v175: riadok s upozornením (dlhé podržanie) */
+[data-odp-cas]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.odp-riadok{box-shadow:inset 3px 0 0 var(--red)}
+.odp-riadok[data-odp-t]::after{content:attr(data-odp-t);flex:none;margin-left:auto;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--red-text, var(--red));padding-left:8px}

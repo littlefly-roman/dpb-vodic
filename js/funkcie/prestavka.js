@@ -152,5 +152,49 @@
     return b;
   }
 
-  window.DpbPrestavka = { ikona: ikona };
+  // Prestávkovaný vodič: potvrdenie „prestávka mi bola zabezpečená“ pri riadku PRESTÁVKA na jeho karte.
+  // Štandardne fajka (zabezpečená); ťuknutím krížik + dôvod → hlásenie nadriadenému (náhľad, kým nie je server).
+  function spravaPrs(r, d, k, p, dovod) {
+    var dd = d.split("-");
+    return [
+      "Hlásenie o nezabezpečenej pracovnej prestávke",
+      "Vodič: " + (menoVodica(r) || "—") + " (os. č. " + r + ")",
+      "Dátum: " + dd[2] + "." + dd[1] + "." + dd[0],
+      "Kurz: " + k.kurz + ", prestávka " + p.prebera + " – " + p.odovzdava + (p["zastávka"] ? " (" + p["zastávka"] + ")" : ""),
+      p.str_meno ? "Striedač: " + p.str_meno + (p.str_kurz ? " (" + p.str_kurz + ")" : "") : "",
+      "Dôvod: " + dovod,
+    ].filter(Boolean).join("\n");
+  }
+  function ikonaPrs(service, k, p) {
+    var r = rid(), d = service && service.date;
+    if (!r || !d) return null;
+    var t = dnes();
+    if (!t || d > t) return null;
+    var id = "prs|" + String(k.kurz) + "|" + String(p.prebera || "");
+    var b = document.createElement("span");
+    b.className = "prest-ik";
+    b.setAttribute("role", "img");
+    function vykresli(nevykonane) {
+      b.classList.toggle("nie", !!nevykonane);
+      b.classList.toggle("ano", !nevykonane);
+      b.innerHTML = nevykonane ? SVG_X : SVG_OK;
+      b.setAttribute("aria-label", nevykonane ? "Prestávka nebola zabezpečená" : "Prestávka zabezpečená");
+    }
+    vykresli(!!dajStav(r, d, id));
+    if (d < t) { b.classList.add("zamknute"); return b; }
+    b.classList.add("klik");
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dajStav(r, d, id)) { toast("Hlásenie už bolo pripravené"); return; }
+      vykresli(true);
+      okno(k.kurz + " · prestávka " + p.prebera + " – " + p.odovzdava, function (dovod) {
+        if (!dovod) { vykresli(false); return; }
+        ulozStav(r, d, id, { dovod: dovod, cas: Date.now() });
+        odosli(spravaPrs(r, d, k, p, dovod));
+      });
+    });
+    return b;
+  }
+
+  window.DpbPrestavka = { ikona: ikona, ikonaPrs: ikonaPrs };
 })();

@@ -1229,6 +1229,11 @@
 
               const row = document.createElement("div");
               row.className = "grafikon-row";
+              if (formatDateKey(appState.selectedDate) === formatDateKey(new Date())) {
+                row.setAttribute("data-odp-cas", z.time);
+                row.setAttribute("data-odp-key", "row|" + linka + "/" + kurz + "|" + z.time + "|" + z.kod);
+                row.setAttribute("data-odp-nazov", nazov + " (" + linka + "/" + kurz + ")");
+              }
               if (inService) row.classList.add("my-service");
               if (_bezCestujucich || jeDp(nazov)) row.classList.add("nepreprava");
               if (

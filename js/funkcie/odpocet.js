@@ -101,6 +101,12 @@
       var s = b.querySelector(".odp-t");
       if (s) s.textContent = je ? t : "";
     });
+    // riadky cestovného poriadku s nastaveným upozornením (dlhé podržanie)
+    document.querySelectorAll("[data-odp-key]").forEach(function (r) {
+      var je = akt && r.getAttribute("data-odp-key") === akt.key;
+      r.classList.toggle("odp-riadok", !!je);
+      if (je) r.setAttribute("data-odp-t", t); else r.removeAttribute("data-odp-t");
+    });
     if (ov) {
       var c = ov.querySelector(".odp-cislo"); if (c) { c.textContent = t; c.classList.toggle("odp-blizko", z <= 60); }
     }
@@ -109,7 +115,8 @@
     audio(); // odblokuje zvuk (ťuknutie je gesto)
     var dep = sekHms(info.cas);
     var z = zostava(dep);
-    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: info.cas.slice(0, 5), spustene: {} };
+    var _pc = String(info.cas).split(":");
+    akt = { key: info.key, dep: dep, nazov: info.nazov, cas: _pc[0] + ":" + (_pc[1] || "00"), spustene: {} };
     [120, 90, 60, 30].forEach(function (st) { if (z <= st) akt.spustene[st] = 1; });
     if (tik) clearInterval(tik);
     tik = setInterval(tikni, 250);
@@ -182,5 +189,43 @@
     return b;
   }
 
-  window.DpbOdpocet = { tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };
+  // Upozornenie na čas z riadku (dlhé podržanie). Platí jedno naraz; nový výber prepíše predchádzajúci.
+  function nastav(info) {
+    var toast = function (t) { if (window._showToast) window._showToast(t, 3500); };
+    if (akt && akt.key === info.key) { toast("Upozornenie na " + akt.cas + " už je nastavené"); return; }
+    if (zostava(sekHms(info.cas)) <= 0) { toast("Tento čas už prešiel"); return; }
+    var pred = akt;
+    zapni(info);
+    toast(pred ? "Upozornenie zmenené z " + pred.cas + " na " + akt.cas : "Upozornenie nastavené na " + akt.cas);
+  }
+
+  (function dlhePodrzanie() {
+    var CAS = 550, tm = null, x0 = 0, y0 = 0, potlac = 0;
+    function cielEl(e) { return e.target && e.target.closest ? e.target.closest("[data-odp-cas]") : null; }
+    function zrus() { if (tm) { clearTimeout(tm); tm = null; } }
+    document.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      var el = cielEl(e); if (!el) return;
+      x0 = e.clientX; y0 = e.clientY; zrus();
+      tm = setTimeout(function () {
+        tm = null;
+        potlac = Date.now();
+        if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
+        nastav({ key: el.getAttribute("data-odp-key"), cas: el.getAttribute("data-odp-cas"), nazov: el.getAttribute("data-odp-nazov") || "" });
+      }, CAS);
+    }, true);
+    document.addEventListener("pointermove", function (e) {
+      if (tm && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) zrus();
+    }, true);
+    ["pointerup", "pointercancel", "scroll"].forEach(function (n) { document.addEventListener(n, zrus, true); });
+    // po dlhom podržaní nesmie nasledovať obyčajné ťuknutie (napr. rozbalenie riadku)
+    document.addEventListener("click", function (e) {
+      if (potlac && Date.now() - potlac < 800 && cielEl(e)) { e.stopPropagation(); e.preventDefault(); potlac = 0; }
+    }, true);
+    document.addEventListener("contextmenu", function (e) { if (cielEl(e)) e.preventDefault(); }, true);
+  })();
+
+  window.DpbOdpocet = {
+    nastav: nastav,
+    obnov: obnov, tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };
 })();
