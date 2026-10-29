@@ -74,7 +74,7 @@
         }
 
         // ── PUBLIC: pridaj notifikáciu (volá burza.js) ──────────────
-        function pridaj(titul, text, kat = "burza") {
+        function pridaj(titul, text, kat = "burza", cil) {
           state.items.unshift({
             id: uid(),
             kat,
@@ -82,6 +82,7 @@
             text,
             cas: new Date(),
             precitana: false,
+            cil: cil || null,
           });
           aktualizujBadge();
           uloz();
@@ -147,7 +148,12 @@
               item.classList.add("precitana");
               item.querySelector(".notif-dot-nova")?.remove();
               uloz();
+              if (n.cil && window.DpbIdiNa) {
+                zavriet();
+                window.DpbIdiNa(n.cil);
+              }
             });
+            if (n.cil) item.style.cursor = "pointer";
             list.appendChild(item);
           });
         }

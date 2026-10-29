@@ -143,8 +143,8 @@
     var nove = cur.filter(function (x) { return !mam[x.id]; });
     if (!nove.length || !window.Notif || !Notif.pridaj) return 0;
     function riadok(x) { return menoDna(x.dateKey) + " " + x.nazov + " " + x.cas + (x.stanicaOd ? " (" + x.stanicaOd + (x.stanicaDo ? " – " + x.stanicaDo : "") + ")" : ""); }
-    if (nove.length > 5) Notif.pridaj("Nové voľné služby v Burze", nove.length + " nových služieb. Najbližšie: " + nove.slice(0, 3).map(riadok).join("; "), "burza");
-    else nove.slice().reverse().forEach(function (x) { Notif.pridaj("Nová voľná služba v Burze", riadok(x), "burza"); });
+    if (nove.length > 5) Notif.pridaj("Nové voľné služby v Burze", nove.length + " nových služieb. Najbližšie: " + nove.slice(0, 3).map(riadok).join("; "), "burza", { burza: true });
+    else nove.slice().reverse().forEach(function (x) { Notif.pridaj("Nová voľná služba v Burze", riadok(x), "burza", { burza: x.dateKey }); });
     return nove.length;
   }
 
@@ -180,7 +180,7 @@
       // zvonček
       if (window.Notif && Notif.pridaj) {
         if (zmeny.length > MAX_SPRAV) Notif.pridaj("Veľa zmien naraz", "Zmenilo sa " + zmeny.length + " vecí v tvojom rozpise. Skontroluj ho.", "zmena");
-        else zmeny.slice().reverse().forEach(function (z) { Notif.pridaj(menoDna(z.d) + " – zmena " + KAT[z.kat].toLowerCase(), z.text, "zmena"); });
+        else zmeny.slice().reverse().forEach(function (z) { Notif.pridaj(menoDna(z.d) + " – zmena " + KAT[z.kat].toLowerCase(), z.text, "zmena", { den: z.d }); });
       }
       if (window._render) window._render();
       return true;
