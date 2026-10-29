@@ -59,7 +59,7 @@
 
           function cleanKurz(lk) {
             lk = lk.trim();
-            if (!/\d+\/\d+/.test(lk)) return lk;
+            if (!/\d+\/\d+/.test(lk) && !/^[A-Za-z\u00c0-\u017e]+\/\d+/.test(lk)) return lk;
             var parts = lk.split("+"),
               res = [],
               lin = null;
