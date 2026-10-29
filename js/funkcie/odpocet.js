@@ -105,7 +105,17 @@
     document.querySelectorAll("[data-odp-key]").forEach(function (r) {
       var je = akt && r.getAttribute("data-odp-key") === akt.key;
       r.classList.toggle("odp-riadok", !!je);
-      if (je) r.setAttribute("data-odp-t", t); else r.removeAttribute("data-odp-t");
+      var sp = r.querySelector(":scope > .odp-rt");
+      if (je) {
+        if (!sp) {
+          sp = document.createElement("span");
+          sp.className = "odp-rt";
+          sp.setAttribute("role", "button");
+          sp.setAttribute("aria-label", "Zrušiť upozornenie");
+          r.appendChild(sp);
+        }
+        sp.textContent = t + " \u00d7";
+      } else if (sp) sp.remove();
     });
     if (ov) {
       var c = ov.querySelector(".odp-cislo"); if (c) { c.textContent = t; c.classList.toggle("odp-blizko", z <= 60); }
@@ -225,6 +235,13 @@
     });
     // po dlhom podržaní nesmie nasledovať obyčajné ťuknutie (napr. rozbalenie riadku)
     document.addEventListener("click", function (e) {
+      // ťuknutie na odpočet pri označenom riadku = zrušenie upozornenia
+      if (e.target.closest && e.target.closest(".odp-rt")) {
+        e.stopPropagation(); e.preventDefault();
+        vypni();
+        if (window._showToast) window._showToast("Upozornenie zrušené", 2500);
+        return;
+      }
       if (potlac && Date.now() - potlac < 800 && cielEl(e)) { e.stopPropagation(); e.preventDefault(); potlac = 0; }
     }, true);
     document.addEventListener("contextmenu", function (e) { if (cielEl(e)) e.preventDefault(); }, true);
