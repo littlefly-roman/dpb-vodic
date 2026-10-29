@@ -51,7 +51,8 @@
   }
   // Stupne podľa počtu pípnutí: 2:00 → 1, 1:30 → 2, 1:00 → 3, 0:30 → 4, odchod → poplach
   function pipni(n, f, vol) {
-    return function () { for (var k = 0; k < n; k++) tón(f, k * 0.4, 0.25, vol); };
+    // jedno „pípnutie“ = dva veľmi krátke tóny v čase pôvodného jedného dlhého
+    return function () { for (var k = 0; k < n; k++) { tón(f, k * 0.4, 0.09, vol); tón(f, k * 0.4 + 0.15, 0.09, vol); } };
   }
   function vibrN(n) {
     var a = []; for (var k = 0; k < n; k++) { if (k) a.push(110); a.push(200); } return a;
