@@ -771,6 +771,14 @@
                   return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava, vozidlo: s.vozidlo };
                 }), _dateKey);
               });
+              if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
+                var _pw = document.createElement("div");
+                _pw.className = "odp-plan-wrap";
+                _pw.appendChild(window.DpbOdpocet.planTlacidlo("striedanie",
+                  _kurzy.filter(function (s) { return s.prebera; }).map(function (s) { return { cas: s.prebera, nazov: "Striedanie " + s.kurz }; }),
+                  "striedanie", "Preberáš o"));
+                body.appendChild(_pw);
+              }
               body.appendChild(
                 buildStrList(
                   _kurzy.map((s) => ({
@@ -850,6 +858,14 @@
               ph.className = "card-prs-hdr";
               ph.textContent = "PRESTÁVKA";
               pb.appendChild(ph);
+              if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
+                var _pw2 = document.createElement("div");
+                _pw2.className = "odp-plan-wrap";
+                _pw2.appendChild(window.DpbOdpocet.planTlacidlo("prestavka",
+                  _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : "") }; }),
+                  "prestavka", "Koniec prestávky o"));
+                pb.appendChild(_pw2);
+              }
               var pz = document.createElement("div");
               pz.className = "card-prs-zas";
               pz.textContent = _rel[0].zastávka || "";

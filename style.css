@@ -3405,3 +3405,8 @@ body {
 .odp-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .odp-chip{min-height:48px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 .odp-chip-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
+
+/* v179: zvonček plánu upozornení na karte */
+.odp-plan{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:15px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+.odp-plan-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
+.odp-plan-wrap{display:flex;justify-content:center;margin:6px 0 8px}
