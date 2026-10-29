@@ -3377,3 +3377,14 @@ body {
 #cpModal { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 #cpModal .grafikon-footer { display: none; }
 #cpModal:not(.active) { transform: translateY(calc(100% + 120px)); pointer-events: none; }
+
+/* Odpočet do odchodu (zvonček v pruhu spoja + okno) */
+.odp-btn { display:inline-flex; align-items:center; gap:5px; min-height:36px; min-width:36px; margin:-6px 0; padding:0 8px; border:none; border-radius:18px; background:rgba(255,255,255,.16); color:inherit; font:inherit; font-size:15px; font-weight:700; cursor:pointer; font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent; }
+.odp-btn.odp-on { background:rgba(255,255,255,.3); }
+.odp-btn.odp-blizko { animation: odpBlik 1s steps(2,start) infinite; }
+@keyframes odpBlik { 50% { opacity:.45; } }
+.odp-cislo.odp-blizko { color: var(--red-text); }
+.odp-pre, .odp-vyp, .odp-zat { flex:1; width:100%; min-height:52px; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text-1); font:inherit; font-size:16px; font-weight:600; cursor:pointer; }
+.odp-pre-on { border-color:var(--text-3); background:var(--surface-2, var(--surface)); }
+.odp-vyp { margin-bottom:8px; background:var(--red); border-color:var(--red); color:#fff; }
+.odp-zat { color:var(--text-2); font-weight:500; }
