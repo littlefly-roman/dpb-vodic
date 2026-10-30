@@ -644,7 +644,7 @@
               isNext = firstNext && o === firstNext;
             var row = document.createElement("div");
             row.style.cssText =
-              "display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);" +
+              "display:flex;align-items:center;gap:8px;height:50px;box-sizing:border-box;padding:0;border-bottom:1px solid var(--border);" +
               (isPast ? "opacity:0.6" : "");
             if (o.den === 0 && !isPast) {
               row.setAttribute("data-odp-cas", o.cas);
@@ -693,7 +693,7 @@
               row.appendChild(voz);
             }
             var ciel = document.createElement("span");
-            ciel.style.cssText = "font-size:15px;color:var(--text-2);flex:1;margin-left:10px";
+            ciel.style.cssText = "font-size:15px;line-height:1.2;color:var(--text-2);flex:1;min-width:0;margin-left:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word";
             ciel.textContent = "\u2192 " + (o.ciel || "");
             row.appendChild(ciel);
             // šípka na konci riadku: rozbalí meno vodiča
@@ -704,14 +704,14 @@
             sip.type = "button";
             sip.setAttribute("aria-label", "Vodič");
             sip.setAttribute("aria-expanded", otvorene ? "true" : "false");
-            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 2px 4px 6px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;transform:rotate(" + (otvorene ? "90deg" : "0deg") + ")";
+            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 0 4px 2px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;transform:rotate(" + (otvorene ? "90deg" : "0deg") + ")";
             sip.textContent = "\u203A";
             // ikonka: celý kurz spoja v malom okne so zoomom na aktuálny čas (ako v Hľadať)
             if (o.den === 0 && window.DpbMiniGrafikon) {
               var ik = document.createElement("button");
               ik.type = "button";
               ik.setAttribute("aria-label", "Grafikon kurzu");
-              ik.style.cssText = "flex:none;border:none;background:transparent;padding:4px 6px;cursor:pointer;color:var(--text-3);line-height:0";
+              ik.style.cssText = "flex:none;border:none;background:transparent;padding:4px 2px;cursor:pointer;color:var(--text-3);line-height:0";
               ik.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>';
               ik.addEventListener("click", function (e) {
                 e.stopPropagation();
