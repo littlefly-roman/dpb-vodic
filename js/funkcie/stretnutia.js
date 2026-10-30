@@ -340,5 +340,31 @@
     return { od: fmt(kde(odS)), do: fmt(kde(doS)) };
   }
 
-  window.DpbStretnutia = { najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
+  // Odchody zo začiatočných zastávok (konečných) spojov kurzu v rozsahu [od, do) – pre upozornenia striedača.
+  // Vráti [{ cas: "H:MM:SS", nazov }] alebo [] (bez grafikonu).
+  async function odchodyZKonecnej(kurz, dateKey, od, do_) {
+    var d = await nacitajObehy(dateKey);
+    if (!d) return [];
+    var p = String(kurz).split("/");
+    if (!p[1]) return [];
+    var obeh = d.obehy[String(p[0]).padStart(3, "0") + String(p[1]).padStart(2, "0") + d.typ];
+    if (!obeh) return [];
+    var odS = typeof od === "number" ? od : sek(od), doS = typeof do_ === "number" ? do_ : sek(do_);
+    if (odS == null || doS == null) return [];
+    if (doS <= odS) doS += 86400;
+    var out = [];
+    obeh.forEach(function (sp) {
+      if (sp.stops.length < 2) return;
+      var t0 = cas(sp.stops[0]), l = sp.stops[sp.stops.length - 1];
+      if (t0 == null) return;
+      var t = t0 < odS && t0 + 86400 >= odS ? t0 + 86400 : t0;
+      if (t < odS || t >= doS) return;
+      var hh = Math.floor(t0 / 3600), mm = Math.floor((t0 % 3600) / 60), ss = t0 % 60;
+      out.push({ t: t, cas: hh + ":" + String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0"), nazov: "Odchod z konečnej " + kurz + " \u2192 " + nazovStanice(d.stanice, l.st) });
+    });
+    out.sort(function (a, b) { return a.t - b.t; });
+    return out.map(function (x) { return { cas: x.cas, nazov: x.nazov }; });
+  }
+
+  window.DpbStretnutia = { odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();
