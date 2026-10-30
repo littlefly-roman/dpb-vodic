@@ -1047,9 +1047,6 @@
       }
       .grafikon-row.highlight {
         background: var(--red-soft);
-        border: 2px solid var(--red);
-        border-radius: 8px;
-        margin: 2px 6px;
       }
       .grafikon-row.highlight .g-time {
         color: var(--red-text);
@@ -1065,6 +1062,26 @@
       .grafikon-row.nepreprava.highlight .g-time,
       .grafikon-row.nepreprava.highlight .g-my {
         color: var(--red);
+      }
+
+      /* v182: aktuálny riadok („Teraz“) = červený pás s bielym tučným písmom (ako zväčšený riadok v Hľadať) */
+      .grafikon-row.teraz,
+      .grafikon-row.nepreprava.teraz {
+        background: var(--red);
+        border-radius: 12px;
+        margin: 2px 6px;
+        transform: scale(1.03);
+        box-shadow: 0 4px 14px rgba(232, 0, 26, 0.25);
+        opacity: 1;
+      }
+      .grafikon-row.teraz .g-time,
+      .grafikon-row.teraz .g-stop,
+      .grafikon-row.teraz .g-my,
+      .grafikon-row.nepreprava.teraz .g-time,
+      .grafikon-row.nepreprava.teraz .g-stop,
+      .grafikon-row.nepreprava.teraz .g-my {
+        color: #fff;
+        font-weight: 700;
       }
 
       .g-badge {
