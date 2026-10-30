@@ -1277,7 +1277,7 @@
           grafikonContent.appendChild(fragment);
 
           if (nearestEl) {
-            nearestEl.classList.add("highlight");
+            nearestEl.classList.add("teraz");
             // hlavička spoja, do ktorého aktuálny riadok patrí, je výrazná (čierna)
             for (let _p = nearestEl.previousElementSibling; _p; _p = _p.previousElementSibling) {
               if (_p.classList && _p.classList.contains("grafikon-direction")) { _p.classList.add("aktualny"); break; }
