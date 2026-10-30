@@ -133,6 +133,12 @@
       var m = Math.ceil(n.z / 60);
       sp.textContent = "Ďalšie " + n.item.cas.split(":").slice(0, 2).join(":") + " · " + (n.z < 60 ? "o <1 min" : "o " + m + " min");
     });
+    var _sb = document.getElementById("profilSkuskaBtn"), _ss = document.getElementById("profilSkuskaStav");
+    if (_sb) {
+      var _on = planJe("skuska"), _n = _on ? planDalsi("skuska") : null;
+      _sb.textContent = _on ? "Vypnúť skúšku" : "Vyskúšať upozornenia";
+      if (_ss) _ss.textContent = !_on ? "–" : _n ? "Ďalšie " + fmt(_n.z) : "Hotovo";
+    }
     // riadky cestovného poriadku s nastaveným upozornením (dlhé podržanie)
     document.querySelectorAll("[data-odp-key]").forEach(function (r) {
       var je = akt && r.getAttribute("data-odp-key") === akt.key;
@@ -398,6 +404,23 @@
     setTimeout(obnov, 0);
     return b;
   }
+  // Skúšobný plán (správcovská funkcia v Profile). V ostrej verzii sa zobrazí len správcovi: ADMIN_FUNKCIE = false.
+  var ADMIN_FUNKCIE = true;
+  function skuska() {
+    var n = new Date(), z = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+    var hms = function (s) { s = s % 86400; return Math.floor(s / 3600) + ":" + String(Math.floor((s % 3600) / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+    planPrepni("skuska", [
+      { cas: hms(z + 120), nazov: "Skúška – striedanie", typ: "striedanie", pop: "Preberáš o" },
+      { cas: hms(z + 240), nazov: "Skúška – odchod z konečnej", typ: "konecna", pop: "Odchod o" },
+      { cas: hms(z + 360), nazov: "Skúška – koniec prestávky", typ: "prestavka", pop: "Koniec prestávky o" }
+    ], "striedanie", "Preberáš o");
+  }
+  (function skuskaUi() {
+    var k = document.getElementById("profilSkuskaKarta"), b = document.getElementById("profilSkuskaBtn");
+    if (!k || !b) return;
+    if (!ADMIN_FUNKCIE) { k.classList.add("hidden"); return; }
+    b.addEventListener("click", skuska);
+  })();
   (function planObnov() {
     try {
       var u = JSON.parse(localStorage.getItem("dpb-odpocet-plan") || "null");
