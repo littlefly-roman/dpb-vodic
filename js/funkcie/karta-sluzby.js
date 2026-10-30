@@ -774,8 +774,18 @@
               if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
                 var _pw = document.createElement("div");
                 _pw.className = "odp-plan-wrap";
-                _pw.appendChild(window.DpbOdpocet.planTlacidlo("striedanie",
-                  _kurzy.filter(function (s) { return s.prebera; }).map(function (s) { return { cas: s.prebera, nazov: "Striedanie " + s.kurz }; }),
+                _pw.appendChild(window.DpbOdpocet.planTlacidlo("striedanie|" + k.kurz + "|" + k.od,
+                  function () {
+                    // striedania + odchody z konečnej spojov kurzov, ktoré striedač jazdí
+                    var it = _kurzy.filter(function (s) { return s.prebera; }).map(function (s) { return { cas: s.prebera, nazov: "Striedanie " + s.kurz }; });
+                    var DS = window.DpbStretnutia;
+                    if (!DS || !DS.odchodyZKonecnej) return Promise.resolve(it);
+                    return Promise.all(_kurzy.filter(function (s) { return s.kurz && s.prebera && s.odovzdava; }).map(function (s) {
+                      return DS.odchodyZKonecnej(s.kurz, service.date, s.prebera, s.odovzdava).then(function (l) {
+                        return l.map(function (x) { return { cas: x.cas, nazov: x.nazov, typ: "konecna", pop: "Odchod o" }; });
+                      });
+                    })).then(function (v) { return it.concat([].concat.apply([], v)); });
+                  },
                   "striedanie", "Preberáš o"));
                 body.appendChild(_pw);
               }
@@ -861,7 +871,7 @@
               if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
                 var _pw2 = document.createElement("div");
                 _pw2.className = "odp-plan-wrap";
-                _pw2.appendChild(window.DpbOdpocet.planTlacidlo("prestavka",
+                _pw2.appendChild(window.DpbOdpocet.planTlacidlo("prestavka|" + k.kurz + "|" + k.od,
                   _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : "") }; }),
                   "prestavka", "Koniec prestávky o"));
                 pb.appendChild(_pw2);

@@ -166,7 +166,7 @@
     tikni();
   }
   function vypni() {
-    if (akt && akt.plan && plan) { plan.skip[akt.planCas + "|" + akt.plan] = 1; planUloz(); }
+    if (akt && akt.plan && plan) { plan.skip[akt.planCas + "|" + akt.plan + "|" + akt.typ] = 1; planUloz(); }
     akt = null;
     if (tik) { clearInterval(tik); tik = null; }
     if (!plan) vypniObrazovku();
@@ -334,7 +334,7 @@
     var best = null, bz = Infinity;
     plan.items.forEach(function (i) {
       if (kind && i.kind !== kind) return;
-      if (plan.skip[i.cas + "|" + i.kind]) return;
+      if (plan.skip[i.cas + "|" + i.kind + "|" + i.typ]) return;
       var z = zostava(sekHms(i.cas));
       if (z > 0 && z < bz) { best = i; bz = z; }
     });
@@ -362,7 +362,7 @@
     if (!akt) vypniObrazovku();
   }
   function planJe(kind) { return !!(plan && plan.items.some(function (i) { return i.kind === kind; })); }
-  function planPrepni(kind, items, typ, pop) {
+  async function planPrepni(kind, items, typ, pop) {
     var toast = function (t) { if (window._showToast) window._showToast(t, 3500); };
     if (planJe(kind)) {
       plan.items = plan.items.filter(function (i) { return i.kind !== kind; });
@@ -372,11 +372,16 @@
       toast("Upozornenia vypnuté");
       return;
     }
+    if (typeof items === "function") {
+      toast("Načítavam časy…");
+      try { items = await items(); } catch (e) { items = []; }
+    }
+    if (planJe(kind)) return;
     var buduce = items.filter(function (i) { return zostava(sekHms(i.cas)) > 0; });
     if (!buduce.length) { toast("Dnes už nie je žiadny čas, na ktorý by sa dalo upozorniť"); return; }
     if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
     audio();
-    buduce.forEach(function (i) { plan.items.push({ cas: i.cas, nazov: i.nazov, typ: typ, pop: pop, kind: kind }); });
+    buduce.forEach(function (i) { plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind }); });
     planUloz(); planStart();
     toast("Upozornenia zapnuté (" + buduce.length + "). Obrazovka ostane zapnutá.");
   }
