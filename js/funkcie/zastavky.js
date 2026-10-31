@@ -1014,7 +1014,7 @@
             b.type = "button";
             b.textContent = text;
             b.style.cssText =
-              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
+              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
             b.addEventListener("click", krok);
             return b;
           }
@@ -1133,7 +1133,7 @@
           tl.type = "button";
           tl.textContent = "Zastávky v okolí";
           tl.style.cssText =
-            "width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
+            "width:100%;margin-top:4px;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
           tl.addEventListener("click", function () {
             ukazBlizke(kamBlizke);
             tl.style.display = "none";

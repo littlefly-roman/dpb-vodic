@@ -3522,3 +3522,9 @@ body {
 .hl-riadok{border:1px solid var(--border-2);border-radius:18px;padding:12px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.05)}
 .hl-riadok.hl-dnes{border-color:var(--border-2);border-left:3px solid var(--red)}
 .hl-hlava{letter-spacing:-.1px}
+
+/* v204: zastávkový poriadok – čistejší vzhľad */
+#cpModal .grafikon-header{background:var(--red);border-bottom:0}
+#cpModal .cp-type-btn{color:rgba(255,255,255,.88)!important;background:transparent!important;font-weight:600;border-bottom:3px solid transparent!important}
+#cpModal .cp-type-btn.cp-type-active{color:#fff!important;background:transparent!important;border-bottom-color:#fff!important;font-weight:700!important}
+#cpStanicaInput{border:1px solid var(--border-2)!important;border-radius:16px!important;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding-left:46px!important;background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e96a8' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><line x1='16.5' y1='16.5' x2='21' y2='21'/></svg>") no-repeat 14px center/22px!important}
