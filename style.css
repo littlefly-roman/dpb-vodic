@@ -3542,3 +3542,12 @@ body {
 #grafikonContent .grafikon-row.my-service .g-my{display:none}
 #grafikonContent .grafikon-row.my-service.teraz{background:var(--red);box-shadow:0 2px 10px rgba(232,0,26,.28);border-radius:14px}
 #grafikonContent .grafikon-row.my-service.teraz .g-time{color:#fff}
+
+/* v207 menu ⋮ a okná */
+.service-menu{border-top:0!important;margin-top:6px!important;padding-top:0!important}
+.menu-item{color:var(--text-1)!important;background:var(--surface-2);border-radius:14px!important;margin-top:8px;padding:11px 16px!important;font-weight:600!important}
+body > div[style*="10000"] > div{border-radius:26px 26px 0 0!important;box-shadow:0 -6px 30px rgba(0,0,0,.18)}
+body > div[style*="10000"] > div::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--border-2);margin:-6px auto 14px}
+body > div[style*="10000"] button{border-radius:14px!important;border:0!important}
+body > div[style*="10000"] button[style*="1px solid"]{background:var(--surface-2)!important}
+body > div[style*="10000"] textarea{border-radius:14px!important;border:0!important;background:var(--surface-2)!important}
