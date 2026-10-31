@@ -1216,7 +1216,12 @@
               var e = document.getElementById(id);
               return !e || e.classList.contains("hidden");
             };
-            var aktivna = !skryty("burzaView") ? "burza" : !skryty("profilView") ? "profil" : "today";
+            var aktivna = !skryty("burzaView") ? "burza" : !skryty("profilView") ? "profil" : !skryty("hladatView") ? "hladat" : "today";
+            // poistka: ak nie je vidieť žiadna obrazovka, ukáž Dnes (nikdy nenechať prázdnu)
+            if (aktivna === "today" && skryty("servicesView")) {
+              var bt = document.getElementById("btnToday");
+              if (bt) { bt.click(); return; }
+            }
             document.querySelectorAll(".bottom-nav button").forEach(function (b) {
               b.classList.toggle("active", b.dataset.nav === aktivna);
             });
