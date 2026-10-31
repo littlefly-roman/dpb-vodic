@@ -3473,3 +3473,20 @@ body {
 @keyframes burza-dych{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
 .burza-stav-dot.stav-odoslana,.burza-tl-dot.stav-odoslana{animation:burza-dych 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.burza-stav-dot.stav-odoslana,.burza-tl-dot.stav-odoslana{animation:none}}
+
+/* v200: karta Dnes – čistejší a elegantnejší vzhľad (rozloženie, obsah a veľkosti písma ostávajú) */
+.service-card{border-radius:20px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);border:1px solid var(--border-2);border-left:4px solid var(--red)}
+.driver-section{background:transparent;border:0;border-bottom:1px solid var(--border-2);border-radius:0;color:var(--text-2)}
+.card-title{font-size:42px;letter-spacing:-.5px}
+.card-time{font-weight:600;font-size:24px}
+.card-route-od,.card-route-do,.card-vehicle{color:var(--text-2)}
+.card-route-od,.card-route-do{font-weight:500}
+.card-ic{color:var(--text-3)}
+.card-prs-blk{margin-top:14px;padding-top:14px;border-top:1px solid var(--border-2)}
+.card-prs-hdr{letter-spacing:.14em;color:var(--text-3);font-weight:700}
+.card-prs-blk .odp-plan{border:0;background:var(--surface-2);color:var(--text-2);padding:7px 14px;border-radius:999px;font-weight:600}
+.card-prs-zas{font-weight:700;margin-top:8px}
+.card-prs-row{background:var(--surface-2);border-radius:14px;padding:10px 12px;margin:8px 0 2px;gap:6px;align-items:center}
+.card-prs-row .prs-cas{font-weight:600;min-width:0;padding-right:0}
+.card-prs-row .prs-meno{flex:1;min-width:0;line-height:1.2}
+.card-prs-row .prs-kurz{width:auto}
