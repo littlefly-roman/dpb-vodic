@@ -366,5 +366,29 @@
     return out.map(function (x) { return { cas: x.cas, nazov: x.nazov }; });
   }
 
-  window.DpbStretnutia = { odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
+  // Striedač nemá vlastný obeh: jeho „kurz“ (napr. 1/5) sa skladá z úsekov (striedaní) v iných kurzoch podľa DPB_STATIC.
+  // Vráti [{kurz, prebera, odovzdava, a, b}] (a, b v sekundách) pre slot najbližší k začiatku služby, len úseky v rozsahu služby.
+  function segmentyStriedaca(kurz, dateKey, odSec, doSec) {
+    if (!window.DPB_STATIC || !window.DPB_STATIC.str || !window.Calendar) return [];
+    var typ = window.Calendar.getDayType(dateKey);
+    var sloty = window.DPB_STATIC.str[kurz + "|" + typ] || [];
+    var mm = function (t) { var q = String(t || "").split(":"); return (+q[0] || 0) * 60 + (+q[1] || 0); };
+    if (!sloty.length) return [];
+    var odM = odSec != null ? odSec / 60 : null, doM = doSec != null ? doSec / 60 : null;
+    var slot = sloty[0];
+    if (odM != null) slot = sloty.reduce(function (b, x) { return Math.abs(mm(x.od) - odM) < Math.abs(mm(b.od) - odM) ? x : b; }, sloty[0]);
+    var k = slot.k || [];
+    if (odM != null && doM != null) {
+      if (doM <= odM) doM += 1440;
+      var v = k.filter(function (x) { var a = mm(x.prebera), b = mm(x.odovzdava); if (b <= a) b += 1440; return a < doM && b > odM; });
+      if (v.length) k = v;
+    }
+    return k.map(function (x) {
+      var a = mm(x.prebera) * 60, b = mm(x.odovzdava) * 60;
+      if (b <= a) b += 86400;
+      return { kurz: x.kurz, prebera: x.prebera, odovzdava: x.odovzdava, a: a, b: b };
+    }).sort(function (x, y) { return x.a - y.a; });
+  }
+
+  window.DpbStretnutia = { segmentyStriedaca: segmentyStriedaca, odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();
