@@ -85,10 +85,12 @@
           const r = O.skontroluj(prace, { od: O.abs(s.dateKey, s.odMin), do: O.abs(s.dateKey, s.doMin) });
           let skr = null;
           if (r.skrateny) {
-            const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + "\u00a0h\u00a0" + String(Math.round(m % 60)).padStart(2, "0") + "\u00a0min");
-            const a = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? "pred\u00a0" + f(r.skrateny.pred) : "";
-            const b = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? "po\u00a0" + f(r.skrateny.po) : "";
-            skr = "Odpočinok iba: " + [a, b].filter(Boolean).join(", ");
+            const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + ":" + String(Math.round(m % 60)).padStart(2, "0") + "\u00a0hod");
+            const pred = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? f(r.skrateny.pred) : "";
+            const po = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? f(r.skrateny.po) : "";
+            if (pred && po) skr = "Odpočinok: " + pred + " pred, " + po + " po";
+            else if (pred) skr = "Odpočinok: " + pred;
+            else if (po) skr = "Odpočinok po službe: " + po;
           }
           return { ok: r.ok, skrateny: skr, delena: r.delena };
         }

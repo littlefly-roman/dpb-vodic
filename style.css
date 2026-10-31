@@ -3500,3 +3500,14 @@ body {
 .list-row{border-bottom:0;padding:11px 14px}
 .list-time{background:transparent;padding:0;color:var(--text-2);font-weight:600}
 .list-day-name{color:var(--text-3)}
+
+/* v202: Burza – čistejší vzhľad, upozornenie na odpočinok dýcha */
+.burza-tabs{background:var(--border-2);border-radius:14px;padding:4px;margin-top:2px}
+.burza-tab{border-radius:11px}
+.burza-tab.active{box-shadow:0 1px 3px rgba(15,20,35,.12);font-weight:700}
+.burza-day-header{letter-spacing:.14em;font-weight:700;padding:18px 6px 8px}
+.burza-group{border-radius:20px;border:1px solid var(--border-2);box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06)}
+.burza-upoz{color:var(--chyba)}
+@keyframes burza-dych-text{0%,100%{opacity:1}50%{opacity:.4}}
+.burza-upoz{animation:burza-dych-text 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.burza-upoz{animation:none}}
