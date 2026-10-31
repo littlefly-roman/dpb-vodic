@@ -254,9 +254,9 @@
         transition: background 0.15s;
         gap: 1px 10px;
       }
-      .section-header:hover {
+      @media (hover: hover) { .section-header:hover {
         background: rgba(47, 108, 176, 0.07);
-      }
+      } }
 
       /* Aktuálny deň (dnes): názov dňa aj dátum zelenou a najtučnejšie */
       .je-dnes .date-day,
@@ -358,9 +358,9 @@
         border-radius: 8px;
         transition: background 0.15s;
       }
-      .calendar-header button:hover {
+      @media (hover: hover) { .calendar-header button:hover {
         background: var(--surface-2);
-      }
+      } }
       .calendar-header .cal-title {
         font-weight: 600;
         font-size: 15px;
@@ -404,9 +404,9 @@
         gap: 2px;
         transition: background 0.12s;
       }
-      .calendar-cell:hover {
+      @media (hover: hover) { .calendar-cell:hover {
         background: var(--surface-2);
-      }
+      } }
       .calendar-cell.today {
         font-weight: 700;
         color: var(--red);
@@ -539,10 +539,10 @@
           border-color 0.15s,
           color 0.15s;
       }
-      .service-title:hover {
+      @media (hover: hover) { .service-title:hover {
         color: var(--red);
         border-bottom-color: var(--red);
-      }
+      } }
 
       /* Meta — vertikálne, väčšie, čitateľné */
       .service-meta {
@@ -593,10 +593,10 @@
           background 0.15s,
           border-color 0.15s;
       }
-      .driver-section:hover {
+      @media (hover: hover) { .driver-section:hover {
         background: var(--border);
         border-color: var(--text-3);
-      }
+      } }
 
       /* Vľavo: ikona | meno | chevron */
       .driver-section.driver-left .driver-name {
@@ -631,9 +631,9 @@
         min-height: 36px;
         transition: color 0.15s;
       }
-      .driver-name:hover {
+      @media (hover: hover) { .driver-name:hover {
         color: var(--red);
-      }
+      } }
 
       .drv-swap {
         color: var(--text-3);
@@ -725,11 +725,14 @@
         width: 18px;
         height: 18px;
       }
-      .service-menu-trigger:hover,
       .service-menu-trigger.open {
         background: var(--surface-2);
         color: var(--red);
       }
+      @media (hover: hover) { .service-menu-trigger:hover {
+        background: var(--surface-2);
+        color: var(--red);
+      } }
 
       .service-menu {
         margin-top: 10px;
@@ -755,9 +758,9 @@
         transition: background 0.12s;
         font-weight: 500;
       }
-      .menu-item:hover {
+      @media (hover: hover) { .menu-item:hover {
         background: var(--surface-2);
-      }
+      } }
       .menu-item-icon {
         font-size: 16px;
         width: 24px;
@@ -842,9 +845,9 @@
           color 0.15s;
         min-height: 44px;
       }
-      .hier-btn:hover {
+      @media (hover: hover) { .hier-btn:hover {
         background: var(--border);
-      }
+      } }
       .hier-btn.active {
         background: var(--red);
         color: white;
@@ -1192,9 +1195,9 @@
       .list-row:last-child {
         border-bottom: none;
       }
-      .list-row:hover {
+      @media (hover: hover) { .list-row:hover {
         background: var(--surface-2);
-      }
+      } }
 
       .list-date {
         width: 28px;
@@ -1456,9 +1459,9 @@
         min-height: 52px;
         gap: 12px;
       }
-      .burza-row-main:hover {
+      @media (hover: hover) { .burza-row-main:hover {
         background: var(--surface-2);
-      }
+      } }
 
       .burza-row.rezervovana .burza-row-main {
         opacity: 0.7;
@@ -1578,9 +1581,9 @@
         cursor: pointer;
         transition: background 0.15s;
       }
-      .burza-btn-close:hover {
+      @media (hover: hover) { .burza-btn-close:hover {
         background: var(--surface-2);
-      }
+      } }
 
       .burza-btn-rez-detail {
         flex: 1;
@@ -1612,9 +1615,9 @@
         cursor: pointer;
         transition: box-shadow 0.15s;
       }
-      .burza-rez-card:hover {
+      @media (hover: hover) { .burza-rez-card:hover {
         box-shadow: var(--sh-md);
-      }
+      } }
 
       .burza-rez-main {
         display: flex;
@@ -1829,9 +1832,9 @@
         cursor: pointer;
         transition: background 0.15s;
       }
-      .burza-btn-zrus:hover {
+      @media (hover: hover) { .burza-btn-zrus:hover {
         background: var(--red-soft);
-      }
+      } }
 
       /* Tlačidlo Rezervovať v riadku — skryť pri expanded */
       .burza-row.expanded .burza-row-actions .burza-btn-rez {
@@ -1887,10 +1890,10 @@
           transform 0.1s;
         display: inline-block;
       }
-      .volno-burza-badge:hover {
+      @media (hover: hover) { .volno-burza-badge:hover {
         background: var(--red-dark);
         transform: scale(1.03);
-      }
+      } }
 
       /* Odkaz do Burzy pod kartou dňa */
       .burza-link-row {
@@ -1935,9 +1938,9 @@
         border-radius: 6px;
         transition: background 0.15s;
       }
-      .burza-filter-clear:hover {
+      @media (hover: hover) { .burza-filter-clear:hover {
         background: var(--red-soft);
-      }
+      } }
 
       .burza-filter-back {
         background: none;
@@ -1951,9 +1954,9 @@
         transition: background 0.15s;
         white-space: nowrap;
       }
-      .burza-filter-back:hover {
+      @media (hover: hover) { .burza-filter-back:hover {
         background: var(--red-soft);
-      }
+      } }
 
       /* ==========================
    NOTIFIKÁCIE — CSS
@@ -1975,9 +1978,9 @@
         transition: background 0.15s;
         flex-shrink: 0;
       }
-      .notif-btn:hover {
+      @media (hover: hover) { .notif-btn:hover {
         background: rgba(0, 0, 0, 0.12);
-      }
+      } }
       .notif-btn.active {
         background: rgba(0, 0, 0, 0.22);
       }
@@ -2061,9 +2064,9 @@
         line-height: 1;
         transition: background 0.15s;
       }
-      .notif-panel-close:hover {
+      @media (hover: hover) { .notif-panel-close:hover {
         background: var(--surface-2);
-      }
+      } }
 
       /* Zoznam */
       #notifList {
@@ -2082,9 +2085,9 @@
         transition: background 0.12s;
         border: 1px solid transparent;
       }
-      .notif-item:hover {
+      @media (hover: hover) { .notif-item:hover {
         background: var(--surface-2);
-      }
+      } }
       .notif-item.nova {
         background: var(--surface-2);
         border-color: var(--border);
@@ -2247,9 +2250,9 @@
         cursor: default;
         box-shadow: none;
       }
-      .login-btn:not(:disabled):hover {
+      @media (hover: hover) { .login-btn:not(:disabled):hover {
         opacity: 0.9;
-      }
+      } }
 
       /* ── KARTY ── */
       .service-card {
@@ -2299,9 +2302,9 @@
         transition: background 0.15s;
         flex-shrink: 0;
       }
-      .drv-phone-btn:hover {
+      @media (hover: hover) { .drv-phone-btn:hover {
         background: rgba(22, 163, 74, 0.1);
-      }
+      } }
       .drv-phone-btn svg {
         width: 16px;
         height: 16px;
@@ -2506,9 +2509,9 @@
         transition: background 0.15s;
         min-height: 36px;
       }
-      .str-main:hover {
+      @media (hover: hover) { .str-main:hover {
         background: var(--surface-2);
-      }
+      } }
       .str-kurz {
         font-size: 15px;
         font-weight: 500;
@@ -3285,7 +3288,7 @@ body {
 .export-menu{position:fixed;z-index:3000;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:6px;min-width:170px}
 .export-menu[hidden]{display:none}
 .export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1);font:inherit;font-size:15px;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
-.export-menu button:hover{background:var(--red-soft)}
+@media (hover: hover) { .export-menu button:hover {background:var(--red-soft)} }
 #btnExport[hidden]{display:none}
 
 .profil-prepinac{cursor:pointer;align-items:center}
@@ -3445,5 +3448,5 @@ body {
 
 /* v191: nadpis pri swipe – náhľad nového dňa / mesiaca sa prelína s odchádzajúcim */
 .hdr-ghost{position:absolute;flex:none;pointer-events:none;cursor:default;box-sizing:border-box;will-change:transform,opacity}
-.hdr-ghost:hover{background:transparent}
+@media (hover: hover) { .hdr-ghost:hover {background:transparent} }
 .section-header.swipe-anim,.hdr-ghost.swipe-anim,.swipe-slide-ghost.swipe-anim,#servicesContainer.swipe-anim{transition:transform .28s cubic-bezier(.25,.46,.45,.94),opacity .28s ease}
