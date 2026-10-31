@@ -430,7 +430,7 @@
       titul: nazov,
       podtitul: pekne(ctx.date) + (povodna ? " · teraz: " + povodna : ""),
       telo: function (t) {
-        var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--red)", true);
+        var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--chyba)", true);
         // Voľný deň: z odpočinkov (min. 6 h) predvyplň „Nástup po“, „Ukončenie do“ a Rannú/Poobednú
         if (!povodna && window.DpbOdpocinok && window.RAW && window.appState) {
           try {

@@ -3112,7 +3112,7 @@ body {
       .card-route.card-nepritomnost {
         font-size: 24px;
         font-weight: 800;
-        color: var(--red);
+        color: var(--text-1);
         margin-top: 6px;
         white-space: normal;
       }
