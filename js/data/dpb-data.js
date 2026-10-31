@@ -28,6 +28,28 @@
               return a.meno.localeCompare(b.meno, "sk");
             });
         }
+        // Rozsah dní, ktoré export pre trakciu vodiča vôbec pokrýva (od najstaršieho po najnovší deň v dátach)
+        var _rozsahCache = {};
+        function rozsahDat(rid) {
+          var tk = _trakcie[rid] || "";
+          if (_rozsahCache[tk]) return _rozsahCache[tk];
+          var od = null, doo = null;
+          Object.keys(_models).forEach(function (r) {
+            if ((_trakcie[r] || "") !== tk) return;
+            (_models[r] || []).forEach(function (d) {
+              if (!d || !d.datum) return;
+              if (od === null || d.datum < od) od = d.datum;
+              if (doo === null || d.datum > doo) doo = d.datum;
+            });
+          });
+          return (_rozsahCache[tk] = { od: od, do: doo });
+        }
+        // true, ak pre daný deň nie sú v dátach žiadne údaje (deň je mimo rozsahu exportu pre trakciu vodiča)
+        function jeMimoDat(rid, dateKey) {
+          var r = rozsahDat(rid);
+          if (!r.od || !r.do) return false;
+          return dateKey < r.od || dateKey > r.do;
+        }
         function getServicesForDate(rid, dateKey) {
           var model = _models[rid];
           if (!model) return [];
@@ -84,6 +106,7 @@
             _volne = _volne.filter(function (x) { return !dni[x.dateKey]; }).concat(nv.volne);
             _volneVerzia++;
           }
+          _rozsahCache = {};
           if (nt) Object.keys(nt).forEach(function (r) { _trakcie[r] = nt[r]; });
           Object.keys(nd).forEach(function (r) {
             _drivers[r] = nd[r];
@@ -108,6 +131,8 @@
         window.DPBData = {
           getDrivers: getDrivers,
           getServicesForDate: getServicesForDate,
+          jeMimoDat: jeMimoDat,
+          rozsahDat: rozsahDat,
           getDatesWithService: getDatesWithService,
           fmt: fmt,
           fmtRange: fmtRange,
