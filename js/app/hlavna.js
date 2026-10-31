@@ -613,6 +613,7 @@
           resetContainerLayout();
           // Mesiac rovnakým štýlom ako date-date
           dateHeader.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(appState.selectedDate)}</span>`;
+          dateHeader.classList.toggle("je-dnes", _jeAktualnyMesiac(appState.selectedDate));
           container.appendChild(buildListFragment(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth()));
         }
 
@@ -852,6 +853,10 @@
         );
 
         // ── Vizuál swipe: nadpis (deň / mesiac) sa posúva a prelína spolu s obsahom, odchádzajúci obsah tmavne ──
+        function _jeAktualnyMesiac(d) {
+          const n = new Date();
+          return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+        }
         let hdrGhost = null;
         function _titleGhostCreate(offset) {
           _titleGhostRemove();
@@ -865,6 +870,7 @@
           } else {
             const cm = new Date(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth() + offset, 1);
             g.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(cm)}</span>`;
+            if (_jeAktualnyMesiac(cm)) g.classList.add("je-dnes");
           }
           g.style.left = dateHeader.offsetLeft + "px";
           g.style.top = dateHeader.offsetTop + "px";
