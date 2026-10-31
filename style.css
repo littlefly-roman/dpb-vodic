@@ -3427,3 +3427,6 @@ body {
 .odp-plan{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:15px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
 .odp-plan-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
 .odp-plan-wrap{display:flex;justify-content:center;margin:6px 0 8px}
+
+/* v186: deň mimo dát exportu – oznam namiesto „Voľno“ */
+.volno-card .volno-text-oznam{font-size:20px;font-weight:700;line-height:1.3;letter-spacing:0;color:var(--text-2)}
