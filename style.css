@@ -306,9 +306,20 @@
         width: 20px;
         height: 20px;
       }
-      .day-icon:hover {
+      /* v193: červené zvýraznenie len pri myši a počas stlačenia; po klepnutí na dotyku sa nezasekne */
+      @media (hover: hover) {
+        .day-icon:hover {
+          background: var(--red-soft);
+          color: var(--red);
+        }
+      }
+      .day-icon:active {
         background: var(--red-soft);
         color: var(--red);
+      }
+      .day-icon:focus,
+      .day-icon:focus-visible {
+        outline: none;
       }
 
       /* ==========================

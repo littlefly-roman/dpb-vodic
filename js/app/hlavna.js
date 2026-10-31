@@ -1566,7 +1566,6 @@
         window._ikonaPrepnutia = ikonaPrepnutia;
         btnList.addEventListener("click", () => {
           appState.viewMode = appState.viewMode === "cards" ? "list" : "cards";
-          btnList.style.color = appState.viewMode === "list" ? "#2f6cb0" : "";
           ikonaPrepnutia(appState.viewMode);
           render();
         });
