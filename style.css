@@ -1137,7 +1137,8 @@
         color: var(--text-3);
       }
       .grafikon-error {
-        color: var(--red);
+        color: var(--chyba);
+        font-weight: 600;
       }
 
       .grafikon-footer {

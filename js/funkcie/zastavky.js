@@ -1153,7 +1153,7 @@
           var sta = await getStanice();
           if (!sta) {
             staResults.innerHTML =
-              '<div style="color:var(--red);font-size:15px">Chyba</div>';
+              '<div style="color:var(--chyba);font-size:15px;font-weight:600">Chyba</div>';
             return;
           }
           var q = stripDia(val);
