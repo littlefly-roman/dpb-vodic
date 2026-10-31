@@ -1410,9 +1410,10 @@
             if (cpc) cpc.click(); else cpm.classList.remove("active");
           }
           var pv = document.getElementById("profilView");
-          if (pv && id !== "profil") pv.classList.add("hidden");
+          // Poriadky ("prehlad") sú okno nad obsahom: obrazovka pod nimi ostáva, aby späť vedelo vrátiť predošlú
+          if (pv && id !== "profil" && id !== "prehlad") pv.classList.add("hidden");
           var hv = document.getElementById("hladatView");
-          if (hv && id !== "hladat") hv.classList.add("hidden");
+          if (hv && id !== "hladat" && id !== "prehlad") hv.classList.add("hidden");
           document
             .querySelectorAll(".bottom-nav button")
             .forEach((btn) =>
@@ -1443,7 +1444,7 @@
                 document.getElementById("burzaView").classList.remove("hidden");
                 Burza.init();
               } else {
-                document.getElementById("burzaView").classList.add("hidden");
+                if (btn.dataset.nav !== "prehlad") document.getElementById("burzaView").classList.add("hidden");
                 if (btn.dataset.nav === "prehlad") {
                   document.getElementById("cpModal").classList.add("active");
                   if (window._zastavkyDomov) window._zastavkyDomov();
