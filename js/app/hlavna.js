@@ -917,11 +917,12 @@
         }
 
         function changeMonth(offset) {
-          const d = new Date(appState.selectedDate);
-          d.setMonth(d.getMonth() + offset);
-          const max = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-          d.setDate(Math.min(appState.selectedDate.getDate(), max));
-          appState.selectedDate = d;
+          // Najprv mesiac, až potom deň (31. + 1 mesiac nesmie preskočiť o mesiac ďalej: 31.10. → 30.11.)
+          const src = appState.selectedDate;
+          const cielMesiac = new Date(src.getFullYear(), src.getMonth() + offset, 1);
+          const max = new Date(cielMesiac.getFullYear(), cielMesiac.getMonth() + 1, 0).getDate();
+          cielMesiac.setDate(Math.min(src.getDate(), max));
+          appState.selectedDate = cielMesiac;
           render();
         }
 
