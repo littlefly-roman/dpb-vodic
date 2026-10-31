@@ -31,7 +31,7 @@
         });
         voz.forEach(function (x) { x.t = x.od && x.do ? x.od + "–" + x.do : ""; });
         if (!voz.length && s.vehicle && s.vehicle !== "—") voz = String(s.vehicle).split(/[,\s]+/).filter(Boolean).map(function (c) { return { c: c, t: "" }; });
-        out.push({ rid: String(d.rid), meno: d.meno || String(d.rid), line: String(s.line || ""), time: s.time || "", voz: voz, nepr: nepr,
+        out.push({ rid: String(d.rid), vzor: vz, meno: d.meno || String(d.rid), line: String(s.line || ""), time: s.time || "", voz: voz, nepr: nepr,
           route: s.route || "", od: minuty(s.time) });
       });
     });
@@ -91,7 +91,14 @@
         it.style.cssText = "padding:12px 16px;font-size:15px;color:var(--red);font-weight:600;cursor:pointer";
         it.addEventListener("click", function (e) {
           e.stopPropagation();
-          window.DpbMiniGrafikon && window.DpbMiniGrafikon.otvor(r.line, kluc(den), r.meno, r.od ? [r.od[0] * 60, r.od[1] * 60] : null);
+          if (!window.DpbMiniGrafikon) return;
+          var oknoS = r.od ? [r.od[0] * 60, r.od[1] * 60] : null;
+          var segm = null;
+          if (r.vzor === "STRIEDAČ" && window.DpbStretnutia && window.DpbStretnutia.segmentyStriedaca) {
+            segm = window.DpbStretnutia.segmentyStriedaca(r.line, kluc(den), oknoS ? oknoS[0] : null, oknoS ? oknoS[1] : null);
+            if (!segm.length) segm = null;
+          }
+          window.DpbMiniGrafikon.otvor(r.line, kluc(den), r.meno, oknoS, segm);
         });
         m.appendChild(it);
         d.parentNode.insertBefore(m, d.nextSibling);

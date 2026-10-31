@@ -64,7 +64,7 @@ async function openGrafikonStriedac(kurzy, dateKey) {
   }
 
   const base = "data/" + folder + "/";
-  const typDna = window.Calendar ? window.Calendar.getDayType(appState.selectedDate) : 1;
+  const typDna = window.Calendar ? window.Calendar.getDayType(dateKey || appState.selectedDate) : 1;
 
   // Načítaj podporné súbory (raz pre všetky kurzy)
   const linky = [...new Set(kurzy.map(k => parseInt(k.kurz.split("/")[0])))];

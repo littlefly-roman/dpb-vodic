@@ -369,7 +369,7 @@
                 e.stopPropagation();
                 const act = item.dataset.action;
                 if (act === "grafikon")
-                  window._openGrafikon && window._openGrafikon(service);
+                  card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
                 else if (act === "stretnutia")
@@ -762,11 +762,17 @@
                     });
                   })();
             if (_kurzy.length) {
+              // Menu „Grafikon“ na karte striedača skladá grafikon z jeho kurzov (nie z čísla služby)
+              card._strGrafikon = function () {
+                openGrafikonStriedac(_kurzy.map(function (s) {
+                  return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava, vozidlo: s.vozidlo };
+                }), service.date || "");
+              };
               // Teraz keď máme _kurzy, nastavíme handler na title
               _strTitleEl.addEventListener("click", function(e) {
                 e.stopPropagation();
                 const _appState = window._appState ? window._appState() : null;
-                const _dateKey = _appState && window.formatDateKey ? window.formatDateKey(_appState.selectedDate) : "";
+                const _dateKey = service.date || (_appState && window.formatDateKey ? window.formatDateKey(_appState.selectedDate) : "");
                 openGrafikonStriedac(_kurzy.map(function(s) {
                   return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava, vozidlo: s.vozidlo };
                 }), _dateKey);

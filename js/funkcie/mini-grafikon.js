@@ -47,7 +47,7 @@
     return { el: w, nastav: nastav };
   }
 
-  function otvor(kurz, dateKey, meno, okno) {
+  function otvor(kurz, dateKey, meno, okno, segmenty) {
     // okno = [odSek, doSek] služby vodiča (nepovinné): poloha sa berie len v rámci nej
 
     if (!window.DpbOkna || !window.DpbStretnutia) return;
@@ -66,11 +66,23 @@
         if (sec < okno[0]) { sec = okno[0]; pred = true; }
         else if (sec > okno[1]) { sec = okno[1]; po = true; }
       }
-      var r = await window.DpbStretnutia.poloha(kurz, dateKey, sec, po);
+      var kurzP = kurz, medzi = false;
+      if (segmenty && segmenty.length) {
+        // striedač: poloha sa berie z kurzu, v ktorom práve je (alebo z najbližšieho striedania)
+        var sg = null;
+        for (var qi = 0; qi < segmenty.length; qi++) { if (sec >= segmenty[qi].a && sec <= segmenty[qi].b) { sg = segmenty[qi]; break; } }
+        if (!sg) {
+          sg = segmenty.filter(function (x) { return x.a > sec; })[0];
+          if (sg) { sec = sg.a; medzi = true; } else { sg = segmenty[segmenty.length - 1]; sec = sg.b; po = true; }
+        }
+        kurzP = sg.kurz;
+      }
+      var r = await window.DpbStretnutia.poloha(kurzP, dateKey, sec, po);
       if (!box || !box.isConnected) return false;
       box.innerHTML = "";
       if (r.chyba) { box.appendChild(el("div", "color:var(--text-2);padding:8px 0", r.chyba)); return true; }
       var popis = pred ? "Služba ešte nezačala – začiatok" : po ? "Služba skončila – koniec služby" : r.stav === "bezi" ? (jeDnes ? "● teraz na trase" : "") : r.stav === "caka" ? "Najbližší spoj" + (r.odchodSpoja ? " o " + r.odchodSpoja : "") : "Služba skončila";
+      if (segmenty && segmenty.length) popis = (medzi ? "Najbližšie striedanie" : popis) + " · kurz " + kurzP;
       status.textContent = (popis ? popis + " · " : "") + "smer " + r.ciel;
       var kk = koleso(r.polozky.map(function (z) { return { cas: z.cas, nazov: z.nazov, pod: "" }; }), r.stred, stavK);
       box.appendChild(kk.el);
