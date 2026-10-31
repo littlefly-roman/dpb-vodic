@@ -611,11 +611,13 @@
         function renderList() {
           container.innerHTML = "";
           resetContainerLayout();
-          const year = appState.selectedDate.getFullYear();
-          const month = appState.selectedDate.getMonth();
           // Mesiac rovnakým štýlom ako date-date
           dateHeader.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(appState.selectedDate)}</span>`;
+          container.appendChild(buildListFragment(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth()));
+        }
 
+        // Zoznam dní jedného mesiaca (používa ho zoznam aj náhľad pri swipe)
+        function buildListFragment(year, month) {
           const lastDay = new Date(year, month + 1, 0).getDate();
 
           // DPB: prefill all days in this month
@@ -687,7 +689,7 @@
             }
             fragment.appendChild(group);
           }
-          container.appendChild(fragment);
+          return fragment;
         }
 
         function buildListRow(
@@ -781,7 +783,9 @@
               });
             }
           } else {
-            // list mode — no header in ghost, just spacer so content starts at same vertical offset
+            // zoznam mesiaca: náhľad susedného mesiaca (offset = +1 nasledujúci, -1 predchádzajúci)
+            const cm = new Date(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth() + offset, 1);
+            ghost.appendChild(buildListFragment(cm.getFullYear(), cm.getMonth()));
           }
           return ghost;
         }
