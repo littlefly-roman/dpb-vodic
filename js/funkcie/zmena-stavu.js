@@ -12,6 +12,21 @@
     if (text != null) e.textContent = text;
     return e;
   }
+  // Chybová hláška vo formulári: oranžová (červená ostáva značke DPB), pri každej novej hláške krátko zabliká
+  function chybaPole() {
+    var e = document.createElement("div");
+    e.className = "chyba-text";
+    var d = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
+    Object.defineProperty(e, "textContent", {
+      get: function () { return d.get.call(e); },
+      set: function (v) {
+        d.set.call(e, v);
+        e.classList.remove("chyba-blik");
+        if (v) { void e.offsetWidth; e.classList.add("chyba-blik"); }
+      }
+    });
+    return e;
+  }
   function toast(t, ms) { if (window._showToast) window._showToast(t, ms); }
 
   function rozloz() {
@@ -237,7 +252,7 @@
           t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
           pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); t.appendChild(pz);
         }
-        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
+        var chyba = chybaPole();
         t.appendChild(chyba);
         t._zber = function () {
           if (!od.get()) { chyba.textContent = "Zadaj začiatok."; return null; }
@@ -446,7 +461,7 @@
         t.appendChild(ch.box); t.appendChild(nch.box);
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
-        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
+        var chyba = chybaPole();
         t.appendChild(chyba);
         ziadostSluzby._z = function () {
           var a = ch.zber(), b = nch.zber();
@@ -530,7 +545,7 @@
         });
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
-        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
+        var chyba = chybaPole();
         t.appendChild(chyba);
         reklamacia._z = function () {
           var r = [];
@@ -609,7 +624,7 @@
         var komu = chipy(t, ["Dielňa", "Dispečing", "Výpravňa"], false);
         var tx = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); tx.placeholder = "Popis (čo sa stalo)";
         t.appendChild(tx);
-        var chyba = el("div", "color:var(--red);font-size:15px;margin-top:8px;min-height:16px");
+        var chyba = chybaPole();
         t.appendChild(chyba);
         nahlasit._z = function () {
           var c = co(), kk = komu();

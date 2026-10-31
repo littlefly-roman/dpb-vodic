@@ -3,6 +3,8 @@
         --red-dark: #c0001a;
         --red-text: #e8001a; /* červený text na podklade povrchu */
         --red-soft: rgba(232, 0, 26, 0.08);
+        --chyba: #b45309; /* chyby, zamietnutia, nevratné akcie – červená ostáva značke DPB */
+        --chyba-soft: rgba(180, 83, 9, 0.12);
 
         --bg: #f1f3f6;
         --surface: #ffffff;
@@ -35,6 +37,8 @@
           --np-fg: #0d0e11;
           --red-soft: rgba(232, 0, 26, 0.1);
           --red-text: #ff6b7d;
+          --chyba: #fb923c;
+          --chyba-soft: rgba(251, 146, 60, 0.16);
           --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.28);
           --sh-md: 0 2px 10px rgba(0, 0, 0, 0.38);
           --sh-lg: 0 6px 24px rgba(0, 0, 0, 0.48);
@@ -54,6 +58,8 @@
           --np-fg: #0d0e11;
           --red-soft: rgba(232, 0, 26, 0.1);
           --red-text: #ff6b7d;
+          --chyba: #fb923c;
+          --chyba-soft: rgba(251, 146, 60, 0.16);
           --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.28);
           --sh-md: 0 2px 10px rgba(0, 0, 0, 0.38);
           --sh-lg: 0 6px 24px rgba(0, 0, 0, 0.48);
@@ -3450,3 +3456,9 @@ body {
 .hdr-ghost{position:absolute;flex:none;pointer-events:none;cursor:default;box-sizing:border-box;will-change:transform,opacity}
 @media (hover: hover) { .hdr-ghost:hover {background:transparent} }
 .section-header.swipe-anim,.hdr-ghost.swipe-anim,.swipe-slide-ghost.swipe-anim,#servicesContainer.swipe-anim{transition:transform .28s cubic-bezier(.25,.46,.45,.94),opacity .28s ease}
+
+/* v195: chybové hlášky – oranžová + jemné blikanie (štyri záblesky, potom stojí) */
+.chyba-text{color:var(--chyba);font-size:15px;font-weight:600;margin-top:8px;min-height:16px}
+@keyframes chyba-blik{0%,100%{opacity:1}50%{opacity:.35}}
+.chyba-blik{animation:chyba-blik .7s ease-in-out 4}
+@media (prefers-reduced-motion: reduce){.chyba-blik{animation:none}}
