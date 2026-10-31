@@ -12,7 +12,7 @@
     var pad = el("div", "height:" + (H * 3) + "px");
     w.appendChild(pad);
     var rows = items.map(function (z) {
-      var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + H + "px;box-sizing:border-box;border-radius:12px;scroll-snap-align:center;will-change:transform,opacity");
+      var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + H + "px;box-sizing:border-box;border-radius:14px;scroll-snap-align:center;will-change:transform,opacity");
       r.appendChild(el("div", "min-width:58px;font-variant-numeric:tabular-nums;font-size:18px", z.cas));
       var t = el("div", "flex:1;min-width:0");
       t.appendChild(el("div", "font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
@@ -34,7 +34,7 @@
         r.style.background = on ? "var(--red)" : "transparent";
         r.style.color = on ? "#fff" : "var(--text-1)";
         r.style.fontWeight = on ? "700" : "400";
-        r.style.boxShadow = on ? "0 4px 14px rgba(232,0,26,.25)" : "none";
+        r.style.boxShadow = on ? "0 2px 10px rgba(232,0,26,.28)" : "none";
       });
     }
     w.addEventListener("scroll", function () { stav.top = w.scrollTop; styl(); }, { passive: true });
