@@ -3511,3 +3511,14 @@ body {
 @keyframes burza-dych-text{0%,100%{opacity:1}50%{opacity:.4}}
 .burza-upoz{animation:burza-dych-text 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.burza-upoz{animation:none}}
+
+/* v203: Hľadať – čistejší vzhľad */
+.hl-vstup{border-radius:16px;border:1px solid var(--border-2);box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding-left:46px;background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e96a8' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><line x1='16.5' y1='16.5' x2='21' y2='21'/></svg>") no-repeat 14px center/22px}
+.hl-vstup:focus{border-color:var(--text-3)}
+.hl-den-nav{gap:6px}
+.hl-den-nav button{min-width:40px;border:0;background:var(--surface-2);background:var(--border-2);border-radius:14px}
+.hl-den-nav #hladatDatum{white-space:nowrap;padding:0;min-width:0;background:var(--surface);border:1px solid var(--border-2);border-radius:14px;box-shadow:0 1px 2px rgba(15,20,35,.05)}
+.hl-sek{letter-spacing:.14em;font-weight:700}
+.hl-riadok{border:1px solid var(--border-2);border-radius:18px;padding:12px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.05)}
+.hl-riadok.hl-dnes{border-color:var(--border-2);border-left:3px solid var(--red)}
+.hl-hlava{letter-spacing:-.1px}
