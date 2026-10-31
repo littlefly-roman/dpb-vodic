@@ -3490,3 +3490,13 @@ body {
 .card-prs-row .prs-cas{font-weight:600;min-width:0;padding-right:0}
 .card-prs-row .prs-meno{flex:1;min-width:0;line-height:1.2}
 .card-prs-row .prs-kurz{width:auto}
+
+/* v201: zoznam mesiaca – súvislý zoznam namiesto samostatných kariet */
+
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group{border-radius:0;margin-bottom:0;box-shadow:none;background:var(--surface);border-bottom:1px solid var(--border-2)}
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group:first-child{border-radius:18px 18px 0 0}
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group:last-child{border-radius:0 0 18px 18px;border-bottom:0}
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group.is-weekend,:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group.is-holiday{background:linear-gradient(rgba(232,0,26,.045),rgba(232,0,26,.045)),var(--surface)}
+.list-row{border-bottom:0;padding:11px 14px}
+.list-time{background:transparent;padding:0;color:var(--text-2);font-weight:600}
+.list-day-name{color:var(--text-3)}
