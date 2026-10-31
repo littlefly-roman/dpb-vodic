@@ -3467,3 +3467,8 @@ body {
 /* v196: zamietnutá rezervácia – oranžová bodka štyrikrát jemne zabliká */
 .burza-stav-dot.stav-zamietnuta,.burza-tl-dot.stav-zamietnuta,.burza-notif-dot.typ-error{animation:chyba-blik .7s ease-in-out 4}
 @media (prefers-reduced-motion: reduce){.burza-stav-dot.stav-zamietnuta,.burza-tl-dot.stav-zamietnuta,.burza-notif-dot.typ-error{animation:none}}
+
+/* v197: „Odoslaná“ dýcha – signalizuje, že sa na rezervácii pracuje */
+@keyframes burza-dych{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.burza-stav-dot.stav-odoslana,.burza-tl-dot.stav-odoslana{animation:burza-dych 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.burza-stav-dot.stav-odoslana,.burza-tl-dot.stav-odoslana{animation:none}}
