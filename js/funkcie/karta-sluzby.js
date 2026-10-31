@@ -861,6 +861,8 @@
               var pm = _tm(p.prebera);
               return pm >= _odM && pm <= _doM;
             });
+            // v chronologickom poradí (podľa začiatku prestávky)
+            _rel.sort(function (a, b) { return _tm(a.prebera) - _tm(b.prebera); });
             if (_rel.length) {
               var pb = document.createElement("div");
               pb.className = "card-prs-blk";
