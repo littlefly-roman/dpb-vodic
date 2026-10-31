@@ -961,6 +961,17 @@
           calendarPanel.classList.remove("hidden");
         });
 
+        // V zozname mesiaca nasleduje nadpis aj zoznam mesiac, ktorý prelistuješ v kalendári (šípky aj swipe)
+        function kalendarPresunMesiac() {
+          if (appState.viewMode === "list") {
+            const max = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+            appState.selectedDate = new Date(calendarYear, calendarMonth, Math.min(appState.selectedDate.getDate(), max));
+            render();
+            calendarPanel.classList.remove("hidden");
+          }
+          renderCalendar();
+        }
+
         function renderCalendar() {
           calendarPanel.innerHTML = "";
 
@@ -976,7 +987,7 @@
               calendarMonth = 11;
               calendarYear--;
             }
-            renderCalendar();
+            kalendarPresunMesiac();
           });
 
           const title = document.createElement("div");
@@ -996,7 +1007,7 @@
               calendarMonth = 0;
               calendarYear++;
             }
-            renderCalendar();
+            kalendarPresunMesiac();
           });
 
           header.append(prev, title, next);
