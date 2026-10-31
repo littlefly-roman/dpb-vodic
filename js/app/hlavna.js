@@ -835,6 +835,7 @@
                   : -(swipeWrapper.offsetWidth + _gap);
               swipeGhost.style.transform = `translateX(${ghostStart}px)`;
               swipeWrapper.appendChild(swipeGhost);
+              _titleGhostCreate(-newDir);
             }
 
             if (swipeGhost) {
@@ -842,6 +843,7 @@
               const ghostBase = swipeDir < 0 ? w : -w;
               container.style.transform = `translateX(${deltaX}px)`;
               swipeGhost.style.transform = `translateX(${ghostBase + deltaX}px)`;
+              _swipeVisual(deltaX, swipeWrapper.offsetWidth);
             } else {
               container.style.transform = `translateX(${deltaX}px)`;
             }
@@ -849,11 +851,72 @@
           { passive: true },
         );
 
+        // ── Vizuál swipe: nadpis (deň / mesiac) sa posúva a prelína spolu s obsahom, odchádzajúci obsah tmavne ──
+        let hdrGhost = null;
+        function _titleGhostCreate(offset) {
+          _titleGhostRemove();
+          const g = document.createElement("div");
+          g.className = "section-header hdr-ghost";
+          if (appState.viewMode === "cards") {
+            const d = new Date(appState.selectedDate);
+            d.setDate(d.getDate() + offset);
+            g.innerHTML = formatDisplayDate(d);
+            if (formatDateKey(d) === formatDateKey(new Date())) g.classList.add("je-dnes");
+          } else {
+            const cm = new Date(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth() + offset, 1);
+            g.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(cm)}</span>`;
+          }
+          g.style.left = dateHeader.offsetLeft + "px";
+          g.style.top = dateHeader.offsetTop + "px";
+          g.style.width = dateHeader.offsetWidth + "px";
+          g.style.opacity = "0";
+          dateHeader.parentNode.appendChild(g);
+          hdrGhost = g;
+        }
+        function _titleGhostRemove() {
+          if (hdrGhost) { hdrGhost.remove(); hdrGhost = null; }
+          dateHeader.classList.remove("swipe-anim");
+          dateHeader.style.transform = "";
+          dateHeader.style.opacity = "";
+        }
+        function _swipeVisual(deltaX, w) {
+          const p = Math.min(1, Math.abs(deltaX) / w);
+          container.style.opacity = String(1 - 0.4 * p);
+          if (swipeGhost) swipeGhost.style.opacity = String(0.55 + 0.45 * p);
+          dateHeader.style.transform = `translateX(${deltaX * 0.35}px)`;
+          dateHeader.style.opacity = String(Math.max(0, 1 - 2 * p));
+          if (hdrGhost) {
+            const sign = deltaX < 0 ? 1 : -1;
+            hdrGhost.style.transform = `translateX(${sign * (1 - p) * 70}px)`;
+            hdrGhost.style.opacity = String(Math.max(0, 2 * p - 1));
+          }
+        }
+        function _swipeVisualAnim(on) {
+          [container, swipeGhost, hdrGhost, dateHeader].forEach((e) => { if (e) e.classList.toggle("swipe-anim", on); });
+        }
+        function _swipeVisualEnd(exitTo) {
+          _swipeVisualAnim(true);
+          container.style.opacity = "0.6";
+          dateHeader.style.transform = `translateX(${exitTo * 0.35}px)`;
+          dateHeader.style.opacity = "0";
+          if (swipeGhost) swipeGhost.style.opacity = "1";
+          if (hdrGhost) { hdrGhost.style.transform = "translateX(0)"; hdrGhost.style.opacity = "1"; }
+        }
+        function _swipeVisualCancel() {
+          _swipeVisualAnim(true);
+          container.style.opacity = "";
+          dateHeader.style.transform = "";
+          dateHeader.style.opacity = "";
+          if (hdrGhost) { hdrGhost.style.transform = `translateX(${swipeDir < 0 ? 70 : -70}px)`; hdrGhost.style.opacity = "0"; }
+        }
+
         function _cleanGhost() {
           if (swipeGhost) {
             swipeGhost.remove();
             swipeGhost = null;
           }
+          _titleGhostRemove();
+          container.style.opacity = "";
           swipeDir = 0;
         }
 
@@ -869,6 +932,7 @@
             swipeGhost.classList.add("swipe-anim");
             swipeGhost.style.transform = `translateX(${ghostFinal}px)`;
           }
+          _swipeVisualEnd(exitTo);
 
           setTimeout(() => {
             container.classList.remove("swipe-anim");
@@ -903,7 +967,9 @@
                 const w = swipeWrapper.offsetWidth;
                 swipeGhost.classList.add("swipe-anim");
                 swipeGhost.style.transform = `translateX(${swipeDir < 0 ? w : -w}px)`;
+                swipeGhost.style.opacity = "0.55";
               }
+              _swipeVisualCancel();
               setTimeout(() => {
                 container.classList.remove("swipe-anim");
                 _cleanGhost();
