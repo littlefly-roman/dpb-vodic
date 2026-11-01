@@ -452,6 +452,13 @@
           const k = service._karta;
           const vzor = service._vzor;
           const card = document.createElement("div");
+          // Zvonček upozornení na každej službe (dnes a v budúcnosti)
+          function pridajZvonec(tr) {
+            if (!tr || !window.DpbKartaNove) return;
+            const dnesKlucZ = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
+            if ((service.date || "") < dnesKlucZ) return;
+            tr.appendChild(window.DpbKartaNove.zvonec(service));
+          }
           card.className = "service-card";
 
           function addTitle(parent, txt) {
@@ -510,10 +517,10 @@
             center.appendChild(lbl);
             addTitle(center, _vp ? _vp.nazov : k.kurz);
             if (_vp) center.lastChild.classList.add("card-title-md");
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
           } else if (vzor === "944") {
             addTitle(center, k.kurz);
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
               rw.className = "card-route-wrap";
@@ -607,7 +614,7 @@
               addTitle(center, _ph.nazov);
               center.lastChild.classList.add("card-title-md");
             } else addTitle(center, k.kurz);
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
             if (_ph && _ph.miesto) {
               const mr = addRow(center, "card-route card-miesto", _ph.miesto);
               pridajIkonu(mr, "poloha");
@@ -652,7 +659,7 @@
             _strTitleEl.className = "card-title";
             _strTitleEl.textContent = k.kurz || "—";
             center.appendChild(_strTitleEl);
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
             // Zastávka: najprv skús DPB_STATIC.str slot.z (z PDF), potom RAW
             if (window.DPB_STATIC && window.DPB_STATIC.str && service.date) {
               var _zTyp = window.Calendar
@@ -854,8 +861,7 @@
             (function () {
               const tr = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
               pridajIkonu(tr, "cas");
-              const dnesKlucZ = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
-              if (tr && window.DpbKartaNove && service.date >= dnesKlucZ) tr.appendChild(window.DpbKartaNove.zvonec(service));
+              pridajZvonec(tr);
             })();
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
