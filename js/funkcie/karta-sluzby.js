@@ -303,7 +303,8 @@
             // Po skončení služby sa menu správa ako pre minulý deň
             if (_now >= _do && _do > _od && _do <= 1440) { isPast = true; isToday = false; }
           }
-          if (sluzbaVzor) items.push({ action: "cp", label: "Cestovný poriadok" });
+          // Cestovný poriadok len tam, kde grafikon existuje (výpravca TRKR a záložné vozidlo 944 ho nemajú)
+          if (["SLUŽBA", "STRIEDAČ", "POHOTOVOSŤ"].includes(vzor)) items.push({ action: "cp", label: "Cestovný poriadok" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
           } else if (isToday) {
