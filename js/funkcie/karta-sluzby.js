@@ -304,7 +304,7 @@
             if (_now >= _do && _do > _od && _do <= 1440) { isPast = true; isToday = false; }
           }
           // Cestovný poriadok len tam, kde grafikon existuje (výpravca TRKR a záložné vozidlo 944 ho nemajú)
-          if (["SLUŽBA", "STRIEDAČ", "POHOTOVOSŤ"].includes(vzor)) items.push({ action: "cp", label: "Cestovný poriadok" });
+          if (["SLUŽBA", "STRIEDAČ"].includes(vzor)) items.push({ action: "cp", label: "Cestovný poriadok" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
           } else if (isToday) {
