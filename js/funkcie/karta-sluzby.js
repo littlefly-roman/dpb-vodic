@@ -633,10 +633,6 @@
               );
             // Pohotovosť so zásahom (službou v obálke): cestovný poriadok skladaný z jej kurzov, ako u striedača
             if (zaskoky.length) {
-              (function () {
-                var q = String(zaskoky[0].od || "").split(":");
-                if (q.length > 1) { service._premavkaOd = (+q[0]) * 3600 + (+q[1]) * 60; if (service._zvonecObnov) service._zvonecObnov(); }
-              })();
               card._strGrafikon = function () {
                 openGrafikonStriedac(zaskoky.map(function (z) { return { kurz: z.kurz, prebera: z.od, odovzdava: z.do, vozidlo: z.vozidlo || null }; }), service.date || "");
                 if (window.DpbKartaNove && window.DpbKartaNove.ozdob)
