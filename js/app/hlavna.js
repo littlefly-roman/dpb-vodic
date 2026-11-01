@@ -113,6 +113,7 @@
         dpbToggle.addEventListener("click", () => {
           document.getElementById("burzaView").classList.add("hidden");
           document.getElementById("profilView").classList.add("hidden");
+          document.getElementById("nastaveniaView").classList.add("hidden");
           if (appState.mainView === "services") {
             servicesView.classList.add("hidden");
             employerView.classList.remove("hidden");
@@ -1523,6 +1524,8 @@
           var pv = document.getElementById("profilView");
           // Poriadky ("prehlad") sú okno nad obsahom: obrazovka pod nimi ostáva, aby späť vedelo vrátiť predošlú
           if (pv && id !== "profil" && id !== "prehlad") pv.classList.add("hidden");
+          var nvw = document.getElementById("nastaveniaView");
+          if (nvw && id !== "nastavenia" && id !== "prehlad") nvw.classList.add("hidden");
           var hv = document.getElementById("hladatView");
           if (hv && id !== "hladat" && id !== "prehlad") hv.classList.add("hidden");
           document
@@ -1569,6 +1572,10 @@
                   servicesView.classList.add("hidden");
                   employerView.classList.add("hidden");
                   window.Profil.otvor();
+                } else if (btn.dataset.nav === "nastavenia" && window.Profil) {
+                  servicesView.classList.add("hidden");
+                  employerView.classList.add("hidden");
+                  window.Profil.otvorNastavenia();
                 } else
                   showToast(
                     `${btn.querySelector(".nav-label").textContent} – pripravujeme…`,

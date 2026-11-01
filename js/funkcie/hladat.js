@@ -122,7 +122,7 @@
   }
   function posun(n) { den = new Date(den.getFullYear(), den.getMonth(), den.getDate() + n); vykresli(); }
   function otvor() {
-    ["burzaView", "profilView", "employerView", "servicesView"].forEach(function (id) { var e = el(id); if (e) e.classList.add("hidden"); });
+    ["burzaView", "profilView", "nastaveniaView", "employerView", "servicesView"].forEach(function (id) { var e = el(id); if (e) e.classList.add("hidden"); });
     el("hladatView").classList.remove("hidden");
     indexDna = null; den = new Date(); vykresli();
     setTimeout(function () { el("hladatVstup").focus(); }, 80);

@@ -1219,7 +1219,7 @@
               var e = document.getElementById(id);
               return !e || e.classList.contains("hidden");
             };
-            var aktivna = !skryty("burzaView") ? "burza" : !skryty("profilView") ? "profil" : !skryty("hladatView") ? "hladat" : "today";
+            var aktivna = !skryty("burzaView") ? "burza" : !skryty("profilView") ? "profil" : !skryty("nastaveniaView") ? "nastavenia" : !skryty("hladatView") ? "hladat" : "today";
             // poistka: ak nie je vidieť žiadna obrazovka, ukáž Dnes (nikdy nenechať prázdnu)
             if (aktivna === "today" && skryty("servicesView")) {
               var bt = document.getElementById("btnToday");

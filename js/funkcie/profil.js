@@ -16,7 +16,16 @@
     var k = window.DPBData && DPBData.getTrakciaKod ? DPBData.getTrakciaKod(rid) : null;
     el("profilTrakcia").textContent = (k && TRAKCIE[k]) || "–";
     el("burzaView").classList.add("hidden");
+    var nv = el("nastaveniaView"); if (nv) nv.classList.add("hidden");
     el("profilView").classList.remove("hidden");
+  }
+
+  // Nastavenia: dáta, Disk Google, obrazovka, skúška upozornení, načítanie dát
+  function otvorNastavenia() {
+    el("burzaView").classList.add("hidden");
+    el("profilView").classList.add("hidden");
+    var hv = el("hladatView"); if (hv) hv.classList.add("hidden");
+    el("nastaveniaView").classList.remove("hidden");
     obnovInfoODatach();
     diag();
   }
@@ -70,6 +79,7 @@
     }
     // pôvodný stav hlavnej obrazovky pre ďalšieho vodiča
     el("profilView").classList.add("hidden");
+    var nv2 = el("nastaveniaView"); if (nv2) nv2.classList.add("hidden");
     el("burzaView").classList.add("hidden");
     el("employerView").classList.add("hidden");
     el("servicesView").classList.remove("hidden");
@@ -138,5 +148,5 @@
     d.textContent = "Zobrazenie: okno " + innerWidth + "×" + innerHeight + " · obrazovka " + screen.width + "×" + screen.height +
       " · okraje hore/dole " + st + "/" + sb + " · " + (sa ? "appka na ploche" : "prehliadač") + " · " + m2;
   }
-  window.Profil = { otvor: otvor, odhlas: odhlas, obnovInfo: obnovInfoODatach };
+  window.Profil = { otvor: otvor, otvorNastavenia: otvorNastavenia, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();

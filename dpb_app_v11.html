@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="img/icon-192.png" />
-    <link rel="stylesheet" href="style.css?v=129">
+    <link rel="stylesheet" href="style.css?v=130">
     <script>
       (function () {
         try {
@@ -300,6 +300,11 @@
             <span>Trakcia</span><span id="profilTrakcia"></span>
           </div>
         </div>
+        <button type="button" id="profilOdhlasit" class="profil-odhlasit">
+          Odhlásiť sa
+        </button>
+      </div>
+      <div id="nastaveniaView" class="hidden">
         <div class="employer-card profil-card" id="profilDataKarta">
           <div class="employer-detail-row">
             <span>Dáta</span><span id="profilDataInfo">–</span>
@@ -335,9 +340,6 @@
           accept=".csv,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel,text/plain"
           style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden"
         />
-        <button type="button" id="profilOdhlasit" class="profil-odhlasit">
-          Odhlásiť sa
-        </button>
         <div id="profilDiag"></div>
       </div>
     </main>
@@ -454,13 +456,13 @@
     <script src="js/data/grafikon-parsery.js?v=57"></script>
     <script src="js/data/vypravna-model.js?v=54"></script>
     <script src="js/funkcie/kalendar-znacky.js?v=1"></script>
-    <script src="js/app/hlavna.js?v=97"></script>
+    <script src="js/app/hlavna.js?v=98"></script>
     <script src="js/funkcie/karty-bodky.js?v=2"></script>
 
     <!-- Card builder + overrides -->
     <script src="js/funkcie/export.js?v=5"></script>
     <script src="js/funkcie/obrazovka.js"></script>
-    <script src="js/funkcie/hladat.js?v=6"></script>
+    <script src="js/funkcie/hladat.js?v=7"></script>
     <script src="js/funkcie/karta-sluzby.js?v=94"></script>
     <script src="js/funkcie/zmeny.js?v=4"></script>
 
@@ -641,7 +643,7 @@
     <script src="js/data/odpocinok.js?v=8"></script>
     <script src="js/data/adapter-csv.js?v=53"></script>
 
-    <script src="js/funkcie/profil.js?v=58"></script>
+    <script src="js/funkcie/profil.js?v=59"></script>
     <script src="js/funkcie/ikony-dopravy.js?v=3"></script>
     <script src="js/funkcie/import-csv.js"></script>
     <script src="js/funkcie/disk-google-config.js?v=2"></script>
@@ -656,7 +658,7 @@
     <script src="js/funkcie/mini-grafikon.js?v=14"></script>
     <script src="js/funkcie/karta-nove.js?v=9"></script>
 
-    <script src="js/funkcie/zastavky.js?v=78"></script>
+    <script src="js/funkcie/zastavky.js?v=79"></script>
   
 
 <!-- =========================
