@@ -3638,3 +3638,4 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .gm-pane .zs-spat,.gm-pane .zs-hviezda,.gm-pane .zs-vod,.gm-pane .zs-krok{display:none!important}
 #nastaveniaView.hidden { display: none; }
 #nastaveniaView { flex: 1; overflow-y: auto; }
+.card-zvonec.off,.card-zvonec:disabled{opacity:.35;cursor:default;pointer-events:none}

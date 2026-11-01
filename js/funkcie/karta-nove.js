@@ -129,7 +129,24 @@
     var b = el("button", "");
     b.type = "button"; b.className = "card-zvonec"; b.setAttribute("aria-label", "Upozornenia");
     b.innerHTML = svg("zvonec", 20);
-    b.addEventListener("click", function (e) { e.stopPropagation(); upozornenia(service); });
+    // Neaktívny, keď je služba podľa cestovného poriadku už v premávke (dnes po začiatku služby)
+    var k = (service && service._karta) || {}, t = null;
+    function odSek() { var q = String(k.od || "").split(":"); return q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null; }
+    function dnesKluc() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }
+    function obnov() {
+      clearTimeout(t);
+      var od = odSek(), n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+      var bezi = od != null && service.date === dnesKluc() && sec >= od;
+      b.disabled = bezi;
+      b.classList.toggle("off", bezi);
+      b.setAttribute("aria-disabled", bezi ? "true" : "false");
+      b.title = bezi ? "Služba už je v premávke" : "";
+      if (!bezi && od != null && service.date === dnesKluc())
+        t = setTimeout(obnov, Math.min(2147000000, Math.max(800, (od - sec) * 1000 + 500)));
+    }
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && b.isConnected) obnov(); });
+    obnov();
+    b.addEventListener("click", function (e) { e.stopPropagation(); if (b.disabled) return; upozornenia(service); });
     return b;
   }
 
