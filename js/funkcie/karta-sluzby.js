@@ -304,7 +304,7 @@
             if (_now >= _do && _do > _od && _do <= 1440) { isPast = true; isToday = false; }
           }
           // Cestovný poriadok len tam, kde grafikon existuje (výpravca TRKR a záložné vozidlo 944 ho nemajú)
-          if (["SLUŽBA", "STRIEDAČ"].includes(vzor)) items.push({ action: "cp", label: "Cestovný poriadok" });
+          if (["SLUŽBA", "STRIEDAČ"].includes(vzor) || (vzor === "POHOTOVOSŤ" && (k.segmenty || []).some(function (z) { return !z.is_poh; }))) items.push({ action: "cp", label: "Cestovný poriadok" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
           } else if (isToday) {
@@ -459,6 +459,7 @@
               strTime: strOd || "",
               typ: typ || null,
               zCP: !!zCP,
+              datum: ctx && ctx.date ? ctx.date : undefined,
               route: "",
               before: null,
               after: null,
@@ -642,6 +643,19 @@
                   })),
                 ),
               );
+            // Pohotovosť so zásahom (službou v obálke): cestovný poriadok skladaný z jej kurzov, ako u striedača
+            if (zaskoky.length) {
+              card._strGrafikon = function () {
+                openGrafikonStriedac(zaskoky.map(function (z) { return { kurz: z.kurz, prebera: z.od, odovzdava: z.do, vozidlo: z.vozidlo || null }; }), service.date || "");
+                if (window.DpbKartaNove && window.DpbKartaNove.ozdob)
+                  window.DpbKartaNove.ozdob({
+                    vzor: "STRIEDAČ", date: service.date || "", kurz: k.kurz, od: k.od, do: k.do,
+                    segmenty: zaskoky.map(function (z) { return { kurz: z.kurz, prebera: z.od, odovzdava: z.do }; }),
+                  });
+              };
+              var _pt = center.querySelector(".card-title");
+              if (_pt) { _pt.style.cursor = "pointer"; _pt.addEventListener("click", function (e) { e.stopPropagation(); card._strGrafikon(); }); }
+            }
             card.appendChild(body);
             const aft = driverRow(service.after, "after");
             if (aft) card.appendChild(aft);

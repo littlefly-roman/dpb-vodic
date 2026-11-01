@@ -1148,10 +1148,10 @@
 ========================== */
 
         async function openGrafikon(service) {
-          const dateKey = formatDateKey(appState.selectedDate);
+          const dateKey = service.datum || formatDateKey(appState.selectedDate);
           // zCP = otvorené zo Službového cestovného poriadku: LIVE tlačidlo je dostupné vždy
           // (sleduje aktuálny čas dňa), ale predvolene vypnuté. Z dashboardu (dnes) je LIVE zapnutý.
-          const today = isToday(appState.selectedDate) || !!service.zCP;
+          const today = (service.datum ? service.datum === formatDateKey(new Date()) : isToday(appState.selectedDate)) || !!service.zCP;
 
           if (appState.grafikonInterval) {
             clearInterval(appState.grafikonInterval);
@@ -1181,7 +1181,7 @@
           const kurz = String(
             service.kurz || service.line.split("/")[1],
           ).padStart(2, "0");
-          const typ = service.typ || Calendar.getDayType(appState.selectedDate);
+          const typ = service.typ || Calendar.getDayType(service.datum || appState.selectedDate);
           const obehCode = "#" + String(linka).padStart(3, "0") + kurz + typ;
 
           const [jr, sm, cileText, staniceText] = await Promise.all([
