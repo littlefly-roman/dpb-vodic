@@ -19,7 +19,7 @@
       if (z.meno && window.DpbKartaNove && window.DpbKartaNove.meno) {
         var pd = el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8");
         if (z.kurz) pd.appendChild(document.createTextNode(z.kurz + "\u2003"));
-        pd.appendChild(window.DpbKartaNove.meno(z.meno, { rola: "Vodič kurzu " + (z.kurz || "") }));
+        pd.appendChild(window.DpbKartaNove.meno(z.meno, { rola: "Vodič kurzu " + (z.kurz || ""), bezFotky: true }));
         if (z.voz) pd.appendChild(document.createTextNode("\u2003" + z.voz));
         t.appendChild(pd);
       } else if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));

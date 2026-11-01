@@ -43,6 +43,7 @@
     if (!t || t === "—") { sp.textContent = t || "—"; sp.classList.add("meno-bez"); return sp; }
     sp.dataset.meno = t;
     if (o.rola) sp.dataset.rola = o.rola;
+    if (o.bezFotky) sp.dataset.bezFotky = "1";
     if (o.tel) sp.dataset.tel = String(o.tel).replace(/\s/g, "");
     sp.setAttribute("role", "button");
     sp.setAttribute("tabindex", "0");
@@ -71,10 +72,11 @@
       var c = cielMena(e); if (!c) return;
       e.stopPropagation(); e.preventDefault();
       if (dlhe) { dlhe = false; return; }
+      if (c.dataset.bezFotky) return; // v cestovných poriadkoch len podržanie = telefonát
       otvor(c);
     }, true);
     document.addEventListener("keydown", function (e) {
-      if ((e.key === "Enter" || e.key === " ") && e.target && e.target.classList && e.target.classList.contains("meno-v") && e.target.dataset.meno) { e.preventDefault(); otvor(e.target); }
+      if ((e.key === "Enter" || e.key === " ") && e.target && e.target.classList && e.target.classList.contains("meno-v") && e.target.dataset.meno && !e.target.dataset.bezFotky) { e.preventDefault(); otvor(e.target); }
     }, true);
   })();
 

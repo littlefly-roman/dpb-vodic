@@ -726,7 +726,10 @@
             wrap.appendChild(row);
             var det = document.createElement("div");
             det.style.cssText = "display:" + (otvorene ? "block" : "none") + ";padding:2px 0 8px 62px;font-size:15px;color:var(--text-2);border-bottom:1px solid var(--border);" + (isPast ? "opacity:0.6" : "");
-            det.textContent = vod ? "Vodič: " + vod.meno : (o.den === 0 ? "Vodič nie je známy" : "Vodič je známy len pre dnešný deň");
+            if (vod && window.DpbKartaNove && window.DpbKartaNove.meno) {
+              det.appendChild(document.createTextNode("Vodič: "));
+              det.appendChild(window.DpbKartaNove.meno(vod.meno, { rola: "Vodič kurzu", bezFotky: true }));
+            } else det.textContent = vod ? "Vodič: " + vod.meno : (o.den === 0 ? "Vodič nie je známy" : "Vodič je známy len pre dnešný deň");
             wrap.appendChild(det);
             row.addEventListener("click", function () {
               _vodOtv[kl] = !_vodOtv[kl];
