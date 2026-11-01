@@ -614,7 +614,7 @@
       podtitul: pekne(ctx.date) + (sv.line ? " · " + sv.line : ""),
       telo: function (t) {
         t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
-        var co = chipy(t, ["Porucha vozidla", "Iné"], true, function (v) { vozBox.style.display = v["Porucha vozidla"] && voz.length > 1 ? "block" : "none"; });
+        var co = chipy(t, ["Porucha", "Udalosť"], true, function (v) { vozBox.style.display = v["Porucha"] && voz.length > 1 ? "block" : "none"; });
         var vozBox = el("div", "display:none;margin:-4px 0 12px");
         vozBox.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
         var vsel = el("select", VSTUP_CSS);
@@ -631,7 +631,7 @@
           if (!c.length) { chyba.textContent = "Vyber, čo nahlasuješ."; return null; }
           if (!kk.length) { chyba.textContent = "Vyber, komu hlásiš."; return null; }
           if (!tx.value.trim()) { chyba.textContent = "Doplň popis."; return null; }
-          return { co: c[0], komu: kk, popis: tx.value.trim(), voz: c[0] === "Porucha vozidla" ? (voz.length > 1 ? vsel.value : (voz[0] || "")) : "" };
+          return { co: c[0], komu: kk, popis: tx.value.trim(), voz: c[0] === "Porucha" ? (voz.length > 1 ? vsel.value : (voz[0] || "")) : "" };
         };
       },
       tlacidla: [

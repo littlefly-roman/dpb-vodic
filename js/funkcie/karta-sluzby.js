@@ -15,13 +15,25 @@
           s.className = "driver-section " + side;
           const ar = document.createElement("span");
           ar.className = "arrow";
-          ar.textContent = "↓";
+          ar.innerHTML = window.DpbKartaNove ? window.DpbKartaNove.svg("swap", 20) : "↓";
           const nm = document.createElement("span");
           nm.style.flex = "1";
           nm.style.fontWeight = "600";
           nm.textContent = data.name;
           s.appendChild(ar);
           s.appendChild(nm);
+          if (window.DpbKartaNove) {
+            const ob = document.createElement("button");
+            ob.type = "button";
+            ob.className = "drv-osoba-btn";
+            ob.setAttribute("aria-label", "Osoba: " + (data.name || ""));
+            ob.innerHTML = window.DpbKartaNove.svg("osoba", 20);
+            ob.addEventListener("click", function (e) {
+              e.stopPropagation();
+              window.DpbKartaNove.osoba(data.name, side === "before" ? "Striedaný vodič" : "Striedajúci vodič");
+            });
+            s.appendChild(ob);
+          }
           // Telefón len ak je k vodičovi číslo (zatiaľ nikto nemá, súhlas so zobrazením sa rieši);
           // keď číslo pribudne, ikona sa objaví sama a ťuk zavolá.
           if (data.phone) {
@@ -39,7 +51,8 @@
           const b = document.createElement("div");
           b.className = "card-menu-btn service-menu-trigger";
           b.innerHTML =
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+          b.setAttribute("aria-label", "Menu karty");
           return b;
         }
 
@@ -262,6 +275,7 @@
           const isFuture = datum > today;
           let isToday = datum === today;
           const items = [];
+          const sluzbaVzor = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor);
           // Služba práve prebieha (dnes, medzi začiatkom a koncom) -> bez zmeny stavu a zmeny služby
           var prebieha = false;
           if (isToday && k.od && k.do) {
@@ -276,24 +290,16 @@
             // Po skončení služby sa menu správa ako pre minulý deň
             if (_now >= _do && _do > _od && _do <= 1440) { isPast = true; isToday = false; }
           }
-          if (
-            ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)
-          )
-            items.push({ action: "grafikon", label: "Grafikon" });
-          if (isToday && vzor === "SLUŽBA" && /^[1349]\//.test(k.kurz || ""))
-            items.push({ action: "stretnutia", label: "Koho stretnem" });
+          if (sluzbaVzor) items.push({ action: "cp", label: "Cestovný poriadok" });
           if (isPast) {
             items.push({ action: "reklamacia", label: "Reklamácia" });
           } else if (isToday) {
             if (vzor === "NEPRÍTOMNOSŤ")
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
-            else if (["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)) {
-              // Dnes: Grafikon, Zmena stavu, porucha vozidla (len ak je vozidlo), udalosť, zmena služby
-              if (!prebieha)
-                items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
-              items.push({ action: "nahlasit", label: "Nahlásiť" });
-              if (!prebieha)
-                items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+            else if (sluzbaVzor) {
+              // Dnes pred nástupom: Voľné služby; počas služby: Nahlásiť (porucha / udalosť)
+              if (!prebieha) items.push({ action: "volne", label: "Voľné služby" });
+              else items.push({ action: "nahlasit", label: "Nahlásiť" });
             } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
@@ -307,10 +313,10 @@
           } else if (isFuture) {
             if (vzor === "NEPRÍTOMNOSŤ")
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
-            else if (["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].includes(vzor)) {
-              // Budúcnosť: Grafikon, Zmena stavu, Zmena služby (+ kalendár)
-              items.push({ action: "zmena_stavu_sluzba", label: "Zmena stavu" });
-              items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+            else if (sluzbaVzor) {
+              // Budúcnosť: Voľné služby, Žiadosti (Zmena stavu | Zmena služby)
+              items.push({ action: "volne", label: "Voľné služby" });
+              items.push({ action: "ziadosti", label: "Žiadosti" });
             } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
@@ -325,6 +331,19 @@
             }
           }
           // Export do kalendára je len zo zoznamu služieb (tlačidlo Export), nie z menu karty.
+          // Šípka je pod kartou (nie v hlavičke); bez položiek sa nezobrazí.
+          if (!mb._pod) {
+            const hd = mb.parentNode;
+            if (hd && hd.classList && hd.classList.contains("card-head")) {
+              const sp = hd.querySelector(".card-spacer");
+              if (sp) sp.remove();
+              mb.remove();
+            }
+            mb.classList.add("chev-pod");
+            mb._pod = true;
+          }
+          mb.style.display = items.length ? "" : "none";
+          if (mb.parentNode !== card) card.appendChild(mb);
           if (!items.length) return;
           const menu = document.createElement("div");
           menu.className = "service-menu";
@@ -368,12 +387,16 @@
               item.addEventListener("click", function (e) {
                 e.stopPropagation();
                 const act = item.dataset.action;
-                if (act === "grafikon")
-                  card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
+                if (act === "cp") {
+                  if (!(vzor === "SLUŽBA" && window.DpbKartaNove && window.DpbKartaNove.cp(service)))
+                    card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
+                }
+                else if (act === "volne")
+                  window.DpbIdiNa && window.DpbIdiNa({ burza: service.date });
+                else if (act === "ziadosti")
+                  window.DpbKartaNove && window.DpbKartaNove.ziadosti(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
-                else if (act === "stretnutia")
-                  window.DpbMiniGrafikon.stretnutia(k.kurz, service.date, k.od, k.do, "");
                 else if (act === "nahlasit")
                   window.DpbNahlasit.otvor({ date: service.date, service: service });
                 else if (act === "reklamacia")
@@ -814,7 +837,12 @@
           } else {
             // SLUŽBA
             addTitle(center, k.kurz);
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
+            (function () {
+              const tr = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
+              pridajIkonu(tr, "cas");
+              const dnesKlucZ = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
+              if (tr && window.DpbKartaNove && service.date >= dnesKlucZ) tr.appendChild(window.DpbKartaNove.zvonec(service));
+            })();
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
               rw.className = "card-route-wrap";
@@ -891,24 +919,68 @@
               _rel.forEach(function (p) {
                 var row = document.createElement("div");
                 row.className = "card-prs-row";
+                var _nov = !!window.DpbKartaNove;
                 var cas = document.createElement("span");
                 cas.className = "prs-cas";
                 zarovnajCas(cas, p.prebera + "–" + p.odovzdava);
-                row.appendChild(cas);
                 var meno = document.createElement("span");
                 meno.className = "prs-meno";
                 var _km = (p.str_meno || "").trim();
                 meno.textContent = _km || "";
-                row.appendChild(meno);
                 var kurz = document.createElement("span");
                 kurz.className = "prs-kurz";
                 kurz.textContent = p.str_kurz ? "(" + p.str_kurz + ")" : "";
-                row.appendChild(kurz);
-                if (window.DpbPrestavka && window.DpbPrestavka.ikonaPrs) {
-                  var _pk = window.DpbPrestavka.ikonaPrs(service, k, p);
+                var _pk = window.DpbPrestavka && window.DpbPrestavka.ikonaPrs ? window.DpbPrestavka.ikonaPrs(service, k, p) : null;
+                if (!_nov) {
+                  row.appendChild(cas);
+                  row.appendChild(meno);
+                  row.appendChild(kurz);
                   if (_pk) row.appendChild(_pk);
+                  pb.appendChild(row);
+                } else {
+                  // Nové rozloženie: ikona výmeny + ikona času + čas, vpravo šípka; meno striedača sa ukáže po rozbalení
+                  row.classList.add("prs-nova");
+                  var ik = document.createElement("span");
+                  ik.className = "prs-ik";
+                  ik.innerHTML = window.DpbKartaNove.svg("swap", 18) + window.DpbKartaNove.svg("cas", 18);
+                  row.appendChild(ik);
+                  row.appendChild(cas);
+                  if (_pk) row.appendChild(_pk);
+                  var det = null;
+                  if (_km || p.str_kurz) {
+                    var sip = document.createElement("button");
+                    sip.type = "button";
+                    sip.className = "prs-sip";
+                    sip.setAttribute("aria-label", "Striedač na prestávke");
+                    sip.setAttribute("aria-expanded", "false");
+                    sip.innerHTML = window.DpbKartaNove.svg("sip", 22);
+                    det = document.createElement("div");
+                    det.className = "prs-det";
+                    det.style.display = "none";
+                    var ob = document.createElement("button");
+                    ob.type = "button";
+                    ob.className = "drv-osoba-btn";
+                    ob.setAttribute("aria-label", "Osoba: " + _km);
+                    ob.innerHTML = window.DpbKartaNove.svg("osoba", 20);
+                    ob.addEventListener("click", function (e) {
+                      e.stopPropagation();
+                      window.DpbKartaNove.osoba(_km, "Striedač na prestávke");
+                    });
+                    det.appendChild(ob);
+                    det.appendChild(meno);
+                    det.appendChild(kurz);
+                    sip.addEventListener("click", function (e) {
+                      e.stopPropagation();
+                      var otv = det.style.display === "none";
+                      det.style.display = otv ? "flex" : "none";
+                      sip.classList.toggle("open", otv);
+                      sip.setAttribute("aria-expanded", otv ? "true" : "false");
+                    });
+                    row.appendChild(sip);
+                  }
+                  pb.appendChild(row);
+                  if (det) pb.appendChild(det);
                 }
-                pb.appendChild(row);
               });
               body.appendChild(pb);
             }

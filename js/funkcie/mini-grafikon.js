@@ -47,13 +47,43 @@
     return { el: w, nastav: nastav };
   }
 
-  function otvor(kurz, dateKey, meno, okno, segmenty) {
+  // Čas (v sekundách od polnoci) najbližšej zmeny po teraz; zoznam časov "H:MM" alebo sekúnd. null = nič ďalšie.
+  function dalsiCas(casy, teraz) {
+    var best = null;
+    casy.forEach(function (c) {
+      var t = typeof c === "number" ? c : (function () { var q = String(c).split(":"); return (+q[0]) * 3600 + (+q[1] || 0) * 60; })();
+      if (isNaN(t)) return;
+      if (t > teraz && (best === null || t < best)) best = t;
+    });
+    return best;
+  }
+  function terazSek() { var n = new Date(); return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(); }
+  // Obnova presne vtedy, keď nastane najbližšia zmena (nie po pevnom intervale). Pri návrate z pozadia hneď.
+  function obnovaPodlaCasu(jeZivy, dalsi, obnov) {
+    var casovac = null;
+    function plan() {
+      clearTimeout(casovac);
+      if (!jeZivy()) return;
+      var d = dalsi();
+      var ms = d == null ? 60000 : Math.max(500, (d - terazSek()) * 1000 + 400);
+      ms = Math.min(ms, 600000);
+      casovac = setTimeout(function () { if (!jeZivy()) return; Promise.resolve(obnov()).then(plan, plan); }, ms);
+    }
+    function pozadie() {
+      if (!jeZivy()) { document.removeEventListener("visibilitychange", pozadie); clearTimeout(casovac); return; }
+      if (!document.hidden) { clearTimeout(casovac); Promise.resolve(obnov()).then(plan, plan); }
+    }
+    document.addEventListener("visibilitychange", pozadie);
+    plan();
+  }
+
+  function otvor(kurz, dateKey, meno, okno, segmenty, kam) {
     // okno = [odSek, doSek] služby vodiča (nepovinné): poloha sa berie len v rámci nej
 
     if (!window.DpbOkna || !window.DpbStretnutia) return;
     var dnes = (function () { var n = new Date(); return n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate()); })();
     var jeDnes = dateKey === dnes;
-    var box = null, status = null, stavK = { dotyk: 0, top: null };
+    var box = null, status = null, stavK = { dotyk: 0, top: null }, dalsiK = null;
     function sekundy() {
       if (jeDnes) { var n = new Date(); return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(); }
       return null;
@@ -84,33 +114,34 @@
       var popis = pred ? "Služba ešte nezačala – začiatok" : po ? "Služba skončila – koniec služby" : r.stav === "bezi" ? (jeDnes ? "● teraz na trase" : "") : r.stav === "caka" ? "Najbližší spoj" + (r.odchodSpoja ? " o " + r.odchodSpoja : "") : "Služba skončila";
       if (segmenty && segmenty.length) popis = (medzi ? "Najbližšie striedanie" : popis) + " · kurz " + kurzP;
       status.textContent = (popis ? popis + " · " : "") + "smer " + r.ciel;
+      dalsiK = jeDnes ? dalsiCas(r.polozky.map(function (z) { return z.cas; }), terazSek()) : null;
       var kk = koleso(r.polozky.map(function (z) { return { cas: z.cas, nazov: z.nazov, pod: "" }; }), r.stred, stavK);
       box.appendChild(kk.el);
       kk.nastav(false);
       return true;
     }
-    var sheet = window.DpbOkna.otvor({
+    function teloFn(t) {
+      status = el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Načítavam…");
+      box = el("div", "");
+      t.appendChild(status); t.appendChild(box);
+    }
+    var sheet = null;
+    if (kam) teloFn(kam);
+    else sheet = window.DpbOkna.otvor({
       titul: "Grafikon " + kurz,
       podtitul: (meno ? meno + " · " : "") + dateKey.split("-").reverse().join("."),
-      telo: function (t) {
-        status = el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Načítavam…");
-        box = el("div", "");
-        t.appendChild(status); t.appendChild(box);
-      },
+      telo: teloFn,
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: window.DpbOkna.zavriVsetko }],
     });
     vykresli(8 * 3600);
     if (jeDnes) {
-      var iv = setInterval(function () {
-        if (!box || !box.isConnected) { clearInterval(iv); return; }
-        vykresli();
-      }, 5000);
+      obnovaPodlaCasu(function () { return !!box && box.isConnected; }, function () { return dalsiK; }, function () { return vykresli(); });
     }
     return sheet;
   }
 
   function hms(s) { return Math.floor(s / 3600) + ":" + p2(Math.floor((s % 3600) / 60)); }
-  async function stretnutia(kurz, dateKey, od, do_, meno) {
+  async function stretnutia(kurz, dateKey, od, do_, meno, kam) {
     if (!window.DpbOkna || !window.DpbStretnutia) return;
     var box = null, info = null, data = null, stavS = { dotyk: 0, top: null };
     var n = new Date(), dnes = n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate());
@@ -132,10 +163,12 @@
       bn.addEventListener("click", function () { kk.nastav(true); });
       box.appendChild(bn);
     }
-    window.DpbOkna.otvor({
+    function teloS(t) { info = el("div", "font-size:15px;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); }
+    if (kam) teloS(kam);
+    else window.DpbOkna.otvor({
       titul: "Koho stretne " + kurz,
       podtitul: (meno ? meno + " · " : "") + dateKey.split("-").reverse().join(".") + " · plánované podľa grafikonu",
-      telo: function (t) { info = el("div", "font-size:15px;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); },
+      telo: teloS,
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: window.DpbOkna.zavriVsetko }],
     });
     var sek = function (x) { if (x == null) return null; if (typeof x === "number") return x; var q = String(x).split(":"); return (+q[0]) * 3600 + (+q[1] || 0) * 60; };
@@ -145,10 +178,11 @@
     data = r; info.textContent = "Električky idúce oproti na rovnakom úseku (" + r.length + "). Zoznam sa obnovuje.";
     kresli();
     if (dateKey === dnes) {
-      var iv2 = setInterval(function () {
-        if (!box || !box.isConnected) { clearInterval(iv2); return; }
-        kresli();
-      }, 10000);
+      obnovaPodlaCasu(
+        function () { return !!box && box.isConnected; },
+        function () { return dalsiCas(data.map(function (x) { return x.sec; }), terazSek()); },
+        function () { kresli(); }
+      );
     }
   }
 
