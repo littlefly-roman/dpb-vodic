@@ -64,7 +64,7 @@
     var bezi = jeDnes && r.od && !r.nepr && (teraz >= r.od[0] && teraz < r.od[1] || teraz + 1440 >= r.od[0] && teraz + 1440 < r.od[1]);
     if (bezi) d.className += " hl-dnes";
     var t = document.createElement("div"); t.className = "hl-text";
-    var h = document.createElement("div"); h.className = "hl-hlava"; h.textContent = r.meno;
+    var h = document.createElement("div"); h.className = "hl-hlava"; if (window.DpbKartaNove && window.DpbKartaNove.meno) h.appendChild(window.DpbKartaNove.meno(r.meno, { rola: "Vodič" })); else h.textContent = r.meno;
     var s = document.createElement("div"); s.className = "hl-sluzba";
     s.textContent = r.nepr ? r.line + (r.time ? "  ·  " + r.time : "") : r.line + (r.time ? "  ·  " + r.time : "");
     t.appendChild(h); t.appendChild(s);

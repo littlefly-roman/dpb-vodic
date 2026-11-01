@@ -19,31 +19,10 @@
           const nm = document.createElement("span");
           nm.style.flex = "1";
           nm.style.fontWeight = "600";
-          nm.textContent = data.name;
+          if (window.DpbKartaNove) nm.appendChild(window.DpbKartaNove.meno(data.name, { tel: data.phone, rola: side === "before" ? "Striedaný vodič" : "Striedajúci vodič" }));
+          else nm.textContent = data.name;
           s.appendChild(ar);
           s.appendChild(nm);
-          if (window.DpbKartaNove) {
-            const ob = document.createElement("button");
-            ob.type = "button";
-            ob.className = "drv-osoba-btn";
-            ob.setAttribute("aria-label", "Osoba: " + (data.name || ""));
-            ob.innerHTML = window.DpbKartaNove.svg("osoba", 20);
-            ob.addEventListener("click", function (e) {
-              e.stopPropagation();
-              window.DpbKartaNove.osoba(data.name, side === "before" ? "Striedaný vodič" : "Striedajúci vodič");
-            });
-            s.appendChild(ob);
-          }
-          // Telefón len ak je k vodičovi číslo (zatiaľ nikto nemá, súhlas so zobrazením sa rieši);
-          // keď číslo pribudne, ikona sa objaví sama a ťuk zavolá.
-          if (data.phone) {
-            const pb = phoneBtn();
-            pb.addEventListener("click", function (e) {
-              e.stopPropagation();
-              window.location.href = "tel:" + String(data.phone).replace(/\s/g, "");
-            });
-            s.appendChild(pb);
-          }
           return s;
         }
 
@@ -206,9 +185,11 @@
             }
             det.innerHTML =
               (k.trasa ? '<span class="str-detail-voz">' + k.trasa + "</span>" : "") +
-              '<span class="str-detail-meno">' +
-              (k.ridic || "—") +
-              "</span>";
+              '<span class="str-detail-meno"></span>';
+            (function (sm) {
+              if (window.DpbKartaNove) sm.appendChild(window.DpbKartaNove.meno(k.ridic, { tel: k.tel, rola: "Vodič kurzu " + k.kurz }));
+              else sm.textContent = k.ridic || "—";
+            })(det.querySelector(".str-detail-meno"));
             row.appendChild(main);
             row.appendChild(det);
             list.appendChild(row);
@@ -990,16 +971,8 @@
                     det = document.createElement("div");
                     det.className = "prs-det";
                     det.style.display = "none";
-                    var ob = document.createElement("button");
-                    ob.type = "button";
-                    ob.className = "drv-osoba-btn";
-                    ob.setAttribute("aria-label", "Osoba: " + _km);
-                    ob.innerHTML = window.DpbKartaNove.svg("osoba", 20);
-                    ob.addEventListener("click", function (e) {
-                      e.stopPropagation();
-                      window.DpbKartaNove.osoba(_km, "Striedač na prestávke");
-                    });
-                    det.appendChild(ob);
+                    meno.textContent = "";
+                    meno.appendChild(window.DpbKartaNove.meno(_km, { tel: p.str_tel, rola: "Striedač na prestávke" }));
                     det.appendChild(meno);
                     det.appendChild(kurz);
                     sip.addEventListener("click", function (e) {

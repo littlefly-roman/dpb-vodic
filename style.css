@@ -3628,3 +3628,8 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .card-ic { left: -18px !important; }
 .card-zvonec { right: -13px !important; width: 34px; height: 34px; }
 .driver-section { padding: 0 3px 0 0 !important; }
+
+/* v210: jednotné meno vodiča (ikona osoby + meno, ťuk = fotka, podržanie = telefonát) */
+.meno-v{display:inline-flex;align-items:center;gap:6px;cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;max-width:100%;min-width:0}
+.meno-v .meno-ik{display:inline-flex;flex:none;color:var(--text-3)}
+.meno-v.meno-bez{cursor:default}

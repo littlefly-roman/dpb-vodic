@@ -33,6 +33,51 @@
     });
   }
 
+  // ---------- Jednotné meno vodiča: ikona osoby + meno; ťuk = fotografia, dlhé podržanie = telefonát (len ak je číslo) ----------
+  // meno(text, {tel, rola}) vráti prvok; ovládanie je delegované na celý dokument (data-atribúty), takže funguje všade rovnako.
+  function meno(text, o) {
+    o = o || {};
+    var t = String(text == null ? "" : text).trim();
+    var sp = document.createElement("span");
+    sp.className = "meno-v";
+    if (!t || t === "—") { sp.textContent = t || "—"; sp.classList.add("meno-bez"); return sp; }
+    sp.dataset.meno = t;
+    if (o.rola) sp.dataset.rola = o.rola;
+    if (o.tel) sp.dataset.tel = String(o.tel).replace(/\s/g, "");
+    sp.setAttribute("role", "button");
+    sp.setAttribute("tabindex", "0");
+    sp.innerHTML = '<span class="meno-ik">' + svg("osoba", 18) + "</span>";
+    sp.appendChild(document.createTextNode(t));
+    return sp;
+  }
+  (function () {
+    var casovac = null, zdroj = null, dlhe = false, x0 = 0, y0 = 0;
+    function cielMena(e) { return e.target && e.target.closest ? e.target.closest(".meno-v[data-meno]") : null; }
+    document.addEventListener("pointerdown", function (e) {
+      var c = cielMena(e); if (!c) return;
+      zdroj = c; dlhe = false; x0 = e.clientX; y0 = e.clientY;
+      clearTimeout(casovac);
+      if (c.dataset.tel) casovac = setTimeout(function () {
+        dlhe = true;
+        try { if (navigator.vibrate) navigator.vibrate(30); } catch (er) {}
+        window.location.href = "tel:" + c.dataset.tel;
+      }, 600);
+    }, true);
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { document.addEventListener(n, function () { clearTimeout(casovac); }, true); });
+    document.addEventListener("pointermove", function (e) { if (casovac && (Math.abs(e.clientX - x0) > 10 || Math.abs(e.clientY - y0) > 10)) clearTimeout(casovac); }, true);
+    document.addEventListener("contextmenu", function (e) { if (cielMena(e)) e.preventDefault(); }, true);
+    function otvor(c) { osoba(c.dataset.meno, c.dataset.rola || ""); }
+    document.addEventListener("click", function (e) {
+      var c = cielMena(e); if (!c) return;
+      e.stopPropagation(); e.preventDefault();
+      if (dlhe) { dlhe = false; return; }
+      otvor(c);
+    }, true);
+    document.addEventListener("keydown", function (e) {
+      if ((e.key === "Enter" || e.key === " ") && e.target && e.target.classList && e.target.classList.contains("meno-v") && e.target.dataset.meno) { e.preventDefault(); otvor(e.target); }
+    }, true);
+  })();
+
   // ---------- Upozornenia (zvonček): nastavenia sa ukladajú, samotné zvonenie príde so serverom ----------
   var KLUC = "dpb_upozornenia";
   var PRED = { nastup: [30, 15, 5], vyjazd: { 20: true, 15: true, 10: true, 5: true, 0: true } };
@@ -266,5 +311,5 @@
     s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.DpbKartaNove = { ozdob: ozdob, osoba: osoba, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  window.DpbKartaNove = { ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
 })();

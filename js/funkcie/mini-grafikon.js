@@ -16,7 +16,13 @@
       r.appendChild(el("div", "min-width:58px;font-variant-numeric:tabular-nums;font-size:18px", z.cas));
       var t = el("div", "flex:1;min-width:0");
       t.appendChild(el("div", "font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
-      if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
+      if (z.meno && window.DpbKartaNove && window.DpbKartaNove.meno) {
+        var pd = el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8");
+        if (z.kurz) pd.appendChild(document.createTextNode(z.kurz + "\u2003"));
+        pd.appendChild(window.DpbKartaNove.meno(z.meno, { rola: "Vodič kurzu " + (z.kurz || "") }));
+        if (z.voz) pd.appendChild(document.createTextNode("\u2003" + z.voz));
+        t.appendChild(pd);
+      } else if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
       r.appendChild(t);
       w.appendChild(r);
       return r;
@@ -155,7 +161,7 @@
         if (idx < 0) idx = data.length - 1;
       }
       var kk = koleso(data.map(function (x) {
-        return { cas: x.cas, nazov: x.kde, pod: [x.kurz, x.meno, x.vozidlo].filter(Boolean).join("\u2003") };
+        return { cas: x.cas, nazov: x.kde, kurz: x.kurz, meno: x.meno, voz: x.vozidlo, pod: [x.kurz, x.meno, x.vozidlo].filter(Boolean).join("\u2003") };
       }), idx, stavS);
       box.appendChild(kk.el);
       kk.nastav(false);
