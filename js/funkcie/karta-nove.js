@@ -131,7 +131,12 @@
     b.innerHTML = svg("zvonec", 20);
     // Neaktívny, keď je služba podľa cestovného poriadku už v premávke (dnes po začiatku služby)
     var k = (service && service._karta) || {}, t = null;
-    function odSek() { var q = String(k.od || "").split(":"); return q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null; }
+    // „V premávke“ = výjazd z vozovne, pri poobednej službe odchod z konečnej, pri striedačovi začiatok prvého striedania
+    // (service._premavkaOd v sekundách sa doplní, keď je známe; dovtedy začiatok služby)
+    function odSek() {
+      if (service._premavkaOd != null) return service._premavkaOd;
+      var q = String(k.od || "").split(":"); return q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null;
+    }
     function dnesKluc() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }
     function obnov() {
       clearTimeout(t);
@@ -145,7 +150,16 @@
         t = setTimeout(obnov, Math.min(2147000000, Math.max(800, (od - sec) * 1000 + 500)));
     }
     document.addEventListener("visibilitychange", function () { if (!document.hidden && b.isConnected) obnov(); });
+    service._zvonecObnov = obnov;
     obnov();
+    // bežná služba: výjazd / prvý odchod z konečnej podľa grafikonu kurzu
+    if (service._vzor === "SLUŽBA" && k.kurz && window.DpbStretnutia && window.DpbStretnutia.odchodyZKonecnej) {
+      window.DpbStretnutia.odchodyZKonecnej(k.kurz, service.date, k.od, k.do).then(function (l) {
+        if (!l || !l.length) return;
+        var q = String(l[0].cas).split(":"), sec = (+q[0]) * 3600 + (+q[1]) * 60 + (+q[2] || 0);
+        if (sec > 0) { service._premavkaOd = sec; obnov(); }
+      }).catch(function () {});
+    }
     b.addEventListener("click", function (e) { e.stopPropagation(); if (b.disabled) return; upozornenia(service); });
     return b;
   }
