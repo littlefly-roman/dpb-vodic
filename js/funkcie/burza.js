@@ -713,38 +713,47 @@
             });
           });
 
-          // Hlavička filtra
+          // Hlavička: prepínač „Z dňa / Všetky“ (len keď sa Burza otvorí z karty dňa)
           const cont = document.getElementById("burzaContent");
-          if (state.denFilter) {
-            let hdr = document.getElementById("burza-filter-hdr");
+          state.denKarty = dateKey || null;
+          let hdr = document.getElementById("burza-filter-hdr");
+          if (state.denKarty) {
             if (!hdr) {
               hdr = document.createElement("div");
               hdr.id = "burza-filter-hdr";
               hdr.className = "burza-filter-hdr";
               cont.parentNode.insertBefore(hdr, cont);
             }
-            const d = new Date(state.denFilter);
-            const DNI2 = ["Ne", "Po", "Ut", "St", "Št", "Pi", "So"];
-            const MES2 = [
-              "jan",
-              "feb",
-              "mar",
-              "apr",
-              "máj",
-              "jún",
-              "júl",
-              "aug",
-              "sep",
-              "okt",
-              "nov",
-              "dec",
-            ];
-            hdr.innerHTML = `
-      <span>Služby: <strong>${DNI2[d.getDay()]} ${d.getDate()}. ${MES2[d.getMonth()]}</strong></span>
-    `;
-          } else {
-            const hdr = document.getElementById("burza-filter-hdr");
-            if (hdr) hdr.remove();
+            const dp = state.denKarty.split("-");
+            const popisDna = dp.length === 3 ? parseInt(dp[2], 10) + ". " + parseInt(dp[1], 10) + ". " : state.denKarty;
+            hdr.innerHTML = "";
+            hdr.style.cssText = "display:flex;gap:6px;padding:4px;background:var(--surface-2);border-radius:12px;margin:0 0 10px";
+            [["den", "Z dňa " + popisDna], ["vsetky", "Všetky"]].forEach(function (x) {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.dataset.rozsah = x[0];
+              b.textContent = x[1];
+              b.style.cssText = "flex:1;padding:9px 6px;border:0;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;";
+              b.addEventListener("click", function () {
+                state.denFilter = x[0] === "den" ? state.denKarty : null;
+                nastavPrepinac();
+                render();
+              });
+              hdr.appendChild(b);
+            });
+            nastavPrepinac();
+          } else if (hdr) {
+            hdr.remove();
+          }
+          function nastavPrepinac() {
+            const h = document.getElementById("burza-filter-hdr");
+            if (!h) return;
+            Array.prototype.forEach.call(h.children, function (b) {
+              const on = (b.dataset.rozsah === "den") === !!state.denFilter;
+              b.style.background = on ? "var(--surface)" : "transparent";
+              b.style.color = on ? "var(--text-1)" : "var(--text-2)";
+              b.style.boxShadow = on ? "0 1px 3px rgba(0,0,0,.12)" : "none";
+            });
           }
 
           render();
@@ -752,8 +761,9 @@
 
         // Gesto späť: ak je Burza otvorená s filtrom dňa, vráti na zoznam služieb dňa
         function zrusFilter() {
-          if (!state.denFilter) return false;
+          if (!state.denKarty) return false;
           state.denFilter = null;
+          state.denKarty = null;
           const h = document.getElementById("burza-filter-hdr");
           if (h) h.remove();
           document.getElementById("burzaView").classList.add("hidden");

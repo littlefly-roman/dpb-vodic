@@ -386,10 +386,8 @@
                   if (vzor === "SLUŽBA") otvorCpSluzby(k, service);
                   else card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
                 }
-                else if (act === "volne") {
-                  if (window.DpbKartaNove && window.DpbKartaNove.volne) window.DpbKartaNove.volne(service);
-                  else window.DpbIdiNa && window.DpbIdiNa({ burza: service.date });
-                }
+                else if (act === "volne")
+                  window.DpbIdiNa && window.DpbIdiNa({ burza: service.date });
                 else if (act === "ziadosti")
                   window.DpbKartaNove && window.DpbKartaNove.ziadosti(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
