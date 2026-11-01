@@ -1250,9 +1250,32 @@
 
           if (today) {
             grafikonLive.classList.remove("hidden");
-            appState.grafikonInterval = setInterval(() => {
-              if (grafikonModal.classList.contains("active")) draw();
-            }, 30000);
+            // Obnova presne vtedy, keď uplynie čas označenej („Teraz“) zastávky – potom sa označí ďalšia; nie po pevnom intervale.
+            const dalsiMs = () => {
+              const t = grafikonContent.querySelector(".grafikon-row.teraz .g-time");
+              if (t) {
+                const q = t.textContent.trim().split(":");
+                const sec = (+q[0] || 0) * 3600 + (+q[1] || 0) * 60 + (+q[2] || 0);
+                const n = new Date();
+                const now = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds() + n.getMilliseconds() / 1000;
+                if (sec > now) return Math.min(600000, Math.max(800, (sec - now) * 1000 + 400));
+              }
+              return 30000;
+            };
+            const planDraw = () => {
+              clearTimeout(appState.grafikonInterval);
+              appState.grafikonInterval = setTimeout(() => {
+                if (!grafikonModal.classList.contains("active")) return;
+                draw();
+                planDraw();
+              }, dalsiMs());
+            };
+            planDraw();
+            const poPozadi = () => {
+              if (!grafikonModal.classList.contains("active")) { document.removeEventListener("visibilitychange", poPozadi); return; }
+              if (!document.hidden) { draw(); planDraw(); }
+            };
+            document.addEventListener("visibilitychange", poPozadi);
           }
         }
 

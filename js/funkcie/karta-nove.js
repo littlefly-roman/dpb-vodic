@@ -117,6 +117,7 @@
     if (!stav) return;
     var s = stav; stav = null;
     try { s.obs.disconnect(); } catch (e) {}
+    try { if (s.sled) s.sled.disconnect(); } catch (e) {}
     if (s.panelZ && s.domov && s.panelZ.parentNode !== s.domov) s.domov.insertBefore(s.panelZ, s.domov.firstChild);
     [s.tabs, s.paneZ, s.paneK, s.pozadie].forEach(function (x) { if (x && x.parentNode) x.parentNode.removeChild(x); });
     s.gm.classList.remove("gm-sheet");
@@ -164,6 +165,7 @@
     var vys = document.getElementById("cpStanicaResults");
     if (!inp || !nazov || !vys) return;
     inp.value = nazov;
+    if (stav) stav.auto = nazov;
     inp.dispatchEvent(new Event("input", { bubbles: true }));
     var cil = nazov.trim().toLowerCase(), pokusy = 0;
     var t = setInterval(function () {
@@ -229,6 +231,25 @@
       s.tabs.appendChild(b);
     });
     ukaz("cp");
+    // Zastávkový CP sleduje cestovný poriadok naživo: keď sa v grafikone posunie „Teraz“ na ďalšiu zastávku, posunie sa aj on
+    // (len kým si zastávku sám nezmenil a kým je zapnuté LIVE)
+    if (!ctx.segmenty) {
+      var odloz = null;
+      s.sled = new MutationObserver(function () {
+        clearTimeout(odloz);
+        odloz = setTimeout(function () {
+          if (stav !== s || !s.zHotovo) return;
+          var as = window._appState ? window._appState() : null;
+          if (as && as.grafikonFollow === false) return;
+          var r = document.querySelector("#grafikonContent .grafikon-row.teraz .g-stop");
+          var inp = document.getElementById("cpStanicaInput");
+          if (!r || !inp) return;
+          var nova = r.textContent.trim();
+          if (nova && nova !== s.auto && inp.value === s.auto) predvypln(nova);
+        }, 200);
+      });
+      s.sled.observe(obsah, { childList: true });
+    }
     s.obs = new MutationObserver(function () { if (!gm.classList.contains("active")) setTimeout(function () { if (stav === s && !gm.classList.contains("active")) zrusOkno(); }, 300); });
     s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
