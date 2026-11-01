@@ -820,7 +820,7 @@
           hdr.style.justifyContent = "space-between";
           hdr.style.alignItems = "center";
           var spat = document.createElement("button");
-          spat.type = "button";
+          spat.type = "button"; spat.className = "zs-spat";
           spat.textContent = "\u2039 Späť";
           spat.style.cssText = "border:none;background:transparent;font-size:15px;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
           spat.addEventListener("click", spatNaZoznam);
@@ -830,7 +830,7 @@
           hdrNaz.textContent = nazov;
           hdr.appendChild(hdrNaz);
           var hviezda = document.createElement("button");
-          hviezda.type = "button";
+          hviezda.type = "button"; hviezda.className = "zs-hviezda";
           hviezda.style.cssText = "border:none;background:transparent;font-size:22px;line-height:1;padding:2px 6px;cursor:pointer;color:var(--red-text)";
           var nastavHviezdu = function () {
             var o = jeObluben(grp);
@@ -843,7 +843,7 @@
             prepniObluben(grp, nazov);
             nastavHviezdu();
           });
-          var vodLab = document.createElement("label");
+          var vodLab = document.createElement("label"); vodLab.className = "zs-vod";
           vodLab.style.cssText = "display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:500;color:var(--text-2);margin-right:6px;cursor:pointer;flex:none";
           var vodCb = document.createElement("input");
           vodCb.type = "checkbox";
@@ -1014,7 +1014,7 @@
           _poPocet = 10;
           function tlacidloOkna(text, krok) {
             var b = document.createElement("button");
-            b.type = "button";
+            b.type = "button"; b.className = "zs-krok";
             b.textContent = text;
             b.style.cssText =
               "display:block;width:100%;margin:8px 0;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";

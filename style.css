@@ -3633,3 +3633,6 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .meno-v{display:inline-flex;align-items:center;gap:6px;cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;max-width:100%;min-width:0}
 .meno-v .meno-ik{display:inline-flex;flex:none;color:var(--text-3)}
 .meno-v.meno-bez{cursor:default}
+
+/* v210: zastávkový CP v okne cestovného poriadku – len zastávka a filter (bez Späť, Vodiči, hviezdy, predchádzajúcich/nasledujúcich) */
+.gm-pane .zs-spat,.gm-pane .zs-hviezda,.gm-pane .zs-vod,.gm-pane .zs-krok{display:none!important}
