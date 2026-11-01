@@ -122,17 +122,30 @@
     s.gm.classList.remove("gm-sheet");
     if (s.obsah) s.obsah.style.display = "";
   }
+  // Úsek striedača, v ktorom je práve (dnes), inak najbližší nasledujúci / posledný
+  function terazUsek(ctx) {
+    var seg = ctx.segmenty || [];
+    if (!seg.length) return null;
+    var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+    var rozsah = function (x) { var a = sekOd(x.prebera), b = sekOd(x.odovzdava); if (b <= a) b += 86400; return [a, b]; };
+    var v = seg.filter(function (x) { var r = rozsah(x); return sec >= r[0] && sec <= r[1]; })[0];
+    if (!v) v = seg.filter(function (x) { return rozsah(x)[0] > sec; })[0];
+    return v || seg[seg.length - 1];
+  }
   // Aktuálna zastávka kurzu podľa času (z polohy v cestovnom poriadku)
   async function aktualnaZastavka(ctx) {
     // najprv riadok „Teraz“ priamo z grafikonu (rovnaká poloha, akú vidí vodič), počká sa na jeho načítanie
+    var sel = ctx.segmenty ? "#grafikonContent .grafikon-row:not(.past) .g-stop" : "#grafikonContent .grafikon-row.teraz .g-stop";
     for (var i = 0; i < 20; i++) {
-      var r0 = document.querySelector("#grafikonContent .grafikon-row.teraz .g-stop");
+      var r0 = document.querySelector(sel);
       if (r0 && r0.textContent.trim()) return r0.textContent.trim();
       await new Promise(function (ok) { setTimeout(ok, 200); });
     }
     var DS = window.DpbStretnutia;
     if (!DS || !DS.poloha) return null;
     var n = new Date(), dnes = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
+    var t = ctx.segmenty ? terazUsek(ctx) : null;
+    if (t) ctx = { kurz: t.kurz, od: t.prebera, do: t.odovzdava, date: ctx.date };
     var od = sekOd(ctx.od), do_ = sekOd(ctx.do); if (do_ <= od) do_ += 86400;
     var sec = od, po = false;
     if (ctx.date === dnes) {
@@ -167,7 +180,8 @@
     zrusOkno();
     var n = new Date();
     var dnes = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
-    var mozeKto = ctx.date === dnes && ctx.vzor === "SLUŽBA" && /^[1349]\//.test(ctx.kurz || "");
+    var jeLinka = function (kurz) { return /^[1349]\//.test(kurz || ""); };
+    var mozeKto = ctx.date === dnes && (ctx.vzor === "SLUŽBA" ? jeLinka(ctx.kurz) : ctx.vzor === "STRIEDAČ" && (ctx.segmenty || []).some(function (x) { return jeLinka(x.kurz); }));
     var obsah = document.getElementById("grafikonContent");
     var panelZ = document.getElementById("cpZastavkovyPanel");
     var s = { gm: gm, obsah: obsah, panelZ: panelZ, domov: panelZ && panelZ.parentNode };
@@ -202,7 +216,11 @@
       } else if (s.zHotovo && id !== "zast") { /* panel ostáva v okne, len skrytý */ }
       if (id === "kto") {
         s.paneK.innerHTML = "";
-        window.DpbMiniGrafikon.stretnutia(ctx.kurz, ctx.date, ctx.od, ctx.do, "", s.paneK);
+        var tu = ctx.segmenty ? terazUsek(ctx) : null;
+        if (tu && !jeLinka(tu.kurz)) {
+          s.paneK.appendChild(el("div", "padding:14px 4px;font-size:15px;color:var(--text-2)", "Teraz jazdíš na kurze " + tu.kurz + ", pre ktorý sa „Koho stretávam“ nepočíta."));
+        } else if (tu) window.DpbMiniGrafikon.stretnutia(tu.kurz, ctx.date, tu.prebera, tu.odovzdava, "", s.paneK);
+        else window.DpbMiniGrafikon.stretnutia(ctx.kurz, ctx.date, ctx.od, ctx.do, "", s.paneK);
       }
     }
     ouska.forEach(function (o) {

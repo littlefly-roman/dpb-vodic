@@ -807,15 +807,17 @@
                 openGrafikonStriedac(_kurzy.map(function (s) {
                   return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava, vozidlo: s.vozidlo };
                 }), service.date || "");
+                // rovnaké okno ako pri službe: ušká Zastávkový CP a Koho stretávam (s dátami striedača)
+                if (window.DpbKartaNove && window.DpbKartaNove.ozdob)
+                  window.DpbKartaNove.ozdob({
+                    vzor: "STRIEDAČ", date: service.date || "", kurz: k.kurz, od: k.od, do: k.do,
+                    segmenty: _kurzy.map(function (s) { return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava }; }),
+                  });
               };
               // Teraz keď máme _kurzy, nastavíme handler na title
               _strTitleEl.addEventListener("click", function(e) {
                 e.stopPropagation();
-                const _appState = window._appState ? window._appState() : null;
-                const _dateKey = service.date || (_appState && window.formatDateKey ? window.formatDateKey(_appState.selectedDate) : "");
-                openGrafikonStriedac(_kurzy.map(function(s) {
-                  return { kurz: s.kurz, prebera: s.prebera, odovzdava: s.odovzdava, vozidlo: s.vozidlo };
-                }), _dateKey);
+                card._strGrafikon();
               });
               if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
                 var _pw = document.createElement("div");
