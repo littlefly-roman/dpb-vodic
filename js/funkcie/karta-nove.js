@@ -233,6 +233,18 @@
     ukaz("cp");
     // Zastávkový CP sleduje cestovný poriadok naživo: keď sa v grafikone posunie „Teraz“ na ďalšiu zastávku, posunie sa aj on
     // (len kým si zastávku sám nezmenil a kým je zapnuté LIVE)
+    if (ctx.segmenty) {
+      var sledS = function (e) {
+        if (stav !== s || !s.zHotovo) return;
+        var as = window._appState ? window._appState() : null;
+        if (as && as.grafikonFollow === false) return;
+        var inp = document.getElementById("cpStanicaInput");
+        var nova = e.detail;
+        if (nova && inp && nova !== s.auto && inp.value === s.auto) predvypln(nova);
+      };
+      document.addEventListener("grafikon-teraz", sledS);
+      s.sled = { disconnect: function () { document.removeEventListener("grafikon-teraz", sledS); } };
+    }
     if (!ctx.segmenty) {
       var odloz = null;
       s.sled = new MutationObserver(function () {

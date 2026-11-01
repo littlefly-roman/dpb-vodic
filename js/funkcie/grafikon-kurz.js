@@ -103,7 +103,8 @@ async function openGrafikonStriedac(kurzy, dateKey) {
 
   const now = new Date();
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  const isToday = dateKey === (window.formatDateKey ? window.formatDateKey(new Date()) : "");
+  const _fdk = (window.DpbCas && window.DpbCas.formatDateKey) || window.formatDateKey;
+  const isToday = !!_fdk && dateKey === _fdk(new Date());
 
   let scrollTarget = null;
 
@@ -176,6 +177,7 @@ async function openGrafikonStriedac(kurzy, dateKey) {
         row.className = "grafikon-row my-service";
         if (bezCestujucich || window._jeDp(nazov)) row.classList.add("nepreprava");
 
+        row.dataset.sec = stopSec;
         if (isToday) {
           if (stopSec < nowSec) row.classList.add("past");
           else if (!scrollTarget) scrollTarget = row;
@@ -198,6 +200,50 @@ async function openGrafikonStriedac(kurzy, dateKey) {
   }
 
   content.appendChild(fragment);
+
+  if (isToday) {
+    // LIVE: značka „Teraz“ sa presunie na ďalšiu zastávku presne v čase odchodu tej označenej (ako pri službe)
+    appState.grafikonFollow = true;
+    live.classList.remove("hidden", "off");
+    live.textContent = "● LIVE";
+    live.setAttribute("aria-pressed", "true");
+    if (appState.grafikonInterval) { clearTimeout(appState.grafikonInterval); appState.grafikonInterval = null; }
+    const oznac = (scroll) => {
+      if (!modal.classList.contains("active")) return;
+      const n2 = new Date();
+      const sec = n2.getHours() * 3600 + n2.getMinutes() * 60 + n2.getSeconds();
+      const rows = Array.from(content.querySelectorAll(".grafikon-row.my-service"));
+      let cur = null;
+      rows.forEach((r) => {
+        const b = r.querySelector(".g-badge"); if (b) b.remove();
+        r.classList.remove("teraz");
+        const past = +r.dataset.sec < sec;
+        r.classList.toggle("past", past);
+        if (!past && !cur) cur = r;
+      });
+      content.querySelectorAll(".grafikon-direction.aktualny").forEach((d) => d.classList.remove("aktualny"));
+      if (cur) {
+        cur.classList.add("teraz");
+        for (let q = cur.previousElementSibling; q; q = q.previousElementSibling)
+          if (q.classList && q.classList.contains("grafikon-direction")) { q.classList.add("aktualny"); break; }
+        cur.insertAdjacentHTML("beforeend", '<div class="g-badge">Teraz ›</div>');
+        if (scroll && appState.grafikonFollow !== false)
+          content.scrollTo({ top: Math.max(0, cur.offsetTop - content.clientHeight / 2 + cur.clientHeight / 2), behavior: "smooth" });
+      }
+      document.dispatchEvent(new CustomEvent("grafikon-teraz", { detail: cur ? cur.querySelector(".g-stop").textContent.trim() : null }));
+      clearTimeout(appState.grafikonInterval);
+      if (cur) {
+        const ms = Math.min(600000, Math.max(800, (+cur.dataset.sec - (sec + n2.getMilliseconds() / 1000)) * 1000 + 400));
+        appState.grafikonInterval = setTimeout(() => oznac(true), ms);
+      }
+    };
+    window._grafikonRedraw = () => oznac(true);
+    document.addEventListener("visibilitychange", function poPozadi() {
+      if (!modal.classList.contains("active")) { document.removeEventListener("visibilitychange", poPozadi); return; }
+      if (!document.hidden) oznac(true);
+    });
+    oznac(false);
+  }
 
   if (scrollTarget) {
     setTimeout(() => {
