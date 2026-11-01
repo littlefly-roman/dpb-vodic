@@ -3605,3 +3605,26 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
   align-items: center; gap: 10px; margin: 6px 0 2px; padding: 8px 12px;
   background: var(--surface-2); border-radius: 14px;
 }
+
+/* ── v210: Cestovný poriadok ako okno (grafikon + ušká) ── */
+.grafikon-modal.gm-sheet {
+  top: 7vh; bottom: 0; left: 0; right: 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, .35);
+  z-index: 210;
+  overflow: hidden;
+}
+.grafikon-modal.gm-sheet .grafikon-header { border-radius: 20px 20px 0 0; padding-top: 16px; }
+.gm-pozadie { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 205; }
+.gm-ouska { display: flex; flex-shrink: 0; background: var(--surface); border-bottom: 1px solid var(--border-2); }
+.gm-ouska button {
+  flex: 1; padding: 12px 4px; background: none; border: 0; border-bottom: 3px solid transparent;
+  font-size: 15px; font-weight: 700; line-height: 1.15; color: var(--text-2); cursor: pointer;
+}
+.gm-ouska button.on { color: var(--red); border-bottom-color: var(--red); }
+.gm-pane { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 14px; flex-direction: column; }
+
+/* v210: ikony na karte rovnako ďaleko od okrajov (20 px) */
+.card-ic { left: -18px !important; }
+.card-zvonec { right: -13px !important; width: 34px; height: 34px; }
+.driver-section { padding: 0 3px 0 0 !important; }

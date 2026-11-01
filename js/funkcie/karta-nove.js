@@ -109,71 +109,111 @@
     });
   }
 
-  // ---------- Cestovný poriadok: tri ušká v jednom okne ----------
-  function cp(service) {
-    if (!window.DpbOkna || !window.DpbMiniGrafikon) return false;
-    var k = service._karta || {};
-    var dateKey = service.date;
+  // ---------- Cestovný poriadok: grafikon (so všetkými funkciami: LIVE, upozornenia pri spojoch) + tri ušká ----------
+  // Volá sa po otvorení grafikonu (kliknutie na službu aj položka menu): zmení ho na okno a pridá ušká
+  // Zastávkový CP (s vyplnenou aktuálnou zastávkou) a Koho stretávam.
+  var stav = null;
+  function zrusOkno() {
+    if (!stav) return;
+    var s = stav; stav = null;
+    try { s.obs.disconnect(); } catch (e) {}
+    if (s.panelZ && s.domov && s.panelZ.parentNode !== s.domov) s.domov.insertBefore(s.panelZ, s.domov.firstChild);
+    [s.tabs, s.paneZ, s.paneK, s.pozadie].forEach(function (x) { if (x && x.parentNode) x.parentNode.removeChild(x); });
+    s.gm.classList.remove("gm-sheet");
+    if (s.obsah) s.obsah.style.display = "";
+  }
+  // Aktuálna zastávka kurzu podľa času (z polohy v cestovnom poriadku)
+  async function aktualnaZastavka(ctx) {
+    // najprv riadok „Teraz“ priamo z grafikonu (rovnaká poloha, akú vidí vodič), počká sa na jeho načítanie
+    for (var i = 0; i < 20; i++) {
+      var r0 = document.querySelector("#grafikonContent .grafikon-row.teraz .g-stop");
+      if (r0 && r0.textContent.trim()) return r0.textContent.trim();
+      await new Promise(function (ok) { setTimeout(ok, 200); });
+    }
+    var DS = window.DpbStretnutia;
+    if (!DS || !DS.poloha) return null;
+    var n = new Date(), dnes = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
+    var od = sekOd(ctx.od), do_ = sekOd(ctx.do); if (do_ <= od) do_ += 86400;
+    var sec = od, po = false;
+    if (ctx.date === dnes) {
+      sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+      if (sec < od) sec = od; else if (sec > do_) { sec = do_; po = true; }
+    }
+    try {
+      var r = await DS.poloha(ctx.kurz, ctx.date, sec, po);
+      if (!r || r.chyba || !r.polozky || !r.polozky.length) return null;
+      var z = r.polozky[Math.max(0, Math.min(r.polozky.length - 1, r.stred || 0))];
+      return z && z.nazov || null;
+    } catch (e) { return null; }
+  }
+  function predvypln(nazov) {
+    var inp = document.getElementById("cpStanicaInput");
+    var vys = document.getElementById("cpStanicaResults");
+    if (!inp || !nazov || !vys) return;
+    inp.value = nazov;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    var cil = nazov.trim().toLowerCase(), pokusy = 0;
+    var t = setInterval(function () {
+      pokusy++;
+      var riadky = Array.prototype.slice.call(vys.children).filter(function (d) { return d.tagName === "DIV" && d.textContent && d.textContent.length < 80; });
+      var tocny = riadky.filter(function (d) { return d.textContent.trim().toLowerCase() === cil; })[0];
+      if (tocny || (pokusy > 12 && riadky.length)) { clearInterval(t); (tocny || riadky[0]).click(); }
+      else if (pokusy > 25 || !stav) clearInterval(t);
+    }, 150);
+  }
+  function ozdob(ctx) {
+    var gm = document.getElementById("grafikonModal");
+    if (!gm || !ctx) return;
+    zrusOkno();
     var n = new Date();
     var dnes = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
-    var mozeStretnutia = dateKey === dnes && k.vzor === "SLUŽBA" && /^[1349]\//.test(k.kurz || "");
-    var okno = (k.od && k.do) ? [sekOd(k.od), sekOd(k.do) <= sekOd(k.od) ? sekOd(k.do) + 86400 : sekOd(k.do)] : null;
+    var mozeKto = ctx.date === dnes && ctx.vzor === "SLUŽBA" && /^[1349]\//.test(ctx.kurz || "");
+    var obsah = document.getElementById("grafikonContent");
     var panelZ = document.getElementById("cpZastavkovyPanel");
-    var domov = panelZ && panelZ.parentNode;
-    var ouska = [
-      { id: "cp", text: "CP linky / poradia" },
-      { id: "zast", text: "Zastávkový CP", skryt: !panelZ },
-      { id: "kto", text: "Koho stretávam", skryt: !mozeStretnutia },
-    ].filter(function (x) { return !x.skryt; });
-    var obsah = null, lista = null, aktivne = null, nahradene = 0;
-
-    function vrat() { if (panelZ && domov && panelZ.parentNode !== domov) domov.insertBefore(panelZ, domov.firstChild); }
+    var s = { gm: gm, obsah: obsah, panelZ: panelZ, domov: panelZ && panelZ.parentNode };
+    stav = s;
+    gm.classList.add("gm-sheet");
+    s.pozadie = el("div", ""); s.pozadie.className = "gm-pozadie";
+    s.pozadie.addEventListener("click", function () { var c = document.getElementById("closeGrafikon"); if (c) c.click(); });
+    gm.parentNode.insertBefore(s.pozadie, gm);
+    s.paneZ = el("div", ""); s.paneZ.className = "gm-pane"; s.paneZ.style.display = "none";
+    s.paneK = el("div", ""); s.paneK.className = "gm-pane"; s.paneK.style.display = "none";
+    obsah.parentNode.insertBefore(s.paneZ, obsah.nextSibling);
+    obsah.parentNode.insertBefore(s.paneK, s.paneZ.nextSibling);
+    var ouska = [{ id: "cp", t: "CP linky / poradia" }];
+    if (panelZ) ouska.push({ id: "zast", t: "Zastávkový CP" });
+    if (mozeKto) ouska.push({ id: "kto", t: "Koho stretávam" });
+    s.tabs = el("div", ""); s.tabs.className = "gm-ouska";
+    var hl = gm.querySelector(".grafikon-header");
+    hl.parentNode.insertBefore(s.tabs, hl.nextSibling);
+    var aktivne = null;
     function ukaz(id) {
       aktivne = id;
-      nahradene++;
-      vrat();
-      obsah.innerHTML = "";
-      Array.prototype.forEach.call(lista.children, function (b) {
-        var on = b.dataset.id === id;
-        b.style.color = on ? "var(--red)" : "var(--text-2)";
-        b.style.borderBottom = on ? "3px solid var(--red)" : "3px solid transparent";
-      });
-      var kam = el("div", "");
-      obsah.appendChild(kam);
-      if (id === "cp") window.DpbMiniGrafikon.otvor(k.kurz, dateKey, "", okno, null, kam);
-      else if (id === "kto") window.DpbMiniGrafikon.stretnutia(k.kurz, dateKey, k.od, k.do, "", kam);
-      else if (id === "zast") {
-        kam.style.cssText = "display:flex;flex-direction:column;max-height:55vh;min-height:300px;overflow:hidden";
-        kam.appendChild(panelZ);
-        var inp = document.getElementById("cpStanicaInput");
-        if (inp) { try { inp.focus({ preventScroll: true }); } catch (e) {} }
+      Array.prototype.forEach.call(s.tabs.children, function (b) { b.classList.toggle("on", b.dataset.id === id); });
+      obsah.style.display = id === "cp" ? "" : "none";
+      s.paneZ.style.display = id === "zast" ? "flex" : "none";
+      s.paneK.style.display = id === "kto" ? "block" : "none";
+      if (id === "zast") {
+        if (!s.zHotovo) {
+          s.zHotovo = true;
+          s.paneZ.appendChild(panelZ);
+          aktualnaZastavka(ctx).then(function (z) { if (stav === s && z) predvypln(z); });
+        }
+      } else if (s.zHotovo && id !== "zast") { /* panel ostáva v okne, len skrytý */ }
+      if (id === "kto") {
+        s.paneK.innerHTML = "";
+        window.DpbMiniGrafikon.stretnutia(ctx.kurz, ctx.date, ctx.od, ctx.do, "", s.paneK);
       }
     }
-    var sheet = window.DpbOkna.otvor({
-      titul: "Cestovný poriadok" + (k.kurz ? " " + k.kurz : ""),
-      podtitul: String(dateKey || "").split("-").reverse().join("."),
-      telo: function (t) {
-        lista = el("div", "display:flex;border-bottom:2px solid var(--border-2);margin-bottom:8px");
-        ouska.forEach(function (o) {
-          var b = el("button", "flex:1;padding:10px 4px;background:none;border:0;font-size:15px;font-weight:700;line-height:1.15;cursor:pointer;color:var(--text-2)", o.text);
-          b.type = "button"; b.dataset.id = o.id;
-          b.addEventListener("click", function () { if (aktivne !== o.id) ukaz(o.id); });
-          lista.appendChild(b);
-        });
-        obsah = el("div", "");
-        t.appendChild(lista); t.appendChild(obsah);
-      },
-      tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { vrat(); window.DpbOkna.zavriVsetko(); } }],
+    ouska.forEach(function (o) {
+      var b = el("button", "", o.t); b.type = "button"; b.dataset.id = o.id;
+      b.addEventListener("click", function () { if (aktivne !== o.id) ukaz(o.id); });
+      s.tabs.appendChild(b);
     });
-    sheet.el.style.maxHeight = "94vh";
-    sheet.el.style.overflowY = "auto";
     ukaz("cp");
-    // zastávkový panel sa po zavretí okna (aj ťuknutím mimo) vráti na svoje miesto
-    var strazca = setInterval(function () {
-      if (!sheet.el.isConnected) { clearInterval(strazca); vrat(); }
-    }, 300);
-    return true;
+    s.obs = new MutationObserver(function () { if (!gm.classList.contains("active")) setTimeout(function () { if (stav === s && !gm.classList.contains("active")) zrusOkno(); }, 300); });
+    s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.DpbKartaNove = { cp: cp, osoba: osoba, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  window.DpbKartaNove = { ozdob: ozdob, osoba: osoba, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
 })();

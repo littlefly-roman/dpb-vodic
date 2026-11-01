@@ -259,6 +259,19 @@
           if (_menuCaka) setTimeout(_obnovMenu, 400);
         }, true);
 
+        // Cestovný poriadok služby: rovnaký pre ťuknutie na službu aj pre položku menu
+        // (grafikon so všetkými funkciami + ušká Zastávkový CP a Koho stretávam)
+        function otvorCpSluzby(k, service) {
+          var prs = k.prestávka && k.prestávka.length ? k.prestávka : [];
+          var strTime = prs.map(function (p) { return p.prebera + " – " + p.odovzdava; }).join("|");
+          window.openGrafikonKurz(
+            k.kurz, k.od, k.do,
+            (k.vozidla && k.vozidla.length ? k.vozidla[0].cislo : null) || null,
+            strTime || null, undefined, undefined, undefined,
+            { kurz: k.kurz, od: k.od, do: k.do, date: service.date, vzor: k.vzor },
+          );
+        }
+
         function attachMenu(card, mb, service) {
           if (card._menuEl) {
             card._menuEl.remove();
@@ -388,8 +401,8 @@
                 e.stopPropagation();
                 const act = item.dataset.action;
                 if (act === "cp") {
-                  if (!(vzor === "SLUŽBA" && window.DpbKartaNove && window.DpbKartaNove.cp(service)))
-                    card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
+                  if (vzor === "SLUŽBA") otvorCpSluzby(k, service);
+                  else card._strGrafikon ? card._strGrafikon() : window._openGrafikon && window._openGrafikon(service);
                 }
                 else if (act === "volne")
                   window.DpbIdiNa && window.DpbIdiNa({ burza: service.date });
@@ -425,6 +438,7 @@
           strDo,
           typ,
           zCP,
+          ctx,
         ) {
           const parts = (kurzStr || "").split("/");
           const linka = parseInt(parts[0]) || 0;
@@ -448,6 +462,7 @@
               before: null,
               after: null,
             });
+          if (ctx && window.DpbKartaNove && window.DpbKartaNove.ozdob) window.DpbKartaNove.ozdob(ctx);
         };
 
         window.buildNewCard = function (service) {
@@ -463,6 +478,7 @@
             d.textContent = txt;
             d.addEventListener("click", (e) => {
               e.stopPropagation();
+              if (k.vzor === "SLUŽBA" || vzor === "SLUŽBA") { otvorCpSluzby(k, service); return; }
               // Build strTime from prestávka
               var _prs = k.prestávka && k.prestávka.length ? k.prestávka : [];
               var _strTime = _prs
