@@ -156,6 +156,31 @@
     });
   }
 
+  // ---------- Voľné služby z karty: voľba rozsahu (z dňa karty / všetky dostupné) ----------
+  function volne(service) {
+    var dk = (service && service.date) || "";
+    var p = dk.split("-");
+    var den = p.length === 3 ? parseInt(p[2], 10) + ". " + parseInt(p[1], 10) + ". " + p[0] : dk;
+    function ist(cil) { window.DpbOkna.zavriVsetko(); if (window.DpbIdiNa) window.DpbIdiNa(cil); }
+    if (!window.DpbOkna) return ist({ burza: dk || true });
+    window.DpbOkna.otvor({
+      titul: "Voľné služby",
+      podtitul: "",
+      telo: function (t) {
+        [["Z dňa " + den, "Len voľné služby z tohto dňa.", { burza: dk }],
+         ["Všetky dostupné", "Všetky voľné služby, ktoré môžeš teoreticky robiť.", { burza: true }]].forEach(function (x) {
+          var b = el("button", "display:block;width:100%;text-align:left;padding:14px 16px;margin:0 0 10px;border:1px solid var(--border-2);border-radius:14px;background:var(--surface);color:var(--text-1);cursor:pointer");
+          b.type = "button";
+          b.appendChild(el("div", "font-size:17px;font-weight:700", x[0]));
+          b.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:2px", x[1]));
+          b.addEventListener("click", function () { ist(x[2]); });
+          t.appendChild(b);
+        });
+      },
+      tlacidla: [{ text: "Zrušiť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); } }],
+    });
+  }
+
   // ---------- Cestovný poriadok: grafikon (so všetkými funkciami: LIVE, upozornenia pri spojoch) + tri ušká ----------
   // Volá sa po otvorení grafikonu (kliknutie na službu aj položka menu): zmení ho na okno a pridá ušká
   // Zastávkový CP (s vyplnenou aktuálnou zastávkou) a Koho stretávam.
@@ -313,5 +338,5 @@
     s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.DpbKartaNove = { ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  window.DpbKartaNove = { volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
 })();
