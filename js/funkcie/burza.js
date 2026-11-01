@@ -762,6 +762,8 @@
         // Gesto späť: ak je Burza otvorená s filtrom dňa, vráti na zoznam služieb dňa
         function zrusFilter() {
           if (!state.denKarty) return false;
+          // späť vráti na deň karty (ak je zapnuté „Z dňa“), inak na dnes (ak je zapnuté „Všetky“)
+          const cielDen = state.denFilter ? state.denKarty : dateKey(new Date());
           state.denFilter = null;
           state.denKarty = null;
           const h = document.getElementById("burza-filter-hdr");
@@ -770,6 +772,7 @@
           document.getElementById("servicesView").classList.remove("hidden");
           document.querySelectorAll(".bottom-nav button").forEach((b) => b.classList.remove("active"));
           document.getElementById("btnToday").classList.add("active");
+          if (window.DpbIdiNa) window.DpbIdiNa({ den: cielDen });
           return true;
         }
 
