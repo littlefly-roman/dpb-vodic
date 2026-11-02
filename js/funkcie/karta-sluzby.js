@@ -986,7 +986,10 @@
                     meno.appendChild(window.DpbKartaNove.meno(_km, { tel: p.str_tel, rola: "Striedač na prestávke" }));
                     det.appendChild(meno);
                     det.appendChild(kurz);
-                    sip.addEventListener("click", function (e) {
+                    // Celý riadok rozbaľuje meno striedača (okrem aktívnej ikony prestávky)
+                    row.style.cursor = "pointer";
+                    row.addEventListener("click", function (e) {
+                      if (e.target.closest && e.target.closest(".klik")) return;
                       e.stopPropagation();
                       var otv = det.style.display === "none";
                       det.style.display = otv ? "flex" : "none";
