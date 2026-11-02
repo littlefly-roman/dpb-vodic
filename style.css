@@ -3639,3 +3639,11 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 #nastaveniaView.hidden { display: none; }
 #nastaveniaView { flex: 1; overflow-y: auto; }
 .card-zvonec.off,.card-zvonec:disabled{opacity:.35;cursor:default;pointer-events:none}
+
+/* v210: blok Prestávka v karte služby – kompaktnejší (riadky striedača zhruba o polovicu nižšie) */
+.card-prs-blk{margin-top:8px;padding-top:8px}
+.card-prs-blk .odp-plan{padding:4px 12px}
+.card-prs-zas{margin-top:4px}
+.card-prs-row{padding:2px 10px;margin:4px 0 0;border-radius:12px}
+.prs-sip{width:30px;height:30px}
+.prs-det{margin:4px 0 0;padding:6px 10px}
