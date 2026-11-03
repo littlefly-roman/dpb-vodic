@@ -101,6 +101,10 @@
   }
 
   // Jeden riadok exportu -> úsek osi.
+  function dnesKluc() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
   function usek(r) {
     var stav = t(r.STAVTURNUSU);
     var trid = parseInt(r.TRIDENI, 10) || 1;
@@ -154,7 +158,9 @@
       zacvikRid: zacvikRid(r),
       vlastnosti: { zobrazit: t(r.ZOBRAZIT), tridenie: t(r.TRIDENI) },
       zmena: stamp(r),
-      plan: t(r.ZDROJ) === "S",
+      // zdrojS: riadok je zo S_ tabuliek (plán / zapísaná realita); plan: navyše deň ešte len prichádza (bez dispečingu)
+      zdrojS: t(r.ZDROJ) === "S",
+      plan: t(r.ZDROJ) === "S" && (r.DATUM || "").substring(0, 10) > dnesKluc(),
       zdroj: r,
     };
   }

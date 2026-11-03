@@ -349,7 +349,7 @@
           dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
           // Nenápadný údaj o pôvode dát: D = dispečing, S = len plán (služby)
           if (services.length) {
-            const jePlan = services.every((x) => x._karta && x._karta.plan);
+            const jePlan = services.every((x) => x._karta && x._karta.zdrojS);
             const zd = document.createElement("sup");
             zd.className = "zdroj-dat";
             zd.textContent = jePlan ? "S" : "D";
