@@ -45,9 +45,14 @@
           return (_rozsahCache[tk] = { od: od, do: doo });
         }
         // true, ak pre daný deň nie sú v dátach žiadne údaje (deň je mimo rozsahu exportu pre trakciu vodiča)
-        var _planDni = {};
+        var _volnoDni = {}, _maVolno = false;
+        // Balík s riadkami „voľno“ (nový formát): voľno je len tam, kde ho balík vodičovi priamo uvádza; ak vodiča
+        // v ten deň v dátach nenájdeme, nemáme údaje (nie automaticky voľno).
+        function jeVolno(rid, dateKey) {
+          return !!(_volnoDni[rid] && _volnoDni[rid][dateKey]);
+        }
         function jeMimoDat(rid, dateKey) {
-          if (_planDni[dateKey]) return true;
+          if (_maVolno && !jeVolno(rid, dateKey)) return true;
           var r = rozsahDat(rid);
           if (!r.od || !r.do) return false;
           return dateKey < r.od || dateKey > r.do;
@@ -110,8 +115,14 @@
           }
           _rozsahCache = {};
           if (nv && nv.volneDni) {
-            nv.volneDni.forEach(function (d) { delete _planDni[d]; });
-            (nv.planDni || []).forEach(function (d) { _planDni[d] = 1; });
+            // dni, ktoré nový export pokrýva, sa v informácii o voľne nahradia novými
+            Object.keys(_volnoDni).forEach(function (r) {
+              nv.volneDni.forEach(function (d) { delete _volnoDni[r][d]; });
+            });
+            Object.keys(nv.volnoDni || {}).forEach(function (r) {
+              _volnoDni[r] = Object.assign(_volnoDni[r] || {}, nv.volnoDni[r]);
+            });
+            if (nv.maVolno) _maVolno = true;
           }
           if (nt) Object.keys(nt).forEach(function (r) { _trakcie[r] = nt[r]; });
           Object.keys(nd).forEach(function (r) {
