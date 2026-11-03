@@ -1,3 +1,15 @@
+/* Jednorazový reset upozornení (zvonček, zmeny v rozpise, Burza) po zmene zdroja dát: načíta sa čistý stav
+   a staré údaje z minulosti ani zo vzdialenej budúcnosti sa už nehlásia ako novinky. Zmena hodnoty V = ďalší reset. */
+(function () {
+  try {
+    var V = "2026-11-03";
+    if (localStorage.getItem("dpb-reset-upoz") === V) return;
+    Object.keys(localStorage).forEach(function (k) {
+      if (/^dpb-(notif|snap|zmeny|burza)-/.test(k)) localStorage.removeItem(k);
+    });
+    localStorage.setItem("dpb-reset-upoz", V);
+  } catch (e) {}
+})();
 
       /* ==========================
    NOTIFIKÁCIE — globálny systém
