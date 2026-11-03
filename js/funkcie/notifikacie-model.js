@@ -2,7 +2,7 @@
    a staré údaje z minulosti ani zo vzdialenej budúcnosti sa už nehlásia ako novinky. Zmena hodnoty V = ďalší reset. */
 (function () {
   try {
-    var V = "2026-11-03";
+    var V = "2026-11-03b";
     if (localStorage.getItem("dpb-reset-upoz") === V) return;
     Object.keys(localStorage).forEach(function (k) {
       if (/^dpb-(notif|snap|zmeny|burza)-/.test(k)) localStorage.removeItem(k);
