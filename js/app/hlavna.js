@@ -347,6 +347,15 @@
           const services = appState.servicesByDate[key] || [];
 
           dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
+          // Nenápadný údaj o pôvode dát: D = dispečing, S = len plán (služby)
+          if (services.length) {
+            const jePlan = services.every((x) => x._karta && x._karta.plan);
+            const zd = document.createElement("sup");
+            zd.className = "zdroj-dat";
+            zd.textContent = jePlan ? "S" : "D";
+            zd.title = jePlan ? "Údaje z plánu (bez dispečingu)" : "Údaje z dispečingu";
+            dateHeader.appendChild(zd);
+          }
           dateHeader.classList.toggle("je-dnes", formatDateKey(appState.selectedDate) === formatDateKey(new Date()));
           container.innerHTML = "";
           resetContainerLayout();

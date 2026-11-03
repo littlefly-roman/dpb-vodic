@@ -3648,6 +3648,5 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .prs-sip{width:30px;height:30px}
 .prs-det{margin:4px 0 0;padding:6px 10px}
 
-/* Pôvod dát: deň len v pláne (bez dispečingu) */
-.service-card.z-plan { position: relative; }
-.service-card.z-plan::after { content: "plán"; position: absolute; right: 8px; bottom: 4px; font-size: 10px; letter-spacing: .04em; opacity: .45; pointer-events: none; }
+/* Pôvod dát: D = dispečing, S = len plán */
+.zdroj-dat { font-size: 9px; font-weight: 600; opacity: .4; margin-left: 4px; letter-spacing: .04em; vertical-align: super; }
