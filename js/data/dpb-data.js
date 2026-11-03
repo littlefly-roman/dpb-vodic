@@ -45,7 +45,9 @@
           return (_rozsahCache[tk] = { od: od, do: doo });
         }
         // true, ak pre daný deň nie sú v dátach žiadne údaje (deň je mimo rozsahu exportu pre trakciu vodiča)
+        var _planDni = {};
         function jeMimoDat(rid, dateKey) {
+          if (_planDni[dateKey]) return true;
           var r = rozsahDat(rid);
           if (!r.od || !r.do) return false;
           return dateKey < r.od || dateKey > r.do;
@@ -107,6 +109,10 @@
             _volneVerzia++;
           }
           _rozsahCache = {};
+          if (nv && nv.volneDni) {
+            nv.volneDni.forEach(function (d) { delete _planDni[d]; });
+            (nv.planDni || []).forEach(function (d) { _planDni[d] = 1; });
+          }
           if (nt) Object.keys(nt).forEach(function (r) { _trakcie[r] = nt[r]; });
           Object.keys(nd).forEach(function (r) {
             _drivers[r] = nd[r];

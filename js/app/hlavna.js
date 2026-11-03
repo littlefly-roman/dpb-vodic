@@ -366,7 +366,7 @@
             bd.className = "volno-card volno-bez-dat";
             bd.innerHTML =
               '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>' +
-              '<div class="volno-text volno-text-oznam">Pre tento deň ešte nie sú dostupné údaje</div>';
+              '<div class="volno-text volno-text-oznam">Údaje nie sú k dispozícii</div>';
             container.appendChild(bd);
             return;
           }
@@ -766,7 +766,7 @@
               v.className = "volno-card";
               if (window.DPBData && DPBData.jeMimoDat && appState.currentDriver && DPBData.jeMimoDat(appState.currentDriver, key)) {
                 v.classList.add("volno-bez-dat");
-                v.innerHTML = '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="volno-text volno-text-oznam">Pre tento deň ešte nie sú dostupné údaje</div>';
+                v.innerHTML = '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="volno-text volno-text-oznam">Údaje nie sú k dispozícii</div>';
               } else
               v.innerHTML =
                 '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div><div class="volno-text">Voľno</div>';

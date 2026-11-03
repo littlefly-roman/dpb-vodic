@@ -357,17 +357,23 @@
           });
 
           // Voľné služby pre Burzu (js/data/volne-sluzby.js) a dni, ktoré export pokrýva
-          var dniExportu = {};
+          var dniExportu = {}, dniMaD = {};
           rows.forEach(function (r) {
             var d = (r.DATUM || "").substring(0, 10);
             if (d) dniExportu[d] = 1;
+            if (d && String(r.ZDROJ || "").trim() !== "S") dniMaD[d] = 1;
           });
+          // Plánované dni: len plán zo S_ (žiadny riadok z dispečingu) a deň ešte len prichádza; vodič bez služby tam
+          // nemá „Voľno“, ale „Údaje nie sú k dispozícii“ (v pláne sa dá voľno od chýbajúcich údajov len ťažko rozlíšiť).
+          var dnesK = (function () { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); })();
+          var planDni = Object.keys(dniExportu).filter(function (d) { return !dniMaD[d] && d > dnesK; });
           return {
             drivers: driversOut,
             models: modelsOut,
             trakcie: trakcieOut,
             volne: window.DpbVolneSluzby ? window.DpbVolneSluzby.najdi(rows) : [],
             volneDni: Object.keys(dniExportu),
+            planDni: planDni,
           };
         };
       })();
