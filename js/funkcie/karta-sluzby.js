@@ -503,6 +503,8 @@
           head.appendChild(spacer);
           head.appendChild(center);
           head.appendChild(mb);
+          // Nenápadný údaj o pôvode dát: deň ešte len v pláne (bez dispečingu) má v rohu „plán“
+          if (k && k.plan) card.classList.add("z-plan");
 
           if (vzor === "NEPRÍTOMNOSŤ") {
             card.classList.add("je-nepritomnost");
