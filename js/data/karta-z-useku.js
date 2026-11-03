@@ -33,6 +33,7 @@
       vozidla: u.vozidla,
       od_min: u.odMin,
       do_min: u.doMin,
+      plan: !!u.plan,
     };
   }
 

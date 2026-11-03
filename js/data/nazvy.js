@@ -6,13 +6,14 @@
   var MIESTO_POHOTOVOSTI = { 1: "Dp. Trnávka", 2: "Dp. Krasňany" };
   var MIESTO_VYPRAVNE = { KR: "Krasňany", TR: "Trnávka" };
 
-  function pohotovost(kurz) {
+  function pohotovost(kurz, plan) {
     var t = String(kurz || "").trim();
     if (!/^pohotovos/i.test(t)) return null;
     var m = /(\d+)\s*$/.exec(t);
+    // Vo vopred naplánovanom dni (ešte bez dispečingu) je to „Služba do výkonu“, sedavou zálohou sa stane až po dispečingu.
     return {
-      nazov: "Dispozičný vodič",
-      podnazov: "Sedavá záloha",
+      nazov: plan ? "Služba do výkonu" : "Dispozičný vodič",
+      podnazov: plan ? "Pohotovosť" : "Sedavá záloha",
       miesto: (m && MIESTO_POHOTOVOSTI[parseInt(m[1])]) || "",
     };
   }
@@ -24,8 +25,8 @@
     return { nazov: denna ? "Denný výpravca" : "Nočný výpravca", kod: g, miesto: MIESTO_VYPRAVNE[g] };
   }
   // Text do zoznamov a kalendára (kde je len jeden riadok)
-  function nazovSluzby(kurz) {
-    var p = pohotovost(kurz) || vypravca(kurz);
+  function nazovSluzby(kurz, plan) {
+    var p = pohotovost(kurz, plan) || vypravca(kurz);
     return p ? p.nazov : kurz;
   }
   window.DpbNazvy = { pohotovost: pohotovost, vypravca: vypravca, nazovSluzby: nazovSluzby, MIESTO_POHOTOVOSTI: MIESTO_POHOTOVOSTI, MIESTO_VYPRAVNE: MIESTO_VYPRAVNE };

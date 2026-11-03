@@ -61,7 +61,7 @@
             var line =
               k.vzor === "NEPRÍTOMNOSŤ" ? k.popis || k.vzor : k.kurz || k.vzor;
             if (window.DpbNazvy && (k.vzor === "POHOTOVOSŤ" || k.vzor === "TRKR"))
-              line = window.DpbNazvy.nazovSluzby(line);
+              line = window.DpbNazvy.nazovSluzby(line, k.plan);
             return {
               _vzor: k.vzor,
               _karta: k,

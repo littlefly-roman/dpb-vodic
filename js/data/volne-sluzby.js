@@ -50,6 +50,8 @@
         return u.pritomny && u.rid;
       });
       if (obsadena) return;
+      // Plán dopredu (bez dispečingu): voľné miesta tam nie sú skutočné voľné služby, Burza končí tam, kde končia D_ dáta.
+      if (us.some(function (u) { return u.plan; })) return;
       // reprezentant: najnižšie PORADI, ktoré má použiteľný čas
       us.sort(function (a, b) {
         return a.poradi - b.poradi;

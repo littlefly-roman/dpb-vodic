@@ -51,10 +51,7 @@
           }
 
           function cleanName(j, p) {
-            j = j
-              .replace(/\s*(KP\u010c|Ing\.|Mgr\.|Bc\.|Dr\.|PhD\.?)\s*/g, " ")
-              .trim();
-            return (j + " " + p).trim();
+            return window.DpbOsVodica.pomocne.cleanName(j, p);
           }
 
           function cleanKurz(lk) {

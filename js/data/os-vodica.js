@@ -21,9 +21,18 @@
     var p = t.split(":");
     return parseInt(p[0] || 0, 10) * 60 + parseInt(p[1] || 0, 10);
   }
+  var TITULY = /^(kp\u010d|ing|mgr|bc|bca|dr|phd|phdr|judr|mudr|mvdr|rndr|pharmdr|paeddr|doc|prof|csc|drsc|dis|mba|mgr\.art|artd|ing\.arch|arch)$/i;
+  function bezTitulov(s) {
+    return String(s || "")
+      .split(/[\s,]+/)
+      .filter(function (w) {
+        return w && !TITULY.test(w.replace(/\./g, ""));
+      })
+      .join(" ")
+      .trim();
+  }
   function cleanName(j, p) {
-    j = (j || "").replace(/\s*(KPČ|Ing\.|Mgr\.|Bc\.|Dr\.|PhD\.?)\s*/g, " ").trim();
-    return (j + " " + (p || "")).trim();
+    return (bezTitulov(j) + " " + bezTitulov(p)).trim();
   }
   function cleanKurz(lk) {
     lk = (lk || "").trim();
@@ -145,6 +154,7 @@
       zacvikRid: zacvikRid(r),
       vlastnosti: { zobrazit: t(r.ZOBRAZIT), tridenie: t(r.TRIDENI) },
       zmena: stamp(r),
+      plan: t(r.ZDROJ) === "S",
       zdroj: r,
     };
   }

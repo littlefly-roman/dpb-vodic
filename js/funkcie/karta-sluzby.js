@@ -605,7 +605,7 @@
             attachMenu(card, mb, service);
             return card;
           } else if (vzor === "POHOTOVOSŤ") {
-            const _ph = window.DpbNazvy && window.DpbNazvy.pohotovost(k.kurz);
+            const _ph = window.DpbNazvy && window.DpbNazvy.pohotovost(k.kurz, k.plan);
             if (_ph) {
               const lbl = document.createElement("div");
               lbl.className = "card-label";
