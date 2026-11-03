@@ -140,6 +140,8 @@
 
           var byDate = {};
           rows.forEach(function (r) {
+            // riadok „voľno“ (druh 9) nie je služba: nesmie byť ani predchodcom, ani nasledovníkom, ani striedačom
+            if ((r.DRUH_SLUZBY || "").trim() === "9" && (r.ZOBRAZIT || "").trim() === "N") return;
             var d = (r.DATUM || "").substring(0, 10);
             if (!byDate[d]) byDate[d] = [];
             byDate[d].push(r);
