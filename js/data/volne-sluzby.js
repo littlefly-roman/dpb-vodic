@@ -63,6 +63,21 @@
       if (odM == null || doM == null) return;
       if (doM < odM) doM += 1440;
       var p = u.datum.split("-").map(Number);
+      // Striedač: v stanici je len slovo „striedač“ – miesto výmeny doplníme z cestovného poriadku striedača
+      var stOd = u.stanicaOd || "", stDo = u.stanicaDo || "";
+      var bare = /^strieda\u010d\s*$/i;
+      if (bare.test(stOd.trim()) && bare.test(stDo.trim())) {
+        var strAll = (root.DPB_STATIC && root.DPB_STATIC.str) || {};
+        var sl = (strAll[u.kurz + "|" + (u.trideni || 1)] || []).filter(function (x) {
+          return minuty(x.od) === odM;
+        })[0];
+        if (sl && sl.z) {
+          stOd = "strieda\u010d \u2013 " + sl.z;
+          stDo = "";
+        } else {
+          stDo = "";
+        }
+      }
       out.push({
         id: k,
         dateKey: u.datum,
@@ -78,8 +93,8 @@
         pohotovost: jePohotovost(u.kurz),
         nazov: jePohotovost(u.kurz) ? "Dispozičný vodič" : u.kurz,
         podnazov: jePohotovost(u.kurz) ? "Sedavá záloha" : "",
-        stanicaOd: u.stanicaOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
-        stanicaDo: u.stanicaDo,
+        stanicaOd: stOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
+        stanicaDo: stDo,
         trakcia: (u.zdroj.TYPDOPRAVY || "").trim(),
       });
     });
