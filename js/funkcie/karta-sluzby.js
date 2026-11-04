@@ -364,14 +364,11 @@
               mb.classList.add("open");
               // Menu odsunie kartu nahor, aby ho nebolo treba rolovať; pri zatvorení sa karta vráti
               const sc = document.getElementById("servicesContainer");
-              if (sc) {
-                window._menuScroll = sc.scrollTop;
-                // po rozbalení menu (animácia ~0,2 s) ho odroluj tak, aby bolo celé vidno; karta sa tým odsunie hore
-                setTimeout(function () {
-                  const d = menu.getBoundingClientRect().bottom - sc.getBoundingClientRect().bottom + 14;
-                  if (d > 0) sc.scrollTo({ top: sc.scrollTop + d, behavior: "smooth" });
-                }, 220);
-              }
+              window._menuScroll = { sc: sc ? sc.scrollTop : 0, win: window.scrollY || 0 };
+              // po rozbalení menu (animácia ~0,2 s) ho odroluj, nech je celé vidno; karta sa tým odsunie hore
+              setTimeout(function () {
+                menu.scrollIntoView({ behavior: "smooth", block: "end" });
+              }, 220);
             }
           }
           mb.addEventListener("click", toggle);

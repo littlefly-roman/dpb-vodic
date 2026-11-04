@@ -575,7 +575,8 @@
           if (window._menuScroll != null) {
             const t = window._menuScroll;
             window._menuScroll = null;
-            container.scrollTo({ top: t, behavior: "smooth" });
+            container.scrollTo({ top: t.sc, behavior: "smooth" });
+            if (window.scrollY !== t.win) window.scrollTo({ top: t.win, behavior: "smooth" });
           }
           container
             .querySelectorAll(".service-menu")
