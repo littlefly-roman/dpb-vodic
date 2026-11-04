@@ -407,7 +407,6 @@
         </div>
         <div class="burza-row-detail hidden" id="detail-${s.id}">
           ${trasaHtml(s.od, s.kam, s.pohotovost)}
-          ${s.upozornenie ? `<div class="burza-upoz">${s.upozornenie}</div>` : ""}
           <div class="burza-detail-btns">
             <button class="burza-btn-close">Zavrieť</button>
             ${mozeRezervovat ? `<button class="burza-btn-rez-detail">Rezervovať</button>` : ""}
