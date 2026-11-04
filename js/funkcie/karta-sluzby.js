@@ -366,10 +366,11 @@
               const sc = document.getElementById("servicesContainer");
               if (sc) {
                 window._menuScroll = sc.scrollTop;
+                // po rozbalení menu (animácia ~0,2 s) ho odroluj tak, aby bolo celé vidno; karta sa tým odsunie hore
                 setTimeout(function () {
-                  const d = card.getBoundingClientRect().top - sc.getBoundingClientRect().top - 12;
-                  sc.scrollTo({ top: sc.scrollTop + d, behavior: "smooth" });
-                }, 30);
+                  const d = menu.getBoundingClientRect().bottom - sc.getBoundingClientRect().bottom + 14;
+                  if (d > 0) sc.scrollTo({ top: sc.scrollTop + d, behavior: "smooth" });
+                }, 220);
               }
             }
           }
