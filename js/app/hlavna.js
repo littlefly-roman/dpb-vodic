@@ -342,6 +342,22 @@
           volno.appendChild(menu);
         }
 
+        // Služba len z plánu (S_): dvojriadkový nenápadný oznam nad kartou, pod ňou a pri delenej aj v strede
+        function planOznam() {
+          const d = document.createElement("div");
+          d.className = "plan-oznam";
+          d.innerHTML = "<span>Plánovaná služba</span><span>Služba môže byť zmenená</span>";
+          return d;
+        }
+        function pridajPlanOznam(card) {
+          if (!card || !card.classList || !card.classList.contains("z-plan")) return card;
+          const prs = card.querySelector(".card-prs-blk");
+          if (prs && prs.parentNode) prs.parentNode.insertBefore(planOznam(), prs);
+          card.insertBefore(planOznam(), card.firstChild);
+          card.appendChild(planOznam());
+          return card;
+        }
+
         function renderCards() {
           const key = formatDateKey(appState.selectedDate);
           const services = appState.servicesByDate[key] || [];
@@ -398,7 +414,7 @@
             // DPB: use new card builder if available
             if (service._vzor && typeof window.buildNewCard === "function") {
               service.date = key;
-              fragment.appendChild(window.buildNewCard(service));
+              fragment.appendChild(pridajPlanOznam(window.buildNewCard(service)));
               return;
             }
             const card = document.createElement("div");
