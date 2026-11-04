@@ -400,9 +400,83 @@
     b.setAttribute("data-kind", kind);
     b.setAttribute("aria-label", "Upozornenia");
     b.innerHTML = IK_PLAN + '<span class="odp-pt">Upozorniť</span>';
-    b.addEventListener("click", function (e) { e.stopPropagation(); planPrepni(kind, items, typ, pop); });
+    // Ťuknutie = zapne / vypne všetky upozornenia bloku; dlhé podržanie = okno s jednotlivými upozorneniami
+    var tm = null, potlacene = false, x0 = 0, y0 = 0;
+    var zrus = function () { if (tm) { clearTimeout(tm); tm = null; } };
+    b.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      x0 = e.clientX; y0 = e.clientY; potlacene = false; zrus();
+      tm = setTimeout(function () {
+        tm = null; potlacene = true;
+        if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
+        planOkno(kind, items, typ, pop);
+      }, 550);
+    });
+    b.addEventListener("pointermove", function (e) { if (tm && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) zrus(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { b.addEventListener(n, zrus); });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (potlacene) { potlacene = false; e.preventDefault(); return; }
+      planPrepni(kind, items, typ, pop);
+    });
     setTimeout(obnov, 0);
     return b;
+  }
+  // Okno so zoznamom upozornení bloku: každé sa dá samostatne zapnúť / vypnúť
+  async function planOkno(kind, items, typ, pop) {
+    var toast = function (t) { if (window._showToast) window._showToast(t, 3500); };
+    if (typeof items === "function") {
+      toast("Načítavam časy…");
+      try { items = await items(); } catch (e) { items = []; }
+    }
+    items = (items || []).slice().sort(function (a, b) { return sekHms(a.cas) - sekHms(b.cas); });
+    if (!items.length) { toast("Pre túto kartu nie sú žiadne upozornenia"); return; }
+    var bg = document.createElement("div");
+    bg.className = "odp-okno-bg";
+    var ok = document.createElement("div");
+    ok.className = "odp-okno";
+    var h = document.createElement("div");
+    h.className = "odp-okno-h";
+    h.textContent = "Upozornenia";
+    ok.appendChild(h);
+    var zoz = document.createElement("div");
+    zoz.className = "odp-okno-zoz";
+    ok.appendChild(zoz);
+    var zap = function (i) { return !!(plan && plan.items.some(function (x) { return x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ); })); };
+    items.forEach(function (i) {
+      var minulost = zostava(sekHms(i.cas)) <= 0;
+      var r = document.createElement("label");
+      r.className = "odp-okno-r" + (minulost ? " minule" : "");
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.checked = zap(i); cb.disabled = minulost;
+      var tx = document.createElement("span");
+      tx.className = "odp-okno-t";
+      tx.textContent = (i.pop || pop || "") + " " + String(i.cas).slice(0, 5) + (i.nazov ? " · " + i.nazov : "");
+      r.appendChild(cb); r.appendChild(tx);
+      cb.addEventListener("change", function () {
+        if (cb.checked) {
+          if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
+          audio();
+          plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind });
+          planUloz(); planStart();
+        } else if (plan) {
+          plan.items = plan.items.filter(function (x) { return !(x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ)); });
+          if (akt && akt.plan === kind && akt.planCas === i.cas) { var tmp = plan; plan = null; vypni(); plan = tmp; }
+          if (!plan.items.length) { plan = null; planKonci(); }
+          planUloz(); obnov();
+        }
+      });
+      zoz.appendChild(r);
+    });
+    var zv = document.createElement("button");
+    zv.type = "button"; zv.className = "odp-okno-zavri"; zv.textContent = "Zavrieť";
+    var zavri = function () { bg.remove(); obnov(); };
+    zv.addEventListener("click", zavri);
+    bg.addEventListener("click", function (e) { if (e.target === bg) zavri(); });
+    ok.appendChild(zv);
+    bg.appendChild(ok);
+    document.body.appendChild(bg);
   }
   // Skúšobný plán (správcovská funkcia v Profile). V ostrej verzii sa zobrazí len správcovi: ADMIN_FUNKCIE = false.
   var ADMIN_FUNKCIE = true;

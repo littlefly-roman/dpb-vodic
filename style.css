@@ -3657,3 +3657,13 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 
 /* v227: mini karta „Plánovaná služba“ – okrová ako upozornenie na odpočinok */
 .plan-mini{color:var(--chyba);font-weight:500;animation-duration:2.4s}
+
+/* v230: okno s jednotlivými upozorneniami (dlhé podržanie na „Upozorniť“) */
+.odp-okno-bg{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.odp-okno{background:var(--surface);color:var(--text-1);border-radius:22px;padding:18px 16px 16px;width:100%;max-width:380px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.odp-okno-h{font-size:18px;font-weight:700;text-align:center;margin-bottom:10px}
+.odp-okno-zoz{overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.odp-okno-r{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-2);border-radius:14px;font-size:16px;cursor:pointer}
+.odp-okno-r input{width:22px;height:22px;flex:none;accent-color:var(--red,#d62828)}
+.odp-okno-r.minule{opacity:.45}
+.odp-okno-zavri{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:600;background:var(--red,#d62828);color:#fff;cursor:pointer}
