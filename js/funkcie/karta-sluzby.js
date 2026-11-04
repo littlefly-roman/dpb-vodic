@@ -362,6 +362,15 @@
               menu.classList.add("active");
               card.classList.add("menu-open");
               mb.classList.add("open");
+              // Menu odsunie kartu nahor, aby ho nebolo treba rolovať; pri zatvorení sa karta vráti
+              const sc = document.getElementById("servicesContainer");
+              if (sc) {
+                window._menuScroll = sc.scrollTop;
+                setTimeout(function () {
+                  const d = card.getBoundingClientRect().top - sc.getBoundingClientRect().top - 12;
+                  sc.scrollTo({ top: sc.scrollTop + d, behavior: "smooth" });
+                }, 30);
+              }
             }
           }
           mb.addEventListener("click", toggle);

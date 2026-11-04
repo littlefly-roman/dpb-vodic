@@ -353,6 +353,7 @@
         function renderCards() {
           const key = formatDateKey(appState.selectedDate);
           const services = appState.servicesByDate[key] || [];
+          window._menuScroll = null;
 
           dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
           dateHeader.classList.toggle("je-dnes", formatDateKey(appState.selectedDate) === formatDateKey(new Date()));
@@ -571,6 +572,11 @@
 ========================== */
 
         function closeAllGlobal() {
+          if (window._menuScroll != null) {
+            const t = window._menuScroll;
+            window._menuScroll = null;
+            container.scrollTo({ top: t, behavior: "smooth" });
+          }
           container
             .querySelectorAll(".service-menu")
             .forEach((m) => m.classList.remove("active"));
@@ -824,7 +830,7 @@
             const deltaY = e.touches[0].clientY - touchStartY;
             if (Math.abs(deltaY) > Math.abs(deltaX) + 8) {
               isSwiping = false;
-              _cleanGhost();
+              _vratSwipeSpat();
               return;
             }
 
@@ -976,24 +982,34 @@
             } else if (diffX > SWIPE_THRESHOLD) {
               finishSwipe(1);
             } else {
-              // vráť späť
-              container.classList.add("swipe-anim");
-              container.style.transform = "";
-              if (swipeGhost) {
-                const w = swipeWrapper.offsetWidth;
-                swipeGhost.classList.add("swipe-anim");
-                swipeGhost.style.transform = `translateX(${swipeDir < 0 ? w : -w}px)`;
-                swipeGhost.style.opacity = "0.55";
-              }
-              _swipeVisualCancel();
-              setTimeout(() => {
-                container.classList.remove("swipe-anim");
-                _cleanGhost();
-              }, 290);
+              _vratSwipeSpat();
             }
           },
           { passive: true },
         );
+
+        // Vráti kartu na pôvodné miesto (zrušený / nedotiahnutý swipe, prerušený dotyk)
+        function _vratSwipeSpat() {
+          container.classList.add("swipe-anim");
+          container.style.transform = "";
+          if (swipeGhost) {
+            const w = swipeWrapper.offsetWidth;
+            swipeGhost.classList.add("swipe-anim");
+            swipeGhost.style.transform = `translateX(${swipeDir < 0 ? w : -w}px)`;
+            swipeGhost.style.opacity = "0.55";
+          }
+          _swipeVisualCancel();
+          setTimeout(() => {
+            container.classList.remove("swipe-anim");
+            container.style.transform = "";
+            _cleanGhost();
+          }, 290);
+        }
+        swipeWrapper.addEventListener("touchcancel", () => {
+          if (swipeAnimating) return;
+          isSwiping = false;
+          _vratSwipeSpat();
+        }, { passive: true });
 
         function changeDay(offset) {
           const d = new Date(appState.selectedDate);
