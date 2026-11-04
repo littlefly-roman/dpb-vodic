@@ -49,6 +49,8 @@
         do: u.do,
         zast\u00e1vka: u.stanicaOd || u.stanicaDo || "",
         kurzy: [],
+        plan: !!u.plan,
+        zdrojS: !!u.zdrojS,
         pred: pn.pred,
         nasl: pn.nasl,
       };
@@ -190,6 +192,8 @@
       if (!pn.nasl && cs.length > 1) pn.nasl = predNasl(cs[cs.length - 1].zdroj).nasl;
       return {
         vzor: "944",
+        plan: cs.some(function (u) { return u.plan; }),
+        zdrojS: cs.some(function (u) { return u.zdrojS; }),
         kurz: obalKurz,
         od: cs[0].od,
         do: cs[cs.length - 1].do,
