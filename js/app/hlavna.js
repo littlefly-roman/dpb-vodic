@@ -342,20 +342,12 @@
           volno.appendChild(menu);
         }
 
-        // Služba len z plánu (S_): dvojriadkový nenápadný oznam nad kartou, pod ňou a pri delenej aj v strede
-        function planOznam() {
+        // Deň len z plánu (S_): samostatná mini karta s oznamom (karty služieb sa nemenia)
+        function planMiniKarta() {
           const d = document.createElement("div");
-          d.className = "plan-oznam";
+          d.className = "plan-mini";
           d.innerHTML = "<span>Plánovaná služba</span><span>Služba môže byť zmenená</span>";
           return d;
-        }
-        function pridajPlanOznam(card) {
-          if (!card || !card.classList || !card.classList.contains("z-plan")) return card;
-          const prs = card.querySelector(".card-prs-blk");
-          if (prs && prs.parentNode) prs.parentNode.insertBefore(planOznam(), prs);
-          card.insertBefore(planOznam(), card.firstChild);
-          card.appendChild(planOznam());
-          return card;
         }
 
         function renderCards() {
@@ -409,12 +401,13 @@
           }
 
           const fragment = document.createDocumentFragment();
+          if (services.some((x) => x._karta && x._karta.plan)) fragment.appendChild(planMiniKarta());
 
           services.forEach((service) => {
             // DPB: use new card builder if available
             if (service._vzor && typeof window.buildNewCard === "function") {
               service.date = key;
-              fragment.appendChild(pridajPlanOznam(window.buildNewCard(service)));
+              fragment.appendChild(window.buildNewCard(service));
               return;
             }
             const card = document.createElement("div");

@@ -3651,7 +3651,6 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 /* Pôvod dát: D = dispečing, S = len plán */
 .zdroj-dat { font-size: 9px; font-weight: 600; opacity: .4; margin-left: 4px; letter-spacing: .04em; vertical-align: super; }
 
-/* v223: oznam „Plánovaná služba“ – nenápadný, v štandardných farbách, jemne „dýcha“ */
-.plan-oznam{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 12px;font-size:13px;line-height:1.3;color:var(--text-3);text-align:center;animation:burza-dych-text 3.2s ease-in-out infinite}
-.service-card.z-plan{border-style:dashed}
-@media (prefers-reduced-motion: reduce){.plan-oznam{animation:none}}
+/* v224: mini karta „Plánovaná služba“ – samostatná, nenápadná, v štandardných farbách, jemne „dýcha“ */
+.plan-mini{display:flex;flex-direction:column;align-items:center;gap:1px;margin:0 0 10px;padding:10px 14px;font-size:14px;line-height:1.35;color:var(--text-2);text-align:center;background:var(--surface);border:1px dashed var(--border-2);border-radius:16px;animation:burza-dych-text 3.2s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.plan-mini{animation:none}}
