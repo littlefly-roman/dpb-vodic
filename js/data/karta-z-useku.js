@@ -78,11 +78,35 @@
     ].concat(other);
   }
 
-  // Pohotovosť tvorí „obálku“ (od najskoršieho začiatku po najneskorší koniec úsekov). Úseky inej služby, ktoré vodič
-  // z pohotovosti odrobil, zostávajú SAMOSTATNÝMI kartami (od v27: už sa nevnárajú do karty pohotovosti ako zásky).
-  // Čo je v obálke, nie je samostatný výkon; presah mimo obálku je ďalší výkon. Funkcia zostáva kvôli zhode rozhrania.
+  // Pohotovosť tvorí „obálku“ (od najskoršieho začiatku po najneskorší koniec úsekov). Služba, ktorú vodič
+  // z pohotovosti odrobil CELÁ v obálke, sa zobrazí v karte pohotovosti (ako zásah). Čo presahuje mimo
+  // obálky, zostáva samostatnou kartou.
   function vnorDoPohotovosti(karty, pohUseky) {
-    return karty;
+    var poh = karty.filter(function (k) {
+      return k.vzor === "POHOTOVOS\u0164";
+    });
+    if (poh.length !== 1 || poh[0].od_min == null || poh[0].do_min == null) return karty;
+    var p = poh[0];
+    return karty.filter(function (k) {
+      if (
+        k === p ||
+        k.vzor !== "SLU\u017dBA" ||
+        k.od_min == null ||
+        k.do_min == null ||
+        !(k.od_min >= p.od_min && k.do_min <= p.do_min)
+      )
+        return true;
+      p.segmenty = (p.segmenty || []).concat([
+        {
+          kurz: k.kurz,
+          od: k.od,
+          do: k.do,
+          vozidlo: k.vozidla && k.vozidla.length ? k.vozidla[0].cislo : null,
+          is_poh: false,
+        },
+      ]);
+      return false;
+    });
   }
 
   // --- Záložné vozidlo 944 ----------------------------------------------------------------
