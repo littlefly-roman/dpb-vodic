@@ -64,7 +64,15 @@
     else rozloz();
   }
 
+  // Zachytávanie: keď je nastavené, otvor() nevytvorí okno, ale vykreslí telo do daného panelu (pre záložky)
+  var zachyt = null;
   function otvor(o) {
+    if (zachyt) {
+      var z = zachyt; zachyt = null;
+      z.titul = o.titul; z.podtitul = o.podtitul; z.tlacidla = o.tlacidla;
+      if (o.telo) o.telo(z.telo, z.telo);
+      return { el: z.telo };
+    }
     zaisti();
     var s = el("div", "position:absolute;left:50%;bottom:0;width:100%;max-width:480px;box-sizing:border-box;background:var(--surface);color:var(--text-1);border-radius:20px 20px 0 0;padding:18px 20px calc(22px + env(safe-area-inset-bottom, 0px));max-height:88%;overflow:auto;transition:transform .28s cubic-bezier(.32,.72,0,1),filter .28s;transform:translateY(110%);margin-left:-240px");
     // stred pri šírke < 480
@@ -651,6 +659,49 @@
     });
   }
 
+  // Žiadosti z menu karty: jedno okno so záložkami „Zmena stavu“ | „Zmena služby“
+  function ziadostiZalozky(service) {
+    var ctx = { date: service.date, service: service };
+    var panely = [
+      function () { otvorZmenuStavu(ctx); },
+      function () { ziadostSluzby({ date: service.date, service: service, zmena: true }); },
+    ];
+    otvor({
+      titul: "Žiadosti",
+      podtitul: "",
+      telo: function (t) {
+        var lista = el("div", "display:flex;border-bottom:2px solid var(--border-2);margin-bottom:12px");
+        var obsah = el("div", "");
+        var tl = el("div", "display:flex;gap:10px;margin-top:16px");
+        var btns = [];
+        function ukaz(i) {
+          btns.forEach(function (b, j) {
+            b.style.color = j === i ? "var(--red)" : "var(--text-2)";
+            b.style.borderBottom = j === i ? "3px solid var(--red)" : "3px solid transparent";
+          });
+          obsah.innerHTML = ""; tl.innerHTML = "";
+          var z = { telo: obsah };
+          zachyt = z;
+          try { panely[i](); } finally { zachyt = null; }
+          if (z.podtitul) obsah.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:12px", z.podtitul), obsah.firstChild);
+          (z.tlacidla || []).forEach(function (x) {
+            var b = el("button", "flex:1;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;" + (x.primarny ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)"), x.text);
+            b.addEventListener("click", function () { x.klik && x.klik(b); });
+            tl.appendChild(b);
+          });
+        }
+        ["Zmena stavu", "Zmena služby"].forEach(function (n, i) {
+          var b = el("button", "flex:1;padding:12px 6px;background:none;border:0;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:-2px", n);
+          b.type = "button";
+          b.addEventListener("click", function () { ukaz(i); });
+          btns.push(b); lista.appendChild(b);
+        });
+        t.appendChild(lista); t.appendChild(obsah); t.appendChild(tl);
+        ukaz(0);
+      },
+    });
+  }
+  window.DpbZiadosti = { otvor: ziadostiZalozky };
   window.DpbOkna = { otvor: otvor, zavriVrch: zavriVrch, zavriVsetko: zavriVsetko, pocet: function () { return okna.length; } };
   window.DpbZmenaStavu = { otvor: otvorZmenuStavu, _text: spravaText, ukaz: odosli };
   window.DpbZiadostSluzby = { otvor: ziadostSluzby };

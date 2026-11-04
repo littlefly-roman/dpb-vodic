@@ -166,6 +166,7 @@
 
   // ---------- Žiadosti (budúce dni): Zmena stavu | Zmena služby ----------
   function ziadosti(service) {
+    if (window.DpbZiadosti) return window.DpbZiadosti.otvor(service);
     if (!window.DpbOkna) return;
     var ctx = { date: service.date, service: service };
     window.DpbOkna.otvor({
