@@ -508,7 +508,7 @@
 
           if (vzor === "NEPRÍTOMNOSŤ") {
             card.classList.add("je-nepritomnost");
-            addTitle(center, k.kurz || "—");
+            addTitle(center, "—"); // názov pôvodnej služby (napr. pohotovosť E2) sa pri neprítomnosti nezobrazuje
             pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas");
             addRow(center, "card-route card-nepritomnost", k.popis || "");
           } else if (vzor === "TRKR") {
