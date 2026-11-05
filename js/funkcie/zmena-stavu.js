@@ -529,8 +529,8 @@
     var sv = ctx.service;
     var povodna = sv && sv._vzor !== "NEPRÍTOMNOSŤ" ? (sv.line || "") + (sv.time ? " · " + sv.time : "") : "";
     otvor({
-      titul: nazov,
-      podtitul: pekne(ctx.date) + (povodna ? " · teraz: " + povodna : ""),
+      titul: nazov + " na " + pekne(ctx.date),
+      podtitul: "Aktuálne: " + (povodna || "voľno"),
       telo: function (t) {
         var ch = skupina("Chcem", "#2e9b57"), nch = skupina("Nechcem", "var(--chyba)", true);
         // Voľný deň: z odpočinkov (min. 6 h) predvyplň „Nástup po“, „Ukončenie do“ a Rannú/Poobednú
@@ -556,7 +556,7 @@
               if (nastupPo != null && nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
               else if (koncDo != null && koncDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
             }
-            var text = (vyp.length ? "Predvyplnené podľa odpočinku: " + vyp.join(", ") + " (služba najviac 12 h). " : "") + poznamka;
+            var text = (vyp.length ? "Predvyplnené podľa odpočinku: " + vyp.join(", ") + ". " : "") + poznamka;
             if (text) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", text), ch.box.children[1]);
           } catch (e) {}
         }
