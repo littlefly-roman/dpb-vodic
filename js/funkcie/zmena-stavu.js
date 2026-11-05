@@ -561,7 +561,7 @@
           } catch (e) {}
         }
         t.appendChild(ch.box); t.appendChild(nch.box);
-        var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
+        var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:44px;height:44px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
         var chyba = chybaPole();
         t.appendChild(chyba);
@@ -842,14 +842,26 @@
       polozky.forEach(function (p, i) { l.push((i + 1) + ") " + popis(p)); });
       return { nad: "Žiadosť – viac položiek", txt: l.join("\n") };
     }
+    // Aktuálne služby z dňa karty (alebo neprítomnosť / voľno)
+    var dnesne = [];
+    try {
+      var sd = (window.appState && window.appState.servicesByDate && window.appState.servicesByDate[ctx.date]) || [service];
+      sd.forEach(function (x) {
+        if (!x || x._vzor === "NEPRÍTOMNOSŤ") return;
+        var u = (x.line || "") + (x.time ? " · " + x.time : "");
+        if (u && dnesne.indexOf(u) < 0) dnesne.push(u);
+      });
+    } catch (e) {}
+    var kk = (service && service._karta) || {};
+    var aktualne = dnesne.length ? dnesne.join(", ") : (service && service._vzor === "NEPRÍTOMNOSŤ" ? (kk.popis || "neprítomnosť") : "voľno");
     otvor({
-      titul: "Žiadosti",
-      podtitul: "",
+      titul: "Žiadosť na " + pekne(ctx.date),
+      podtitul: "Aktuálne: " + aktualne,
       telo: function (t) {
         var lista = el("div", "display:flex;border-bottom:2px solid var(--border-2);margin-bottom:12px");
         var obsah = el("div", "");
         var chyba = chybaPole();
-        var tl = el("div", "display:flex;gap:8px;margin-top:14px");
+        var tl = el("div", "display:flex;gap:8px;margin-top:10px;position:sticky;bottom:0;padding:10px 0 2px;background:var(--surface);z-index:2");
         var btns = [];
         function aktualna() {
           if (!panel) return null;
@@ -866,7 +878,6 @@
             var z = { telo: obsah };
             zachyt = z;
             try { ziadostSluzby({ date: ctx.date, service: service, zmena: true }); } finally { zachyt = null; }
-            if (z.podtitul) obsah.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:12px", z.podtitul), obsah.firstChild);
           }
         }
         function ukaz(i) {
