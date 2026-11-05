@@ -31,6 +31,24 @@
     }
     return b - cur >= TYD;
   }
+  // Má KAŽDÉ 7-dňové okno [t, t+7 dní] pre t od 'od' do 'do' nepretržitý odpočinok >= 35 h? (B = zlúčená práca, zoradená)
+  // Každá voľná medzera (g0,g1) dlhá >= 35 h pokrýva okná s t v [g0+35h-7d, g1-35h]; okná musia byť pokryté zjednotením medzier.
+  function oknaOk(B, od, do_) {
+    var iv = [], prev = -Infinity;
+    B.forEach(function (x) { iv.push([prev, x.od]); prev = x.do; });
+    iv.push([prev, Infinity]);
+    var pokr = [];
+    iv.forEach(function (g) {
+      if (g[1] - g[0] >= TYD) pokr.push([g[0] + TYD - OKNO, g[1] - TYD]);
+    });
+    pokr.sort(function (a, b) { return a[0] - b[0]; });
+    var cur = od;
+    for (var i = 0; i < pokr.length && cur <= do_; i++) {
+      if (pokr[i][0] > cur) return false;
+      cur = Math.max(cur, pokr[i][1] + 1);
+    }
+    return cur > do_;
+  }
   // prace: [{od,do}] v absolútnych minútach (už bez kandidáta); k: {od,do}
   function skontroluj(prace, k, bezVykonu) {
     var res = { ok: true, dovod: "", skrateny: null };
@@ -79,11 +97,10 @@
         }
       }
     }
-    // týždenný odpočinok: 7 dní PRED nástupom (okno končí nástupom) aj 7 dní PO konci služby (okno začína koncom)
-    // musí obsahovať aspoň jeden nepretržitý odpočinok >= 35 h (presne na minúty, odpočinok orezaný oknom)
+    // týždenný odpočinok: každé 7-dňové okno, ktoré sa dotkne služby, musí obsahovať nepretržitý odpočinok >= 35 h
     var B = spoj(P.concat([{ od: k.od, do: k.do }]));
-    if (!maRest(B, k.od - OKNO, k.od)) return { ok: false, dovod: "v 7 dňoch pred službou by nebol odpočinok 35 h", skrateny: null };
-    if (!maRest(B, k.do, k.do + OKNO)) return { ok: false, dovod: "v 7 dňoch po službe by nebol odpočinok 35 h", skrateny: null };
+    // všetky 7-dňové okná, ktoré sa dotýkajú služby (nie len okno tesne pred nástupom a tesne po konci)
+    if (!oknaOk(B, k.od - OKNO, k.do)) return { ok: false, dovod: "v 7-dňovom období by nebol odpočinok 35 h", skrateny: null };
     return res;
   }
 
