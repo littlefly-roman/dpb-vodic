@@ -190,7 +190,7 @@
         var b = cipy[k], on = st.akt === k;
         b.style.boxShadow = on ? "inset 0 0 0 2px var(--red)" : "inset 0 0 0 2px transparent";
         var prazdne = k === "do" && !st.do;
-        b._v.textContent = st[k] ? kratkyDen(st[k]) : (prazdne ? "neznáme" : "—");
+        b._v.textContent = st[k] ? kratkyDen(st[k]) : (prazdne ? "neznáme" : "nezadané");
         b._v.style.color = st[k] ? "var(--text-1)" : "var(--text-3)";
       });
       panel.innerHTML = "";
@@ -238,6 +238,12 @@
         })(d);
       }
       panel.appendChild(g);
+      if (st.akt === "od" && opt.nepovinneOd) {
+        var bz = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:6px 0", "Bez začiatku (nahlasujem len koniec)");
+        bz.type = "button";
+        bz.addEventListener("click", function () { st.od = ""; st.akt = "do"; zobraz("do"); vykresli(); });
+        panel.appendChild(bz);
+      }
       if (st.akt === "do" && !opt.doPovinne) {
         var bk = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:6px 0", "Bez konca (zatiaľ neznáme)");
         bk.type = "button";
@@ -315,6 +321,8 @@
     if (st.kind === "koniec") {
       r1.push("Od dňa: " + kratko(st.od));
       r1.push("Žiadam o pridelenie služby v tento deň: " + (st.sluzba ? "áno" : "nie"));
+    } else if (!st.od && st.do) {
+      r1.push("Hlásim koniec – Do: " + kratko(st.do));
     } else if (st.kind === "lekar" && st.od) {
       r1.push("Dátum: " + kratko(st.od));
     } else if (st.od) {
@@ -754,10 +762,10 @@
   // Dole: Odoslať žiadosť | Zrušiť. (Vrstvenie viacerých žiadostí sa môže doplniť neskôr.)
   var TYPY_STAVU = [
     { kod: "dovolenka", nazov: "Dovolenka", doPovinne: true },
-    { kod: "pn", nazov: "PN", doPovinne: false },
+    { kod: "pn", nazov: "PN", doPovinne: false, nepovinneOd: true },
     { kod: "lekar", nazov: "Lekár", jenDen: true },
     { kod: "volno", nazov: "Voľno", doPovinne: true },
-    { kod: "ine", nazov: "Iné", doPovinne: false, poznamka: true },
+    { kod: "ine", nazov: "Iné", doPovinne: true, poznamka: true },
   ];
   function stavPanel(ctx, zmena) {
     var kor = el("div", "");
@@ -772,19 +780,21 @@
       var telo = el("div", "display:none;padding:0 14px 14px");
       var f = null;
       function postav() {
-        var roz = rozsahDatumov(ctx.date, { doPovinne: ty.doPovinne, jenDen: ty.jenDen });
+        var roz = rozsahDatumov(ctx.date, { doPovinne: ty.doPovinne, jenDen: ty.jenDen, nepovinneOd: ty.nepovinneOd });
         telo.appendChild(roz.el);
         var pz = null;
         if (ty.poznamka) {
           telo.appendChild(el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
           pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); telo.appendChild(pz);
         }
-        if (ty.kod === "pn") telo.appendChild(el("div", "font-size:14px;color:var(--text-2);margin-top:10px", "PN sa len nahlasuje – nedá sa spojiť s inými žiadosťami."));
+        if (ty.kod === "pn") telo.appendChild(el("div", "font-size:14px;color:var(--text-2);margin-top:10px", "Zadaj začiatok PN, koniec PN, alebo oboje (aspoň jedno)."));
         f = { zber: function () {
           var od = roz.od(), dod = roz.do();
-          if (!od) return { chyba: "Zadaj dátum." };
+          if (ty.nepovinneOd) {
+            if (!od && !dod) return { chyba: "Zadaj začiatok alebo koniec (aspoň jeden)." };
+          } else if (!od) return { chyba: "Zadaj dátum." };
           if (ty.doPovinne && !dod) return { chyba: "Zadaj koniec." };
-          if (dod && dod < od) return { chyba: "Koniec nemôže byť pred začiatkom." };
+          if (od && dod && dod < od) return { chyba: "Koniec nemôže byť pred začiatkom." };
           if (pz && !pz.value.trim()) return { chyba: "Popíš dôvod." };
           return { polozka: { t: "stav", kind: ty.kod, nazov: ty.nazov, od: od, do: dod || "", poznamka: pz ? pz.value.trim() : "" } };
         } };
