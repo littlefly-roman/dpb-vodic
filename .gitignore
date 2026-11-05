@@ -1,0 +1,8 @@
+# Nikdy na GitHub: zálohy projektu, nastavenia s heslami, dáta
+*.zip
+*.ini
+*.csv
+*.fdb
+*.FDB
+export-z-db/
+dpb-exporter/
