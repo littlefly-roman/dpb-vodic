@@ -11,7 +11,7 @@
   }
   // údaje karty alebo null (karta nie je služba / export PJO neobsahuje)
   function zaKartu(k) {
-    if (!k || k.vzor !== "SLUŽBA" || k.pjo == null || k.od_min == null || k.do_min == null) return null;
+    if (!k || (k.vzor !== "SLUŽBA" && k.vzor !== "STRIEDAČ") || k.pjo == null || k.od_min == null || k.do_min == null) return null;
     var cisty = k.do_min - k.od_min - k.pjo;
     if (cisty < 0) return null;
     return { pjo: k.pjo, cisty: cisty, text: "Čistý čas " + fmt(cisty) + " · " + (k.pjo ? "PJO " + k.pjo + " min" : "bez PJO") };
