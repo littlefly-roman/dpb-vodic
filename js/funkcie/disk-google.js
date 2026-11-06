@@ -87,8 +87,9 @@
   function pravaZDisku(ukaz) {
     var a = stiahniText("PRAVA.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastav(t, true); });
     var b = stiahniText("SKUPINY.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastavSkupiny(t, true); });
-    Promise.all([a, b]).then(function (r) {
-      pravaStav = "PRAVA.csv: " + r[0] + " · SKUPINY.csv: " + r[1] + (window.DpbPrava ? " · " + window.DpbPrava.info() : "");
+    var c = stiahniText("SPRAVY.csv", function (t) { return window.DpbSpravy && window.DpbSpravy.nastav(t, true); });
+    Promise.all([a, b, c]).then(function (r) {
+      pravaStav = "PRAVA.csv: " + r[0] + " · SKUPINY.csv: " + r[1] + " · SPRAVY.csv: " + r[2] + (window.DpbSpravy ? " (" + window.DpbSpravy.info() + ")" : "") + (window.DpbPrava ? " · " + window.DpbPrava.info() : "");
       if (ukaz) toast(pravaStav, 6000);
       obnovStav();
     });
@@ -99,7 +100,7 @@
       var f = (j.files || [])[0];
       if (!f) return "na Disku nenájdený";
       return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob").then(function (b) { return b.text(); }).then(function (t) {
-        return hotovo(t) ? "načítaný" : "načítaný, ale zlý formát (chýba hlavička SUBJEKT / SKUPINA;OSOBNE_CISLO)";
+        return hotovo(t) ? "načítaný" : "načítaný, ale zlý formát (chýba hlavička SUBJEKT / SKUPINA;OSOBNE_CISLO / SEKCIA;NADPIS)";
       });
     }).catch(function (e) { return "chyba: " + (e && e.message ? e.message : "?"); });
   }

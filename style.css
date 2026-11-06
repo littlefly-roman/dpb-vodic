@@ -3677,3 +3677,44 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .burza-link-row{background:transparent;border:0;box-shadow:none;padding:12px 4px;font-size:clamp(15px,4.4vw,18px);white-space:nowrap;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
 @keyframes burza-dych-text-jemne{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.burza-link-row{animation:none}}
+
+/* ===== Správy ===== */
+.spravy-pas{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--red-soft);color:var(--red-text);font-weight:700;font-size:15px;cursor:pointer;overflow:hidden}
+.spravy-pas.hidden{display:none}
+.spravy-pas-ik{flex:none;animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
+.spravy-pas-okno{overflow:hidden;flex:1;min-width:0}
+.spravy-pas-text{display:inline-block;white-space:nowrap;animation:spravy-beh var(--trvanie,10s) ease-in-out infinite alternate}
+.spravy-pas-text.stoji{animation:none}
+@keyframes spravy-beh{0%,18%{transform:translateX(0)}82%,100%{transform:translateX(var(--posun,0px))}}
+.spravy-ov{position:fixed;inset:0;z-index:2000;background:rgba(10,12,16,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(64px + env(safe-area-inset-top,0px)) 10px calc(10px + env(safe-area-inset-bottom,0px))}
+.spravy-modal{background:var(--bg);color:var(--text-1);border-radius:22px;box-shadow:var(--sh-lg);width:min(460px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding:14px 12px 12px}
+.spravy-mh{display:flex;align-items:center;gap:8px;margin:2px 4px 10px;font-size:22px}
+.spravy-mh b{flex:1;min-width:0}
+.spravy-dn{font-size:18px;line-height:1.25}
+.spravy-x,.spravy-spat{border:0;background:none;color:var(--text-2);font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;flex:none}
+.spravy-spat{font-size:30px;line-height:1;margin-left:-8px}
+.spravy-sc{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0}
+.spravy-vsetko{width:100%;border:0;background:var(--red);color:#fff;border-radius:14px;padding:13px 14px;font-weight:700;font-size:16px;display:flex;justify-content:space-between;margin-bottom:8px;cursor:pointer}
+.spravy-sek{background:var(--surface);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.spravy-sr{width:100%;border:0;background:none;color:inherit;display:flex;align-items:center;gap:12px;padding:12px 14px;font-size:16px;font-weight:700;cursor:pointer;text-align:left}
+.spravy-i{width:36px;height:36px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;flex:none;color:var(--text-2)}
+.spravy-i svg{width:20px;height:20px}
+.spravy-sn{flex:1;min-width:0}
+.spravy-n{background:var(--red);color:#fff;border-radius:11px;min-width:22px;text-align:center;font-size:13px;padding:2px 7px}
+.spravy-vsetko .spravy-n{background:#fff;color:var(--red)}
+.spravy-n.z{background:var(--surface-2);color:var(--text-3)}
+.spravy-ch{color:var(--text-3);font-size:18px;width:14px;text-align:center}
+.spravy-box{padding:0 14px 6px}
+.spravy-vsetko+.spravy-box{background:var(--surface);border-radius:14px;margin-bottom:8px;padding-top:4px}
+.spravy-it{width:100%;border:0;border-top:1px solid var(--border-2);background:none;color:inherit;text-align:left;padding:11px 18px 11px 2px;font-size:15px;cursor:pointer;position:relative;display:block}
+.spravy-it:first-child{border-top:1px solid var(--border-2)}
+.spravy-it small{display:block;color:var(--text-3);font-size:12.5px;margin-top:2px}
+.spravy-it.un .spravy-it-t{font-weight:700}
+.spravy-it.un::after{content:"";position:absolute;right:4px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+.spravy-prazdne{text-align:center;color:var(--text-3);padding:30px 10px}
+.spravy-meta{margin:0 4px 6px;font-size:13px;color:var(--text-3)}
+.spravy-prog{height:4px;background:var(--border);border-radius:2px;margin:0 4px 10px}
+.spravy-prog i{display:block;height:4px;width:0;background:var(--red);border-radius:2px;transition:width .15s}
+.spravy-art{background:var(--surface);border-radius:16px;padding:16px;font-size:16px;line-height:1.5}
+.spravy-pozn{margin-top:8px;text-align:center;font-size:13px;color:var(--text-3)}
+@media (prefers-reduced-motion:reduce){.spravy-pas-text{animation:none}.spravy-pas-ik{animation:none}}

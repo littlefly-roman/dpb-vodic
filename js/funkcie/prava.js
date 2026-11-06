@@ -76,6 +76,21 @@
     });
     return out.sort(function (a, b) { return b.w - a.w; });
   }
+  // true, ak sa subjekt (os:/skupina:/pp:/stredisko:/trakcia:/*) týka aktuálneho vodiča
+  function zahrna(subjekt) {
+    var s = String(subjekt || "").trim().toLowerCase();
+    if (s === "" || s === "*") return true;
+    var v = vodic();
+    if (s === "os:" + v.rid) return !!v.rid;
+    if (s === "stredisko:" + v.stredisko) return !!v.stredisko;
+    if (s === "pp:" + v.pp) return !!v.pp;
+    if (s.indexOf("skupina:") === 0) return !!v.rid && !!(clenovia[s.slice(8)] || {})[v.rid];
+    if (s.indexOf("trakcia:") === 0) {
+      var tr = window.DPBData && DPBData.getTrakciaKod ? DPBData.getTrakciaKod(v.rid) : null;
+      return !!tr && String(tr).toLowerCase() === s.slice(8).trim();
+    }
+    return false;
+  }
   function moze(f) {
     if (riadky === null) return true;
     return moje().some(function (x) { return /^(1|ano|áno|x)$/i.test(x.r[f] || ""); });
@@ -124,5 +139,5 @@
   try { var u2 = localStorage.getItem(KLUC_S); if (u2) nastavSkupiny(u2, false); } catch (e) {}
   document.addEventListener("dpb-prava", pouzi);
   document.addEventListener("DOMContentLoaded", pouzi);
-  window.DpbPrava = { info: info, nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
+  window.DpbPrava = { zahrna: zahrna, info: info, nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
 })();
