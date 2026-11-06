@@ -3674,6 +3674,6 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .list-cisty{color:var(--text-2);font-weight:600;min-width:44px;text-align:right}
 
 /* Odkaz na voľné služby z Burzy: nenápadný, červený, jemne dýchajúci text */
-.burza-link-row{background:transparent;border:0;box-shadow:none;padding:10px 12px;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
+.burza-link-row{background:transparent;border:0;box-shadow:none;padding:12px 12px;font-size:18px;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
 @keyframes burza-dych-text-jemne{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.burza-link-row{animation:none}}
