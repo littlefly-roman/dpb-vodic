@@ -888,7 +888,8 @@
           });
           zostav();
         }
-        ["Zmena stavu", "Zmena služby"].forEach(function (n, i) {
+        var _mozeZS = !window.DpbPrava || window.DpbPrava.moze("zmena_sluzby");
+        (_mozeZS ? ["Zmena stavu", "Zmena služby"] : ["Zmena stavu"]).forEach(function (n, i) {
           var b = el("button", "flex:1;padding:12px 6px;background:none;border:0;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:-2px", n);
           b.type = "button";
           b.addEventListener("click", function () { ukaz(i); });
@@ -915,7 +916,8 @@
           odosli(x.txt, x.nad);
         });
         tlacidlo("Zrušiť", false, zavriVsetko);
-        t.appendChild(lista); t.appendChild(obsah); t.appendChild(chyba); t.appendChild(tl);
+        if (_mozeZS) t.appendChild(lista);
+        t.appendChild(obsah); t.appendChild(chyba); t.appendChild(tl);
         ukaz(0);
       },
     });
