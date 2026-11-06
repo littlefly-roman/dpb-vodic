@@ -31,6 +31,39 @@
   var pasRaf = 0;
   function zastavPas() { if (pasRaf) cancelAnimationFrame(pasRaf); pasRaf = 0; }
 
+  // meria sa až keď je pás viditeľný (po štarte býva hlavná obrazovka ešte skrytá -> šírka 0)
+  var pasSirka = -1;
+  function spustiPas() {
+    var pas = $("spravyPas"); if (!pas) return;
+    var okno = pas.querySelector(".spravy-pas-okno"), track = pas.querySelector(".spravy-pas-track"), k1 = pas.querySelector(".spravy-pas-kopia");
+    if (!okno || !track || !k1) return;
+    zastavPas();
+    var kopie = track.querySelectorAll(".spravy-pas-kopia");
+    for (var i = 1; i < kopie.length; i++) kopie[i].remove();
+    k1.classList.remove("sirka"); track.style.transform = "";
+    pasSirka = okno.offsetWidth;
+    if (!pasSirka) return; // skrytý – spustí sa po zobrazení (ResizeObserver)
+    var w = k1.offsetWidth;
+    if (w <= pasSirka) return; // zmestí sa -> stojí
+    k1.classList.add("sirka");
+    track.appendChild(k1.cloneNode(true));
+    w = k1.offsetWidth;
+    var x = 0, last = 0, SP = 38; // px za sekundu
+    (function krok(ts) {
+      if (!last) last = ts;
+      x -= SP * Math.min(0.1, (ts - last) / 1000); last = ts;
+      if (x <= -w) x += w;
+      track.style.transform = "translate3d(" + x + "px,0,0)";
+      pasRaf = requestAnimationFrame(krok);
+    })(performance.now());
+  }
+  try {
+    if (window.ResizeObserver) new ResizeObserver(function () {
+      var o = document.querySelector("#spravyPas .spravy-pas-okno");
+      if (o && o.offsetWidth !== pasSirka) spustiPas();
+    }).observe(document.getElementById("spravyPas") || document.body);
+  } catch (e) {}
+
   // ---------- hlavička a bežiaci text
   function obnov() {
     var n = S() ? S().pocetNovych() : 0, b = $("spravyBadge"), btn = $("spravyBtn");
@@ -45,22 +78,7 @@
         var t = d.map(function (x) { return esc(x.nadpis); }).join(" &nbsp;•&nbsp; ");
         pas.innerHTML = '<svg class="spravy-pas-ik" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v5M12 18v.5"/></svg>' +
           '<div class="spravy-pas-okno"><span class="spravy-pas-track"><span class="spravy-pas-kopia">' + t + " &nbsp;›</span></span></div>";
-        var okno = pas.querySelector(".spravy-pas-okno"), track = pas.querySelector(".spravy-pas-track"), k1 = pas.querySelector(".spravy-pas-kopia");
-        zastavPas();
-        var w = k1.offsetWidth;
-        if (w > okno.offsetWidth) { // nezmestí sa -> plynulý pás: kópia za kópiou dookola
-          k1.classList.add("sirka");
-          var k2 = k1.cloneNode(true); track.appendChild(k2);
-          w = k1.offsetWidth;
-          var x = 0, last = 0, SP = 38; // px za sekundu
-          (function krok(ts) {
-            if (!last) last = ts;
-            x -= SP * Math.min(0.1, (ts - last) / 1000); last = ts;
-            if (x <= -w) x += w;
-            track.style.transform = "translate3d(" + x + "px,0,0)";
-            pasRaf = requestAnimationFrame(krok);
-          })(performance.now());
-        }
+        spustiPas();
         pas.onclick = function () { otvor(d.length === 1 ? d[0].id : null); };
       }
     }
