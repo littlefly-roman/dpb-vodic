@@ -12,12 +12,14 @@
   var clenovia = {}; // názov skupiny (malé písmená) -> { osobné číslo: true }
   var riadky = null; // null = súbor sa nenačítal -> všetko povolené (nič sa neskrýva)
 
-  function rozdel(l) { return l.split(";").map(function (x) { return x.replace(/^"|"$/g, "").trim(); }); }
+  var ODD = ";";
+  function rozdel(l) { return l.split(ODD).map(function (x) { return x.replace(/^"|"$/g, "").trim(); }); }
   function parse(text) {
     if (!text) return null;
     if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
     var l = text.split(/\r?\n/).filter(function (x) { return x.trim(); });
     if (l.length < 1) return null;
+    ODD = l[0].indexOf(";") >= 0 ? ";" : l[0].indexOf("\t") >= 0 ? "\t" : ",";
     var h = rozdel(l[0]).map(function (x) { return x.toLowerCase(); });
     var iS = h.indexOf("subjekt");
     if (iS < 0) return null;
@@ -40,6 +42,7 @@
     if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
     var l = text.split(/\r?\n/).filter(function (x) { return x.trim(); });
     if (l.length < 1) return false;
+    ODD = l[0].indexOf(";") >= 0 ? ";" : l[0].indexOf("\t") >= 0 ? "\t" : ",";
     var h = rozdel(l[0]).map(function (x) { return x.toLowerCase(); });
     var iG = h.indexOf("skupina"), iO = h.indexOf("osobne_cislo");
     if (iG < 0 || iO < 0) return false;
@@ -106,6 +109,13 @@
     var hm = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
     return "Vozidlo od " + hm;
   }
+  // krátky popis pre Nastavenia/Profil (diagnostika)
+  function info() {
+    var n = Object.keys(clenovia).reduce(function (a, g) { return a + Object.keys(clenovia[g]).length; }, 0);
+    var v = vodic();
+    return (riadky === null ? "PRAVA.csv nenačítaný (všetko povolené)" : "PRAVA.csv " + riadky.length + " riadkov") +
+      " · SKUPINY.csv " + n + " členov · vodič " + (v.rid || "–") + " má pravidiel " + (riadky === null ? 0 : moje().length);
+  }
   function pouzi() {
     var b = document.querySelector('[data-nav="hladat"]');
     if (b) b.style.display = moze("hladat") ? "" : "none";
@@ -114,5 +124,5 @@
   try { var u2 = localStorage.getItem(KLUC_S); if (u2) nastavSkupiny(u2, false); } catch (e) {}
   document.addEventListener("dpb-prava", pouzi);
   document.addEventListener("DOMContentLoaded", pouzi);
-  window.DpbPrava = { nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
+  window.DpbPrava = { info: info, nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
 })();

@@ -83,26 +83,32 @@
   }
 
   // PRAVA.csv (viditeľnosť funkcií) – nezávisle od D_VYPR_POL.csv; chyba sa ticho ignoruje
-  function pravaZDisku() {
-    stiahniText("PRAVA.csv", function (t) { if (window.DpbPrava) window.DpbPrava.nastav(t, true); });
-    stiahniText("SKUPINY.csv", function (t) { if (window.DpbPrava) window.DpbPrava.nastavSkupiny(t, true); });
+  var pravaStav = "";
+  function pravaZDisku(ukaz) {
+    var a = stiahniText("PRAVA.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastav(t, true); });
+    var b = stiahniText("SKUPINY.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastavSkupiny(t, true); });
+    Promise.all([a, b]).then(function (r) {
+      pravaStav = "PRAVA.csv: " + r[0] + " · SKUPINY.csv: " + r[1] + (window.DpbPrava ? " · " + window.DpbPrava.info() : "");
+      if (ukaz) toast(pravaStav, 6000);
+      obnovStav();
+    });
   }
   function stiahniText(nazov, hotovo) {
     var q = "name='" + nazov + "' and trashed=false";
-    api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)").then(function (j) {
+    return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)").then(function (j) {
       var f = (j.files || [])[0];
-      if (!f) return;
+      if (!f) return "na Disku nenájdený";
       return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob").then(function (b) { return b.text(); }).then(function (t) {
-        hotovo(t);
+        return hotovo(t) ? "načítaný" : "načítaný, ale zlý formát (chýba hlavička SUBJEKT / SKUPINA;OSOBNE_CISLO)";
       });
-    }).catch(function () {});
+    }).catch(function (e) { return "chyba: " + (e && e.message ? e.message : "?"); });
   }
 
   function stav(t) { var e = el("profilDiskStav"); if (e) e.textContent = t; }
   function obnovStav() {
     if (!nastavene()) return;
     var k = parseInt(ls(K_KONTROLA) || "0", 10), b = el("profilDiskBtn");
-    stav(pripojene() ? (k ? "Pripojené · kontrola " + pred(k) : "Pripojené") : "Nepripojené");
+    stav((pripojene() ? (k ? "Pripojené · kontrola " + pred(k) : "Pripojené") : "Nepripojené") + (pravaStav ? " · " + pravaStav : ""));
     if (b) b.textContent = pripojene() ? "Skontrolovať Disk teraz" : "Pripojiť Disk Google";
   }
 
@@ -116,7 +122,7 @@
     ik(true);
     return dajToken(!!prvy).then(function () {
       ls(K_LINK, "1");
-      pravaZDisku();
+      pravaZDisku(!ticho);
       return najdi();
     }).then(function (f) {
       ls(K_KONTROLA, String(Date.now()));
