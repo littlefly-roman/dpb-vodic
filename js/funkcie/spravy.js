@@ -83,6 +83,11 @@
     document.dispatchEvent(new Event("dpb-spravy"));
   }
 
+  function vynulujPrecitane() {
+    try { localStorage.removeItem(KLUC_P); } catch (e) {}
+    document.dispatchEvent(new Event("dpb-spravy"));
+  }
+
   function zoznam() {
     if (!vsetky) return [];
     var dnes = new Date(); dnes.setHours(0, 0, 0, 0);
@@ -118,5 +123,5 @@
 
   try { var u = localStorage.getItem(KLUC); if (u) nastav(u, false); } catch (e) {}
   document.addEventListener("dpb-prava", function () { document.dispatchEvent(new Event("dpb-spravy")); });
-  window.DpbSpravy = { nastav: nastav, zoznam: zoznam, sekcie: sekcie, pocetNovych: pocetNovych, dolezite: dolezite, oznacPrecitana: oznacPrecitana, info: info };
+  window.DpbSpravy = { nastav: nastav, zoznam: zoznam, sekcie: sekcie, pocetNovych: pocetNovych, dolezite: dolezite, oznacPrecitana: oznacPrecitana, vynulujPrecitane: vynulujPrecitane, info: info };
 })();

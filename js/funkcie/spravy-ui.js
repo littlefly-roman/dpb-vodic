@@ -94,9 +94,12 @@
       if (otv) { h += '<div class="spravy-box">'; x.polozky.forEach(function (s) { h += polozka(s); }); h += "</div>"; }
       h += "</div>";
     });
+    if (sx.length) h += '<button class="spravy-znova">Označiť všetko ako neprečítané</button>';
     h += "</div></div>";
     ov.innerHTML = h;
     ov.querySelector(".spravy-x").onclick = zavri;
+    var zn = ov.querySelector(".spravy-znova");
+    if (zn) zn.onclick = function () { S().vynulujPrecitane(); };
     ov.querySelectorAll("[data-sek]").forEach(function (b) {
       b.onclick = function () { var k = b.getAttribute("data-sek"); stav.otvorena = stav.otvorena === k ? null : k; vykresli(); };
     });

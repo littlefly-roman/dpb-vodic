@@ -3718,3 +3718,4 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .spravy-art{background:var(--surface);border-radius:16px;padding:16px;font-size:16px;line-height:1.5}
 .spravy-pozn{margin-top:8px;text-align:center;font-size:13px;color:var(--text-3)}
 @media (prefers-reduced-motion:reduce){.spravy-pas-text{animation:none}.spravy-pas-ik{animation:none}}
+.spravy-znova{display:block;margin:10px auto 2px;border:0;background:none;color:var(--text-3);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px}
