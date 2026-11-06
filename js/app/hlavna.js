@@ -397,7 +397,7 @@
               const r = document.createElement("button");
               r.type = "button";
               r.className = "burza-link-row";
-              r.textContent = "Z burzy sa dá pridať: " + burzaSluzby.length + " " + (burzaSluzby.length === 1 ? "služba" : burzaSluzby.length < 5 ? "služby" : "služieb") + "  ›";
+              r.textContent = burzaVolneText(burzaSluzby.length);
               r.addEventListener("click", () => otvorBurzuPreDen(selKey));
               container.appendChild(r);
             }
@@ -564,7 +564,7 @@
             var r = document.createElement("button");
             r.type = "button";
             r.className = "burza-link-row";
-            r.textContent = "Z burzy sa dá pridať: " + bs.length + " " + (bs.length === 1 ? "služba" : bs.length < 5 ? "služby" : "služieb") + "  ›";
+            r.textContent = burzaVolneText(bs.length);
             r.addEventListener("click", function () { otvorBurzuPreDen(key); });
             container.appendChild(r);
           })();
@@ -635,6 +635,13 @@
           dateHeader.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(appState.selectedDate)}</span>`;
           dateHeader.classList.toggle("je-dnes", _jeAktualnyMesiac(appState.selectedDate));
           container.appendChild(buildListFragment(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth()));
+        }
+
+        // „K dispozícii je 1 voľná služba“ / „K dispozícii sú 2 voľné služby“ / „K dispozícii je 5 voľných služieb“
+        function burzaVolneText(n) {
+          if (n === 1) return "K dispozícii je 1 voľná služba  ›";
+          if (n >= 2 && n <= 4) return "K dispozícii sú " + n + " voľné služby  ›";
+          return "K dispozícii je " + n + " voľných služieb  ›";
         }
 
         // Zoznam dní jedného mesiaca (používa ho zoznam aj náhľad pri swipe)

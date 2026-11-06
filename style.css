@@ -3672,3 +3672,8 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .odp-okno-zavri{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:600;background:var(--red,#d62828);color:#fff;cursor:pointer}
 .card-pjo{font-size:15px;color:var(--text-2);margin-top:2px}
 .list-cisty{color:var(--text-2);font-weight:600;min-width:44px;text-align:right}
+
+/* Odkaz na voľné služby z Burzy: nenápadný, červený, jemne dýchajúci text */
+.burza-link-row{background:transparent;border:0;box-shadow:none;padding:10px 12px;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
+@keyframes burza-dych-text-jemne{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.burza-link-row{animation:none}}
