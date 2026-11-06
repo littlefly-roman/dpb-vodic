@@ -478,7 +478,7 @@
         </div>
         <div class="service-meta-item">
           <span class="service-meta-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
-          <span class="service-meta-val">Vozidlo ${service.vehicle}</span>
+          <span class="service-meta-val">Vozidlo ${service.vehicleText || service.vehicle}</span>
         </div>
       </div>
     `;
@@ -1197,7 +1197,7 @@
           grafikonModal.classList.add("active");
           grafikonContent.innerHTML = `<div class="grafikon-loading">Načítavam grafikon…</div>`;
           grafikonLeft.textContent = `Linka ${service.line}`;
-          grafikonRight.textContent = `Vozidlo ${service.vehicle}`;
+          grafikonRight.textContent = `Vozidlo ${service.vehicleText || service.vehicle}`;
           grafikonLive.classList.add("hidden");
 
           const folder = Calendar.findDataFolder(dateKey, appState.dataFolders);

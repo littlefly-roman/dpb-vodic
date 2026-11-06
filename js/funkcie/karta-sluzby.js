@@ -320,7 +320,7 @@
               items.push({ action: "volno", label: "Žiadosť o voľno" });
               items.push({ action: "lekar", label: "Nahlásiť lekára" });
               items.push({ action: "ine_ziadost", label: "Iná žiadosť" });
-              items.push({ action: "zmena_sluzby", label: "Zmena služby" });
+              if (!window.DpbPrava || window.DpbPrava.moze("zmena_sluzby")) items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             }
           }
           // Voľné služby: každý deň od dnes, ale len ak je deň z dispečingu (D_), nie z plánu (S_)
@@ -562,6 +562,12 @@
                 if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
                 center.appendChild(d);
               });
+              if (!poradie.length && k.vozidloOd) {
+                var dh = document.createElement("div");
+                dh.className = "card-vehicle";
+                dh.textContent = k.vozidloOd;
+                center.appendChild(dh);
+              }
             })();
             body.appendChild(head);
             var _hrad = k.hradenia || [];
@@ -907,6 +913,12 @@
               if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
               center.appendChild(d);
             });
+            if (k.vozidloOd && !(k.vozidla && k.vozidla.length)) {
+              const dh = document.createElement("div");
+              dh.className = "card-vehicle";
+              dh.textContent = k.vozidloOd;
+              center.appendChild(dh);
+            }
           }
 
           if (service.zacvik && service.zacvik.mena && service.zacvik.mena.length) {

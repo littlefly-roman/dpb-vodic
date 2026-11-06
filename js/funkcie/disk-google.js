@@ -82,6 +82,18 @@
     });
   }
 
+  // PRAVA.csv (viditeľnosť funkcií) – nezávisle od D_VYPR_POL.csv; chyba sa ticho ignoruje
+  function pravaZDisku() {
+    var q = "name='PRAVA.csv' and trashed=false";
+    api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)").then(function (j) {
+      var f = (j.files || [])[0];
+      if (!f) return;
+      return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob").then(function (b) { return b.text(); }).then(function (t) {
+        if (window.DpbPrava) window.DpbPrava.nastav(t, true);
+      });
+    }).catch(function () {});
+  }
+
   function stav(t) { var e = el("profilDiskStav"); if (e) e.textContent = t; }
   function obnovStav() {
     if (!nastavene()) return;
@@ -100,6 +112,7 @@
     ik(true);
     return dajToken(!!prvy).then(function () {
       ls(K_LINK, "1");
+      pravaZDisku();
       return najdi();
     }).then(function (f) {
       ls(K_KONTROLA, String(Date.now()));

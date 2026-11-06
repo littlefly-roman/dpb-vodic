@@ -58,6 +58,7 @@
           }
 
           document.getElementById("loginScreen").classList.add("hidden");
+          if (window.DpbPrava) window.DpbPrava.pouzi();
           if (window.Notif && Notif.nastavVodica) Notif.nastavVodica(sel.value);
           window._render();
           if (window.DpbZmeny) DpbZmeny.skontroluj();

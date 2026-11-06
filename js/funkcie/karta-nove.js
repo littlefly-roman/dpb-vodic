@@ -175,7 +175,7 @@
       telo: function (t) {
         var lista = el("div", "display:flex;border-bottom:2px solid var(--border-2)");
         [["Zmena stavu", function () { window.DpbZmenaStavu.otvor(ctx); }],
-         ["Zmena služby", function () { window.DpbZiadostSluzby.otvor({ date: service.date, service: service, zmena: true }); }]].forEach(function (x) {
+         ["Zmena služby", function () { window.DpbZiadostSluzby.otvor({ date: service.date, service: service, zmena: true }); }]].filter(function (x) { return x[0] !== "Zmena služby" || !window.DpbPrava || window.DpbPrava.moze("zmena_sluzby"); }).forEach(function (x) {
           var b = el("button", "flex:1;padding:14px 6px;background:none;border:0;font-size:16px;font-weight:700;color:var(--red);cursor:pointer", x[0]);
           b.type = "button";
           b.addEventListener("click", function () { window.DpbOkna.zavriVsetko(); x[1](); });
@@ -287,7 +287,7 @@
     var n = new Date();
     var dnes = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
     var jeLinka = function (kurz) { return /^[1349]\//.test(kurz || ""); };
-    var mozeKto = ctx.date === dnes && (ctx.vzor === "SLUŽBA" ? jeLinka(ctx.kurz) : ctx.vzor === "STRIEDAČ" && (ctx.segmenty || []).some(function (x) { return jeLinka(x.kurz); }));
+    var mozeKto = ctx.date === dnes && (!window.DpbPrava || window.DpbPrava.moze("stretnutia")) && (ctx.vzor === "SLUŽBA" ? jeLinka(ctx.kurz) : ctx.vzor === "STRIEDAČ" && (ctx.segmenty || []).some(function (x) { return jeLinka(x.kurz); }));
     var obsah = document.getElementById("grafikonContent");
     var panelZ = document.getElementById("cpZastavkovyPanel");
     var s = { gm: gm, obsah: obsah, panelZ: panelZ, domov: panelZ && panelZ.parentNode };

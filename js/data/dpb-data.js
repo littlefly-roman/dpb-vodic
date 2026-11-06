@@ -69,6 +69,16 @@
           });
           if (!den || !den.karty) return [];
           return den.karty.map(function (k) {
+            // PRAVA.csv: vozidlo sa ukáže až X minút pred nástupom (vodič/skupina s obmedzením)
+            var vozOdText = "";
+            if (window.DpbPrava && k.od_min != null && !window.DpbPrava.vozidloViditelne(dateKey, k.od_min)) {
+              vozOdText = window.DpbPrava.vozidloOdText(dateKey, k.od_min);
+              k = Object.assign({}, k, {
+                vozidla: [], vozidlo: null, vozidloOd: vozOdText,
+                hradenia: (k.hradenia || []).map(function (h) { return Object.assign({}, h, { vozidla: [] }); }),
+                kurzy: (k.kurzy || []).map(function (x) { return Object.assign({}, x, { vozidlo: null, vozidla: [] }); }),
+              });
+            }
             var line =
               k.vzor === "NEPRÍTOMNOSŤ" ? k.popis || k.vzor : k.kurz || k.vzor;
             if (window.DpbNazvy && (k.vzor === "POHOTOVOSŤ" || k.vzor === "TRKR"))
@@ -83,6 +93,7 @@
               vehicle:
                 (k.vozidla && k.vozidla.length ? k.vozidla[0].cislo : null) ||
                 "—",
+              vehicleText: vozOdText ? vozOdText.replace(/^Vozidlo /, "") : "",
               linka: k.kurz ? k.kurz.split("/")[0] : "",
               kurz: k.kurz ? k.kurz.split("/")[1] : "",
               before: k.pred ? { name: k.pred.meno, phone: null } : null,

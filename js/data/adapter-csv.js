@@ -136,6 +136,13 @@
               var n = cleanName(r.RIDIC_JMENO || "", r.RIDIC_PRIJMENI || "");
               if (n && n !== "1 A") names[cid] = n;
             }
+            // stredisko a pracovný pomer vodiča (pre PRAVA.csv), ak ich export obsahuje
+            if (cid) {
+              window.DpbStredisko = window.DpbStredisko || {};
+              window.DpbPracPomer = window.DpbPracPomer || {};
+              if (r.RIDIC_STREDISKO) window.DpbStredisko[cid] = String(r.RIDIC_STREDISKO).trim();
+              if (r.RIDIC_PP) window.DpbPracPomer[cid] = String(r.RIDIC_PP).trim();
+            }
           });
 
           var byDate = {};
