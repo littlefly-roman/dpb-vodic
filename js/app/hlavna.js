@@ -699,6 +699,11 @@
                   today && i === 0,
                   false,
                   isHoliday && isSluzba,
+                  (function () {
+                    // čistý výkon = výkon − PJO (len ak ho export obsahuje)
+                    const cc = window.DpbCistyCas && window.DpbCistyCas.zaKartu(s._karta);
+                    return cc ? window.DpbCistyCas.fmt(cc.cisty) : "";
+                  })(),
                 );
                 row.addEventListener("click", () => {
                   appState.selectedDate = date;
@@ -721,6 +726,7 @@
           today,
           volno,
           sviatokSluzba,
+          cisty,
         ) {
           const row = document.createElement("div");
           row.className = "list-row" + (today ? " is-today" : "");
@@ -732,7 +738,7 @@
     <div class="list-date">${date}</div>
     <div class="list-day-name">${dayName}</div>
     <div class="${lineClass}">${line}</div>
-    <div class="list-time">${time}</div>
+    <div class="list-time">${time}</div>${cisty ? `<div class="list-cisty">${cisty}</div>` : ""}
   `;
           return row;
         }
