@@ -35,6 +35,7 @@
       vozidla: u.vozidla,
       od_min: u.odMin,
       do_min: u.doMin,
+      pjo: u.pjo == null ? null : u.pjo,
       plan: !!u.plan,
       zdrojS: !!u.zdrojS,
     };

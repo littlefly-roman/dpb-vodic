@@ -160,6 +160,8 @@
       zmena: stamp(r),
       // zdrojS: riadok je zo S_ tabuliek (plán / zapísaná realita); plan: navyše deň ešte len prichádza (bez dispečingu)
       zdrojS: t(r.ZDROJ) === "S",
+      // PJO služby v minútach (stĺpec PJO exportu); null = export ho ešte neobsahuje
+      pjo: t(r.PJO) === "" || isNaN(parseInt(r.PJO, 10)) ? null : parseInt(r.PJO, 10),
       plan: t(r.ZDROJ) === "S" && (r.DATUM || "").substring(0, 10) > dnesKluc(),
       zdroj: r,
     };

@@ -885,6 +885,8 @@
               const tr = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
               pridajIkonu(tr, "cas");
               pridajZvonec(tr);
+              const cc = window.DpbCistyCas && window.DpbCistyCas.zaKartu(k);
+              if (cc) addRow(center, "card-pjo", cc.text);
             })();
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
