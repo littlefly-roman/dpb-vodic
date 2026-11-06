@@ -308,9 +308,10 @@
           }
           volno.classList.add("volno-s-menu");
           const mb = document.createElement("div");
-          mb.className = "card-menu-btn service-menu-trigger volno-menu-btn";
+          mb.className = "card-menu-btn service-menu-trigger volno-menu-btn chev-pod";
+          mb.setAttribute("aria-label", "Menu karty");
           mb.innerHTML =
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
           const menu = document.createElement("div");
           menu.className = "service-menu volno-menu";
           polozky.forEach(function (it) {

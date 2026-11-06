@@ -3360,8 +3360,11 @@ body {
 
 /* Voľno: menu (tri bodky vpravo hore) */
 .volno-card.volno-s-menu{position:relative}
-.volno-card .volno-menu-btn{position:absolute;top:8px;right:8px}
-.volno-card .volno-menu{text-align:left;margin-top:16px}
+.volno-card.volno-s-menu{padding-bottom:0}
+.volno-card .service-menu-trigger.volno-menu-btn.chev-pod{position:static;display:flex;align-items:center;justify-content:center;width:calc(100% + 40px);height:40px;margin:22px -20px 0;border-top:1px solid var(--border-2);border-radius:0 0 16px 16px}
+.volno-card .volno-menu-btn.chev-pod svg{width:22px;height:22px;transition:transform .18s}
+.volno-card .volno-menu-btn.chev-pod.open svg{transform:rotate(180deg)}
+.volno-card .volno-menu{text-align:left;margin:6px 0 14px!important}
 
 /* Striedač: ikona vykonané / nevykonané pri riadku prestávkovanej služby */
 .prest-ik{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;flex-shrink:0;margin-left:2px;-webkit-tap-highlight-color:transparent}
