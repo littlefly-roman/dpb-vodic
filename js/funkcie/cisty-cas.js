@@ -2,7 +2,7 @@
    Pravidlá výpočtu sú len tu, aby sa dali jednoducho zmeniť.
    Vstup: karta služby (k.od_min, k.do_min v minútach, k.pjo v minútach alebo null, ak export PJO ešte neobsahuje).
    - čistý čas = (koniec − nástup) − PJO
-   - PJO samostatných štandardných služieb v ten istý deň sa sčítavajú;
+   - PJO samostatných štandardných služieb v ten istý deň sa sčítavajú (každá karta má svoj čistý výkon);
      pri 944 a pohotovosti sa nekumuluje (v dennom súčte sa berie raz). */
 (function () {
   function fmt(min) {
@@ -11,7 +11,7 @@
   }
   // údaje karty alebo null (karta nie je služba / export PJO neobsahuje)
   function zaKartu(k) {
-    if (!k || (k.vzor !== "SLUŽBA" && k.vzor !== "STRIEDAČ") || k.pjo == null || k.od_min == null || k.do_min == null) return null;
+    if (!k || ["SLUŽBA", "STRIEDAČ", "TRKR", "944", "POHOTOVOSŤ"].indexOf(k.vzor) < 0 || k.pjo == null || k.od_min == null || k.do_min == null) return null;
     var cisty = k.do_min - k.od_min - k.pjo;
     if (cisty < 0) return null;
     return { pjo: k.pjo, cisty: cisty, text: "Čistý čas " + fmt(cisty) + " · " + (k.pjo ? "PJO " + k.pjo + " min" : "bez PJO") };

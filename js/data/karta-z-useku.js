@@ -67,6 +67,12 @@
   // --- Pohotovosť -------------------------------------------------------------------------
   // Viac úsekov pohotovosti jedného vodiča v jednom dni sa zlúči do jednej karty: od = najskorší
   // začiatok, do = najneskorší koniec (podľa minút osi, takže funguje aj cez polnoc).
+  // jedno PJO: väčšie z dvoch (null = neznáme)
+  function maxPjo(a, b) {
+    if (a == null) return b == null ? null : b;
+    if (b == null) return a;
+    return Math.max(a, b);
+  }
   function zlucPohotovosti(karty) {
     var poh = karty.filter(function (k) {
       return k.vzor === "POHOTOVOS\u0164";
@@ -82,7 +88,10 @@
       return b.do_min > a.do_min ? b : a;
     });
     return [
-      Object.assign({}, poh[0], { od: zac.od, do: kon.do, od_min: zac.od_min, do_min: kon.do_min }),
+      Object.assign({}, poh[0], {
+        od: zac.od, do: kon.do, od_min: zac.od_min, do_min: kon.do_min,
+        pjo: poh.reduce(function (a, k) { return maxPjo(a, k.pjo); }, null), // PJO sa nekumuluje
+      }),
     ].concat(other);
   }
 
@@ -104,6 +113,7 @@
         !(k.od_min >= p.od_min && k.do_min <= p.do_min)
       )
         return true;
+      p.pjo = maxPjo(p.pjo, k.pjo);
       p.segmenty = (p.segmenty || []).concat([
         {
           kurz: k.kurz,
@@ -205,6 +215,7 @@
         do: cs[cs.length - 1].do,
         od_min: odM,
         do_min: doM,
+        pjo: cs.reduce(function (a, u) { return maxPjo(a, u.pjo); }, null), // PJO sa nekumuluje
         hradenia: hradenia,
         // miesto: z vlastných úsekov 944 – odkiaľ prvý vychádza a kam posledný prichádza
         stan_od: (cs.filter(function (u) { return u.kurz === obalKurz; })[0] || {}).stanicaOd || "",
