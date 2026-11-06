@@ -51,6 +51,10 @@
         function jeVolno(rid, dateKey) {
           return !!(_volnoDni[rid] && _volnoDni[rid][dateKey]);
         }
+        // voľno len z plánu (S_, dispečing ešte nie je): 2; z dispečingu: 1
+        function jeVolnoPlan(rid, dateKey) {
+          return !!(_volnoDni[rid] && _volnoDni[rid][dateKey] === 2);
+        }
         function jeMimoDat(rid, dateKey) {
           if (_maVolno && !jeVolno(rid, dateKey)) return true;
           var r = rozsahDat(rid);
@@ -149,6 +153,7 @@
           getDrivers: getDrivers,
           getServicesForDate: getServicesForDate,
           jeMimoDat: jeMimoDat,
+          jeVolnoPlan: jeVolnoPlan,
           rozsahDat: rozsahDat,
           getDatesWithService: getDatesWithService,
           fmt: fmt,

@@ -12,6 +12,8 @@
       stan_do: u.stanicaDo,
       kod: parseInt(u.stav, 10) || 0,
       popis: u.popisStavu,
+      plan: !!u.plan,
+      zdrojS: !!u.zdrojS,
     };
   }
 

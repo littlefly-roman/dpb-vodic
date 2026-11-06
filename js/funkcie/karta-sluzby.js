@@ -293,8 +293,7 @@
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
             else if (sluzbaVzor) {
               // Dnes pred nástupom: Voľné služby; počas služby: Nahlásiť (porucha / udalosť)
-              if (!prebieha) items.push({ action: "volne", label: "Voľné služby" });
-              else items.push({ action: "nahlasit", label: "Nahlásiť" });
+              if (prebieha) items.push({ action: "nahlasit", label: "Nahlásiť" });
             } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
@@ -310,7 +309,6 @@
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
             else if (sluzbaVzor) {
               // Budúcnosť: Voľné služby, Žiadosti (Zmena stavu | Zmena služby)
-              items.push({ action: "volne", label: "Voľné služby" });
               items.push({ action: "ziadosti", label: "Žiadosti" });
             } else if (!k.kod || k.kod === 0)
               items.push({
@@ -324,6 +322,11 @@
               items.push({ action: "ine_ziadost", label: "Iná žiadosť" });
               items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             }
+          }
+          // Voľné služby: každý deň od dnes, ale len ak je deň z dispečingu (D_), nie z plánu (S_)
+          if (!isPast && !k.plan && !(prebieha && sluzbaVzor)) {
+            const ix = items.length && items[0].action === "cp" ? 1 : 0;
+            items.splice(ix, 0, { action: "volne", label: "Voľné služby" });
           }
           // Export do kalendára je len zo zoznamu služieb (tlačidlo Export), nie z menu karty.
           // Šípka je pod kartou (nie v hlavičke); bez položiek sa nezobrazí.

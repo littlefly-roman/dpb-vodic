@@ -303,7 +303,7 @@
           const polozky = [];
           if (kluc < dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
           else {
-            polozky.push({ a: "volne", t: "Voľné služby" });
+            if (!(typeof DPBData !== "undefined" && DPBData.jeVolnoPlan && DPBData.jeVolnoPlan(appState.currentDriver, kluc))) polozky.push({ a: "volne", t: "Voľné služby" });
             polozky.push({ a: "ziadost_sluzba", t: "Žiadosť o službu" });
             polozky.push({ a: "zmena_stavu", t: "Zmena stavu" });
           }
@@ -465,7 +465,7 @@
             main.innerHTML = `
       <div class="service-head">
         <span class="service-title clickable-line">${service.line}</span>
-        <span class="service-menu-trigger"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+        <span class="service-menu-trigger"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </div>
       <div class="service-meta">
         <div class="service-meta-item">

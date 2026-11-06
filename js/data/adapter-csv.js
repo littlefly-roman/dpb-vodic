@@ -259,6 +259,8 @@
           }
 
           var driverRows = {}, volnoDniOut = {}, maVolno = false;
+          var _dn = new Date();
+          var dnesK = _dn.getFullYear() + "-" + String(_dn.getMonth() + 1).padStart(2, "0") + "-" + String(_dn.getDate()).padStart(2, "0");
           rows.forEach(function (r) {
             var rid = (r.RIDIC_CISLO || "").trim();
             if (!rid) return;
@@ -266,7 +268,8 @@
             if (!d) return;
             // Skrytý riadok „voľno“ z balíka (druh 9): vodič má v ten deň naozaj voľno, karta sa z neho netvorí
             if ((r.DRUH_SLUZBY || "").trim() === "9" && (r.ZOBRAZIT || "").trim() === "N") {
-              (volnoDniOut[rid] = volnoDniOut[rid] || {})[d] = 1;
+              // 2 = voľno len z plánu (S_, deň ešte len prichádza), 1 = voľno z dispečingu
+              (volnoDniOut[rid] = volnoDniOut[rid] || {})[d] = ((r.ZDROJ || "").trim() === "S" && d > dnesK) ? 2 : 1;
               maVolno = true;
               return;
             }
