@@ -324,7 +324,7 @@
             }
           }
           // Voľné služby: každý deň od dnes, ale len ak je deň z dispečingu (D_), nie z plánu (S_)
-          if (!isPast && !k.plan && !(prebieha && sluzbaVzor)) {
+          if (!isPast && !k.plan) {
             const ix = items.length && items[0].action === "cp" ? 1 : 0;
             items.splice(ix, 0, { action: "volne", label: "Voľné služby" });
           }
