@@ -303,6 +303,7 @@
           const polozky = [];
           if (kluc < dnes) polozky.push({ a: "reklamacia", t: "Reklamácia" });
           else {
+            polozky.push({ a: "volne", t: "Voľné služby" });
             polozky.push({ a: "ziadost_sluzba", t: "Žiadosť o službu" });
             polozky.push({ a: "zmena_stavu", t: "Zmena stavu" });
           }
@@ -320,7 +321,8 @@
             d.textContent = it.t;
             d.addEventListener("click", function (e) {
               e.stopPropagation();
-              if (it.a === "reklamacia" && window.DpbReklamacia) window.DpbReklamacia.otvor({ date: kluc, volno: true });
+              if (it.a === "volne") otvorBurzuPreDen(kluc);
+              else if (it.a === "reklamacia" && window.DpbReklamacia) window.DpbReklamacia.otvor({ date: kluc, volno: true });
               else if (it.a === "ziadost_sluzba" && window.DpbZiadostSluzby) window.DpbZiadostSluzby.otvor({ date: kluc });
               else if (it.a === "zmena_stavu" && window.DpbZmenaStavu) window.DpbZmenaStavu.otvor({ date: kluc, volno: true });
               else if (window._showToast) window._showToast("Pripravuje sa");
