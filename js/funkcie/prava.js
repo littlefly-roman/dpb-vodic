@@ -1,6 +1,6 @@
 /* Viditeľnosť funkcií podľa PRAVA.csv (z Disku Google, vedľa D_VYPR_POL.csv).
    Stĺpce: SUBJEKT;POPIS;hladat;stretnutia;zmena_sluzby;vozidlo_min
-   SUBJEKT: os:<osobné číslo> | stredisko:<číslo> | pp:<pracovný pomer> | skupina:<názov> (členovia v stĺpci clenovia, osobné čísla oddelené čiarkou) | *
+   SUBJEKT: os:<osobné číslo> | stredisko:<číslo> | pp:<pracovný pomer> | skupina:<názov> (členovia sú v súbore SKUPINY.csv: SKUPINA;OSOBNE_CISLO;MENO – jeden vodič na riadok) | *
    Funkcie: 1 = povolené (súčet cez všetky riadky, ktoré vodiča zahŕňajú); bez riadku = skryté.
    vozidlo_min: číslo = vozidlo sa ukáže až toľko minút pred nástupom; prázdne = bez obmedzenia.
      Pri viacerých riadkoch platí najkonkrétnejší: osoba > vlastná skupina > pracovný pomer > stredisko > *.
@@ -8,6 +8,8 @@
 (function () {
   var KLUC = "dpb_prava_csv";
   var FUNKCIE = ["hladat", "stretnutia", "zmena_sluzby"];
+  var KLUC_S = "dpb_skupiny_csv";
+  var clenovia = {}; // názov skupiny (malé písmená) -> { osobné číslo: true }
   var riadky = null; // null = súbor sa nenačítal -> všetko povolené (nič sa neskrýva)
 
   function rozdel(l) { return l.split(";").map(function (x) { return x.replace(/^"|"$/g, "").trim(); }); }
@@ -33,6 +35,24 @@
     document.dispatchEvent(new Event("dpb-prava"));
     return true;
   }
+  function nastavSkupiny(text, uloz) {
+    if (!text) return false;
+    if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+    var l = text.split(/\r?\n/).filter(function (x) { return x.trim(); });
+    if (l.length < 1) return false;
+    var h = rozdel(l[0]).map(function (x) { return x.toLowerCase(); });
+    var iG = h.indexOf("skupina"), iO = h.indexOf("osobne_cislo");
+    if (iG < 0 || iO < 0) return false;
+    var m = {};
+    l.slice(1).forEach(function (ln) {
+      var c = rozdel(ln), g = (c[iG] || "").toLowerCase(), o = c[iO] || "";
+      if (g && o) (m[g] = m[g] || {})[o] = true;
+    });
+    clenovia = m;
+    if (uloz) try { localStorage.setItem(KLUC_S, text); } catch (e) {}
+    document.dispatchEvent(new Event("dpb-prava"));
+    return true;
+  }
   function vodic() {
     var rid = window.appState && window.appState.currentDriver;
     var st = (window.DpbStredisko && window.DpbStredisko[rid]) || "";
@@ -47,7 +67,7 @@
       if (s === "*") w = 0;
       else if (s === "stredisko:" + v.stredisko && v.stredisko) w = 1;
       else if (s === "pp:" + v.pp && v.pp) w = 1.5;
-      else if (s.indexOf("skupina:") === 0 && v.rid && (r.clenovia || "").split(/[\s,]+/).indexOf(v.rid) >= 0) w = 2.5;
+      else if (s.indexOf("skupina:") === 0 && v.rid && (clenovia[s.slice(8)] || {})[v.rid]) w = 2.5;
       else if (s === "os:" + v.rid && v.rid) w = 3;
       if (w >= 0) out.push({ w: w, r: r });
     });
@@ -91,7 +111,8 @@
     if (b) b.style.display = moze("hladat") ? "" : "none";
   }
   try { var u = localStorage.getItem(KLUC); if (u) nastav(u, false); } catch (e) {}
+  try { var u2 = localStorage.getItem(KLUC_S); if (u2) nastavSkupiny(u2, false); } catch (e) {}
   document.addEventListener("dpb-prava", pouzi);
   document.addEventListener("DOMContentLoaded", pouzi);
-  window.DpbPrava = { nastav: nastav, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
+  window.DpbPrava = { nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
 })();

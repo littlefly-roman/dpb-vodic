@@ -84,12 +84,16 @@
 
   // PRAVA.csv (viditeľnosť funkcií) – nezávisle od D_VYPR_POL.csv; chyba sa ticho ignoruje
   function pravaZDisku() {
-    var q = "name='PRAVA.csv' and trashed=false";
+    stiahniText("PRAVA.csv", function (t) { if (window.DpbPrava) window.DpbPrava.nastav(t, true); });
+    stiahniText("SKUPINY.csv", function (t) { if (window.DpbPrava) window.DpbPrava.nastavSkupiny(t, true); });
+  }
+  function stiahniText(nazov, hotovo) {
+    var q = "name='" + nazov + "' and trashed=false";
     api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)").then(function (j) {
       var f = (j.files || [])[0];
       if (!f) return;
       return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob").then(function (b) { return b.text(); }).then(function (t) {
-        if (window.DpbPrava) window.DpbPrava.nastav(t, true);
+        hotovo(t);
       });
     }).catch(function () {});
   }
