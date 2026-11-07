@@ -143,7 +143,19 @@
   // Profil: pozrieť si úvod znova (aj karty, ktoré už boli ukázané)
   function znova(rid) {
     var karty = zozbieraj(rid, new Date(), true).slice(0, 3);
-    if (!karty.length) { if (window._showToast) window._showToast("Dnes nie je čo zobraziť"); return false; }
+    if (!karty.length) {
+      // nič zvláštne dnes: ukáž aspoň počet dní v DPB (ak máme dátum nástupu)
+      var o = osoby && osoby[String(parseInt(rid, 10))], dn = new Date();
+      if (o && o.nastup) {
+        var d0 = new Date(dn.getFullYear(), dn.getMonth(), dn.getDate()), dni = Math.round((d0 - o.nastup) / 86400000);
+        if (dni >= 0) {
+          var roky = Math.floor(dni / 365.25);
+          karty = [{ id: "zn:" + Date.now(), em: "🚋", nadpis: roky >= 1 ? "Si s nami už " + roky + " " + pl(roky, "rok", "roky", "rokov") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní"),
+            text: (roky >= 1 ? "To je " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false }];
+        }
+      }
+    }
+    if (!karty.length) { if (window._showToast) window._showToast("Nemám čo zobraziť: v OSOBY.csv chýba tvoj riadok s dátumom nástupu"); return false; }
     if (ov) zavri();
     ukaz(karty, 0);
     return true;
