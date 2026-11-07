@@ -3731,8 +3731,14 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .uvod-text{font-size:clamp(17px,4.8vw,20px);line-height:1.45;opacity:.96}
 .uvod-pod{margin-top:26px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;opacity:.75}
 .uvod-karta.mala .uvod-nadpis{font-size:clamp(21px,6vw,26px)}
-.uvod-bodky{position:absolute;bottom:84px;display:flex;gap:8px}.uvod-bodky i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}.uvod-bodky i.on{background:#fff}
-.uvod-skip{position:absolute;bottom:40px;font-size:13px;opacity:.7}
+.uvod-bodky{position:absolute;bottom:112px;display:flex;gap:8px}.uvod-bodky i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}.uvod-bodky i.on{background:#fff}
+.uvod-prog{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:14px;right:14px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+.uvod-prog i{display:block;height:100%;width:100%;background:#fff;transform-origin:left;animation:uvod-prog linear forwards}
+@keyframes uvod-prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.uvod-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:6px;width:56px;height:56px;border:0;background:none;color:#fff;opacity:.35;font-size:22px;cursor:pointer;z-index:2}
+.uvod-tlac{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;gap:12px}
+.uvod-tlac button{border:1.5px solid rgba(255,255,255,.7);background:rgba(255,255,255,.12);color:#fff;font-size:16px;font-weight:700;padding:12px 22px;border-radius:26px;cursor:pointer;min-width:130px}
+.uvod-ov.pauza .uvod-prog i,.uvod-ov.pauza .uvod-konf b{animation-play-state:paused}
 .uvod-konf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .uvod-konf b{position:absolute;top:-16px;border-radius:2px;opacity:.9;animation:uvod-pad linear infinite}
 @keyframes uvod-pad{to{transform:translateY(110vh) rotate(540deg)}}

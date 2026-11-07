@@ -7,7 +7,7 @@
   "use strict";
   var KLUC = "dpb_osoby_csv", KLUC_V = "dpb_uvod_videne";
   var osoby = null, ODD = ";";
-  var TRVANIE = 4500;
+  var TRVANIE = 3000;
 
   function rozdel(l) { return l.split(ODD).map(function (x) { return x.trim().replace(/^"|"$/g, ""); }); }
   function dm(t) { // DD.MM. alebo DD.MM.RRRR -> {d,m}
@@ -84,8 +84,8 @@
     var k = Object.keys(v); if (k.length > 200) k.sort(function (a, b) { return v[a] - v[b]; }).slice(0, k.length - 200).forEach(function (x) { delete v[x]; });
     try { localStorage.setItem(KLUC_V, JSON.stringify(v)); } catch (e) {}
   }
-  function zozbieraj(rid, dnes) {
-    var v = videne(), karty = [];
+  function zozbieraj(rid, dnes, vsetky) {
+    var v = vsetky ? {} : videne(), karty = [];
     var o = osoby && osoby[String(parseInt(rid, 10))];
     if (o) karty = kartyOsobne(o, dnes || new Date());
     if (window.DpbSpravy) window.DpbSpravy.uvodne().forEach(function (s) {
@@ -94,29 +94,42 @@
     return karty.filter(function (k) { return !v[k.id]; }).slice(0, 3);
   }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  var ov = null, casovac = 0;
-  function zavri() { if (casovac) clearTimeout(casovac); casovac = 0; if (ov) { ov.classList.add("preč"); var o = ov; ov = null; setTimeout(function () { o.remove(); }, 250); } }
+  var ov = null, casovac = 0, zostava = 0, t0 = 0, pauza = false;
+  function zavri() { if (casovac) clearTimeout(casovac); casovac = 0; pauza = false; if (ov) { ov.classList.add("preč"); var o = ov; ov = null; setTimeout(function () { o.remove(); }, 250); } }
   function konfety(host) {
     var f = ["#fff", "#ffd54a", "#ffb3b0", "#fff3c4"], h = "";
     for (var i = 0; i < 26; i++)
       h += '<b style="left:' + Math.round(Math.random() * 96) + "%;background:" + f[i % 4] + ";animation-delay:" + (Math.random() * 2.2).toFixed(2) + "s;animation-duration:" + (2.6 + Math.random() * 2).toFixed(2) + "s;width:" + (5 + Math.round(Math.random() * 4)) + "px;height:" + (8 + Math.round(Math.random() * 6)) + 'px"></b>';
     var c = document.createElement("div"); c.className = "uvod-konf"; c.innerHTML = h; host.appendChild(c);
   }
+  function spustiCas(ms, dalej) { zostava = ms; t0 = Date.now(); casovac = setTimeout(dalej, ms); }
   function ukaz(karty, i) {
     if (i >= karty.length) return zavri();
     var k = karty[i];
     zapisVidene(k.id);
     if (k.spravaId && window.DpbSpravy) window.DpbSpravy.oznacPrecitana(k.spravaId);
+    if (casovac) clearTimeout(casovac);
+    pauza = false;
     if (!ov) { ov = document.createElement("div"); ov.className = "uvod-ov"; document.body.appendChild(ov); }
+    ov.classList.remove("pauza");
     var bodky = ""; if (karty.length > 1) for (var j = 0; j < karty.length; j++) bodky += "<i" + (j === i ? ' class="on"' : "") + "></i>";
-    ov.innerHTML = '<div class="uvod-karta' + (k.mala ? " mala" : "") + '"><div class="uvod-logo">' + (document.querySelector(".login-logo svg") ? document.querySelector(".login-logo svg").outerHTML : "") + "</div>" +
+    ov.innerHTML = '<div class="uvod-prog"><i style="animation-duration:' + TRVANIE + 'ms"></i></div>' +
+      '<button type="button" class="uvod-x" aria-label="Zavrieť">✕</button>' +
+      '<div class="uvod-karta' + (k.mala ? " mala" : "") + '"><div class="uvod-logo">' + (document.querySelector(".login-logo svg") ? document.querySelector(".login-logo svg").outerHTML : "") + "</div>" +
       '<div class="uvod-em">' + k.em + "</div>" + (k.cislo ? '<div class="uvod-cislo">' + esc(k.cislo) + "</div>" : '<div class="uvod-nadpis">' + esc(k.nadpis) + "</div>") +
       '<div class="uvod-text">' + esc(k.text).replace(/\n/g, "<br>") + '</div><div class="uvod-pod">Tvoj Dopravný podnik</div></div>' +
-      '<div class="uvod-bodky">' + bodky + '</div><div class="uvod-skip">Ťuknutím pokračuj</div>';
+      '<div class="uvod-bodky">' + bodky + '</div>' +
+      '<div class="uvod-tlac"><button type="button" class="uvod-pz">Pozastaviť</button><button type="button" class="uvod-dalej">' + (i + 1 < karty.length ? "Ďalej ›" : "Zavrieť") + "</button></div>";
     if (k.konfety) konfety(ov);
-    var dalej = function () { if (casovac) clearTimeout(casovac); ukaz(karty, i + 1); };
-    ov.onclick = dalej;
-    casovac = setTimeout(dalej, TRVANIE);
+    var dalej = function () { ukaz(karty, i + 1); };
+    var bPz = ov.querySelector(".uvod-pz");
+    bPz.onclick = function () {
+      if (!pauza) { pauza = true; clearTimeout(casovac); zostava -= Date.now() - t0; ov.classList.add("pauza"); bPz.textContent = "Pokračovať"; }
+      else { pauza = false; ov.classList.remove("pauza"); bPz.textContent = "Pozastaviť"; spustiCas(Math.max(300, zostava), dalej); }
+    };
+    ov.querySelector(".uvod-dalej").onclick = dalej;
+    ov.querySelector(".uvod-x").onclick = zavri;
+    spustiCas(TRVANIE, dalej);
   }
   function zobraz(rid, dnes) {
     try {
@@ -127,6 +140,22 @@
     } catch (e) {}
   }
 
+  // Profil: pozrieť si úvod znova (aj karty, ktoré už boli ukázané)
+  function znova(rid) {
+    var karty = zozbieraj(rid, new Date(), true).slice(0, 3);
+    if (!karty.length) { if (window._showToast) window._showToast("Dnes nie je čo zobraziť"); return false; }
+    if (ov) zavri();
+    ukaz(karty, 0);
+    return true;
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest("#profilUvodBtn");
+    if (!b) return;
+    var rid = window.appState && window.appState.currentDriver;
+    if (rid) znova(rid);
+  });
+
   try { var u = localStorage.getItem(KLUC); if (u) nastavOsoby(u, false); } catch (e) {}
-  window.DpbUvod = { zobraz: zobraz, nastavOsoby: nastavOsoby, kartyOsobne: kartyOsobne, zozbieraj: zozbieraj, peknyPocet: peknyPocet };
+  window.DpbUvod = { zobraz: zobraz, znova: znova, nastavOsoby: nastavOsoby, kartyOsobne: kartyOsobne, zozbieraj: zozbieraj, peknyPocet: peknyPocet };
 })();
