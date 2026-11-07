@@ -62,6 +62,7 @@
           if (window.Notif && Notif.nastavVodica) Notif.nastavVodica(sel.value);
           window._render();
           if (window.DpbZmeny) DpbZmeny.skontroluj();
+          if (window.DpbUvod) DpbUvod.zobraz(sel.value);
         });
       });
     

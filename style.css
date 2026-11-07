@@ -3719,3 +3719,23 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .spravy-pozn{margin-top:8px;text-align:center;font-size:13px;color:var(--text-3)}
 @media (prefers-reduced-motion:reduce){.spravy-pas-ik{animation:none}}
 .spravy-znova{display:block;margin:10px auto 2px;border:0;background:none;color:var(--text-3);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px}
+
+/* ===== Úvod: karty po logu ===== */
+.uvod-ov{position:fixed;inset:0;z-index:3000;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:uvod-vstup .35s ease both;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.uvod-ov.preč{opacity:0;transition:opacity .25s}
+.uvod-karta{text-align:center;padding:24px 26px;max-width:420px;animation:uvod-karta .5s ease both}
+.uvod-logo{width:64px;height:64px;margin:0 auto 26px;color:#fff}.uvod-logo svg{width:100%;height:100%}
+.uvod-em{font-size:60px;line-height:1}
+.uvod-nadpis{font-size:clamp(24px,7.2vw,32px);font-weight:800;line-height:1.15;margin:14px 0 14px}
+.uvod-cislo{font-size:clamp(96px,32vw,150px);font-weight:900;line-height:1;margin:6px 0 8px}
+.uvod-text{font-size:clamp(17px,4.8vw,20px);line-height:1.45;opacity:.96}
+.uvod-pod{margin-top:26px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;opacity:.75}
+.uvod-karta.mala .uvod-nadpis{font-size:clamp(21px,6vw,26px)}
+.uvod-bodky{position:absolute;bottom:84px;display:flex;gap:8px}.uvod-bodky i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}.uvod-bodky i.on{background:#fff}
+.uvod-skip{position:absolute;bottom:40px;font-size:13px;opacity:.7}
+.uvod-konf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.uvod-konf b{position:absolute;top:-16px;border-radius:2px;opacity:.9;animation:uvod-pad linear infinite}
+@keyframes uvod-pad{to{transform:translateY(110vh) rotate(540deg)}}
+@keyframes uvod-vstup{from{opacity:0}to{opacity:1}}
+@keyframes uvod-karta{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.uvod-konf{display:none}.uvod-karta,.uvod-ov{animation:none}}
