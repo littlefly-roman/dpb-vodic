@@ -5,7 +5,7 @@
    Každá karta sa ukáže najviac raz (pamätá sa v telefóne). Žiadne údaje nejdú von. */
 (function () {
   "use strict";
-  var KLUC = "dpb_osoby_csv", KLUC_V = "dpb_uvod_videne";
+  var KLUC = "dpb_osoby_csv", KLUC_V = "dpb_uvod_videne", KLUC_P = "dpb_povinne_den";
   var osoby = null, ODD = ";";
   var TRVANIE = 3000;
 
@@ -88,14 +88,21 @@
     var v = vsetky ? {} : videne(), karty = [];
     var o = osoby && osoby[String(parseInt(rid, 10))];
     if (o) karty = kartyOsobne(o, dnes || new Date());
+    var dnesK = (function (d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); })(dnes || new Date());
+    var pov = []; try { pov = JSON.parse(localStorage.getItem(KLUC_P) || "{}") || {}; } catch (e) {}
+    if (window.DpbSpravy) window.DpbSpravy.povinne().forEach(function (s) {
+      if (!vsetky && pov[s.id] === dnesK) return; // dnes už ukázaná (a nedokončená) – skúsime zajtra
+      karty.unshift({ id: "povinne:" + s.id, em: "💌", nadpis: s.nadpis, text: s.text, spravaId: s.id, povinna: s.povinne, povinnyId: s.id, povinnyDen: dnesK, mala: true, konfety: false });
+    });
     if (window.DpbSpravy) window.DpbSpravy.uvodne().forEach(function (s) {
+      if (s.povinne > 0) return; // povinné sa už ukázali hore
       karty.push({ id: "sprava:" + s.id, em: "🚋", nadpis: s.nadpis, text: s.text, spravaId: s.id, konfety: false, mala: true });
     });
-    return karty.filter(function (k) { return !v[k.id]; }).slice(0, 3);
+    return karty.filter(function (k) { return k.povinna || !v[k.id]; }).slice(0, 3);
   }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  var ov = null, casovac = 0, zostava = 0, t0 = 0, pauza = false;
-  function zavri() { if (casovac) clearTimeout(casovac); casovac = 0; pauza = false; if (ov) { ov.classList.add("preč"); var o = ov; ov = null; setTimeout(function () { o.remove(); }, 250); } }
+  var ov = null, casovac = 0, zostava = 0, t0 = 0, pauza = false, odpocet = 0;
+  function zavri() { if (casovac) clearTimeout(casovac); casovac = 0; if (odpocet) clearInterval(odpocet); odpocet = 0; pauza = false; if (ov) { ov.classList.add("preč"); var o = ov; ov = null; setTimeout(function () { o.remove(); }, 250); } }
   function konfety(host) {
     var f = ["#fff", "#ffd54a", "#ffb3b0", "#fff3c4"], h = "";
     for (var i = 0; i < 26; i++)
@@ -106,22 +113,45 @@
   function ukaz(karty, i) {
     if (i >= karty.length) return zavri();
     var k = karty[i];
-    zapisVidene(k.id);
-    if (k.spravaId && window.DpbSpravy) window.DpbSpravy.oznacPrecitana(k.spravaId);
     if (casovac) clearTimeout(casovac);
+    if (odpocet) { clearInterval(odpocet); odpocet = 0; }
+    if (k.povinna) {
+      // zapíš len „dnes ukázaná“; prečítaná je až po dokončení odpočtu
+      try { var pv = JSON.parse(localStorage.getItem(KLUC_P) || "{}") || {}; pv[k.povinnyId] = k.povinnyDen; localStorage.setItem(KLUC_P, JSON.stringify(pv)); } catch (e) {}
+    } else {
+      zapisVidene(k.id);
+      if (k.spravaId && window.DpbSpravy) window.DpbSpravy.oznacPrecitana(k.spravaId);
+    }
     pauza = false;
     if (!ov) { ov = document.createElement("div"); ov.className = "uvod-ov"; document.body.appendChild(ov); }
     ov.classList.remove("pauza");
     var bodky = ""; if (karty.length > 1) for (var j = 0; j < karty.length; j++) bodky += "<i" + (j === i ? ' class="on"' : "") + "></i>";
-    ov.innerHTML = '<div class="uvod-prog"><i style="animation-duration:' + TRVANIE + 'ms"></i></div>' +
-      '<button type="button" class="uvod-x" aria-label="Zavrieť">✕</button>' +
+    ov.innerHTML = '<div class="uvod-prog"><i style="animation-duration:' + (k.povinna ? k.povinna * 1000 : TRVANIE) + 'ms"></i></div>' +
+      (k.povinna ? "" : '<button type="button" class="uvod-x" aria-label="Zavrieť">✕</button>') +
       '<div class="uvod-karta' + (k.mala ? " mala" : "") + '"><div class="uvod-logo">' + (document.querySelector(".login-logo svg") ? document.querySelector(".login-logo svg").outerHTML : "") + "</div>" +
       '<div class="uvod-em">' + k.em + "</div>" + (k.cislo ? '<div class="uvod-cislo">' + esc(k.cislo) + "</div>" : '<div class="uvod-nadpis">' + esc(k.nadpis) + "</div>") +
       '<div class="uvod-text">' + esc(k.text).replace(/\n/g, "<br>") + '</div><div class="uvod-pod">Tvoj Dopravný podnik</div></div>' +
       '<div class="uvod-bodky">' + bodky + '</div>' +
-      '<div class="uvod-tlac"><button type="button" class="uvod-pz">Pozastaviť</button><button type="button" class="uvod-dalej">' + (i + 1 < karty.length ? "Ďalej ›" : "Zavrieť") + "</button></div>";
+      '<div class="uvod-tlac">' + (k.povinna ? "" : '<button type="button" class="uvod-pz">Pozastaviť</button>') + '<button type="button" class="uvod-dalej">' + (i + 1 < karty.length ? "Ďalej ›" : "Zavrieť") + "</button></div>";
     if (k.konfety) konfety(ov);
     var dalej = function () { ukaz(karty, i + 1); };
+    if (k.povinna) {
+      // povinná karta: tlačidlo je vypnuté, kým neuplynie čas; potom je správa prečítaná
+      var bd = ov.querySelector(".uvod-dalej"), zost = k.povinna, popis = bd.textContent;
+      ov.classList.add("povinna");
+      bd.disabled = true; bd.textContent = popis + " (" + zost + ")";
+      odpocet = setInterval(function () {
+        zost--;
+        if (zost > 0) { bd.textContent = popis + " (" + zost + ")"; return; }
+        clearInterval(odpocet); odpocet = 0; bd.disabled = false; bd.textContent = popis;
+      }, 1000);
+      bd.onclick = function () {
+        if (bd.disabled) return;
+        if (k.spravaId && window.DpbSpravy) window.DpbSpravy.oznacPrecitana(k.spravaId);
+        dalej();
+      };
+      return; // bez automatického prechodu
+    }
     var bPz = ov.querySelector(".uvod-pz");
     bPz.onclick = function () {
       if (!pauza) { pauza = true; clearTimeout(casovac); zostava -= Date.now() - t0; ov.classList.add("pauza"); bPz.textContent = "Pokračovať"; }

@@ -3745,3 +3745,5 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 @keyframes uvod-vstup{from{opacity:0}to{opacity:1}}
 @keyframes uvod-karta{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.uvod-konf{display:none}.uvod-karta,.uvod-ov{animation:none}}
+.uvod-tlac button:disabled{opacity:.45;cursor:default}
+.uvod-ov.povinna .uvod-text{max-height:34vh;overflow-y:auto;text-align:left}

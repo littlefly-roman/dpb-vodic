@@ -6,6 +6,8 @@
      OD / DO   – platnosť (DD.MM.RRRR alebo RRRR-MM-DD), prázdne = bez obmedzenia
      PRE_KOHO  – viac hodnôt oddeľ znakom |:  * | os:<číslo> | skupina:<názov> | trakcia:<kód> | pp:<pomer> | stredisko:<č>; prázdne = všetci
      DOLEZITE  – 1/ano = beží nad kartou na Dnes, kým nie je prečítaná
+   POVINNE   – (voliteľný stĺpec) počet sekúnd, napr. 8: správa prebije všetko, ukáže sa pri prvom spustení appky v daný deň
+               a dá sa zavrieť až po uplynutí tohto času (potom je prečítaná)
    UVOD      – (voliteľný stĺpec) 1/ano = správa sa ukáže ako „karta dňa“ po logu pri prihlásení (raz)
    V TEXT sa riadok zalomí zápisom \n. */
 (function () {
@@ -60,7 +62,8 @@
         do: datum(g("do")),
         preKoho: g("pre_koho").split("|").map(function (x) { return x.trim(); }).filter(Boolean),
         dolezite: /^(1|ano|áno|x)$/i.test(g("dolezite")),
-        uvod: /^(1|ano|áno|x)$/i.test(g("uvod"))
+        uvod: /^(1|ano|áno|x)$/i.test(g("uvod")),
+        povinne: Math.max(0, Math.min(60, parseInt(g("povinne"), 10) || 0))
       });
     });
     return out;
@@ -119,6 +122,7 @@
     out.sort(function (a, b) { return (b.nove > 0) - (a.nove > 0) || (dol(b) - dol(a)) || a.nazov.localeCompare(b.nazov, "sk"); });
     return out;
   }
+  function povinne() { return zoznam().filter(function (s) { return s.povinne > 0 && !s.precitana; }); }
   function uvodne() { return zoznam().filter(function (s) { return s.uvod; }); }
   function pocetNovych() { return zoznam().filter(function (s) { return !s.precitana; }).length; }
   function dolezite() { return zoznam().filter(function (s) { return s.dolezite && !s.precitana; }); }
@@ -126,5 +130,5 @@
 
   try { var u = localStorage.getItem(KLUC); if (u) nastav(u, false); } catch (e) {}
   document.addEventListener("dpb-prava", function () { document.dispatchEvent(new Event("dpb-spravy")); });
-  window.DpbSpravy = { nastav: nastav, zoznam: zoznam, sekcie: sekcie, pocetNovych: pocetNovych, dolezite: dolezite, uvodne: uvodne, oznacPrecitana: oznacPrecitana, vynulujPrecitane: vynulujPrecitane, info: info };
+  window.DpbSpravy = { nastav: nastav, zoznam: zoznam, sekcie: sekcie, pocetNovych: pocetNovych, dolezite: dolezite, uvodne: uvodne, povinne: povinne, oznacPrecitana: oznacPrecitana, vynulujPrecitane: vynulujPrecitane, info: info };
 })();
