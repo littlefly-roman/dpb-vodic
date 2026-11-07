@@ -68,7 +68,11 @@
             return d.datum === dateKey;
           });
           if (!den || !den.karty) return [];
-          return den.karty.map(function (k) {
+          // chronologicky podľa času nástupu (stabilne; karty bez času idú nakoniec)
+          var _kluc = function (k) { var t = k.od_min != null ? k.od_min : k.od; return typeof t === "number" ? t : 1e9; };
+          var _karty = den.karty.map(function (k, i) { return { k: k, i: i }; });
+          _karty.sort(function (a, b) { return (_kluc(a.k) - _kluc(b.k)) || (a.i - b.i); });
+          return _karty.map(function (x) { return x.k; }).map(function (k) {
             // PRAVA.csv: vozidlo sa ukáže až X minút pred nástupom (vodič/skupina s obmedzením)
             var vozOdText = "";
             if (window.DpbPrava && k.od_min != null && !window.DpbPrava.vozidloViditelne(dateKey, k.od_min)) {
