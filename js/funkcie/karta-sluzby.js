@@ -67,7 +67,7 @@
             SVG_IK[druh] + "</svg>";
           riadok.insertBefore(i, riadok.firstChild);
         }
-        // Vozidlá na karte: na prvý pohľad len čísla; po kliknutí detail „od–do“ pri každom vozidle
+        // Vozidlá na karte: zbalené len čísla vedľa seba; po kliknutí na šípku pod sebou a ich časy „od–do“ vedľa nich
         function pridajVozidla(center, zoznam) {
           if (!zoznam || !zoznam.length) return;
           var cisla = [];
@@ -76,33 +76,41 @@
           var maDetail = zoznam.some(function (v) { return v.od && v.do; });
           var d = document.createElement("div");
           d.className = "card-vehicle";
-          var t = document.createElement("span");
-          t.textContent = cisla.join(" · ");
+          var t = document.createElement("div");
+          t.className = "veh-txt";
           d.appendChild(t);
+          function kresli(otvorene) {
+            t.innerHTML = "";
+            if (!otvorene) { t.textContent = cisla.join(" · "); return; }
+            zoznam.forEach(function (v) {
+              var r = document.createElement("div");
+              r.className = "veh-r";
+              r.appendChild(document.createTextNode(v.cislo));
+              if (v.od && v.do) {
+                var c = document.createElement("span");
+                c.className = "veh-cas";
+                c.textContent = hm(v.od) + "–" + hm(v.do);
+                r.appendChild(c);
+              }
+              t.appendChild(r);
+            });
+          }
+          kresli(false);
           pridajIkonu(d, druhVozidla(zoznam[0].cislo));
           center.appendChild(d);
           if (!maDetail) return;
           var sip = document.createElement("span");
           sip.className = "veh-sip";
-          sip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+          sip.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
           d.appendChild(sip);
           d.classList.add("veh-klik");
           d.setAttribute("role", "button");
           d.setAttribute("aria-expanded", "false");
-          var det = document.createElement("div");
-          det.className = "card-veh-det";
-          det.hidden = true;
-          zoznam.forEach(function (v) {
-            var r = document.createElement("div");
-            r.textContent = (zoznam.length > 1 ? v.cislo + (v.od && v.do ? " • " : "") : "") + (v.od && v.do ? hm(v.od) + "–" + hm(v.do) : "");
-            det.appendChild(r);
-          });
-          center.appendChild(det);
           d.addEventListener("click", function () {
-            var open = det.hidden;
-            det.hidden = !open;
+            var open = !d.classList.contains("open");
             d.classList.toggle("open", open);
             d.setAttribute("aria-expanded", open ? "true" : "false");
+            kresli(open);
           });
         }
 

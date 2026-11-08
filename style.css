@@ -3770,10 +3770,13 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .prs-det{padding-left:16px}
 .prs-det .meno-v .meno-ik{width:28px;justify-content:center}
 
-/* v218: vozidlá na karte – len čísla, detail po kliknutí */
+/* v219: vozidlá na karte – čísla vedľa seba, šípka na kraji, po kliknutí pod sebou s časmi vedľa */
+.card-vehicle{position:relative}
 .card-vehicle.veh-klik{cursor:pointer;-webkit-tap-highlight-color:transparent}
-.card-vehicle .veh-sip{display:inline-flex;align-items:center;margin-left:6px;color:var(--text-3)}
+.card-vehicle .veh-txt{text-align:center}
+.card-vehicle .veh-r{display:flex;justify-content:center;gap:12px;line-height:1.5}
+.card-vehicle .veh-cas{color:var(--text-3)}
+.card-vehicle .veh-sip{position:absolute;right:-4px;top:2px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--text-3)}
 .card-vehicle .veh-sip svg{transition:transform .18s}
 .card-vehicle.open .veh-sip svg{transform:rotate(180deg)}
-.card-veh-det{width:100%;text-align:center;font-size:16px;color:var(--text-2);line-height:1.5;margin:0 0 4px}
-.card-veh-det[hidden]{display:none}
+.card-vehicle.s-ikonou .card-ic{top:5px;transform:none}
