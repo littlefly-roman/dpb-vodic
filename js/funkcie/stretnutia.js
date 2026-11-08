@@ -366,6 +366,30 @@
     return out.map(function (x) { return { cas: x.cas, nazov: x.nazov }; });
   }
 
+  // Výjazd z depa: ak prvý spoj služby začína na zastávke Dp./Depo, vráti { cas:"H:MM:SS", sek }, inak null.
+  async function vyjazdZDepa(kurz, dateKey, od, do_) {
+    var d = await nacitajObehy(dateKey);
+    if (!d) return null;
+    var p = String(kurz).split("/");
+    if (!p[1]) return null;
+    var obeh = d.obehy[String(p[0]).padStart(3, "0") + String(p[1]).padStart(2, "0") + d.typ];
+    if (!obeh) return null;
+    var odS = typeof od === "number" ? od : sek(od), doS = typeof do_ === "number" ? do_ : sek(do_);
+    if (odS == null || doS == null) return null;
+    if (doS <= odS) doS += 86400;
+    var best = null;
+    obeh.forEach(function (sp) {
+      if (sp.stops.length < 2) return;
+      var t0 = cas(sp.stops[0]);
+      if (t0 == null) return;
+      var t = t0 < odS && t0 + 86400 >= odS ? t0 + 86400 : t0;
+      if (t < odS || t >= doS) return;
+      if (!best || t < best.t) best = { t: t, t0: t0, st: sp.stops[0].st };
+    });
+    if (!best || !/^(Dp|Depo)[.\s]/i.test(String(nazovStanice(d.stanice, best.st) || ""))) return null;
+    return { sek: best.t0 };
+  }
+
   // Striedač nemá vlastný obeh: jeho „kurz“ (napr. 1/5) sa skladá z úsekov (striedaní) v iných kurzoch podľa DPB_STATIC.
   // Vráti [{kurz, prebera, odovzdava, a, b}] (a, b v sekundách) pre slot najbližší k začiatku služby, len úseky v rozsahu služby.
   function segmentyStriedaca(kurz, dateKey, odSec, doSec) {
@@ -390,5 +414,5 @@
     }).sort(function (x, y) { return x.a - y.a; });
   }
 
-  window.DpbStretnutia = { segmentyStriedaca: segmentyStriedaca, odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
+  window.DpbStretnutia = { vyjazdZDepa: vyjazdZDepa, segmentyStriedaca: segmentyStriedaca, odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();

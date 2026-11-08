@@ -111,7 +111,7 @@
   }
   function ma(service) {
     var v = service._vzor;
-    return { vyj: v === "SLUŽBA" || v === "944", konecna: v === "SLUŽBA", prestavka: v === "SLUŽBA" && !!(service._upoz && service._upoz.prestavka && service._upoz.prestavka.length), striedac: v === "STRIEDAČ" };
+    return { vyj: v === "944" || (v === "SLUŽBA" && service._zDepa === true), konecna: v === "SLUŽBA", prestavka: v === "SLUŽBA" && !!(service._upoz && service._upoz.prestavka && service._upoz.prestavka.length), striedac: v === "STRIEDAČ" };
   }
   function jeDnes(service) { return service.date === dnesKluc(); }
   // Zoznamy časov (odchody z konečnej, koniec prestávky, striedania) – len dnes
@@ -258,12 +258,13 @@
     document.addEventListener("visibilitychange", function () { if (!document.hidden && b.isConnected) obnov(); });
     service._zvonecObnov = obnov;
     obnov();
-    // výjazd z vozovne (pre riadok „Pred výjazdom“) podľa grafikonu kurzu
-    if (service._vzor === "SLUŽBA" && k.kurz && window.DpbStretnutia && window.DpbStretnutia.odchodyZKonecnej) {
-      window.DpbStretnutia.odchodyZKonecnej(k.kurz, service.date, k.od, k.do).then(function (l) {
-        if (!l || !l.length) return;
-        var q = String(l[0].cas).split(":"), sec = (+q[0]) * 3600 + (+q[1]) * 60 + (+q[2] || 0);
-        if (sec > 0) { service._premavkaOd = sec; obnov(); }
+    // výjazd z depa (pre riadok „Pred výjazdom“): len keď prvý spoj služby začína na zastávke Dp.
+    if (service._vzor === "SLUŽBA" && k.kurz && window.DpbStretnutia && window.DpbStretnutia.vyjazdZDepa) {
+      window.DpbStretnutia.vyjazdZDepa(k.kurz, service.date, k.od, k.do).then(function (r) {
+        if (!r) return;
+        service._zDepa = true;
+        if (r.sek > 0) service._premavkaOd = r.sek;
+        obnov();
       }).catch(function () {});
     }
     function prepniVsetko() {
