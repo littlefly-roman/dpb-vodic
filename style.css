@@ -3780,3 +3780,8 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .card-vehicle .veh-sip svg{transition:transform .18s}
 .card-vehicle.open .veh-sip svg{transform:rotate(180deg)}
 .card-vehicle.s-ikonou .card-ic{top:5px;transform:none}
+
+/* v220: vozidlá zarovnané doľava, v rovnakom stĺpci ako miesto nástupu */
+.card-vehicle.s-ikonou{justify-content:flex-start;padding-left:26px;padding-right:34px;box-sizing:border-box}
+.card-vehicle .veh-txt{text-align:left}
+.card-vehicle .veh-r{justify-content:flex-start}
