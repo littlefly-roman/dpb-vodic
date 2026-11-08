@@ -70,8 +70,7 @@
         // Vozidlá na karte: zbalené len čísla vedľa seba; po kliknutí na šípku pod sebou a ich časy „od–do“ vedľa nich
         function pridajVozidla(center, zoznam) {
           if (!zoznam || !zoznam.length) return;
-          var cisla = [];
-          zoznam.forEach(function (v) { if (cisla.indexOf(String(v.cislo)) < 0) cisla.push(String(v.cislo)); });
+          var cisla = zoznam.map(function (v) { return String(v.cislo); }); // aj rovnaké číslo s inými časmi = dve vozidlá
           var hm = function (t) { return String(t).replace(/^0(\d:)/, "$1"); };
           var maDetail = zoznam.some(function (v) { return v.od && v.do; });
           var d = document.createElement("div");
