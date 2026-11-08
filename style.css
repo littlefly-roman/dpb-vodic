@@ -3756,16 +3756,16 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .card-route-wrap .card-route-od{text-align:left}
 .card-route-wrap .card-route-do{text-align:right}
 .card-prs-blk{position:relative}
-.card-prs-hdr{display:flex;align-items:center;justify-content:center;min-height:44px;margin:0;position:relative}
+.card-prs-hdr{display:flex;align-items:center;justify-content:center;min-height:24px;margin:0;position:relative}
 .card-prs-hdr .prs-h-ik{position:absolute;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:28px;color:var(--text-3)}
 .card-prs-hdr .prs-h-kava{left:-26px}
 .card-prs-hdr .prs-h-vym{left:16px}
-.card-prs-hdr .odp-plan-zv{position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:34px;height:34px;min-height:0;padding:0;border-radius:50%;justify-content:center;gap:0}
+.card-prs-hdr .odp-plan-zv{position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:30px;height:30px;min-height:0;padding:0;border-radius:50%;justify-content:center;gap:0}
+.card-prs-hdr .odp-plan-zv svg{width:18px;height:18px}
 .card-prs-hdr .odp-plan-zv .odp-pt{display:none}
-.card-prs-zas{display:flex;align-items:center;justify-content:center;min-height:44px;margin:0;position:relative}
+.card-prs-zas{display:flex;align-items:center;justify-content:center;margin:0;position:relative;min-height:22px}
 .card-prs-zas .prs-z-ik{position:absolute;left:16px;top:50%;transform:translateY(-50%);display:inline-flex;width:28px;justify-content:center;color:var(--text-3)}
-.card-prs-row.prs-nova{min-height:44px;padding-left:16px}
+.card-prs-row.prs-nova{padding-left:16px}
 .card-prs-row.prs-nova .prs-ik{width:28px;justify-content:center}
-.prs-det{min-height:44px;padding-left:16px}
+.prs-det{padding-left:16px}
 .prs-det .meno-v .meno-ik{width:28px;justify-content:center}
-.prs-det .meno-v .meno-ik svg{width:22px;height:22px}
