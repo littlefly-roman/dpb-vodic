@@ -951,19 +951,28 @@
               pb.className = "card-prs-blk";
               var ph = document.createElement("div");
               ph.className = "card-prs-hdr";
-              ph.textContent = "PRESTÁVKA";
+              var _kn = window.DpbKartaNove;
+              if (_kn) {
+                // ikony: káva + výmena (prestávku zabezpečuje striedač) vľavo, zvonček upozornení vpravo
+                ph.innerHTML = '<span class="prs-h-ik prs-h-kava">' + _kn.svg("kava", 28) + '</span><span class="prs-h-ik prs-h-vym">' + _kn.svg("swap", 22) + '</span><span class="prs-h-t">PRESTÁVKA</span>';
+              } else ph.textContent = "PRESTÁVKA";
               pb.appendChild(ph);
               if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
-                var _pw2 = document.createElement("div");
-                _pw2.className = "odp-plan-wrap";
-                _pw2.appendChild(window.DpbOdpocet.planTlacidlo("prestavka|" + k.kurz + "|" + k.od,
+                var _pbtn = window.DpbOdpocet.planTlacidlo("prestavka|" + k.kurz + "|" + k.od,
                   _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : "") }; }),
-                  "prestavka", "Koniec prestávky o"));
-                pb.appendChild(_pw2);
+                  "prestavka", "Koniec prestávky o");
+                if (_kn) { _pbtn.classList.add("odp-plan-zv"); ph.appendChild(_pbtn); }
+                else {
+                  var _pw2 = document.createElement("div");
+                  _pw2.className = "odp-plan-wrap";
+                  _pw2.appendChild(_pbtn);
+                  pb.appendChild(_pw2);
+                }
               }
               var pz = document.createElement("div");
               pz.className = "card-prs-zas";
-              pz.textContent = _rel[0].zastávka || "";
+              if (_kn) pz.innerHTML = '<span class="prs-h-ik prs-z-ik">' + _kn.svg("poloha", 22) + '</span>';
+              pz.appendChild(document.createTextNode(_rel[0].zastávka || ""));
               pb.appendChild(pz);
               _rel.forEach(function (p) {
                 var row = document.createElement("div");
@@ -991,7 +1000,7 @@
                   row.classList.add("prs-nova");
                   var ik = document.createElement("span");
                   ik.className = "prs-ik";
-                  ik.innerHTML = window.DpbKartaNove.svg("swap", 18) + window.DpbKartaNove.svg("cas", 18);
+                  ik.innerHTML = window.DpbKartaNove.svg("cas", 22);
                   row.appendChild(ik);
                   row.appendChild(cas);
                   if (_pk) row.appendChild(_pk);
