@@ -67,6 +67,45 @@
             SVG_IK[druh] + "</svg>";
           riadok.insertBefore(i, riadok.firstChild);
         }
+        // Vozidlá na karte: na prvý pohľad len čísla; po kliknutí detail „od–do“ pri každom vozidle
+        function pridajVozidla(center, zoznam) {
+          if (!zoznam || !zoznam.length) return;
+          var cisla = [];
+          zoznam.forEach(function (v) { if (cisla.indexOf(String(v.cislo)) < 0) cisla.push(String(v.cislo)); });
+          var hm = function (t) { return String(t).replace(/^0(\d:)/, "$1"); };
+          var maDetail = zoznam.some(function (v) { return v.od && v.do; });
+          var d = document.createElement("div");
+          d.className = "card-vehicle";
+          var t = document.createElement("span");
+          t.textContent = cisla.join(" · ");
+          d.appendChild(t);
+          pridajIkonu(d, druhVozidla(zoznam[0].cislo));
+          center.appendChild(d);
+          if (!maDetail) return;
+          var sip = document.createElement("span");
+          sip.className = "veh-sip";
+          sip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+          d.appendChild(sip);
+          d.classList.add("veh-klik");
+          d.setAttribute("role", "button");
+          d.setAttribute("aria-expanded", "false");
+          var det = document.createElement("div");
+          det.className = "card-veh-det";
+          det.hidden = true;
+          zoznam.forEach(function (v) {
+            var r = document.createElement("div");
+            r.textContent = (zoznam.length > 1 ? v.cislo + (v.od && v.do ? " • " : "") : "") + (v.od && v.do ? hm(v.od) + "–" + hm(v.do) : "");
+            det.appendChild(r);
+          });
+          center.appendChild(det);
+          d.addEventListener("click", function () {
+            var open = det.hidden;
+            det.hidden = !open;
+            d.classList.toggle("open", open);
+            d.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+        }
+
         // Druh vozidla podľa čísla: 7xxx električky, 6xxx trolejbusy, ostatné autobusy;
         // fiktívne vozy 5000 a 7000 bez ikony.
         function druhVozidla(cislo) {
@@ -555,13 +594,7 @@
                 }
               });
               poradie.sort(function (x, y) { return (x.od || "") < (y.od || "") ? -1 : 1; });
-              poradie.forEach(function (v, vi) {
-                var d = document.createElement("div");
-                d.className = "card-vehicle";
-                d.textContent = v.cislo + (v.od && v.do ? " • " + String(v.od).replace(/^0(\d:)/, "$1") + "–" + String(v.do).replace(/^0(\d:)/, "$1") : "");
-                if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
-                center.appendChild(d);
-              });
+              pridajVozidla(center, poradie);
               if (!poradie.length && k.vozidloOd) {
                 var dh = document.createElement("div");
                 dh.className = "card-vehicle";
@@ -902,17 +935,10 @@
                 }).catch(function () {});
               }
             }
-            (
-              k.vozidla ||
-              (k.vozidlo ? [{ cislo: k.vozidlo, od: "", do: "" }] : [])
-            ).forEach(function (v, vi) {
-              const d = document.createElement("div");
-              d.className = "card-vehicle";
-              d.textContent =
-                v.cislo + (v.od && v.do ? " • " + String(v.od).replace(/^0(\d:)/, "$1") + "–" + String(v.do).replace(/^0(\d:)/, "$1") : "");
-              if (vi === 0) pridajIkonu(d, druhVozidla(v.cislo));
-              center.appendChild(d);
-            });
+            pridajVozidla(
+              center,
+              k.vozidla || (k.vozidlo ? [{ cislo: k.vozidlo, od: "", do: "" }] : []),
+            );
             if (k.vozidloOd && !(k.vozidla && k.vozidla.length)) {
               const dh = document.createElement("div");
               dh.className = "card-vehicle";

@@ -3769,3 +3769,11 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .card-prs-row.prs-nova .prs-ik{width:28px;justify-content:center}
 .prs-det{padding-left:16px}
 .prs-det .meno-v .meno-ik{width:28px;justify-content:center}
+
+/* v218: vozidlá na karte – len čísla, detail po kliknutí */
+.card-vehicle.veh-klik{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.card-vehicle .veh-sip{display:inline-flex;align-items:center;margin-left:6px;color:var(--text-3)}
+.card-vehicle .veh-sip svg{transition:transform .18s}
+.card-vehicle.open .veh-sip svg{transform:rotate(180deg)}
+.card-veh-det{width:100%;text-align:center;font-size:16px;color:var(--text-2);line-height:1.5;margin:0 0 4px}
+.card-veh-det[hidden]{display:none}
