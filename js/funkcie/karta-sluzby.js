@@ -339,7 +339,7 @@
               items.push({ action: "zmena_stavu", label: "Zmena stavu" });
             else if (sluzbaVzor) {
               // Dnes pred nástupom: Voľné služby; počas služby: Nahlásiť (porucha / udalosť)
-              if (prebieha) items.push({ action: "nahlasit", label: "Nahlásiť" });
+              // „Nahlásiť“ je zatiaľ skryté (funkcia ostáva v kóde): if (prebieha) items.push({ action: "nahlasit", label: "Nahlásiť" });
             } else if (!k.kod || k.kod === 0)
               items.push({
                 action: "ziadost_sluzba",
@@ -368,6 +368,10 @@
               items.push({ action: "ine_ziadost", label: "Iná žiadosť" });
               if (!window.DpbPrava || window.DpbPrava.moze("zmena_sluzby")) items.push({ action: "zmena_sluzby", label: "Zmena služby" });
             }
+          }
+          if (!isPast && ["SLUŽBA", "STRIEDAČ", "TRKR", "944", "POHOTOVOSŤ"].includes(vzor) && window.DpbKartaNove && window.DpbKartaNove.upozornenia) {
+            const ixu = items.length && items[0].action === "cp" ? 1 : 0;
+            items.splice(ixu, 0, { action: "upozornenia", label: "Upozornenia" });
           }
           // Voľné služby: každý deň od dnes, ale len ak je deň z dispečingu (D_), nie z plánu (S_)
           if (!isPast && !k.plan) {
@@ -446,6 +450,7 @@
                   window.DpbIdiNa && window.DpbIdiNa({ burza: service.date });
                 else if (act === "ziadosti")
                   window.DpbKartaNove && window.DpbKartaNove.ziadosti(service);
+                else if (act === "upozornenia") window.DpbKartaNove.upozornenia(service);
                 else if (act === "kal_google") window.DpbExport.kartaGoogle(service);
                 else if (act === "kal_ics") window.DpbExport.kartaIcs(service);
                 else if (act === "nahlasit")
@@ -884,11 +889,9 @@
                 e.stopPropagation();
                 card._strGrafikon();
               });
-              if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
-                var _pw = document.createElement("div");
-                _pw.className = "odp-plan-wrap";
-                _pw.appendChild(window.DpbOdpocet.planTlacidlo("striedanie|" + k.kurz + "|" + k.od,
-                  function () {
+              // Upozornenia striedača (striedania + odchody z konečnej) – ovláda ich zvonček na hlavnej karte
+              service._upoz = service._upoz || {};
+              service._upoz.striedac = function () {
                     // striedania + odchody z konečnej spojov kurzov, ktoré striedač jazdí
                     var it = _kurzy.filter(function (s) { return s.prebera; }).map(function (s) { return { cas: s.prebera, nazov: "Striedanie " + s.kurz }; });
                     var DS = window.DpbStretnutia;
@@ -898,10 +901,7 @@
                         return l.map(function (x) { return { cas: x.cas, nazov: x.nazov, typ: "konecna", pop: "Odchod o" }; });
                       });
                     })).then(function (v) { return it.concat([].concat.apply([], v)); });
-                  },
-                  "striedanie", "Preberáš o"));
-                body.appendChild(_pw);
-              }
+                  };
               body.appendChild(
                 buildStrList(
                   _kurzy.map((s) => ({
@@ -990,18 +990,8 @@
                 ph.innerHTML = '<span class="prs-h-ik prs-h-kava">' + _kn.svg("kava", 22) + '</span><span class="prs-h-ik prs-h-vym">' + _kn.svg("swap", 18) + '</span><span class="prs-h-t">PRESTÁVKA</span>';
               } else ph.textContent = "PRESTÁVKA";
               pb.appendChild(ph);
-              if (window.DpbOdpocet && window.DpbOdpocet.planTlacidlo && service.date === window.DpbCas.formatDateKey(new Date())) {
-                var _pbtn = window.DpbOdpocet.planTlacidlo("prestavka|" + k.kurz + "|" + k.od,
-                  _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : "") }; }),
-                  "prestavka", "Koniec prestávky o");
-                if (_kn) { _pbtn.classList.add("odp-plan-zv"); ph.appendChild(_pbtn); }
-                else {
-                  var _pw2 = document.createElement("div");
-                  _pw2.className = "odp-plan-wrap";
-                  _pw2.appendChild(_pbtn);
-                  pb.appendChild(_pw2);
-                }
-              }
+              service._upoz = service._upoz || {};
+              service._upoz.prestavka = _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : ""), typ: "prestavka", pop: "Koniec prestávky o" }; });
               var pz = document.createElement("div");
               pz.className = "card-prs-zas";
               if (_kn) pz.innerHTML = '<span class="prs-h-ik prs-z-ik">' + _kn.svg("poloha", 18) + '</span>';

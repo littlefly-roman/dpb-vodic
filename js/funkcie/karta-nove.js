@@ -82,79 +82,183 @@
     }, true);
   })();
 
-  // ---------- Upozornenia (zvonček): nastavenia sa ukladajú, samotné zvonenie príde so serverom ----------
+  // ---------- Upozornenia (zvonček na hlavnej karte) ----------
+  // Minúty sú spoločné pre všetky karty, zapnutie je na každej karte zvlášť.
+  // „Pred službou“ a „Pred výjazdom“ sa zatiaľ len ukladajú (zvonenie príde so serverom);
+  // odchody z konečnej, striedania a koniec prestávky zvonia hneď (odpocet.js), kým je aplikácia otvorená.
   var KLUC = "dpb_upozornenia";
-  var PRED = { nastup: [30, 15, 5], vyjazd: { 20: true, 15: true, 10: true, 5: true, 0: true } };
+  var DEF = { v: 2, pred: [30, 15, 5], vyj: [20, 10, 5, 0], karty: {} };
+  var VOLBY_PRED = [60, 45, 30, 20, 15, 10, 5];
+  var VOLBY_VYJ = [30, 25, 20, 15, 10, 5, 0];
+  function dnesKluc() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }
   function nacitajUpoz() {
-    try {
-      var r = JSON.parse(localStorage.getItem(KLUC) || "null");
-      if (r && r.nastup && r.vyjazd) return r;
-    } catch (e) {}
-    return JSON.parse(JSON.stringify(PRED));
+    var r = null;
+    try { r = JSON.parse(localStorage.getItem(KLUC) || "null"); } catch (e) {}
+    if (!r || r.v !== 2) r = JSON.parse(JSON.stringify(DEF));
+    r.karty = r.karty || {};
+    var dn = dnesKluc();
+    Object.keys(r.karty).forEach(function (k) { if (k.slice(0, 10) < dn) delete r.karty[k]; });
+    return r;
   }
   function ulozUpoz(u) { try { localStorage.setItem(KLUC, JSON.stringify(u)); } catch (e) {} }
-  var VOLBY_NASTUP = [0, 60, 45, 30, 20, 15, 10, 5];
+  function kluc(service) { var k = (service && service._karta) || {}; return (service.date || "") + "|" + (k.kurz || service._vzor || "") + "|" + (k.od || ""); }
+  function kartaNast(u, service) {
+    var key = kluc(service), c = u.karty[key];
+    if (!c) c = u.karty[key] = { pred: [], vyj: [] };
+    while (c.pred.length < u.pred.length) c.pred.push(0);
+    while (c.vyj.length < u.vyj.length) c.vyj.push(0);
+    return c;
+  }
+  function ma(service) {
+    var v = service._vzor;
+    return { vyj: v === "SLUŽBA", konecna: v === "SLUŽBA", prestavka: v === "SLUŽBA" && !!(service._upoz && service._upoz.prestavka && service._upoz.prestavka.length), striedac: v === "STRIEDAČ" };
+  }
+  function jeDnes(service) { return service.date === dnesKluc(); }
+  // Zoznamy časov (odchody z konečnej, koniec prestávky, striedania) – len dnes
+  function nacitajSkupiny(service) {
+    var k = service._karta || {}, key = (k.kurz || "") + "|" + (k.od || ""), m = ma(service), out = [];
+    var DS = window.DpbStretnutia;
+    if (m.konecna && k.kurz && DS && DS.odchodyZKonecnej) {
+      out.push(DS.odchodyZKonecnej(k.kurz, service.date, k.od, k.do).then(function (l) {
+        return { kind: "kn|" + key, nazov: "Odchody z konečnej", typ: "konecna", pop: "Odchod o", items: (l || []).map(function (x) { return { cas: x.cas, nazov: x.nazov }; }) };
+      }).catch(function () { return null; }));
+    }
+    if (m.prestavka) out.push(Promise.resolve({ kind: "pr|" + key, nazov: "Koniec prestávky", typ: "prestavka", pop: "Koniec prestávky o", items: service._upoz.prestavka.map(function (x) { return { cas: x.cas, nazov: x.nazov }; }) }));
+    if (m.striedac && service._upoz && service._upoz.striedac) {
+      out.push(Promise.resolve(service._upoz.striedac()).then(function (l) {
+        l = l || [];
+        return [
+          { kind: "sd|" + key, nazov: "Striedania", typ: "striedanie", pop: "Preberáš o", items: l.filter(function (x) { return x.typ !== "konecna"; }) },
+          { kind: "kn|" + key, nazov: "Odchody z konečnej", typ: "konecna", pop: "Odchod o", items: l.filter(function (x) { return x.typ === "konecna"; }) }
+        ];
+      }).catch(function () { return null; }));
+    }
+    return Promise.all(out).then(function (v) { return [].concat.apply([], v).filter(function (g) { return g && g.items && g.items.length; }); });
+  }
+  // Ťuk / dlhé podržanie na tlačidle
+  function podrz(b, tap, dlhe) {
+    var tm = null, pot = false, x0 = 0, y0 = 0;
+    var zrus = function () { if (tm) { clearTimeout(tm); tm = null; } };
+    b.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      x0 = e.clientX; y0 = e.clientY; pot = false; zrus();
+      tm = setTimeout(function () { tm = null; pot = true; try { if (navigator.vibrate) navigator.vibrate(30); } catch (er) {} dlhe(); }, 550);
+    });
+    b.addEventListener("pointermove", function (e) { if (tm && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) zrus(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { b.addEventListener(n, zrus); });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    b.addEventListener("click", function (e) { e.stopPropagation(); if (pot) { pot = false; e.preventDefault(); return; } tap(e); });
+  }
+  function minutyOkno(titul, volby, aktualne, hotovo) {
+    if (!window.DpbOkna) return;
+    window.DpbOkna.otvor({
+      titul: titul, podtitul: "",
+      telo: function (t) {
+        var g = el("div", "display:grid;grid-template-columns:repeat(3,1fr);gap:8px");
+        volby.forEach(function (mm) {
+          var on = mm === aktualne;
+          var b = el("button", "min-height:48px;border-radius:12px;font-size:17px;font-weight:700;font-family:inherit;border:2px solid " + (on ? "var(--red)" : "var(--border)") + ";background:" + (on ? "var(--red)" : "var(--surface-2)") + ";color:" + (on ? "#fff" : "var(--text-1)"), mm ? mm + " min" : "V čase");
+          b.type = "button";
+          b.addEventListener("click", function () { hotovo(mm); window.DpbOkna.zavriVrch(); });
+          g.appendChild(b);
+        });
+        t.appendChild(g);
+      },
+      tlacidla: [{ text: "Zrušiť", klik: function () { window.DpbOkna.zavriVrch(); } }]
+    });
+  }
   function upozornenia(service) {
     if (!window.DpbOkna) return;
     var k = (service && service._karta) || {};
-    var u = nacitajUpoz();
+    var u = nacitajUpoz(), m = ma(service), O = window.DpbOdpocet, dnes = jeDnes(service);
+    var skupiny = [], nacitane = false;
+    var odSec = function () { return sekOd(k.od); };
+    var vyjSec = function () { return service._premavkaOd != null ? service._premavkaOd : odSec(); };
+    var terazSec = function () { var n = new Date(); return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(); };
     window.DpbOkna.otvor({
       titul: "Upozornenia" + (k.kurz ? " – " + k.kurz : ""),
       podtitul: "",
       telo: function (t) {
-        var hlavicka = function (txt) { return el("div", "font-size:15px;letter-spacing:.1em;font-weight:700;color:var(--text-3);text-transform:uppercase;margin:6px 0 4px", txt); };
-        t.appendChild(hlavicka("Nástup" + (k.od ? " " + k.od : "")));
-        u.nastup.forEach(function (min, i) {
-          var r = el("div", "display:flex;align-items:center;gap:10px;padding:6px 0");
-          r.appendChild(el("div", "flex:1;font-size:17px", (i + 1) + ". upozornenie"));
-          var sel = el("select", "padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:16px;font-weight:600");
-          VOLBY_NASTUP.forEach(function (m) {
-            var o = el("option", "", m ? m + " min pred" : "vypnuté"); o.value = String(m); if (m === min) o.selected = true; sel.appendChild(o);
+        var cele = el("div", "");
+        t.appendChild(cele);
+        var hl = function (txt) { return el("div", "font-size:15px;letter-spacing:.08em;font-weight:700;color:var(--text-3);text-transform:uppercase;margin:12px 0 6px", txt); };
+        function tlac(txt, zap, minule) {
+          var b = el("button", "flex:1;min-height:52px;border-radius:12px;font-size:17px;font-weight:700;font-family:inherit;line-height:1.1;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-2)") + (minule ? ";opacity:.4" : ""));
+          b.type = "button"; b.innerHTML = '<div style="display:flex;justify-content:center;margin-bottom:2px">' + svg("zvonec", 16) + '</div>' + txt;
+          return b;
+        }
+        function riadok(nazov, pole, mins, volby, cas) {
+          cele.appendChild(hl(nazov));
+          var r = el("div", "display:flex;gap:8px");
+          var c = kartaNast(u, service);
+          mins.forEach(function (mm, i) {
+            var minule = dnes && terazSec() >= cas() - mm * 60;
+            var b = tlac(mm ? mm + " min" : "V čase", !!c[pole][i], minule);
+            podrz(b, function () { c[pole][i] = c[pole][i] ? 0 : 1; ulozUpoz(u); kresli(); if (service._zvonecObnov) service._zvonecObnov(); },
+              function () { minutyOkno(nazov, volby, mm, function (nm) { mins[i] = nm; ulozUpoz(u); kresli(); }); });
+            r.appendChild(b);
           });
-          sel.addEventListener("change", function () { u.nastup[i] = parseInt(sel.value, 10) || 0; ulozUpoz(u); });
-          r.appendChild(sel); t.appendChild(r);
-        });
-        t.appendChild(hlavicka("Výjazd (začiatok cestovného poriadku)"));
-        [20, 15, 10, 5, 0].forEach(function (m) {
-          var r = el("label", "display:flex;align-items:center;gap:10px;padding:8px 0;font-size:17px;cursor:pointer");
-          r.appendChild(el("div", "flex:1", m ? m + " min pred" : "V čase odchodu (siréna z konečnej)"));
-          var cb = el("input", "width:22px;height:22px;accent-color:var(--red)"); cb.type = "checkbox"; cb.checked = !!u.vyjazd[m];
-          cb.addEventListener("change", function () { u.vyjazd[m] = cb.checked; ulozUpoz(u); });
-          r.appendChild(cb); t.appendChild(r);
-        });
-        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:8px", "Nastavenia sa uložia. Samotné zvonenie pribudne neskôr."));
+          cele.appendChild(r);
+        }
+        function kresli() {
+          cele.innerHTML = "";
+          riadok("Pred službou" + (k.od ? " " + k.od : ""), "pred", u.pred, VOLBY_PRED, odSec);
+          if (m.vyj) riadok("Pred výjazdom", "vyj", u.vyj, VOLBY_VYJ, vyjSec);
+          var ma_zoz = m.konecna || m.prestavka || m.striedac;
+          if (!ma_zoz) return;
+          if (!dnes) { cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:14px", "Odchody z konečnej a koniec prestávky sa dajú zapnúť v deň služby.")); return; }
+          if (!nacitane) { cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:14px", "Načítavam časy…")); return; }
+          skupiny.forEach(function (g) {
+            cele.appendChild(hl(g.nazov));
+            var box = el("div", "display:flex;flex-direction:column;gap:6px;" + (g.items.length > 4 ? "max-height:220px;overflow-y:auto" : ""));
+            g.items.forEach(function (it) {
+              var minule = !!(O && O.zostavaSek(it.cas) <= 0);
+              var zap = !!(O && O.planZapnuta(g.kind, it, g.typ));
+              var r = el("button", "display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:17px;font-family:inherit;text-align:left;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-1)") + (minule ? ";opacity:.4" : ""));
+              r.type = "button";
+              r.appendChild(el("span", "font-weight:700;font-variant-numeric:tabular-nums", String(it.cas).split(":").slice(0, 2).join(":")));
+              r.appendChild(el("span", "flex:1;text-align:right;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap", it.nazov || ""));
+              podrz(r, function () { if (minule || !O) return; O.planPolozka(g.kind, it, g.typ, g.pop, !zap); kresli(); if (service._zvonecObnov) service._zvonecObnov(); },
+                function () { if (O) O.predstihOkno(g.typ); });
+              box.appendChild(r);
+            });
+            cele.appendChild(box);
+          });
+          cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:12px", "Ťuk = zapnúť / vypnúť, podržanie = zmena minút."));
+        }
+        kresli();
+        if (dnes && (m.konecna || m.prestavka || m.striedac)) nacitajSkupiny(service).then(function (g) { skupiny = g; nacitane = true; if (cele.isConnected) kresli(); });
       },
-      tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); } }],
+      tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); if (service._zvonecObnov) service._zvonecObnov(); } }]
     });
   }
+  // Zvonček: ťuk = zapne / vypne všetko, podržanie = nastavenie
   function zvonec(service) {
     var b = el("button", "");
     b.type = "button"; b.className = "card-zvonec"; b.setAttribute("aria-label", "Upozornenia");
     b.innerHTML = svg("zvonec", 20);
-    // Neaktívny, keď je služba podľa cestovného poriadku už v premávke (dnes po začiatku služby)
     var k = (service && service._karta) || {}, t = null;
-    // „V premávke“ = výjazd z vozovne, pri poobednej službe odchod z konečnej, pri striedačovi začiatok prvého striedania
-    // (service._premavkaOd v sekundách sa doplní, keď je známe; dovtedy začiatok služby)
-    function odSek() {
-      if (service._premavkaOd != null) return service._premavkaOd;
-      var q = String(k.od || "").split(":"); return q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null;
+    function koniecSek() { var q = String(k.do || "").split(":"), od = sekOd(k.od), d = q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null; return d != null && d > od ? d : null; }
+    function planKindy() { var key = (k.kurz || "") + "|" + (k.od || ""); return ["kn|" + key, "pr|" + key, "sd|" + key]; }
+    function zapnute() {
+      var u = nacitajUpoz(), c = u.karty[kluc(service)], m = ma(service), O = window.DpbOdpocet;
+      var vrch = !!(c && (c.pred.some(Boolean) || (m.vyj && c.vyj.some(Boolean))));
+      return vrch || !!(O && planKindy().some(function (kk) { return O.planJe(kk); }));
     }
-    function dnesKluc() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }
     function obnov() {
       clearTimeout(t);
-      var od = odSek(), n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
-      var bezi = od != null && service.date === dnesKluc() && sec >= od;
-      b.disabled = bezi;
-      b.classList.toggle("off", bezi);
-      b.setAttribute("aria-disabled", bezi ? "true" : "false");
-      b.title = bezi ? "Služba už je v premávke" : "";
-      if (!bezi && od != null && service.date === dnesKluc())
-        t = setTimeout(obnov, Math.min(2147000000, Math.max(800, (od - sec) * 1000 + 500)));
+      var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(), kon = koniecSek();
+      var skoncila = jeDnes(service) && kon != null && sec >= kon;
+      b.disabled = skoncila;
+      b.classList.toggle("off", skoncila);
+      b.classList.toggle("zap", !skoncila && zapnute());
+      b.title = skoncila ? "Služba už skončila" : "";
+      if (!skoncila && kon != null && jeDnes(service)) t = setTimeout(obnov, Math.min(2147000000, Math.max(800, (kon - sec) * 1000 + 500)));
     }
     document.addEventListener("visibilitychange", function () { if (!document.hidden && b.isConnected) obnov(); });
     service._zvonecObnov = obnov;
     obnov();
-    // bežná služba: výjazd / prvý odchod z konečnej podľa grafikonu kurzu
+    // výjazd z vozovne (pre riadok „Pred výjazdom“) podľa grafikonu kurzu
     if (service._vzor === "SLUŽBA" && k.kurz && window.DpbStretnutia && window.DpbStretnutia.odchodyZKonecnej) {
       window.DpbStretnutia.odchodyZKonecnej(k.kurz, service.date, k.od, k.do).then(function (l) {
         if (!l || !l.length) return;
@@ -162,7 +266,19 @@
         if (sec > 0) { service._premavkaOd = sec; obnov(); }
       }).catch(function () {});
     }
-    b.addEventListener("click", function (e) { e.stopPropagation(); if (b.disabled) return; upozornenia(service); });
+    function prepniVsetko() {
+      var O = window.DpbOdpocet, u = nacitajUpoz(), c = kartaNast(u, service), m = ma(service), vypnut = zapnute();
+      c.pred = c.pred.map(function () { return vypnut ? 0 : 1; });
+      c.vyj = c.vyj.map(function () { return vypnut ? 0 : 1; });
+      ulozUpoz(u);
+      if (O && jeDnes(service) && (m.konecna || m.prestavka || m.striedac)) {
+        if (vypnut) planKindy().forEach(function (kk) { O.planVypniKind(kk); });
+        else nacitajSkupiny(service).then(function (g) { g.forEach(function (gr) { gr.items.forEach(function (it) { O.planPolozka(gr.kind, it, gr.typ, gr.pop, true); }); }); obnov(); });
+      }
+      if (window._showToast) window._showToast(vypnut ? "Upozornenia vypnuté" : "Upozornenia zapnuté", 2500);
+      obnov();
+    }
+    podrz(b, function () { if (!b.disabled) prepniVsetko(); }, function () { if (!b.disabled) upozornenia(service); });
     return b;
   }
 

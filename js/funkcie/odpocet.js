@@ -503,7 +503,55 @@
     } catch (e) {}
   })();
 
+  // --- API pre zvonček na hlavnej karte ---
+  function planZapnuta(kind, i, typ) { return !!(plan && plan.items.some(function (x) { return x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ); })); }
+  function planPolozka(kind, i, typ, pop, zap) {
+    if (zap) {
+      if (planZapnuta(kind, i, typ) || zostava(sekHms(i.cas)) <= 0) return;
+      if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
+      audio();
+      plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind });
+      planUloz(); planStart();
+    } else if (plan) {
+      plan.items = plan.items.filter(function (x) { return !(x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ)); });
+      if (akt && akt.plan === kind && akt.planCas === i.cas) { var tmp = plan; plan = null; vypni(); plan = tmp; }
+      if (!plan.items.length) { plan = null; planKonci(); }
+      planUloz(); obnov();
+    }
+  }
+  function planVypniKind(kind) {
+    if (!planJe(kind)) return;
+    plan.items = plan.items.filter(function (i) { return i.kind !== kind; });
+    if (akt && akt.plan === kind) { var tmp = plan; plan = null; vypni(); plan = tmp; }
+    if (!plan.items.length) { plan = null; planKonci(); }
+    planUloz(); obnov();
+  }
+  // Okno s nastavením, koľko pred časom upozorniť (pre daný typ upozornenia)
+  function predstihOkno(typ) {
+    var CH = [[180, "3 min"], [120, "2 min"], [90, "1,5 min"], [60, "1 min"], [30, "30 s"], [0, "V čase"]];
+    var bg = document.createElement("div"); bg.className = "odp-okno-bg";
+    var ok = document.createElement("div"); ok.className = "odp-okno";
+    function kresli() {
+      var set = NAST.predstih[typ] || [];
+      ok.innerHTML = '<div class="odp-okno-h">' + (TYP_NAZOV[typ] || "Upozornenie") + ' – koľko pred</div><div class="odp-chips" style="margin-bottom:14px">' +
+        CH.map(function (c) { return '<button type="button" class="odp-chip' + (set.indexOf(c[0]) >= 0 ? " odp-chip-on" : "") + '" data-st="' + c[0] + '">' + c[1] + '</button>'; }).join("") +
+        '</div><button type="button" class="odp-okno-zavri">Hotovo</button>';
+      ok.querySelectorAll(".odp-chip").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var st = +b.getAttribute("data-st"), a = NAST.predstih[typ] || (NAST.predstih[typ] = []), ix = a.indexOf(st);
+          if (ix >= 0) a.splice(ix, 1); else { a.push(st); a.sort(function (x, y) { return y - x; }); }
+          uloz(); kresli();
+        });
+      });
+      ok.querySelector(".odp-okno-zavri").addEventListener("click", function () { bg.remove(); });
+    }
+    kresli();
+    bg.addEventListener("click", function (e) { if (e.target === bg) bg.remove(); });
+    bg.appendChild(ok); document.body.appendChild(bg);
+  }
+
   window.DpbOdpocet = {
+    planZapnuta: planZapnuta, planPolozka: planPolozka, planVypniKind: planVypniKind, planJe: planJe, predstihOkno: predstihOkno, zostavaSek: function (c) { return zostava(sekHms(c)); },
     planTlacidlo: planTlacidlo,
     nastav: nastav,
     obnov: obnov, tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };

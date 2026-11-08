@@ -3785,3 +3785,6 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .card-vehicle.s-ikonou{justify-content:flex-start;padding-left:26px;padding-right:34px;box-sizing:border-box}
 .card-vehicle .veh-txt{text-align:left}
 .card-vehicle .veh-r{justify-content:flex-start}
+/* v221: zvonček upozornení – zapnutý */
+.card-zvonec.zap{background:var(--red,#d62828);color:#fff;border-color:var(--red,#d62828)}
+.card-zvonec.zap svg{stroke:#fff}
