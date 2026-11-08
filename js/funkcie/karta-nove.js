@@ -87,7 +87,7 @@
   // „Pred službou“ a „Pred výjazdom“ sa zatiaľ len ukladajú (zvonenie príde so serverom);
   // odchody z konečnej, striedania a koniec prestávky zvonia hneď (odpocet.js), kým je aplikácia otvorená.
   var KLUC = "dpb_upozornenia";
-  var DEF = { v: 2, pred: [30, 15, 5], vyj: [20, 10, 5, 0], karty: {} };
+  var DEF = { v: 2, pred: [60, 30, 15], vyj: [20, 10, 5, 0], karty: {} };
   var VOLBY_PRED = [60, 45, 30, 20, 15, 10, 5];
   var VOLBY_VYJ = [30, 25, 20, 15, 10, 5, 0];
   function dnesKluc() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }

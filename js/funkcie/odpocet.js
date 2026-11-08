@@ -118,6 +118,9 @@
     var t = akt ? fmt(z) : "";
     document.querySelectorAll(".odp-btn").forEach(function (b) {
       var je = akt && b.getAttribute("data-key") === akt.key;
+      var cs = sekHms(b.getAttribute("data-cas") || ""), zapn = !!(plan && plan.items.some(function (i) { return sekHms(i.cas) === cs; }));
+      b.hidden = !(je || zapn);
+      b.classList.toggle("odp-zap", zapn && !je);
       b.classList.toggle("odp-on", !!je);
       b.classList.toggle("odp-blizko", !!je && z <= 60);
       var s = b.querySelector(".odp-t");
@@ -258,6 +261,8 @@
     b.type = "button";
     b.className = "odp-btn";
     b.setAttribute("data-key", info.key);
+    b.setAttribute("data-cas", info.cas);
+    b.hidden = true;   // zobrazí sa len keď je upozornenie na tento odchod zapnuté (obnov)
     b.setAttribute("aria-label", "Odpočet do odchodu");
     b.innerHTML = IK + '<span class="odp-t"></span>';
     b.addEventListener("click", function (e) {
