@@ -3791,3 +3791,7 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 /* v222: zvonček v grafikone – viditeľný len keď je upozornenie zapnuté */
 .odp-btn[hidden]{display:none}
 .odp-btn.odp-zap{background:var(--red,#d62828);color:#fff}
+/* v223: podržanie prsta neoznačuje text ani neotvára menu prehliadača (polia na písanie ostávajú) */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img{-webkit-user-drag:none}

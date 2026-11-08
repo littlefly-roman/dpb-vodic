@@ -490,4 +490,10 @@
   }
 
   window.DpbKartaNove = { volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  // Podržanie prsta nesmie otvárať menu prehliadača (okrem polí na písanie)
+  document.addEventListener("contextmenu", function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest("input,textarea,select,[contenteditable='true'],.selectable")) return;
+    e.preventDefault();
+  });
 })();
