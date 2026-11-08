@@ -111,7 +111,7 @@
   }
   function ma(service) {
     var v = service._vzor;
-    return { vyj: v === "SLUŽBA", konecna: v === "SLUŽBA", prestavka: v === "SLUŽBA" && !!(service._upoz && service._upoz.prestavka && service._upoz.prestavka.length), striedac: v === "STRIEDAČ" };
+    return { vyj: v === "SLUŽBA" || v === "944", konecna: v === "SLUŽBA", prestavka: v === "SLUŽBA" && !!(service._upoz && service._upoz.prestavka && service._upoz.prestavka.length), striedac: v === "STRIEDAČ" };
   }
   function jeDnes(service) { return service.date === dnesKluc(); }
   // Zoznamy časov (odchody z konečnej, koniec prestávky, striedania) – len dnes
