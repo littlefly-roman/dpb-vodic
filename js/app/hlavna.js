@@ -275,7 +275,8 @@
             }
           }
           if (window._ikonaPrepnutia) window._ikonaPrepnutia(appState.viewMode);
-          if (appState.viewMode === "cards") renderCards();
+          if (appState.vs && window.DpbVS) renderVS();
+          else if (appState.viewMode === "cards") renderCards();
           else renderList();
 
           if (!calendarPanel.classList.contains("hidden")) {
@@ -351,6 +352,16 @@
           d.className = "plan-mini";
           d.innerHTML = "<span>Plánovaná služba</span><span>Služba môže byť zmenená</span>";
           return d;
+        }
+
+        // VS: dátum, kalendár a swipe sú z hlavnej obrazovky, obsah dňa kreslí js/funkcie/vs.js
+        function renderVS() {
+          window._menuScroll = null;
+          dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
+          dateHeader.classList.toggle("je-dnes", formatDateKey(appState.selectedDate) === formatDateKey(new Date()));
+          container.innerHTML = "";
+          resetContainerLayout();
+          window.DpbVS.vykresli(container, formatDateKey(appState.selectedDate));
         }
 
         function renderCards() {
@@ -776,7 +787,11 @@
           const ghost = document.createElement("div");
           ghost.className = "swipe-slide-ghost";
 
-          if (appState.viewMode === "cards") {
+          if (appState.vs && window.DpbVS) {
+            const dv = new Date(appState.selectedDate);
+            dv.setDate(dv.getDate() + offset);
+            window.DpbVS.vykresli(ghost, formatDateKey(dv));
+          } else if (appState.viewMode === "cards") {
             const d = new Date(appState.selectedDate);
             d.setDate(d.getDate() + offset);
             const key = formatDateKey(d);
@@ -1572,6 +1587,11 @@
             var cpc = document.getElementById("cpClose");
             if (cpc) cpc.click(); else cpm.classList.remove("active");
           }
+          // VS je režim hlavnej obrazovky; Poriadky (okno nad obsahom) ho nemenia
+          if (id !== "prehlad") {
+            appState.vs = id === "vs";
+            servicesView.classList.toggle("vs-rezim", appState.vs);
+          }
           var pv = document.getElementById("profilView");
           // Poriadky ("prehlad") sú okno nad obsahom: obrazovka pod nimi ostáva, aby späť vedelo vrátiť predošlú
           if (pv && id !== "profil" && id !== "prehlad") pv.classList.add("hidden");
@@ -1617,6 +1637,12 @@
                     var el = document.getElementById("cpStanicaInput");
                     if (el) el.focus();
                   }, 100);
+                } else if (btn.dataset.nav === "vs") {
+                  employerView.classList.add("hidden");
+                  servicesView.classList.remove("hidden");
+                  appState.viewMode = "cards";
+                  appState.mainView = "services";
+                  render();
                 } else if (btn.dataset.nav === "hladat" && window.Hladat) {
                   window.Hladat.otvor();
                 } else if (btn.dataset.nav === "profil" && window.Profil) {

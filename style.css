@@ -3806,3 +3806,28 @@ img{-webkit-user-drag:none}
 .voz-okno-v{font-size:48px;font-weight:800;margin:6px 0 14px;font-variant-numeric:tabular-nums}
 .voz-okno-pl{display:flex;align-items:center;justify-content:center;gap:10px;border:2px dashed var(--border,#999);border-radius:14px;padding:12px;font-size:17px;color:var(--text-3,#888);margin-bottom:14px}
 .voz-okno-b{width:100%;min-height:50px;border:0;border-radius:12px;background:#ff9f0a;color:#111;font-size:18px;font-weight:800;font-family:inherit}
+
+/* VS – porovnanie služieb s kolegami */
+.vs-rezim #btnList{display:none}
+.vs-ikona b{font-size:15px;font-weight:800;border:2px solid currentColor;border-radius:6px;padding:0 4px;line-height:17px;letter-spacing:0}
+.vs-wrap{padding:2px 2px 16px}
+.vs-karta{background:var(--surface);border:1px solid var(--border-2,var(--border));border-left:5px solid var(--border);border-radius:16px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding:12px 14px;margin:10px 0}
+.vs-karta.vs-ja{border-left-color:var(--red)}
+.vs-hlava{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vs-meno{font-size:15px;font-weight:700;color:var(--text-3)}
+.vs-x{border:0;background:var(--border-2,var(--border));color:var(--text-3);border-radius:12px;min-width:36px;min-height:36px;font-size:18px;cursor:pointer}
+.vs-sluzba{margin-top:6px}
+.vs-sluzba+.vs-sluzba{border-top:1px solid var(--border);padding-top:8px}
+.vs-linka{font-size:22px;font-weight:800;color:var(--text-1)}
+.vs-cas{font-size:19px;font-weight:600;color:var(--text-1)}
+.vs-info{font-size:15px;color:var(--text-3);margin-top:2px}
+.vs-volno{font-size:19px;font-weight:600;color:var(--text-3);margin-top:6px}
+.vs-pridaj{margin:12px 0}
+.vs-pridaj-btn{width:100%;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);background:var(--surface);color:var(--text-3);border-radius:14px;padding:14px;font:inherit;font-size:17px;font-weight:600;cursor:pointer}
+.vs-panel{margin-top:6px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.vs-hladaj{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--border);padding:14px;font:inherit;font-size:16px;background:var(--surface);color:var(--text-1);outline:none}
+.vs-zoznam{max-height:260px;overflow:auto}
+.vs-pol{display:flex;justify-content:space-between;gap:10px;padding:13px 14px;font-size:16px;font-weight:600;color:var(--text-1);border-bottom:1px solid var(--border);cursor:pointer}
+.vs-pol:last-child{border-bottom:0}
+.vs-cislo{color:var(--text-3);font-weight:500}
+.vs-pozn{padding:13px 14px;font-size:15px;color:var(--text-3)}
