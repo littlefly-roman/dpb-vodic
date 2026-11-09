@@ -63,7 +63,7 @@
         });
         prvy = false;
       });
-      if (mal) { T.dni++; if (den > 240) { T.str++; rows[r0].str = 1; } }
+      if (mal) { T.dni++; if (den > 240) { var sk = den >= 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
@@ -82,7 +82,7 @@
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? "<b>" + esc(x.c) + "</b> &nbsp;" + f(x.min) : "–";
-        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + esc(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + f(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? f(r.noc) : "–") + "</td><td>" + (r.str ? "<b>1</b>" : "") + "</td></tr>";
+        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + esc(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + f(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? f(r.noc) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
         else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td></tr>";
       });
       return out;
