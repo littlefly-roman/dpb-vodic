@@ -67,7 +67,7 @@
           if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
           T.plat += kr;
           if (STRAVNE_NEPR[kod]) strNepr = true;
-          rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
+          rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
           prvy = false;
           return;
         }
@@ -99,14 +99,15 @@
         if (sviatok) T.sv += cisty;
         rows.push({
           dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
-          znacka: prvy ? (sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "") : "",
+          znacka: prvy ? (sviatok ? "sviatok" : "") : "",
           sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc, oddych: oddych,
         });
         prvy = false;
       });
       if (d < 1) continue;
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
-        znacka: sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "", voz: [] });
+        znacka: sviatok ? "sviatok" : "", voz: [] });
+      for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; }
       if (strNepr && rows[r0] && !rows[r0].str && !(den > 240)) { T.str++; rows[r0].str = 1; }
       if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
@@ -121,7 +122,7 @@
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
-  var CSS = ".vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:760px;padding:18px;box-sizing:border-box}" +
+  var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
     ".vk h1{font-size:20px;margin:0}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
     ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 20%}.vk .tot b{display:block;font-size:18px}" +
     ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 5px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
@@ -132,13 +133,14 @@
     var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
-      if (r.prazdny) return '<tr class="n"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
+      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
-        else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td><td></td></tr>";
+        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+        else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td><td></td></tr>';
       });
       return out;
     }).join("");
@@ -165,18 +167,18 @@
     var st = document.createElement("style"); st.textContent = CSS +
       ".vk-ov{position:fixed;inset:0;z-index:99999;background:#555;display:flex;flex-direction:column}" +
       ".vk-bar{display:flex;gap:8px;padding:8px;background:#111;align-items:center}.vk-bar button{font:700 16px system-ui;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#e8001a;color:#fff}.vk-bar .sv{background:#444}.vk-bar span{flex:1;color:#fff;font-size:15px}" +
-      ".vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
+      ".vk-ov{-webkit-text-size-adjust:100%;text-size-adjust:100%}.vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
     var ov_ = document.createElement("div"); ov_.className = "vk-ov";
     ov_.innerHTML = '<div class="vk-bar"><button class="sv" data-a="x">Zavrieť</button><span>Výkaz</span><button class="sv" data-a="-">−</button><button class="sv" data-a="+">+</button><button data-a="p">Tlačiť</button></div><div class="vk-sc"><div class="vk-in">' + telo(D) + "</div></div>";
     document.head.appendChild(st); document.body.appendChild(ov_);
-    var sc = ov_.querySelector(".vk-sc"), inn = ov_.querySelector(".vk-in"), z = Math.min(1, (window.innerWidth) / 760);
+    var sc = ov_.querySelector(".vk-sc"), inn = ov_.querySelector(".vk-in"), z = 1;
     function nastav(n, cx, cy) {
       n = Math.max(0.4, Math.min(3, n));
       var k = n / z, x = sc.scrollLeft + (cx == null ? 0 : cx), y = sc.scrollTop + (cy == null ? 0 : cy);
       z = n; inn.style.zoom = z;
       sc.scrollLeft = x * k - (cx || 0); sc.scrollTop = y * k - (cy || 0);
     }
-    nastav(z);
+    z = Math.min(1, window.innerWidth / (inn.scrollWidth || 760)); nastav(z);
     function zavri() { ov_.remove(); st.remove(); }
     ov_.addEventListener("click", function (e) {
       var a = e.target.getAttribute && e.target.getAttribute("data-a");
