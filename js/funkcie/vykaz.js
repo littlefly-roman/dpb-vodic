@@ -10,6 +10,10 @@
   function kluc(d) { return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
   function f(min) { return Math.floor(min / 60) + ":" + p2(min % 60); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  // zarovnanie na dvojbodku / lomku / bodku: pevná šírka pred oddeľovačom, číslice rovnakej šírky
+  function ft(min) { return '<span class="h">' + Math.floor(min / 60) + "</span>:" + p2(min % 60); }
+  function fsl(t) { var i = String(t).indexOf("/"); return i < 0 ? esc(t) : '<span class="h">' + esc(String(t).slice(0, i)) + "</span>/" + esc(String(t).slice(i + 1)); }
+  function fdat(t) { var m = /^(\d+)(\..*)$/.exec(t || ""); return m ? '<span class="h">' + m[1] + "</span>" + esc(m[2]) : esc(t); }
   function tmin(t) { var m = /(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[1] * 60 + +m[2] : null; }
   function ov(a, b, c, d) { return Math.max(0, Math.min(b, d) - Math.max(a, c)); }
   function vodic() {
@@ -59,7 +63,7 @@
         rows.push({
           dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
           znacka: prvy ? (sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "") : "",
-          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: f(a % 1440) + "–" + f(b % 1440), cisty: cisty, voz: voz, noc: noc,
+          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc,
         });
         prvy = false;
       });
@@ -68,7 +72,7 @@
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
-  var CSS = ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:760px;padding:18px;box-sizing:border-box}" +
+  var CSS = ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:760px;padding:18px;box-sizing:border-box}" +
     ".vk h1{font-size:20px;margin:0}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
     ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 20%}.vk .tot b{display:block;font-size:18px}" +
     ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 5px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
@@ -81,8 +85,8 @@
     var tr = D.rows.map(function (r) {
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
-        var cell = x ? "<b>" + esc(x.c) + "</b> &nbsp;" + f(x.min) : "–";
-        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + esc(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + f(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? f(r.noc) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+        var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
+        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
         else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td></tr>";
       });
       return out;
