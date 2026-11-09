@@ -558,7 +558,18 @@
 
           container.appendChild(fragment);
           (function () {
-            if (!(appState.selectedDate > new Date())) return;
+            if (!(appState.selectedDate > new Date())) {
+              // dnes: všeobecný klikateľný oznam, ak sú dostupné voľné služby
+              if (window.DpbZmeny && DpbZmeny.burzaPocet && DpbZmeny.burzaPocet() > 0) {
+                var g = document.createElement("button");
+                g.type = "button";
+                g.className = "burza-link-row";
+                g.textContent = "Sú dostupné voľné služby  ›";
+                g.addEventListener("click", function () { otvorBurzuPreDen(); });
+                container.appendChild(g);
+              }
+              return;
+            }
             var bs = getBurzaSluzbyPreDen(key);
             if (!bs.length) return;
             var r = document.createElement("button");

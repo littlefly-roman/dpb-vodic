@@ -266,7 +266,7 @@
     // pásik pod kartou sa už nepoužíva (naMini sa zahodí)
   }
 
-  window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
+  window.DpbZmeny = { burzaPocet: function () { var r = rid(); try { return r ? dostupneBurza(r).length : 0; } catch (e) { return 0; } }, skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
 
   // všetky karty prechádzajú cez window.buildNewCard
   var pov = window.buildNewCard;
