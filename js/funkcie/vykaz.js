@@ -38,6 +38,7 @@
     if (/1,5 dňa/.test(t)) return denMin * 1.5;
     return denMin;
   }
+  var EXTRA_SV = { "2026-05-08": 1, "2026-09-15": 1 }; // sviatok, ale nie deň pracovného pokoja
   function vzorK(s) { return s._vzor || (s._karta && s._karta.vzor) || ""; }
 
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
@@ -47,7 +48,7 @@
     var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0, del: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
       var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, casy = [];
-      var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
+      var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) || !!EXTRA_SV[kluc(dt)]; // sviatok = deň pracovného pokoja + sviatky, ktoré ním nie sú
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
         if (vz === "NEPRÍTOMNOSŤ") {
@@ -60,7 +61,7 @@
             if (dt.getDay() === 0) T.ne += rv;
             if (sviatok) T.sv += rv;
             if (rv) rekMal = true;
-            rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: "Reklamácia" + (rd ? " · delená ×" + rd : ""), cas: "", cisty: rv, voz: [], noc: rk.noc || 0, oddych: null });
+            rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: "Reklamácia", d: rd, cas: "", cisty: rv, voz: [], noc: rk.noc || 0, oddych: null });
             prvy = false; return;
           }
           if (PRACA[kod]) { // iný druh práce: je to výkon
@@ -118,11 +119,11 @@
       if (d < 1) continue;
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : "", voz: [] });
-      for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; }
+      for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
       // delená: dve služby v jeden deň, druhá začína neskôr, než prvá skončila (dĺžka prestávky sa nerieši) – počítame sami, nie z DB
       casy.sort(function (x, y) { return x[0] - y[0]; });
       var delDen = casy.some(function (c, i) { return i > 0 && c[0] > casy[i - 1][1]; });
-      if (delDen && rows[r0]) { T.del++; rows[r0].sl += " · delená"; }
+      if (delDen && rows[r0]) { T.del++; rows[r0].d = 1; }
       if (strNepr && rows[r0] && !rows[r0].str && !(den > 240)) { T.str++; rows[r0].str = 1; }
       if (mal || rekMal) { if (mal) T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
@@ -150,19 +151,19 @@
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
-      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
-        else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td><td></td></tr>';
+        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+        else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>' + cell + '</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
       });
       return out;
     }).join("");
     return '<div class="vk"><div class="hd"><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1>" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
-      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Oddych</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="8">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
+      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Oddych</th><th>D</th><th>Sviatok</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="10">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
       "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát.</p></div>";
   }
 
@@ -208,5 +209,5 @@
     }, { passive: false });
     sc.addEventListener("touchend", function () { d0 = 0; }, { passive: true });
   }
-  window.DpbVykaz = { otvor: otvor, _zber: zber };
+  window.DpbVykaz = { otvor: otvor, _zber: zber, _telo: telo };
 })();
