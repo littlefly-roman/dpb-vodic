@@ -161,10 +161,25 @@
     ov.querySelector(".uvod-x").onclick = zavri;
     spustiCas(TRVANIE, dalej);
   }
+  // Karta „Si s nami už X rokov / dní“ (z dátumu nástupu v OSOBY.csv)
+  function kartaPocet(rid) {
+    var o = osoby && osoby[String(parseInt(rid, 10))], dn = new Date();
+    if (!o || !o.nastup) return null;
+    var d0 = new Date(dn.getFullYear(), dn.getMonth(), dn.getDate()), dni = Math.round((d0 - o.nastup) / 86400000);
+    if (dni < 0) return null;
+    var roky = Math.floor(dni / 365.25);
+    return { id: "zn:" + Date.now(), em: "🚋", nadpis: roky >= 1 ? "Si s nami už " + roky + " " + pl(roky, "rok", "roky", "rokov") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní"),
+      text: (roky >= 1 ? "To je " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false };
+  }
   function zobraz(rid, dnes) {
     try {
       if (ov) return;
       var karty = zozbieraj(rid, dnes);
+      // po každom štarte vždy aj počet rokov a dní v DPB (ak dnes nie je iná osobná karta o rokoch/dňoch)
+      var maPocet = karty.some(function (k) { return /^(rok|dni|rok-pred):/.test(k.id); });
+      var zk = maPocet ? null : kartaPocet(rid);
+      if (zk) karty.unshift(zk);
+      karty = karty.slice(0, 3);
       if (!karty.length) return;
       ukaz(karty, 0);
     } catch (e) {}
@@ -174,17 +189,8 @@
   function znova(rid) {
     var karty = zozbieraj(rid, new Date(), true);
     // nič osobné dnes: ukáž aspoň počet rokov a dní v DPB (ak máme dátum nástupu), ako prvú kartu
-    if (!karty.some(function (k) { return !k.spravaId; })) {
-      var o = osoby && osoby[String(parseInt(rid, 10))], dn = new Date();
-      if (o && o.nastup) {
-        var d0 = new Date(dn.getFullYear(), dn.getMonth(), dn.getDate()), dni = Math.round((d0 - o.nastup) / 86400000);
-        if (dni >= 0) {
-          var roky = Math.floor(dni / 365.25);
-          karty.unshift({ id: "zn:" + Date.now(), em: "🚋", nadpis: roky >= 1 ? "Si s nami už " + roky + " " + pl(roky, "rok", "roky", "rokov") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní"),
-            text: (roky >= 1 ? "To je " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false });
-        }
-      }
-    }
+    var zk = kartaPocet(rid);
+    if (zk && !karty.some(function (k) { return !k.spravaId; })) karty.unshift(zk);
     karty = karty.slice(0, 3);
     if (!karty.length) { if (window._showToast) window._showToast("Nemám čo zobraziť: v OSOBY.csv chýba tvoj riadok s dátumom nástupu"); return false; }
     if (ov) zavri();
