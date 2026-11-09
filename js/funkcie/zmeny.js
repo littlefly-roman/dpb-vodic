@@ -263,12 +263,8 @@
       ciele.forEach(function (el) { el.addEventListener("click", potvrd, true); });
     });
     if (zvyrazneneNieco) card.classList.add("ma-zmenu");
-    if (naMini.length) {   // nie je čo zvýrazniť (napr. vozidlo odpadlo) – malý pásik v karte
-      card.classList.add("ma-zmenu");
-      var mk = minikarta(naMini, r, d, l);
-      var menu = card.querySelector(".service-menu");
-      if (menu) card.insertBefore(mk, menu); else card.appendChild(mk);
-    }
+    // pásik pod kartou sa už nepoužíva (naMini sa zahodí)
+  }
   }
 
   window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
