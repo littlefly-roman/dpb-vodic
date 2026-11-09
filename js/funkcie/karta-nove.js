@@ -232,6 +232,43 @@
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); if (service._zvonecObnov) service._zvonecObnov(); } }]
     });
   }
+  // ---------- Okno „Pridelené vozidlo“ pred nástupom (len služby so začiatkom v depe) ----------
+  // Ukáže sa 15 minút pred nástupom a v čase nástupu znova; pri zmene vozidla sa ukáže nanovo.
+  var _vozTimery = {};
+  function oknoVozidla(service) {
+    var k = (service && service._karta) || {};
+    if (!jeDnes(service) || !service._zDepa || !k.od) return;
+    var v = (k.vozidla || [])[0], cislo = v && v.cislo ? String(v.cislo) : "";
+    if (!cislo) return;
+    var kl = kluc(service), od = sekOd(k.od);
+    var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+    var sl = null;
+    try { sl = JSON.parse(localStorage.getItem("dpb_voz_okno") || "null"); } catch (e) {}
+    if (!sl || sl.d !== dnesKluc()) sl = { d: dnesKluc(), m: {} };
+    function ukaz(slot) {
+      var kk = kl + "|" + slot;
+      if (sl.m[kk] === cislo) return;
+      sl.m[kk] = cislo; try { localStorage.setItem("dpb_voz_okno", JSON.stringify(sl)); } catch (e) {}
+      if (document.querySelector(".voz-okno-bg")) return;
+      var bg = el("div", ""); bg.className = "voz-okno-bg";
+      var ok = el("div", ""); ok.className = "voz-okno";
+      ok.appendChild(el("div", "", "Pridelené vozidlo na linku " + (k.kurz || "")));
+      ok.firstChild.className = "voz-okno-t";
+      var vv = el("div", "", cislo); vv.className = "voz-okno-v"; ok.appendChild(vv);
+      var pl = el("div", ""); pl.className = "voz-okno-pl"; pl.innerHTML = svg("poloha", 22) + "<span>Poloha vozidla</span>"; ok.appendChild(pl);
+      var bt = el("button", "", "Rozumiem"); bt.type = "button"; bt.className = "voz-okno-b";
+      bt.addEventListener("click", function () { bg.remove(); });
+      ok.appendChild(bt); bg.appendChild(ok); document.body.appendChild(bg);
+      try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+    }
+    var t = _vozTimery[kl]; if (t) t.forEach(clearTimeout);
+    _vozTimery[kl] = [];
+    var a = od - 900;
+    if (sec >= od) return;
+    if (sec >= a) ukaz("15"); else _vozTimery[kl].push(setTimeout(function () { ukaz("15"); }, Math.min(2147000000, (a - sec) * 1000)));
+    _vozTimery[kl].push(setTimeout(function () { ukaz("0"); }, Math.min(2147000000, (od - sec) * 1000)));
+  }
+
   // Zvonček: ťuk = zapne / vypne všetko, podržanie = nastavenie
   function zvonec(service) {
     var b = el("button", "");
@@ -265,6 +302,7 @@
         service._zDepa = true;
         if (r.sek > 0) service._premavkaOd = r.sek;
         obnov();
+        oknoVozidla(service);
       }).catch(function () {});
     }
     function prepniVsetko() {

@@ -218,15 +218,57 @@
     });
     return b;
   }
+  // Zvýraznenie zmeny priamo na karte (nové / zmenené: služba, vozidlo, striedaný a striedajúci vodič).
+  // Ostatné druhy zmien sa na karte nezobrazujú (ostávajú len v zvončeku).
+  function cielKarty(card, kat) {
+    if (kat === "sluzba") return Array.prototype.slice.call(card.querySelectorAll(".card-title, .card-time"));
+    if (kat === "vozidlo") return Array.prototype.slice.call(card.querySelectorAll(".card-vehicle"));
+    if (kat === "striedany") return Array.prototype.slice.call(card.querySelectorAll(".driver-section.before"));
+    if (kat === "striedajuci") return Array.prototype.slice.call(card.querySelectorAll(".driver-section.after"));
+    return [];
+  }
+  function stitok(o) {
+    var l = String(o.lab || "");
+    return /^(Pridal|Pridala|Pridalo)/.test(l) ? (/vodič/.test(l) ? "NOVÝ" : /služba/.test(l) ? "NOVÁ" : "NOVÉ") : "ZMENA";
+  }
   function ozn(card, s) {
     var r = rid(), d = s && s.date, l = String(s && s.line || "");
     if (!r || !d || !card) return;
     var vl = dajVlajky(r), kat = vl[d] && vl[d][l];
     if (!kat || !kat.length) return;
-    card.classList.add("ma-zmenu");
-    var mk = minikarta(kat, r, d, l);
-    var menu = card.querySelector(".service-menu");
-    if (menu) card.insertBefore(mk, menu); else card.appendChild(mk);
+    var zvyrazneneNieco = false, naMini = [];
+    kat.forEach(function (x) {
+      var o = typeof x === "string" ? { k: x } : x, k = o.k || x;
+      if (["sluzba", "vozidlo", "striedany", "striedajuci"].indexOf(k) < 0) return;
+      var ciele = cielKarty(card, k);
+      if (!ciele.length) { naMini.push(o); return; }
+      var tag = stitok(o), dalsi = ciele.length > 1 && k === "sluzba" ? ciele.slice(0, 1) : ciele;
+      ciele.forEach(function (el, ix) {
+        el.classList.add("zm-on");
+        if (ix === 0 || k !== "sluzba") { var t = document.createElement("span"); t.className = "zm-tag"; t.textContent = tag; el.appendChild(t); }
+      });
+      zvyrazneneNieco = true;
+      var potvrd = function (e) {
+        e.stopPropagation();
+        ciele.forEach(function (el) { el.classList.remove("zm-on"); var t = el.querySelector(":scope > .zm-tag"); if (t) t.remove(); el.removeEventListener("click", potvrd, true); });
+        var v2 = dajVlajky(r);
+        if (v2[d] && v2[d][l]) {
+          v2[d][l] = v2[d][l].filter(function (q) { return (q && q.k || q) !== k; });
+          if (!v2[d][l].length) delete v2[d][l];
+          if (!Object.keys(v2[d]).length) delete v2[d];
+          ulozVlajky(r, v2);
+        }
+        if (!card.querySelector(".zm-on")) card.classList.remove("ma-zmenu");
+      };
+      ciele.forEach(function (el) { el.addEventListener("click", potvrd, true); });
+    });
+    if (zvyrazneneNieco) card.classList.add("ma-zmenu");
+    if (naMini.length) {   // nie je čo zvýrazniť (napr. vozidlo odpadlo) – malý pásik v karte
+      card.classList.add("ma-zmenu");
+      var mk = minikarta(naMini, r, d, l);
+      var menu = card.querySelector(".service-menu");
+      if (menu) card.insertBefore(mk, menu); else card.appendChild(mk);
+    }
   }
 
   window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
