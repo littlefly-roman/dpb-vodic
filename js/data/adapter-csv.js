@@ -142,6 +142,10 @@
               window.DpbPracPomer = window.DpbPracPomer || {};
               if (r.RIDIC_STREDISKO) window.DpbStredisko[cid] = String(r.RIDIC_STREDISKO).trim();
               if (r.RIDIC_PP) window.DpbPracPomer[cid] = String(r.RIDIC_PP).trim();
+              // týždenný úväzok v hodinách (S_PRACPOM.UKALEND); bez neho sa berie 37,5
+              window.DpbUvazok = window.DpbUvazok || {};
+              var uv = parseFloat(String(r.UVAZOK || "").replace(",", "."));
+              if (uv >= 5 && uv <= 40) window.DpbUvazok[cid] = uv;
             }
           });
 

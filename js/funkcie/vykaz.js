@@ -76,6 +76,14 @@
         znacka: sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "", voz: [] });
       if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
+    // mesačný úväzok = pracovné dni (po–pi bez sviatkov) × denný úväzok (týždenný ÷ 5); nadčas = výkon nad úväzok
+    var tyz = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, pd = 0;
+    for (var q = 1; q <= n; q++) {
+      var dq = new Date(y, m, q);
+      if (dq.getDay() !== 0 && dq.getDay() !== 6 && !(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dq))) pd++;
+    }
+    T.fond = Math.round(pd * tyz / 5 * 60);
+    T.nadcas = Math.max(0, T.cisty - T.fond);
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
@@ -87,7 +95,7 @@
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
   function telo(D) {
-    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str]];
+    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       if (r.prazdny) return '<tr class="n"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
