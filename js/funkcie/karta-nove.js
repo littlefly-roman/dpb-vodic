@@ -120,7 +120,13 @@
     var DS = window.DpbStretnutia;
     if (m.konecna && k.kurz && DS && DS.odchodyZKonecnej) {
       out.push(DS.odchodyZKonecnej(k.kurz, service.date, k.od, k.do).then(function (l) {
-        return { kind: "kn|" + key, nazov: "Odchody z konečnej", typ: "konecna", pop: "Odchod o", items: (l || []).map(function (x) { return { cas: x.cas, nazov: x.nazov }; }) };
+        // odchody počas prestávky robí striedač (má vlastné upozornenia) – vynechať
+        var okna = (service._upoz && service._upoz.prestavkaOkna || []).map(function (w) { return [sekOd(w.od), sekOd(w["do"])]; });
+        var vonku = (l || []).filter(function (x) {
+          var q = String(x.cas).split(":"), t = (+q[0]) * 3600 + (+q[1]) * 60 + (+q[2] || 0);
+          return !okna.some(function (w) { return t >= w[0] && t < w[1]; });
+        });
+        return { kind: "kn|" + key, nazov: "Odchody z konečnej", typ: "konecna", pop: "Odchod o", items: vonku.map(function (x) { return { cas: x.cas, nazov: String(x.nazov || "").replace(/^[^→]*(?=→)/, "") }; }) };
       }).catch(function () { return null; }));
     }
     if (m.prestavka) out.push(Promise.resolve({ kind: "pr|" + key, nazov: "Koniec prestávky", typ: "prestavka", pop: "Koniec prestávky o", items: service._upoz.prestavka.map(function (x) { return { cas: x.cas, nazov: x.nazov }; }) }));

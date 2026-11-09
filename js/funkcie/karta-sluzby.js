@@ -991,6 +991,7 @@
               } else ph.textContent = "PRESTÁVKA";
               pb.appendChild(ph);
               service._upoz = service._upoz || {};
+              service._upoz.prestavkaOkna = _rel.map(function (p) { return { od: p.prebera, "do": p.odovzdava }; });
               service._upoz.prestavka = _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : ""), typ: "prestavka", pop: "Koniec prestávky o" }; });
               var pz = document.createElement("div");
               pz.className = "card-prs-zas";
