@@ -29,6 +29,7 @@
   // Neprítomnosti (kódy zo STAVTURNUSU): iný druh práce = výkon, neplatené sa nepočítajú, PN a príbuzné len po–pi, ostatné platené každý deň
   var PRACA = { 11: 1, 16: 1, 17: 1, 18: 1, 39: 1 };                                  // prestoj, zájazd, výluka, prevod na inú prácu, refundácia
   var NEPLATENE = { 8: 1, 24: 1, 34: 1, 9: 1, 13: 1, 19: 1, 49: 1, 53: 1, 54: 1 };     // neplatené voľno, absencia, neurčená, vyžiadané voľno, nemoc neplatená, štrajk
+  var STRAVNE_NEPR = { 1: 1, 3: 1, 42: 1, 57: 1, 15: 1, 27: 1, 37: 1, 47: 1, 45: 1 }; // dovolenka, návšteva lekára, preventívna prehliadka, psychologické vyšetrenie
   var LEN_PO_PI = { 7: 1, 40: 1, 41: 1, 48: 1, 51: 1, 52: 1, 56: 1, 58: 1, 12: 1, 26: 1, 36: 1, 43: 1, 59: 1, 38: 1 };
   function kredit(k, denMin) { // hodiny platenej neprítomnosti v minútach: deň / pol dňa / 1,5 dňa / „N h“
     var t = String(k.popis || ""), h = /(\d+)\s*h\b/.exec(t);
@@ -45,7 +46,7 @@
     var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = Math.round(tyz0 / 5 * 60);
     var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
-      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0;
+      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
@@ -65,6 +66,7 @@
           var kr = 0;
           if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
           T.plat += kr;
+          if (STRAVNE_NEPR[kod]) strNepr = true;
           rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
           prvy = false;
           return;
@@ -105,6 +107,7 @@
       if (d < 1) continue;
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "", voz: [] });
+      if (strNepr && rows[r0] && !rows[r0].str && !(den > 240)) { T.str++; rows[r0].str = 1; }
       if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
     // mesačný úväzok = pracovné dni (po–pi aj so sviatkami) × denný úväzok (týždenný ÷ 5); nadčas = výkon nad úväzok
@@ -130,7 +133,7 @@
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       if (r.prazdny) return '<tr class="n"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td></td></tr>";
+      if (r.nepr) return '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
