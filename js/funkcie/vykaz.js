@@ -54,6 +54,7 @@
           if (e <= o) e += 1440;
           return { c: x.cislo, min: e - o };
         });
+        if (vz === "STRIEDAČ") voz = [{ c: vs.length ? vs[0].cislo : "", min: cisty }]; // striedač má voz vždy po celý čas v práci
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
         den += cisty; T.cisty += cisty; T.voz += vmin; T.noc += noc;
