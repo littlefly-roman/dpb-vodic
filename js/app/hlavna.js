@@ -133,14 +133,14 @@
 
         const employerStructure = {
           DEaT: {
-            label: "Divízia električ. a trolejbusov",
+            label: "Divízia električiek a trolejbusov",
             operations: {
               DPE: {
-                label: "Prevádzka električka",
+                label: "Prevádzka električiek",
                 workplaces: ["Jurajov dvor", "Krasňany"],
               },
               DPT: {
-                label: "Prevádzka trolejbus",
+                label: "Prevádzka trolejbusov",
                 workplaces: ["Hroboňova", "Trnávka"],
               },
             },
@@ -148,9 +148,9 @@
           DA: {
             label: "Divízia autobusov",
             operations: {
-              "I.DPA": { label: "1. prevádzka autobus", workplaces: [] },
-              "II.DPA": { label: "2. prevádzka autobus", workplaces: [] },
-              "III.DPA": { label: "3. prevádzka autobus", workplaces: [] },
+              "I.DPA": { label: "1. dopravná prevádzka autobusov", workplaces: [] },
+              "II.DPA": { label: "2. dopravná prevádzka autobusov", workplaces: [] },
+              "III.DPA": { label: "3. dopravná prevádzka autobusov", workplaces: [] },
             },
           },
         };

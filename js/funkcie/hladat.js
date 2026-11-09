@@ -113,7 +113,7 @@
     el("hladatDatum").textContent = (key === dnes ? "Dnes · " : "") + DNI[den.getDay()] + " " + den.getDate() + ". " + (den.getMonth() + 1) + ". " + den.getFullYear();
     box.innerHTML = "";
     var res = hladaj(el("hladatVstup").value, key);
-    if (res === null) { box.innerHTML = '<div class="hl-pozn">Napíš meno vodiča, číslo vozidla (napr. 7436) alebo službu (napr. 4/9) – ukážem, kde je v zvolený deň.</div>'; return; }
+    if (res === null) { box.innerHTML = '<div class="hl-pozn">Napíš meno vodiča, číslo vozidla (napr. 7436) alebo službu (napr. 4/9)</div>'; return; }
     if (!res.length) { box.innerHTML = '<div class="hl-pozn">V tento deň som nič nenašiel.</div>'; return; }
     var n = new Date(), teraz = n.getHours() * 60 + n.getMinutes(), jeDnes = key === dnes;
     var cnt = document.createElement("div"); cnt.className = "hl-sek"; cnt.textContent = "Nájdené: " + res.length + (res.length > 80 ? " (zobrazených 80)" : "");
