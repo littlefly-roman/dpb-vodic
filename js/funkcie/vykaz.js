@@ -44,15 +44,25 @@
   function zber(datum) {
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
     var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = Math.round(tyz0 / 5 * 60);
-    var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0 }, nepr = {};
+    var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0, del: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
-      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false;
+      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
         if (vz === "NEPRÍTOMNOSŤ") {
           if (d < 1) return;
           var kod = k.kod, nm = k.popis || "Neprítomnosť";
+          if (kod === 50) { // Reklamácia: nie je neprítomnosť; platí sa to, čo sa v nej reklamovalo (hodiny výkonu, nočné, príplatok za delenú)
+            var rk = k.rekl || {}, rv = rk.vykon || 0, rd = rk.delena || 0;
+            den += rv; T.cisty += rv; T.noc += rk.noc || 0; T.del += rd;
+            if (dt.getDay() === 6) T.so += rv;
+            if (dt.getDay() === 0) T.ne += rv;
+            if (sviatok) T.sv += rv;
+            if (rv) rekMal = true;
+            rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: "Reklamácia" + (rd ? " · delená ×" + rd : ""), cas: "", cisty: rv, voz: [], noc: rk.noc || 0, oddych: null });
+            prvy = false; return;
+          }
           if (PRACA[kod]) { // iný druh práce: je to výkon
             var pa = k.od_min, pb = k.do_min;
             if (pa == null || pb == null) { pa = tmin(k.od); pb = tmin(k.do); }
@@ -109,7 +119,7 @@
         znacka: sviatok ? "sviatok" : "", voz: [] });
       for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; }
       if (strNepr && rows[r0] && !rows[r0].str && !(den > 240)) { T.str++; rows[r0].str = 1; }
-      if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
+      if (mal || rekMal) { if (mal) T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
     // mesačný úväzok = pracovné dni (po–pi aj so sviatkami) × denný úväzok (týždenný ÷ 5); nadčas = výkon nad úväzok
     var tyz = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, pd = 0;
@@ -131,6 +141,7 @@
 
   function telo(D) {
     var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
+    if (T.del) tl.splice(8, 0, ["Príplatok za delenú", T.del]);
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");

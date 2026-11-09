@@ -187,9 +187,19 @@
             return window.DpbKartaZUseku.predNaslVypravca(window.DpbOsVodica.usek(r), dnaIdx, names);
           }
 
+          // Karta neprítomnosti; pri Reklamácii (kód 50) aj hodiny a počty zo S_TREKLAMACE (minúty výkonu, z toho nočné, počet príplatkov za delenú)
+          function nepKarta(r, u) {
+            var kn = window.DpbKartaZUseku.nepritomnost(u);
+            var rv = parseInt(r.REKL_VYKON, 10) || 0, rn = parseInt(r.REKL_NOC, 10) || 0, rd = parseInt(r.REKL_DELENA, 10) || 0;
+            if (rv || rn || rd) kn.rekl = { vykon: rv, noc: rn, delena: rd };
+            return kn;
+          }
+
           function makeKarta(r, dateRows) {
             var u = window.DpbOsVodica.usek(r);
-            if ((r.STAVTURNUSU || "0") !== "0") return window.DpbKartaZUseku.nepritomnost(u);
+            if ((r.STAVTURNUSU || "0") !== "0") {
+              return nepKarta(r, u);
+            }
             var vzor = vzorFor(r.LINKAKURZ || "", r.STANSMERVYJEZD || "");
             if (vzor === "SLUZBA") vzor = "SLU\u017dBA";
             if (vzor === "STRIEDAC") vzor = "STRIEDAČ";
@@ -340,7 +350,7 @@
                   karty = mergePoh(karty);
                   karty = nestInPoh(karty, active);
                   absent.forEach(function (r) {
-                    karty.push(window.DpbKartaZUseku.nepritomnost(window.DpbOsVodica.usek(r)));
+                    karty.push(nepKarta(r, window.DpbOsVodica.usek(r)));
                   });
                   if (karty.length) days.push({ datum: date, karty: karty });
                 });
