@@ -76,11 +76,11 @@
         znacka: sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "", voz: [] });
       if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
-    // mesačný úväzok = pracovné dni (po–pi bez sviatkov) × denný úväzok (týždenný ÷ 5); nadčas = výkon nad úväzok
+    // mesačný úväzok = pracovné dni (po–pi aj so sviatkami) × denný úväzok (týždenný ÷ 5); nadčas = výkon nad úväzok
     var tyz = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, pd = 0;
     for (var q = 1; q <= n; q++) {
       var dq = new Date(y, m, q);
-      if (dq.getDay() !== 0 && dq.getDay() !== 6 && !(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dq))) pd++;
+      if (dq.getDay() !== 0 && dq.getDay() !== 6) pd++; // sviatok v pracovný deň sa do úväzku počíta
     }
     T.fond = Math.round(pd * tyz / 5 * 60);
     T.nadcas = Math.max(0, T.cisty - T.fond);
