@@ -650,9 +650,7 @@
 
         // „K dispozícii je 1 voľná služba“ / „K dispozícii sú 2 voľné služby“ / „K dispozícii je 5 voľných služieb“
         function burzaVolneText(n) {
-          if (n === 1) return "K dispozícii je 1 voľná služba  ›";
-          if (n >= 2 && n <= 4) return "K dispozícii sú " + n + " voľné služby  ›";
-          return "K dispozícii je " + n + " voľných služieb  ›";
+          return "Sú dostupné voľné služby  ›";
         }
 
         // Zoznam dní jedného mesiaca (používa ho zoznam aj náhľad pri swipe)
