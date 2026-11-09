@@ -268,7 +268,7 @@
     list.parentNode.insertBefore(b, list);
     var menu = document.createElement("div");
     menu.id = "exportMenu"; menu.className = "export-menu"; menu.hidden = true;
-    [["PDF", pdfMesiaca], ["Excel (.xlsx)", function (d) { stiahni(menoSuboru(d, "xlsx"), "", xlsxMesiaca(d)); }], ["Kalendár (.ics)", icsMesiaca]].forEach(function (p) {
+    [["Výkaz mesiaca", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d); }], ["PDF", pdfMesiaca], ["Excel (.xlsx)", function (d) { stiahni(menoSuboru(d, "xlsx"), "", xlsxMesiaca(d)); }], ["Kalendár (.ics)", icsMesiaca]].forEach(function (p) {
       var i = document.createElement("button"); i.type = "button"; i.textContent = p[0];
       i.addEventListener("click", function () {
         menu.hidden = true;
