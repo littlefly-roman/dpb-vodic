@@ -31,18 +31,21 @@
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
   function zber(datum) {
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
-    var rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0 }, nepr = {};
-    for (var d = 1; d <= n; d++) {
+    var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0 }, nepr = {};
+    for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
       var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
-        if (vz === "NEPRÍTOMNOSŤ") { var nm = k.popis || "Neprítomnosť"; nepr[nm] = (nepr[nm] || 0) + 1; return; }
+        if (vz === "NEPRÍTOMNOSŤ") { if (d < 1) return; var nm = k.popis || "Neprítomnosť"; nepr[nm] = (nepr[nm] || 0) + 1; return; }
         if (VOZ.indexOf(vz) < 0) return;
         var a = k.od_min != null ? k.od_min : tmin((s.time || "").split(/[–-]/)[0]);
         var b = k.do_min != null ? k.do_min : tmin((s.time || "").split(/[–-]/)[1]);
         if (a == null || b == null) return;
         if (b <= a) b += 1440;
+        var abs0 = Date.UTC(y, m, d) / 60000 + a, oddych = prevEnd == null ? null : abs0 - prevEnd;
+        prevEnd = abs0 + (b - a);
+        if (d < 1) return;
         var cc = window.DpbCistyCas && DpbCistyCas.zaKartu(k);
         var cisty = cc ? cc.cisty : b - a;
         var noc = ov(a, b, 0, NOC_DO) + ov(a, b, NOC_OD, 1440 + NOC_DO);
@@ -64,10 +67,11 @@
         rows.push({
           dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
           znacka: prvy ? (sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "") : "",
-          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc,
+          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc, oddych: oddych,
         });
         prvy = false;
       });
+      if (d < 1) continue;
       if (!mal) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : dt.getDay() === 6 ? "sobota" : dt.getDay() === 0 ? "nedeľa" : "", voz: [] });
       if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
@@ -86,18 +90,18 @@
     var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
-      if (r.prazdny) return '<tr class="n"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+      if (r.prazdny) return '<tr class="n"><td><b>' + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
-        else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td></tr>";
+        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+        else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td><td></td></tr>";
       });
       return out;
     }).join("");
     return '<div class="vk"><div class="hd"><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1>" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
-      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="7">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
+      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Oddych</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="8">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
       "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát.</p></div>";
   }
 
