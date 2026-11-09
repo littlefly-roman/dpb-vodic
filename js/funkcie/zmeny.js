@@ -265,7 +265,6 @@
     if (zvyrazneneNieco) card.classList.add("ma-zmenu");
     // pásik pod kartou sa už nepoužíva (naMini sa zahodí)
   }
-  }
 
   window.DpbZmeny = { skontroluj: skontroluj, ozn: ozn, _porovnaj: porovnaj, _snimka: snimka };
 
