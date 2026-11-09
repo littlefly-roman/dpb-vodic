@@ -335,7 +335,7 @@
                     karty = karty.concat(res.karty);
                     active = res.remaining;
                   }
-                  var seen = {};
+                  var seen = {}, delGr = {};
                   active.forEach(function (r) {
                     var key =
                       (r.LINKAKURZ || "") +
@@ -345,7 +345,19 @@
                       gt(r.SKUTNASTUP || "");
                     if (seen[key]) return;
                     seen[key] = 1;
-                    karty.push(makeKarta(r, dateRows));
+                    var kk = makeKarta(r, dateRows);
+                    if ((r.DRUH_SLUZBY || "").trim() === "3") {
+                      var tk = (r.CISLOTURNUSU || "") + "|" + (r.RADEK || "");
+                      (delGr[tk] = delGr[tk] || []).push(kk);
+                    }
+                    karty.push(kk);
+                  });
+                  // delená služba: turnus druhu 3 rozdelený na dve časti v jeden deň
+                  Object.keys(delGr).forEach(function (tk) {
+                    if (delGr[tk].length > 1)
+                      delGr[tk].forEach(function (kk) {
+                        kk.delena = true;
+                      });
                   });
                   karty = mergePoh(karty);
                   karty = nestInPoh(karty, active);

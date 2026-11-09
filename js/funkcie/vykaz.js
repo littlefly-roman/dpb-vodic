@@ -46,7 +46,7 @@
     var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = Math.round(tyz0 / 5 * 60);
     var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0, del: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
-      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false;
+      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, delDen = false;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
@@ -103,6 +103,7 @@
         if (vz === "STRIEDAČ") voz = [{ c: vs.length ? vs[0].cislo : "", min: cisty }]; // striedač má voz vždy po celý čas v práci
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
+        if (k.delena) delDen = true;
         den += cisty; T.cisty += cisty; T.voz += vmin; T.noc += noc;
         if (dt.getDay() === 6) T.so += cisty;
         if (dt.getDay() === 0) T.ne += cisty;
@@ -118,6 +119,8 @@
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : "", voz: [] });
       for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; }
+      // delená služba: dve časti toho istého turnusu v jeden deň
+      if (delDen && rows[r0]) { T.del++; rows[r0].sl += " · delená"; }
       if (strNepr && rows[r0] && !rows[r0].str && !(den > 240)) { T.str++; rows[r0].str = 1; }
       if (mal || rekMal) { if (mal) T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
