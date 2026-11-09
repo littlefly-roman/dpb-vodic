@@ -27,9 +27,9 @@
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
   function zber(datum) {
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
-    var rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0 }, nepr = {};
+    var rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0 }, nepr = {};
     for (var d = 1; d <= n; d++) {
-      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false;
+      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0;
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt));
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
@@ -52,7 +52,7 @@
         });
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
-        T.cisty += cisty; T.voz += vmin; T.noc += noc;
+        den += cisty; T.cisty += cisty; T.voz += vmin; T.noc += noc;
         if (dt.getDay() === 6) T.so += cisty;
         if (dt.getDay() === 0) T.ne += cisty;
         if (sviatok) T.sv += cisty;
@@ -63,7 +63,7 @@
         });
         prvy = false;
       });
-      if (mal) T.dni++;
+      if (mal) { T.dni++; if (den > 240) { T.str++; rows[r0].str = 1; } }
     }
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
@@ -76,20 +76,20 @@
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
   function telo(D) {
-    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)]];
+    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? "<b>" + esc(x.c) + "</b> &nbsp;" + f(x.min) : "–";
-        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + esc(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + f(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? f(r.noc) : "–") + "</td></tr>";
-        else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td></tr>";
+        if (i === 0) out += '<tr class="' + (r.prvy ? "n" : "") + '"><td>' + (r.dat ? "<b>" + esc(r.dat) + "</b>" + (r.znacka ? ' <span class="t">' + r.znacka + "</span>" : "") : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + f(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? f(r.noc) : "–") + "</td><td>" + (r.str ? "<b>1</b>" : "") + "</td></tr>";
+        else out += "<tr><td></td><td></td><td></td><td></td><td>" + cell + "</td><td></td><td></td></tr>";
       });
       return out;
     }).join("");
     return '<div class="vk"><div class="hd"><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1>" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
-      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th></tr></thead><tbody>" + (tr || '<tr><td colspan="6">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
+      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="7">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
       "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát.</p></div>";
   }
 
