@@ -63,7 +63,7 @@
         });
         prvy = false;
       });
-      if (mal) { T.dni++; if (den > 240) { var sk = den >= 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
+      if (mal) { T.dni++; if (den > 240) { var sk = den > 630 ? 2 : 1; T.str += sk; rows[r0].str = sk; } }
     }
     return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
