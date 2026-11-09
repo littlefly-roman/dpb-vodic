@@ -145,7 +145,7 @@
               // týždenný úväzok v hodinách (S_PRACPOM.UKALEND); bez neho sa berie 37,5
               window.DpbUvazok = window.DpbUvazok || {};
               var uv = parseFloat(String(r.UVAZOK || "").replace(",", "."));
-              if (uv >= 5 && uv <= 40) window.DpbUvazok[cid] = uv;
+              if (uv > 0 && uv <= 40) window.DpbUvazok[cid] = uv;
             }
           });
 
