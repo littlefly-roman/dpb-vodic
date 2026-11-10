@@ -3860,3 +3860,10 @@ img{-webkit-user-drag:none}
 .dp-pridat{display:block;margin:10px auto;border:1.5px dashed #2f6fed;color:#2f6fed;background:none;border-radius:14px;font-size:16px;font-weight:700;padding:10px 18px;min-height:44px;cursor:pointer}
 :root[data-theme="dark"] .dp-pridat{color:#7aa5ff;border-color:#7aa5ff}
 .dp-edit select{font-size:18px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit;max-width:60%}
+
+/* prepínač zoznamu 1 / 2 (DPB / druhá práca) */
+.list-prepinac{display:flex;justify-content:center;gap:0;margin:4px 0 10px}
+.list-prepinac button{min-width:64px;min-height:44px;font-size:18px;font-weight:800;border:1.5px solid var(--border);background:var(--surface);color:var(--text-2,inherit);cursor:pointer}
+.list-prepinac button:first-child{border-radius:12px 0 0 12px}
+.list-prepinac button:last-child{border-radius:0 12px 12px 0;border-left:0}
+.list-prepinac button.on{background:var(--red,#e8001a);color:#fff;border-color:var(--red,#e8001a)}

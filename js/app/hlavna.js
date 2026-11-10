@@ -670,7 +670,47 @@
           // Mesiac rovnakým štýlom ako date-date
           dateHeader.innerHTML = `<span class="date-date" style="text-transform:capitalize">${formatMonthTitle(appState.selectedDate)}</span>`;
           dateHeader.classList.toggle("je-dnes", _jeAktualnyMesiac(appState.selectedDate));
+          // prepínač 1 / 2 (DPB / druhá práca) – len ak sú dva kalendáre
+          const dva = !!(window.DpbDruhaPraca && DpbDruhaPraca.povolene());
+          if (!dva) appState.zoznamDp = false;
+          if (dva) {
+            const pr = document.createElement("div");
+            pr.className = "list-prepinac";
+            [["0", "1"], ["1", "2"]].forEach(([v, t]) => {
+              const b = document.createElement("button");
+              b.type = "button"; b.textContent = t; b.setAttribute("aria-label", v === "0" ? "Zoznam DPB" : "Zoznam druhej práce");
+              b.className = (appState.zoznamDp ? "1" : "0") === v ? "on" : "";
+              b.addEventListener("click", () => { appState.zoznamDp = v === "1"; renderList(); });
+              pr.appendChild(b);
+            });
+            container.appendChild(pr);
+          }
           container.appendChild(buildListFragment(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth()));
+        }
+
+        // Zoznam dní z vlastného kalendára druhej práce (rovnaký vzhľad ako zoznam DPB)
+        function buildListFragmentDp(year, month) {
+          const lastDay = new Date(year, month + 1, 0).getDate(), fragment = document.createDocumentFragment();
+          const hm = (m) => Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0");
+          for (let d = 1; d <= lastDay; d++) {
+            const date = new Date(year, month, d), key = formatDateKey(date), ev = DpbDruhaPraca.pre(key);
+            const dow = date.getDay(), isHoliday = window.Calendar && window.Calendar.isHoliday(date);
+            const group = document.createElement("div");
+            group.className = "list-day-group" + (isHoliday ? " is-holiday" : dow === 0 || dow === 6 ? " is-weekend" : "");
+            const klik = (row) => row.addEventListener("click", () => { appState.selectedDate = date; appState.viewMode = "cards"; render(); });
+            if (!ev.length) {
+              const row = buildListRow(d, DAY_NAMES[dow], "Voľno", "", isToday(date), true, false);
+              klik(row); group.appendChild(row);
+            } else ev.forEach((e, i) => {
+              const sl = !e.typ || e.typ === "sluzba", c = DpbDruhaPraca.cisty(e);
+              const row = buildListRow(i === 0 ? d : "", i === 0 ? DAY_NAMES[dow] : "", sl ? "Služba" : e.t,
+                e.od == null || e["do"] == null ? "" : hm(e.od) + " – " + (e["do"] >= 1440 ? "24:00" : hm(e["do"])),
+                isToday(date) && i === 0, false, isHoliday && sl, sl && c != null ? hm(c) : "");
+              klik(row); group.appendChild(row);
+            });
+            fragment.appendChild(group);
+          }
+          return fragment;
         }
 
         // „K dispozícii je 1 voľná služba“ / „K dispozícii sú 2 voľné služby“ / „K dispozícii je 5 voľných služieb“
@@ -680,6 +720,7 @@
 
         // Zoznam dní jedného mesiaca (používa ho zoznam aj náhľad pri swipe)
         function buildListFragment(year, month) {
+          if (appState.zoznamDp && window.DpbDruhaPraca && DpbDruhaPraca.povolene()) return buildListFragmentDp(year, month);
           const lastDay = new Date(year, month + 1, 0).getDate();
 
           // DPB: prefill all days in this month
