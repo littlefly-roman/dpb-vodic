@@ -285,5 +285,5 @@
   });
   document.addEventListener("DOMContentLoaded", obnovProfil);
 
-  window.DpbDruhaPraca = { uvazokDen: uvazokDen, pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
+  window.DpbDruhaPraca = { obrazok: obrazok, uvazokDen: uvazokDen, pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
 })();

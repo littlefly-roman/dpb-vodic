@@ -673,18 +673,6 @@
           // prepínač 1 / 2 (DPB / druhá práca) – len ak sú dva kalendáre
           const dva = !!(window.DpbDruhaPraca && DpbDruhaPraca.povolene());
           if (!dva) appState.zoznamDp = false;
-          if (dva) {
-            const pr = document.createElement("div");
-            pr.className = "list-prepinac";
-            [["0", "1"], ["1", "2"]].forEach(([v, t]) => {
-              const b = document.createElement("button");
-              b.type = "button"; b.textContent = t; b.setAttribute("aria-label", v === "0" ? "Zoznam DPB" : "Zoznam druhej práce");
-              b.className = (appState.zoznamDp ? "1" : "0") === v ? "on" : "";
-              b.addEventListener("click", () => { appState.zoznamDp = v === "1"; renderList(); });
-              pr.appendChild(b);
-            });
-            container.appendChild(pr);
-          }
           container.appendChild(buildListFragment(appState.selectedDate.getFullYear(), appState.selectedDate.getMonth()));
         }
 

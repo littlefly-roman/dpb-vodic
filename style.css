@@ -3861,9 +3861,6 @@ img{-webkit-user-drag:none}
 :root[data-theme="dark"] .dp-pridat{color:#7aa5ff;border-color:#7aa5ff}
 .dp-edit select{font-size:18px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit;max-width:60%}
 
-/* prepínač zoznamu 1 / 2 (DPB / druhá práca) */
-.list-prepinac{display:flex;justify-content:center;gap:0;margin:4px 0 10px}
-.list-prepinac button{min-width:64px;min-height:44px;font-size:18px;font-weight:800;border:1.5px solid var(--border);background:var(--surface);color:var(--text-2,inherit);cursor:pointer}
-.list-prepinac button:first-child{border-radius:12px 0 0 12px}
-.list-prepinac button:last-child{border-radius:0 12px 12px 0;border-left:0}
-.list-prepinac button.on{background:var(--red,#e8001a);color:#fff;border-color:var(--red,#e8001a)}
+/* prepínač zoznamov v hlavičke: číslo alebo logo */
+.zoznam2-cislo{font-size:20px;font-weight:800;line-height:1;color:var(--text-3)}
+.zoznam2-logo{width:28px;height:28px;object-fit:contain;border-radius:6px}

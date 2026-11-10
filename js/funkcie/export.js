@@ -266,6 +266,25 @@
     b.id = "btnExport"; b.type = "button"; b.className = "day-icon"; b.setAttribute("aria-label", "Exportovať mesiac"); b.hidden = true;
     b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + IK_EXPORT + "</svg>";
     list.parentNode.insertBefore(b, list);
+    // prepínač zoznamov: ikona = číslo (alebo logo) zoznamu, NA KTORÝ sa prepne; len pri dvoch kalendároch
+    var z = document.createElement("button");
+    z.id = "btnZoznam2"; z.type = "button"; z.className = "day-icon"; z.hidden = true;
+    z.addEventListener("click", function () {
+      window.appState.zoznamDp = !window.appState.zoznamDp;
+      obnovZ(); if (window._render) window._render();
+    });
+    b.parentNode.insertBefore(z, b);
+    function obnovZ() {
+      var dva = !!(window.DpbDruhaPraca && DpbDruhaPraca.povolene());
+      z.hidden = !(dva && window.appState && window.appState.viewMode === "list");
+      if (!dva) return;
+      var naDp = !window.appState.zoznamDp, o = naDp ? DpbDruhaPraca.obrazok() : "";
+      z.setAttribute("aria-label", naDp ? "Zoznam druhej práce" : "Zoznam DPB");
+      z.innerHTML = "";
+      if (o) { var im = document.createElement("img"); im.alt = ""; im.src = o; im.className = "zoznam2-logo"; z.appendChild(im); }
+      else { var t = document.createElement("span"); t.className = "zoznam2-cislo"; t.textContent = naDp ? "2" : "1"; z.appendChild(t); }
+    }
+    window.addEventListener("dpb-druha-praca", obnovZ);
     var menu = document.createElement("div");
     menu.id = "exportMenu"; menu.className = "export-menu"; menu.hidden = true;
     [["Výkaz mesiaca", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d); }], ["Výkaz druhej práce", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d, "dp"); }], ["Excel (.xlsx)", function (d) { stiahni(menoSuboru(d, "xlsx"), "", xlsxMesiaca(d)); }], ["Kalendár (.ics)", icsMesiaca]].forEach(function (p) {
@@ -292,6 +311,7 @@
     window._ikonaPrepnutia = function (mode) {
       if (pov) pov(mode);
       b.hidden = mode !== "list"; if (b.hidden) menu.hidden = true;
+      obnovZ();
     };
   });
 
