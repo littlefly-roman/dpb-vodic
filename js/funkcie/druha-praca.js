@@ -82,20 +82,76 @@
     return Math.max(0, e["do"] - e.od - (e.pjo ? 30 : 0));
   }
 
-  // ── karta v zozname dňa ──
+  // ── karta v zozname dňa: veľký obrázok (vlastné logo) + časy od–do, všetko na stred; ťuknutie na časy = úprava ──
+  function obrKluc() { return PREF + "img_" + rid(); }
+  function obrazok() { try { return localStorage.getItem(obrKluc()) || ""; } catch (e) { return ""; } }
+  var IKONA = '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
   function karta(e) {
     var d = document.createElement("div");
     d.className = "dp-karta";
     d.dataset.dp = e.id;
     var cs = e.od == null ? "Celý deň" : hm(e.od) + " – " + (e["do"] >= 1440 ? "24:00" : hm(e["do"]));
-    var c = cisty(e);
-    d.innerHTML = '<div class="dp-hlava"><span class="dp-stitok">Druhá práca</span>' +
-      (e.pjo ? '<span class="dp-pjo">PJO</span>' : "") + "</div>" +
-      '<div class="dp-nazov"></div><div class="dp-cas">' + cs + "</div>" +
-      (c != null ? '<div class="dp-cisty">Čistý čas ' + hm(c) + "</div>" : "");
-    d.querySelector(".dp-nazov").textContent = e.t;
+    var o = obrazok();
+    d.innerHTML = '<div class="dp-logo">' + (o ? '<img alt="">' : IKONA) + '</div><button type="button" class="dp-cas">' + cs + "</button>";
+    if (o) d.querySelector("img").src = o;
+    d.querySelector(".dp-cas").addEventListener("click", function () { uprav(e.id); });
     return d;
   }
+
+  // ── úprava: od, do, PJO, zmazanie ──
+  function minNaVstup(m) { return pad(Math.floor(m / 60)) + ":" + pad(m % 60); }
+  function vstupNaMin(v) { var m = /^(\d{1,2}):(\d{2})$/.exec(v || ""); return m ? (+m[1]) * 60 + (+m[2]) : null; }
+  function uprav(id) {
+    var r = rid(), o = nacitaj(r), e = null;
+    (o.ev || []).forEach(function (x) { if (x.id === id) e = x; });
+    if (!e) return;
+    var ov = document.createElement("div");
+    ov.className = "dp-edit-ov";
+    ov.innerHTML = '<div class="dp-edit"><div class="dp-edit-t">Úprava služby</div>' +
+      '<label>Od<input type="time" id="dpOd"></label><label>Do<input type="time" id="dpDo"></label>' +
+      '<label class="dp-edit-pjo"><input type="checkbox" id="dpPjo"> PJO (odpočíta sa 30 min)</label>' +
+      '<div class="dp-edit-b"><button type="button" id="dpUloz" class="dp-b-hl">Uložiť</button><button type="button" id="dpZrus">Zrušiť</button><button type="button" id="dpZmaz" class="dp-b-zmaz">Zmazať</button></div></div>';
+    document.body.appendChild(ov);
+    var iod = ov.querySelector("#dpOd"), ido = ov.querySelector("#dpDo"), ip = ov.querySelector("#dpPjo");
+    if (e.od != null) iod.value = minNaVstup(e.od);
+    if (e["do"] != null) ido.value = e["do"] >= 1440 ? "23:59" : minNaVstup(e["do"]);
+    ip.checked = !!e.pjo;
+    function zavri() { ov.remove(); }
+    function uloz2(zmaz) {
+      var a = vstupNaMin(iod.value), b = vstupNaMin(ido.value);
+      if (!zmaz && (a == null || b == null || b <= a)) { if (window._showToast) window._showToast("Skontroluj časy (do musí byť po od)", 3000); return; }
+      (o.ev || []).forEach(function (x) {
+        if (x.id !== id) return;
+        if (zmaz) x.zmazana = true; else { x.od = a; x["do"] = b; x.pjo = ip.checked; }
+        x.upr = true;
+      });
+      uloz(r, o); zavri(); document.dispatchEvent(new Event("dpb-druha-praca"));
+    }
+    ov.querySelector("#dpUloz").addEventListener("click", function () { uloz2(false); });
+    ov.querySelector("#dpZrus").addEventListener("click", zavri);
+    ov.querySelector("#dpZmaz").addEventListener("click", function () { if (window.confirm("Zmazať túto službu?")) uloz2(true); });
+    ov.addEventListener("click", function (ev) { if (ev.target === ov) zavri(); });
+  }
+
+  // ── obrázok na karte (vlastné logo): len v zariadení, zmenšený ──
+  function nastavObrazok(file) {
+    var r = rid(); if (!r || !file) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var sc = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+        c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        try { localStorage.setItem(obrKluc(), c.toDataURL("image/png")); } catch (e) {}
+        document.dispatchEvent(new Event("dpb-druha-praca"));
+        if (window._showToast) window._showToast("Obrázok na karte nastavený", 2500);
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+
   // vloží karty druhej práce do už zostaveného fragmentu/kontajnera podľa času; uzly = deti s dátami dpOd (min od polnoci)
   function vloz(rodic, den) {
     var ev = pre(den);
@@ -142,7 +198,13 @@
     };
     rd.readAsText(f);
   });
+  document.addEventListener("change", function (ev) {
+    var inp = ev.target; if (!inp || inp.id !== "profilDpObr" || !inp.files || !inp.files[0]) return;
+    nastavObrazok(inp.files[0]); inp.value = "";
+  });
   document.addEventListener("click", function (ev) {
+    var q = ev.target && ev.target.closest && ev.target.closest("#profilDpObrZmaz");
+    if (q) { try { localStorage.removeItem(obrKluc()); } catch (e) {} document.dispatchEvent(new Event("dpb-druha-praca")); }
     var t = ev.target && ev.target.closest && ev.target.closest("#profilDpZmaz");
     if (t && window.confirm && window.confirm("Zmazať kalendár druhej práce z tohto zariadenia?")) zmaz();
   });

@@ -3833,17 +3833,24 @@ img{-webkit-user-drag:none}
 .vs-cislo{color:var(--text-3);font-weight:500}
 .vs-pozn{padding:13px 14px;font-size:15px;color:var(--text-3)}
 
-/* Druhá práca – vlastný kalendár vodiča: iná farba (modrá), karty sa môžu prekrývať */
-.dp-karta{position:relative;background:var(--surface);border:1px solid var(--border-2,var(--border));border-left:5px solid #2f6fed;border-radius:16px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding:12px 14px;margin:10px 0;color:var(--text-1)}
+/* Druhá práca – vlastný kalendár vodiča: iná farba (modrá), len obrázok a časy na stred; karty sa môžu prekrývať */
+.dp-karta{position:relative;background:var(--surface);border:1px solid var(--border-2,var(--border));border-left:5px solid #2f6fed;border-radius:16px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding:16px 14px 14px;margin:10px 0;color:var(--text-1);text-align:center}
 .dp-karta::before{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(47,111,237,.10);pointer-events:none}
+.dp-logo{display:flex;align-items:center;justify-content:center;min-height:64px;color:#2f6fed}
+.dp-logo img{max-width:70%;max-height:96px;object-fit:contain}
+.dp-cas{position:relative;display:block;width:100%;margin-top:8px;border:0;background:none;font-family:inherit;font-weight:800;font-size:30px;line-height:1.2;color:var(--text-1);cursor:pointer;padding:6px 0;-webkit-tap-highlight-color:transparent}
 .dp-prekryv-hore{margin-top:-26px;z-index:2;margin-left:14px;margin-right:0}
 .dp-prekryv-dole{margin-bottom:-26px;z-index:2;margin-left:14px;position:relative}
 .dp-prekryv-dole + *{position:relative;z-index:1}
-.dp-hlava{display:flex;align-items:center;gap:8px}
-.dp-stitok{font-size:15px;font-weight:700;color:#2f6fed;letter-spacing:.02em}
-.dp-pjo{font-size:15px;font-weight:700;border:1.5px solid #2f6fed;color:#2f6fed;border-radius:8px;padding:0 6px}
-.dp-nazov{font-size:20px;font-weight:800;margin-top:4px}
-.dp-cas{font-size:22px;font-weight:700;margin-top:2px}
-.dp-cisty{font-size:15px;color:var(--text-3);margin-top:2px}
-:root[data-theme="dark"] .dp-stitok,:root[data-theme="dark"] .dp-pjo{color:#7aa5ff;border-color:#7aa5ff}
 :root[data-theme="dark"] .dp-karta{border-left-color:#5b8cff}
+:root[data-theme="dark"] .dp-logo{color:#7aa5ff}
+.dp-edit-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
+.dp-edit{background:var(--surface,#fff);color:var(--text-1,#111);border-radius:18px;padding:18px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;font-size:16px}
+.dp-edit-t{font-size:18px;font-weight:800;text-align:center}
+.dp-edit label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.dp-edit input[type=time]{font-size:20px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit}
+.dp-edit-pjo{justify-content:flex-start!important}
+.dp-edit-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.dp-edit-b button{font-size:16px;font-weight:700;border:0;border-radius:12px;padding:10px 14px;background:var(--border-2,#e5e7eb);color:inherit;cursor:pointer;min-height:44px}
+.dp-b-hl{background:#2f6fed!important;color:#fff!important}
+.dp-b-zmaz{color:#d62828!important}
