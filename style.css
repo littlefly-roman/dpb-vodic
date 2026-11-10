@@ -3868,3 +3868,6 @@ img{-webkit-user-drag:none}
 /* Profil – druhá práca: tlačidlá pod sebou, rovnako veľké */
 #profilDpKarta .profil-nacitat{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;margin:8px 0 0;text-align:center}
 #profilDpKarta .profil-subor-lbl{cursor:pointer}
+
+#btnZoznam2[hidden]{display:none}
+#btnZoznam2 .zoznam2-dpb{width:28px;height:28px;color:var(--red,#e8001a)}

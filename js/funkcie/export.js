@@ -282,7 +282,12 @@
       z.setAttribute("aria-label", naDp ? "Zoznam druhej práce" : "Zoznam DPB");
       z.innerHTML = "";
       if (o) { var im = document.createElement("img"); im.alt = ""; im.src = o; im.className = "zoznam2-logo"; z.appendChild(im); }
-      else { var t = document.createElement("span"); t.className = "zoznam2-cislo"; t.textContent = naDp ? "2" : "1"; z.appendChild(t); }
+      else if (naDp) { var t = document.createElement("span"); t.className = "zoznam2-cislo"; t.textContent = "2"; z.appendChild(t); }
+      else {
+        var lg = document.querySelector("#dpbToggle svg");
+        if (lg) { var k = lg.cloneNode(true); k.removeAttribute("height"); k.setAttribute("class", "zoznam2-dpb"); z.appendChild(k); }
+        else { var t1 = document.createElement("span"); t1.className = "zoznam2-cislo"; t1.textContent = "1"; z.appendChild(t1); }
+      }
     }
     window.addEventListener("dpb-druha-praca", obnovZ);
     var menu = document.createElement("div");
