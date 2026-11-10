@@ -26,6 +26,19 @@
     if (st && st.servicesByDate && st.servicesByDate[key]) return st.servicesByDate[key];
     return window.DPBData ? DPBData.getServicesForDate(rid, key) : [];
   }
+  // Druhá práca: záznamy z vlastného kalendára vodiča prevedené na „karty“, aby ich spracoval ten istý výpočet
+  var DP_KOD = { dov: 1, lekar: 3, pn: 7, nahr: 9001, ine: 8 };
+  function dpSluzby(key) {
+    if (!window.DpbDruhaPraca) return [];
+    return DpbDruhaPraca.pre(key).map(function (e) {
+      if (!e.typ || e.typ === "sluzba") {
+        if (e.od == null || e["do"] == null) return null;
+        return { _vzor: "SLUŽBA", line: "Služba", time: "", _karta: { _dp: 1, od_min: e.od, do_min: e["do"], vozidla: [], _dpCisty: DpbDruhaPraca.cisty(e) } };
+      }
+      var dl = e.od != null && e["do"] != null ? e["do"] - e.od : 0;
+      return { _vzor: "NEPRÍTOMNOSŤ", _karta: { _dp: 1, kod: DP_KOD[e.typ] || 8, popis: e.t || "Neprítomnosť", od_min: e.od, do_min: e["do"], _dpKredit: dl } };
+    }).filter(Boolean);
+  }
   // Neprítomnosti (kódy zo STAVTURNUSU): iný druh práce = výkon, neplatené sa nepočítajú, PN a príbuzné len po–pi, ostatné platené každý deň
   var PRACA = { 11: 1, 16: 1, 17: 1, 18: 1, 39: 1 };                                  // prestoj, zájazd, výluka, prevod na inú prácu, refundácia
   var NEPLATENE = { 8: 1, 24: 1, 34: 1, 9: 1, 13: 1, 19: 1, 49: 1, 53: 1, 54: 1 };     // neplatené voľno, absencia, neurčená, vyžiadané voľno, nemoc neplatená, štrajk
@@ -42,12 +55,13 @@
   function vzorK(s) { return s._vzor || (s._karta && s._karta.vzor) || ""; }
 
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
-  function zber(datum) {
+  function zber(datum, zdroj) {
+    var dp = zdroj === "dp";
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
     var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = Math.round(tyz0 / 5 * 60);
     var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0, del: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
-      var dt = new Date(y, m, d), sv = sluzbyDna(v.rid, kluc(dt)) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, casy = [];
+      var dt = new Date(y, m, d), sv = (dp ? dpSluzby(kluc(dt)) : sluzbyDna(v.rid, kluc(dt))) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, casy = [];
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) || !!EXTRA_SV[kluc(dt)]; // sviatok = deň pracovného pokoja + sviatky, ktoré ním nie sú
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
@@ -75,7 +89,8 @@
           }
           nepr[nm] = (nepr[nm] || 0) + 1;
           var kr = 0;
-          if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
+          if (k._dp) kr = k._dpKredit || 0;
+          else if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
           T.plat += kr;
           if (STRAVNE_NEPR[kod]) strNepr = true;
           rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
@@ -91,7 +106,7 @@
         prevEnd = abs0 + (b - a);
         if (d < 1) return;
         var cc = window.DpbCistyCas && DpbCistyCas.zaKartu(k);
-        var cisty = cc ? cc.cisty : b - a;
+        var cisty = k._dp ? (k._dpCisty != null ? k._dpCisty : b - a) : cc ? cc.cisty : b - a;
         var noc = ov(a, b, 0, NOC_DO) + ov(a, b, NOC_OD, 1440 + NOC_DO);
         var voz = [], vs = k.vozidla || [];
         if (vs.length === 1 && tmin(vs[0].od) === a % 1440 && tmin(vs[0].do) === b % 1440) voz = [{ c: vs[0].cislo, min: cisty }];
@@ -104,7 +119,7 @@
         if (vz === "STRIEDAČ") voz = [{ c: vs.length ? vs[0].cislo : "", min: cisty }]; // striedač má voz vždy po celý čas v práci
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
-        if (vz !== "POHOTOVOSŤ") casy.push([a, b]);
+        if (vz !== "POHOTOVOSŤ" && !dp) casy.push([a, b]);
         den += cisty; T.cisty += cisty; T.voz += vmin; T.noc += noc;
         if (dt.getDay() === 6) T.so += cisty;
         if (dt.getDay() === 0) T.ne += cisty;
@@ -133,9 +148,9 @@
       var dq = new Date(y, m, q);
       if (dq.getDay() !== 0 && dq.getDay() !== 6) pd++; // sviatok v pracovný deň sa do úväzku počíta
     }
-    T.fond = Math.round(pd * tyz / 5 * 60);
+    T.fond = dp ? 0 : Math.round(pd * tyz / 5 * 60);
     T.nadcas = Math.max(0, T.cisty + T.plat - T.fond);
-    return { v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
+    return { dp: dp, v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
   var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
@@ -145,7 +160,22 @@
     ".vk th{background:#222;color:#fff}.vk tr.n td{border-top:2px solid #999}.vk .t{background:#f90;padding:0 5px;border-radius:3px}.vk p{margin:8px 0}" +
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
+  function teloDp(D) {
+    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)]];
+    var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
+    var tr = D.rows.map(function (r) {
+      var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
+      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+    }).join("");
+    return '<div class="vk"><div class="hd"><h1>Pracovný výkaz – druhá práca – ' + esc(D.nadpis) + "</h1>" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div>" +
+      '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
+      "<table><thead><tr><th>Deň</th><th>Záznam</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Noc</th><th>Oddych</th><th>Sviatok</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="8">V tomto mesiaci nie sú záznamy.</td></tr>') + "</tbody></table>" +
+      "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z vlastného kalendára druhej práce. Údaje sú podľa kalendára uloženého v tomto zariadení.</p></div>";
+  }
   function telo(D) {
+    if (D.dp) return teloDp(D);
     var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
     tl.splice(8, 0, ["Príplatok za delenú", T.del || 0]);
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
@@ -179,14 +209,14 @@
     }, 400);
   }
 
-  function otvor(datum) {
-    var D = zber(datum);
+  function otvor(datum, zdroj) {
+    var D = zber(datum, zdroj);
     var st = document.createElement("style"); st.textContent = CSS +
       ".vk-ov{position:fixed;inset:0;z-index:99999;background:#555;display:flex;flex-direction:column}" +
       ".vk-bar{display:flex;gap:8px;padding:8px;background:#111;align-items:center}.vk-bar button{font:700 16px system-ui;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#e8001a;color:#fff}.vk-bar .sv{background:#444}.vk-bar span{flex:1;color:#fff;font-size:15px}" +
       ".vk-ov{-webkit-text-size-adjust:100%;text-size-adjust:100%}.vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
     var ov_ = document.createElement("div"); ov_.className = "vk-ov";
-    ov_.innerHTML = '<div class="vk-bar"><button class="sv" data-a="x">Zavrieť</button><span>Výkaz</span><button class="sv" data-a="-">−</button><button class="sv" data-a="+">+</button><button data-a="p">Tlačiť</button></div><div class="vk-sc"><div class="vk-in">' + telo(D) + "</div></div>";
+    ov_.innerHTML = '<div class="vk-bar"><button class="sv" data-a="x">Zavrieť</button><span>' + (zdroj === "dp" ? "Výkaz – druhá práca" : "Výkaz") + '</span><button class="sv" data-a="-">−</button><button class="sv" data-a="+">+</button><button data-a="p">Tlačiť</button></div><div class="vk-sc"><div class="vk-in">' + telo(D) + "</div></div>";
     document.head.appendChild(st); document.body.appendChild(ov_);
     var sc = ov_.querySelector(".vk-sc"), inn = ov_.querySelector(".vk-in"), z = 1;
     function nastav(n, cx, cy) {

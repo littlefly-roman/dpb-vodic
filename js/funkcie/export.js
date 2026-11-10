@@ -268,7 +268,7 @@
     list.parentNode.insertBefore(b, list);
     var menu = document.createElement("div");
     menu.id = "exportMenu"; menu.className = "export-menu"; menu.hidden = true;
-    [["Výkaz mesiaca", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d); }], ["Excel (.xlsx)", function (d) { stiahni(menoSuboru(d, "xlsx"), "", xlsxMesiaca(d)); }], ["Kalendár (.ics)", icsMesiaca]].forEach(function (p) {
+    [["Výkaz mesiaca", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d); }], ["Výkaz druhej práce", function (d) { if (window.DpbVykaz) DpbVykaz.otvor(d, "dp"); }], ["Excel (.xlsx)", function (d) { stiahni(menoSuboru(d, "xlsx"), "", xlsxMesiaca(d)); }], ["Kalendár (.ics)", icsMesiaca]].forEach(function (p) {
       var i = document.createElement("button"); i.type = "button"; i.textContent = p[0];
       i.addEventListener("click", function () {
         menu.hidden = true;
@@ -283,6 +283,7 @@
       var r = b.getBoundingClientRect();
       menu.style.top = r.bottom + 4 + "px";
       menu.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+      Array.prototype.forEach.call(menu.children, function (x) { if (x.textContent === "Výkaz druhej práce") x.style.display = window.DpbDruhaPraca && DpbDruhaPraca.povolene() ? "" : "none"; });
       menu.hidden = false;
     });
     document.addEventListener("click", function () { menu.hidden = true; });
