@@ -3864,3 +3864,7 @@ img{-webkit-user-drag:none}
 /* prepínač zoznamov v hlavičke: číslo alebo logo */
 .zoznam2-cislo{font-size:20px;font-weight:800;line-height:1;color:var(--text-3)}
 .zoznam2-logo{width:28px;height:28px;object-fit:contain;border-radius:6px}
+
+/* Profil – druhá práca: tlačidlá pod sebou, rovnako veľké */
+#profilDpKarta .profil-nacitat{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;margin:8px 0 0;text-align:center}
+#profilDpKarta .profil-subor-lbl{cursor:pointer}
