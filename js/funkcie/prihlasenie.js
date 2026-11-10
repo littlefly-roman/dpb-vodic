@@ -47,11 +47,8 @@
             String(today.getMonth() + 1).padStart(2, "0") +
             "-" +
             String(today.getDate()).padStart(2, "0");
-          let pick = availDates.includes(todayKey) ||
-            (availDates.length && availDates[0] <= todayKey && todayKey <= availDates[availDates.length - 1])
-            ? todayKey
-            : availDates.filter((d) => d <= todayKey).slice(-1)[0] ||
-              availDates[0];
+          // vždy aktuálny dátum (aj keď vodič v ten deň nemá službu alebo mu dáta končia skôr)
+          let pick = todayKey;
           if (pick) {
             const [y, m, d] = pick.split("-").map(Number);
             window.appState.selectedDate = new Date(y, m - 1, d);
