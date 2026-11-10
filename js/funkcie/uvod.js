@@ -184,10 +184,7 @@
     try {
       if (ov) return;
       var karty = zozbieraj(rid, dnes);
-      // po každom štarte vždy aj počet rokov a dní v DPB (ak dnes nie je iná osobná karta o rokoch/dňoch)
-      var maPocet = karty.some(function (k) { return /^(rok|dni|rok-pred):/.test(k.id); });
-      var zk = maPocet ? null : kartaPocet(rid);
-      if (zk) karty.unshift(zk);
+      // počet rokov/dní sa ukáže len v pekné dni (výročie, okrúhle počty dní) – rieši zozbieraj/kartyOsobne
       karty = karty.slice(0, 3);
       if (!karty.length) return;
       _ukazane = true;
