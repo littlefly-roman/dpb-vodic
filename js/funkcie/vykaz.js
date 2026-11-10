@@ -58,7 +58,7 @@
   function zber(datum, zdroj) {
     var dp = zdroj === "dp";
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
-    var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = Math.round(tyz0 / 5 * 60);
+    var tyz0 = (window.DpbUvazok && DpbUvazok[v.rid]) || 37.5, denMin = dp && window.DpbDruhaPraca ? DpbDruhaPraca.uvazokDen() : Math.round(tyz0 / 5 * 60);
     var prevEnd = null, rows = [], T = { dni: 0, cisty: 0, voz: 0, noc: 0, so: 0, ne: 0, sv: 0, str: 0, plat: 0, del: 0 }, nepr = {};
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
       var dt = new Date(y, m, d), sv = (dp ? dpSluzby(kluc(dt)) : sluzbyDna(v.rid, kluc(dt))) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, casy = [];
@@ -89,8 +89,7 @@
           }
           nepr[nm] = (nepr[nm] || 0) + 1;
           var kr = 0;
-          if (k._dp) kr = k._dpKredit || 0;
-          else if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
+          if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
           T.plat += kr;
           if (STRAVNE_NEPR[kod]) strNepr = true;
           rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
@@ -148,7 +147,7 @@
       var dq = new Date(y, m, q);
       if (dq.getDay() !== 0 && dq.getDay() !== 6) pd++; // sviatok v pracovný deň sa do úväzku počíta
     }
-    T.fond = dp ? 0 : Math.round(pd * tyz / 5 * 60);
+    T.fond = dp ? pd * denMin : Math.round(pd * tyz / 5 * 60);
     T.nadcas = Math.max(0, T.cisty + T.plat - T.fond);
     return { dp: dp, v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
@@ -161,7 +160,7 @@
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
   function teloDp(D) {
-    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)]];
+    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");

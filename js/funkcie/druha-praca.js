@@ -75,6 +75,11 @@
     document.dispatchEvent(new Event("dpb-druha-praca"));
     return nove.length;
   }
+  // denný úväzok druhej práce v minútach (predvolene 4:00); nastaviteľný v Profile
+  function uvazokDen() {
+    try { var v = parseFloat(localStorage.getItem(PREF + "uv_" + rid())); if (v > 0 && v <= 12) return Math.round(v * 60); } catch (e) {}
+    return 240;
+  }
   function povolene() {
     var r = rid(); if (!r) return false;
     try { if (localStorage.getItem(PREF + "on_" + r) === "1") return true; } catch (e) {}
@@ -248,6 +253,7 @@
   // ── Profil: ručný import ──
   function obnovProfil() {
     var s = document.getElementById("profilDpStav"); if (s) s.textContent = info();
+    var u = document.getElementById("profilDpUv"); if (u && document.activeElement !== u) u.value = String(uvazokDen() / 60);
   }
   document.addEventListener("dpb-druha-praca", obnovProfil);
   document.addEventListener("change", function (ev) {
@@ -262,6 +268,12 @@
     rd.readAsText(f);
   });
   document.addEventListener("change", function (ev) {
+    var inp = ev.target; if (!inp || inp.id !== "profilDpUv") return;
+    var v = parseFloat(String(inp.value).replace(",", "."));
+    try { if (v > 0 && v <= 12) localStorage.setItem(PREF + "uv_" + rid(), String(v)); else localStorage.removeItem(PREF + "uv_" + rid()); } catch (e) {}
+    obnovProfil();
+  });
+  document.addEventListener("change", function (ev) {
     var inp = ev.target; if (!inp || inp.id !== "profilDpObr" || !inp.files || !inp.files[0]) return;
     nastavObrazok(inp.files[0]); inp.value = "";
   });
@@ -273,5 +285,5 @@
   });
   document.addEventListener("DOMContentLoaded", obnovProfil);
 
-  window.DpbDruhaPraca = { pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
+  window.DpbDruhaPraca = { uvazokDen: uvazokDen, pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
 })();
