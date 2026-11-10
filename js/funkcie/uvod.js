@@ -169,9 +169,15 @@
     if (!o || !o.nastup) return null;
     var d0 = new Date(dn.getFullYear(), dn.getMonth(), dn.getDate()), dni = Math.round((d0 - o.nastup) / 86400000);
     if (dni < 0) return null;
-    var roky = Math.floor(dni / 365.25);
-    return { id: "zn:" + Date.now(), em: "🚋", nadpis: roky >= 1 ? "Si s nami už " + roky + " " + pl(roky, "rok", "roky", "rokov") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní"),
-      text: (roky >= 1 ? "To je " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false };
+    // presne podľa kalendára: celé roky od nástupu + zvyšné dni od posledného výročia
+    var roky = d0.getFullYear() - o.nastup.getFullYear();
+    var vyr = new Date(o.nastup.getFullYear() + roky, o.nastup.getMonth(), o.nastup.getDate());
+    if (vyr > d0) { roky--; vyr = new Date(o.nastup.getFullYear() + roky, o.nastup.getMonth(), o.nastup.getDate()); }
+    var zv = Math.round((d0 - vyr) / 86400000);
+    var rokTxt = roky + " " + pl(roky, "rok", "roky", "rokov");
+    var nadpis = roky >= 1 ? "Si s nami už " + rokTxt + (zv ? " a " + zv + " " + pl(zv, "deň", "dni", "dní") : "") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní");
+    return { id: "zn:" + Date.now(), em: "🚋", nadpis: nadpis,
+      text: (roky >= 1 ? "Spolu " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false };
   }
   var _ukazane = false;
   function zobraz(rid, dnes) {
