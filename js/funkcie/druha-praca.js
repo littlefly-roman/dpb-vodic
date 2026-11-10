@@ -248,7 +248,7 @@
     var o = nacitaj(r);
     return o.ev.length ? o.ev.length + " udalostí" + (o.zdroj ? " · " + o.zdroj : "") : "nič nenačítané";
   }
-  function zmaz() { var r = rid(); if (r) { try { localStorage.removeItem(PREF + r); } catch (e) {} document.dispatchEvent(new Event("dpb-druha-praca")); } }
+  function zmaz() { var r = rid(); if (r) { try { localStorage.removeItem(PREF + r); } catch (e) {} idb(function (st) { st.delete(r); }); document.dispatchEvent(new Event("dpb-druha-praca")); } }
 
   // ── Profil: ručný import ──
   function obnovProfil() {
@@ -284,6 +284,83 @@
     if (t && window.confirm && window.confirm("Zmazať kalendár druhej práce z tohto zariadenia?")) zmaz();
   });
   document.addEventListener("DOMContentLoaded", obnovProfil);
+
+  // ── Záloha a obnova: súbor (.json) + automatická kópia v IndexedDB (prežije aj vyčistenie localStorage) ──
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function zaloha(r) {
+    var d = lsGet(PREF + r);
+    if (!d) return null;
+    return { format: "dpb-druha-praca", v: 1, osobne: r, cas: new Date().toISOString(), data: d, uv: lsGet(PREF + "uv_" + r), img: lsGet(PREF + "img_" + r), imgzdroj: lsGet(PREF + "imgzdroj_" + r) };
+  }
+  function obnov(z, r) {
+    if (!z || z.format !== "dpb-druha-praca" || !z.data) return false;
+    try {
+      localStorage.setItem(PREF + r, z.data);
+      localStorage.setItem(PREF + "on_" + r, "1");
+      [["uv_", z.uv], ["img_", z.img], ["imgzdroj_", z.imgzdroj]].forEach(function (p) {
+        if (p[1]) localStorage.setItem(PREF + p[0] + r, p[1]); else localStorage.removeItem(PREF + p[0] + r);
+      });
+    } catch (e) { return false; }
+    document.dispatchEvent(new Event("dpb-druha-praca"));
+    return true;
+  }
+  function idb(fn) {
+    try {
+      var rq = indexedDB.open("dpb_druha_praca", 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore("zaloha"); };
+      rq.onsuccess = function () { try { fn(rq.result.transaction("zaloha", "readwrite").objectStore("zaloha")); } catch (e) {} };
+    } catch (e) {}
+  }
+  var _tm = 0;
+  function kopiaDoIdb() {
+    clearTimeout(_tm);
+    _tm = setTimeout(function () {
+      var r = rid(), z = r && zaloha(r);
+      if (z) idb(function (st) { st.put(z, r); });
+    }, 800);
+  }
+  document.addEventListener("dpb-druha-praca", kopiaDoIdb);
+  // ak je localStorage prázdny a kópia existuje, obnov ju (raz po zistení vodiča)
+  var _skus = 0;
+  var _iv = setInterval(function () {
+    var r = rid(); if (!r) { if (++_skus > 60) clearInterval(_iv); return; }
+    clearInterval(_iv);
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    if (lsGet(PREF + r)) return;
+    idb(function (st) {
+      var g = st.get(r);
+      g.onsuccess = function () {
+        if (g.result && !lsGet(PREF + r) && obnov(g.result, r) && window._showToast) window._showToast("Druhá práca: obnovené z kópie v zariadení", 4000);
+      };
+    });
+  }, 500);
+  function stiahniZalohu() {
+    var r = rid(), z = zaloha(r);
+    if (!z) { if (window._showToast) window._showToast("Nie je čo zálohovať – kalendár je prázdny", 3000); return; }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(z)], { type: "application/json" }));
+    a.download = "druha_praca_" + r + "_" + kluc(new Date()) + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  document.addEventListener("click", function (ev) {
+    if (ev.target && ev.target.closest && ev.target.closest("#profilDpZaloha")) stiahniZalohu();
+  });
+  document.addEventListener("change", function (ev) {
+    var inp = ev.target; if (!inp || inp.id !== "profilDpObnov" || !inp.files || !inp.files[0]) return;
+    var f = inp.files[0], r = rid(), rd = new FileReader();
+    rd.onload = function () {
+      var z = null; try { z = JSON.parse(String(rd.result || "")); } catch (e) {}
+      var ok = z && z.format === "dpb-druha-praca";
+      if (ok && String(z.osobne) !== r && !(window.confirm && window.confirm("Záloha je z osobného čísla " + z.osobne + ", teraz máš " + r + ". Aj tak obnoviť?"))) ok = null;
+      if (ok === null) { inp.value = ""; return; }
+      if (ok && lsGet(PREF + r) && window.confirm && !window.confirm("Obnovením sa nahradí aktuálny kalendár druhej práce. Pokračovať?")) { inp.value = ""; return; }
+      var hotovo = ok && obnov(z, r);
+      if (window._showToast) window._showToast(hotovo ? "Druhá práca: obnovené zo zálohy" : "Tento súbor nie je záloha druhej práce", 3500);
+      inp.value = "";
+    };
+    rd.readAsText(f);
+  });
 
   window.DpbDruhaPraca = { obrazok: obrazok, uvazokDen: uvazokDen, pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
 })();
