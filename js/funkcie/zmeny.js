@@ -251,7 +251,7 @@
       var tag = stitok(o), dalsi = ciele.length > 1 && k === "sluzba" ? ciele.slice(0, 1) : ciele;
       ciele.forEach(function (el, ix) {
         el.classList.add("zm-on");
-        if (ix === 0 || k !== "sluzba") { var t = document.createElement("span"); t.className = "zm-tag"; t.textContent = tag; el.appendChild(t); }
+        if ((ix === 0 || k !== "sluzba") && !/^NOV/.test(tag)) { var t = document.createElement("span"); t.className = "zm-tag"; t.textContent = tag; el.appendChild(t); }
       });
       zvyrazneneNieco = true;
       var potvrd = function (e) {
