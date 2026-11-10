@@ -569,9 +569,9 @@
 
           container.appendChild(fragment);
           (function () {
-            if (!(appState.selectedDate > new Date())) {
-              // dnes: všeobecný klikateľný oznam, ak sú dostupné voľné služby
-              if (window.DpbZmeny && DpbZmeny.burzaPocet && DpbZmeny.burzaPocet() > 0) {
+            if (isToday(appState.selectedDate) || !(appState.selectedDate > new Date())) {
+              // dnes (a len dnes – vo včerajšku oznam nie je): všeobecný klikateľný oznam, ak sú dostupné voľné služby
+              if (isToday(appState.selectedDate) && typeof Burza !== "undefined" && Burza.pocetVhodnych && Burza.pocetVhodnych() > 0) {
                 var g = document.createElement("button");
                 g.type = "button";
                 g.className = "burza-link-row";
@@ -1617,6 +1617,23 @@
           appState.mainView = "services";
           render();
         });
+
+        // Po polnoci (appka ostala otvorená/v pozadí): ak bol zobrazený „dnešok“, posuň sa na nový dnešný deň
+        var _denKluc = formatDateKey(new Date());
+        function poPolnoci() {
+          var nk = formatDateKey(new Date());
+          if (nk === _denKluc) return;
+          var bolDnes = formatDateKey(appState.selectedDate) === _denKluc;
+          _denKluc = nk;
+          if (bolDnes) {
+            appState.selectedDate = new Date();
+            if (appState.mainView === "services") render();
+          }
+        }
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) poPolnoci(); });
+        window.addEventListener("pageshow", poPolnoci);
+        window.addEventListener("focus", poPolnoci);
+        setInterval(poPolnoci, 60000);
 
         document
           .querySelectorAll(".bottom-nav button:not(#btnToday)")

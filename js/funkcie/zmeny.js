@@ -131,7 +131,13 @@
     return DPBData.getVolneSluzby().filter(function (x) {
       if (x.startMs <= ted) return false;
       if (tr && x.trakcia && tr !== x.trakcia) return false;
-      return !(DPBData.getServicesForDate(r, x.dateKey) || []).length;
+      if ((DPBData.getServicesForDate(r, x.dateKey) || []).length) return false;
+      // povinný odpočinok (denný 11 h / skrátený 6–11 h, týždenný 35 h) – rovnako ako v zozname Burzy
+      var O = window.DpbOdpocinok;
+      if (O && window.RAW && x.odMin != null && x.doMin != null) {
+        try { if (!O.skontroluj(O.praceVodica(window.RAW.models, r), { od: O.abs(x.dateKey, x.odMin), do: O.abs(x.dateKey, x.doMin) }).ok) return false; } catch (e) {}
+      }
+      return true;
     });
   }
   function burzaNove(r, cas) {

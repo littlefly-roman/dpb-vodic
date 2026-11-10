@@ -782,6 +782,12 @@
           );
         }
 
-        return { init, render, zrusFilter, getVolnePreDen, rezervuj, getStav: (id) => state.rezervacie.find(r => r.sluzbaId === id && ["odoslana","riesenie","schvalena"].includes(r.stav)) || null };
+        // počet voľných služieb, ktoré by vodič naozaj mohol vziať (trakcia, neprítomnosť, povinný odpočinok) – rovnaké kritérium ako v zozname Burzy
+        function pocetVhodnych() {
+          syncVolne();
+          return state.sluzby.filter((s) => s.stav === "volna" && dostupna(s)).length;
+        }
+
+        return { init, render, zrusFilter, getVolnePreDen, pocetVhodnych, rezervuj, getStav: (id) => state.rezervacie.find(r => r.sluzbaId === id && ["odoslana","riesenie","schvalena"].includes(r.stav)) || null };
       })();
     
