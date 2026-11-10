@@ -137,7 +137,15 @@
   function nastavObrazok(file, zdroj, r0) {
     var r = r0 || rid(); if (!r || !file) return;
     var fr = new FileReader();
+    var jeSvg = /svg/i.test(file.type || "") || /\.svg$/i.test(file.name || "");
     fr.onload = function () {
+      if (jeSvg) { // SVG sa uloží priamo (ostrý v každej veľkosti, bez ohľadu na chýbajúce rozmery)
+        var du = String(fr.result || "").replace(/^data:[^;,]*/, "data:image/svg+xml");
+        try { localStorage.setItem(PREF + "img_" + r, du); localStorage.setItem(PREF + "imgzdroj_" + r, zdroj || "rucny"); } catch (e) {}
+        document.dispatchEvent(new Event("dpb-druha-praca"));
+        if (window._showToast && zdroj !== "disk") window._showToast("Obrázok na karte nastavený", 2500);
+        return;
+      }
       var im = new Image();
       im.onload = function () {
         var sc = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas");

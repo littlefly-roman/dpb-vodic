@@ -108,7 +108,7 @@
       return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q2) + "&pageSize=50&fields=files(id,name,mimeType)").then(function (l) {
         var vs = l.files || [];
         var fs = vs.filter(function (x) { return /\.ics$/i.test(x.name || ""); });
-        var im = vs.filter(function (x) { return /^image\//.test(x.mimeType || ""); })[0];
+        var im = vs.filter(function (x) { return /^image\//.test(x.mimeType || "") || /\.(svg|png|jpe?g|webp)$/i.test(x.name || ""); })[0];
         var pr = [];
         if (im) pr.push(api("https://www.googleapis.com/drive/v3/files/" + im.id + "?alt=media", "blob").then(function (b) { DpbDruhaPraca.obrazokZDisku(String(r), b); }));
         return Promise.all(pr).then(function () {
