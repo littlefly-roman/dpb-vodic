@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" href="img/icon-192.png" />
-    <link rel="stylesheet" href="style.css?v=164">
+    <link rel="stylesheet" href="style.css?v=166">
     <script>
       (function () {
         try {
@@ -322,6 +322,14 @@
           <button type="button" id="profilDiskBtn" class="profil-nacitat">Pripojiť Disk Google</button>
           <div class="profil-pozn">Po jednorazovom prihlásení appka sama nájde najnovší export na Disku a načíta ho.</div>
         </div>
+        <div class="employer-card profil-card" id="profilDpKarta">
+          <div class="employer-detail-row">
+            <span>Druhá práca</span><span id="profilDpStav">–</span>
+          </div>
+          <label class="profil-nacitat profil-subor-lbl">Nahrať kalendár (.ics)<input type="file" id="profilDpFile" accept=".ics,text/calendar" hidden></label>
+          <button type="button" id="profilDpZmaz" class="profil-nacitat">Zmazať kalendár</button>
+          <div class="profil-pozn">Kalendár sa uloží len v tomto zariadení. Appka ho sama načíta aj z priečinka s tvojím osobným číslom na Disku Google.</div>
+        </div>
         <div class="employer-card profil-card" id="profilUvodKarta">
           <button type="button" id="profilUvodBtn" class="profil-nacitat">Zobraziť úvod znova</button>
         </div>
@@ -468,7 +476,7 @@
     <script src="js/data/grafikon-parsery.js?v=57"></script>
     <script src="js/data/vypravna-model.js?v=54"></script>
     <script src="js/funkcie/kalendar-znacky.js?v=1"></script>
-    <script src="js/app/hlavna.js?v=116"></script>
+    <script src="js/app/hlavna.js?v=117"></script>
     <script src="js/funkcie/karty-bodky.js?v=2"></script>
 
     <!-- Card builder + overrides -->
@@ -477,6 +485,7 @@
     <script src="js/funkcie/obrazovka.js"></script>
     <script src="js/funkcie/hladat.js?v=8"></script>
     <script src="js/funkcie/vs.js?v=1"></script>
+    <script src="js/funkcie/druha-praca.js?v=2"></script>
     <script src="js/funkcie/cisty-cas.js?v=5"></script>
     <script src="js/funkcie/karta-sluzby.js?v=118"></script>
     <script src="js/funkcie/zmeny.js?v=9"></script>
@@ -662,7 +671,7 @@
     <script src="js/funkcie/ikony-dopravy.js?v=3"></script>
     <script src="js/funkcie/import-csv.js"></script>
     <script src="js/funkcie/disk-google-config.js?v=2"></script>
-    <script src="js/funkcie/disk-google.js?v=9"></script>
+    <script src="js/funkcie/disk-google.js?v=10"></script>
 
     <script src="js/funkcie/cestovne-poriadky.js?v=13"></script>
 

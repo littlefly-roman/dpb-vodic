@@ -85,6 +85,7 @@
   // PRAVA.csv (viditeľnosť funkcií) – nezávisle od D_VYPR_POL.csv; chyba sa ticho ignoruje
   var pravaStav = "";
   function pravaZDisku(ukaz) {
+    druhaPracaZDisku();
     var a = stiahniText("PRAVA.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastav(t, true); });
     var b = stiahniText("SKUPINY.csv", function (t) { return window.DpbPrava && window.DpbPrava.nastavSkupiny(t, true); });
     var c = stiahniText("SPRAVY.csv", function (t) { return window.DpbSpravy && window.DpbSpravy.nastav(t, true); });
@@ -95,6 +96,24 @@
       obnovStav();
     });
   }
+  // Druhá práca: priečinok s názvom = osobné číslo vodiča; všetky súbory .ics v ňom (každý vodič vidí len svoj)
+  function druhaPracaZDisku() {
+    var r = window.appState && window.appState.currentDriver;
+    if (!r || !window.DpbDruhaPraca || !token) return Promise.resolve("");
+    var q = "name='" + String(r).replace(/'/g, "") + "' and mimeType='application/vnd.google-apps.folder' and trashed=false";
+    return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&pageSize=1&fields=files(id)").then(function (j) {
+      var f = (j.files || [])[0];
+      if (!f) return "";
+      var q2 = "'" + f.id + "' in parents and trashed=false and name contains '.ics'";
+      return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q2) + "&pageSize=20&fields=files(id,name)").then(function (l) {
+        var fs = l.files || [];
+        return Promise.all(fs.map(function (x) {
+          return api("https://www.googleapis.com/drive/v3/files/" + x.id + "?alt=media", "blob").then(function (b) { return b.text(); });
+        })).then(function (t) { return t.length ? String(DpbDruhaPraca.zTextov(String(r), t, "Disk Google · " + fs.length + " súb.")) : ""; });
+      });
+    }).catch(function () { return ""; });
+  }
+
   function stiahniText(nazov, hotovo) {
     var q = "name='" + nazov + "' and trashed=false";
     return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)").then(function (j) {
@@ -193,5 +212,5 @@
     if (b) b.addEventListener("click", function () { skontroluj(!pripojene(), false); });
     obnovStav();
   });
-  window.DpbDisk = { skontroluj: skontroluj, auto: auto, obnovStav: obnovStav };
+  window.DpbDisk = { druhaPraca: druhaPracaZDisku, skontroluj: skontroluj, auto: auto, obnovStav: obnovStav };
 })();

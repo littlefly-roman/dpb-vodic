@@ -382,6 +382,7 @@
               '<div class="volno-icon"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>' +
               '<div class="volno-text volno-text-oznam">Údaje nie sú k dispozícii</div>';
             container.appendChild(bd);
+            if (window.DpbDruhaPraca) { try { DpbDruhaPraca.vloz(container, key); } catch (e) {} }
             return;
           }
           if (services.length === 0) {
@@ -404,6 +405,7 @@
             pridajMenuVolno(volno, selKey);
 
             container.appendChild(volno);
+            if (window.DpbDruhaPraca) { try { DpbDruhaPraca.vloz(container, selKey); } catch (e) {} }
             if (maVBurze) {
               const r = document.createElement("button");
               r.type = "button";
@@ -567,6 +569,18 @@
             fragment.appendChild(card);
           });
 
+          // Druhá práca (vlastný kalendár vodiča): karty sa zaradia podľa času medzi služby DPB
+          if (window.DpbDruhaPraca) {
+            try {
+              const uz = Array.prototype.slice.call(fragment.children), off = uz.length - services.length;
+              if (off === 0 || off === 1)
+                services.forEach((sv, i) => {
+                  const k = sv._karta, n = uz[off + i];
+                  if (k && n && typeof k.od_min === "number") { n.dataset.od = String(k.od_min); if (typeof k.do_min === "number") n.dataset.do = String(k.do_min); }
+                });
+              DpbDruhaPraca.vloz(fragment, key);
+            } catch (e) {}
+          }
           container.appendChild(fragment);
           (function () {
             if (isToday(appState.selectedDate) || !(appState.selectedDate > new Date())) {
@@ -1630,6 +1644,7 @@
             if (appState.mainView === "services") render();
           }
         }
+        document.addEventListener("dpb-druha-praca", function () { if (appState.currentDriver && appState.mainView === "services") render(); });
         document.addEventListener("visibilitychange", function () { if (!document.hidden) poPolnoci(); });
         window.addEventListener("pageshow", poPolnoci);
         window.addEventListener("focus", poPolnoci);
