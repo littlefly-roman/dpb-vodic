@@ -104,12 +104,18 @@
     return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&pageSize=1&fields=files(id)").then(function (j) {
       var f = (j.files || [])[0];
       if (!f) return "";
-      var q2 = "'" + f.id + "' in parents and trashed=false and name contains '.ics'";
-      return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q2) + "&pageSize=20&fields=files(id,name)").then(function (l) {
-        var fs = l.files || [];
-        return Promise.all(fs.map(function (x) {
-          return api("https://www.googleapis.com/drive/v3/files/" + x.id + "?alt=media", "blob").then(function (b) { return b.text(); });
-        })).then(function (t) { return t.length ? String(DpbDruhaPraca.zTextov(String(r), t, "Disk Google · " + fs.length + " súb.")) : ""; });
+      var q2 = "'" + f.id + "' in parents and trashed=false";
+      return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q2) + "&pageSize=50&fields=files(id,name,mimeType)").then(function (l) {
+        var vs = l.files || [];
+        var fs = vs.filter(function (x) { return /\.ics$/i.test(x.name || ""); });
+        var im = vs.filter(function (x) { return /^image\//.test(x.mimeType || ""); })[0];
+        var pr = [];
+        if (im) pr.push(api("https://www.googleapis.com/drive/v3/files/" + im.id + "?alt=media", "blob").then(function (b) { DpbDruhaPraca.obrazokZDisku(String(r), b); }));
+        return Promise.all(pr).then(function () {
+          return Promise.all(fs.map(function (x) {
+            return api("https://www.googleapis.com/drive/v3/files/" + x.id + "?alt=media", "blob").then(function (b) { return b.text(); });
+          }));
+        }).then(function (t) { return t.length ? String(DpbDruhaPraca.zTextov(String(r), t, "Disk Google · " + fs.length + " súb.")) : ""; });
       });
     }).catch(function () { return ""; });
   }

@@ -134,8 +134,8 @@
   }
 
   // ── obrázok na karte (vlastné logo): len v zariadení, zmenšený ──
-  function nastavObrazok(file) {
-    var r = rid(); if (!r || !file) return;
+  function nastavObrazok(file, zdroj, r0) {
+    var r = r0 || rid(); if (!r || !file) return;
     var fr = new FileReader();
     fr.onload = function () {
       var im = new Image();
@@ -143,9 +143,9 @@
         var sc = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas");
         c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
         c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-        try { localStorage.setItem(obrKluc(), c.toDataURL("image/png")); } catch (e) {}
+        try { localStorage.setItem(PREF + "img_" + r, c.toDataURL("image/png")); localStorage.setItem(PREF + "imgzdroj_" + r, zdroj || "rucny"); } catch (e) {}
         document.dispatchEvent(new Event("dpb-druha-praca"));
-        if (window._showToast) window._showToast("Obrázok na karte nastavený", 2500);
+        if (window._showToast && zdroj !== "disk") window._showToast("Obrázok na karte nastavený", 2500);
       };
       im.src = fr.result;
     };
@@ -173,6 +173,13 @@
       if (pred) rodic.insertBefore(k, pred); else rodic.appendChild(k);
     });
     return ev.length;
+  }
+
+  // obrázok z Disku (priečinok s kalendárom): použije sa, len ak si vodič nenahral vlastný ručne
+  function obrazokZDisku(r, blob) {
+    var zdroj = ""; try { zdroj = localStorage.getItem(PREF + "imgzdroj_" + r) || ""; } catch (e) {}
+    if (zdroj === "rucny") return;
+    nastavObrazok(blob, "disk", r);
   }
 
   function info() {
@@ -204,11 +211,11 @@
   });
   document.addEventListener("click", function (ev) {
     var q = ev.target && ev.target.closest && ev.target.closest("#profilDpObrZmaz");
-    if (q) { try { localStorage.removeItem(obrKluc()); } catch (e) {} document.dispatchEvent(new Event("dpb-druha-praca")); }
+    if (q) { try { localStorage.removeItem(obrKluc()); localStorage.removeItem(PREF + "imgzdroj_" + rid()); } catch (e) {} document.dispatchEvent(new Event("dpb-druha-praca")); }
     var t = ev.target && ev.target.closest && ev.target.closest("#profilDpZmaz");
     if (t && window.confirm && window.confirm("Zmazať kalendár druhej práce z tohto zariadenia?")) zmaz();
   });
   document.addEventListener("DOMContentLoaded", obnovProfil);
 
-  window.DpbDruhaPraca = { parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
+  window.DpbDruhaPraca = { obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
 })();
