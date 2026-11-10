@@ -5,6 +5,15 @@
 (function () {
   var PREF = "dpb_dp_";
 
+  var TYPY = [["sluzba", "Služba"], ["dov", "Dovolenka"], ["pn", "Práceneschopnosť"], ["lekar", "Lekár"], ["nahr", "Náhradné voľno"], ["ine", "Iná neprítomnosť"]];
+  function typNazov(t) { for (var i = 0; i < TYPY.length; i++) if (TYPY[i][0] === t) return TYPY[i][1]; return "Služba"; }
+  function typZTextu(t) {
+    t = String(t || "");
+    if (/dovolen|^dov$/i.test(t)) return "dov";
+    if (/\bPN\b|prácenesch|pracenesch/i.test(t)) return "pn";
+    if (/lek[aá]r|ošetrenie|osetrenie/i.test(t)) return "lekar";
+    return "sluzba";
+  }
   function rid() { return String((window.appState && window.appState.currentDriver) || ""); }
   function nacitaj(r) {
     try { var j = JSON.parse(localStorage.getItem(PREF + r) || "null"); return j && j.ev ? j : { ev: [], zdroj: "", cas: 0 }; } catch (e) { return { ev: [], zdroj: "", cas: 0 }; }
@@ -41,7 +50,8 @@
               if (koniec && kluc(koniec) === o.d) o["do"] = koniec.getHours() * 60 + koniec.getMinutes();
               else o["do"] = 24 * 60; // cez polnoc: ukáže sa do konca dňa
             }
-            o.pjo = /\bPJO\b/i.test(o.popis) && !/\bbez PJO\b/i.test(o.popis);
+            o.typ = typZTextu(o.t);
+            o.pjo = o.typ === "sluzba" && /\bPJO\b/i.test(o.popis) && !/\bbez PJO\b/i.test(o.popis);
             out.push(o);
           }
         }
@@ -60,9 +70,15 @@
     var stare = nacitaj(r), upravy = {};
     (stare.ev || []).forEach(function (e) { if (e.upr) upravy[e.id] = e; }); // ručné úpravy zostanú (krok 2)
     var nove = udalosti.map(function (e) { return upravy[e.id] || e; });
-    uloz(r, { ev: nove, zdroj: zdroj, cas: Date.now() });
+    uloz(r, { ev: nove.concat((stare.ev || []).filter(function (e) { return /^man-/.test(e.id); })), zdroj: zdroj, cas: Date.now() });
+    try { localStorage.setItem(PREF + "on_" + r, "1"); } catch (e) {}
     document.dispatchEvent(new Event("dpb-druha-praca"));
     return nove.length;
+  }
+  function povolene() {
+    var r = rid(); if (!r) return false;
+    try { if (localStorage.getItem(PREF + "on_" + r) === "1") return true; } catch (e) {}
+    return nacitaj(r).ev.length > 0 || !!obrazok();
   }
 
   // z Disku: pole textov .ics
@@ -92,7 +108,9 @@
     d.dataset.dp = e.id;
     var cs = e.od == null ? "Celý deň" : hm(e.od) + " – " + (e["do"] >= 1440 ? "24:00" : hm(e["do"]));
     var o = obrazok();
-    d.innerHTML = '<div class="dp-logo">' + (o ? '<img alt="">' : IKONA) + '</div><button type="button" class="dp-cas">' + cs + "</button>";
+    var typ = e.typ && e.typ !== "sluzba" ? '<span class="dp-typ">' + typNazov(e.typ) + "</span>" : "";
+    var casTxt = e.od == null ? (typ ? "" : "Celý deň") : cs;
+    d.innerHTML = '<div class="dp-logo">' + (o ? '<img alt="">' : IKONA) + '</div><button type="button" class="dp-cas">' + typ + casTxt + "</button>";
     if (o) d.querySelector("img").src = o;
     d.querySelector(".dp-cas").addEventListener("click", function () { uprav(e.id); });
     return d;
@@ -101,36 +119,59 @@
   // ── úprava: od, do, PJO, zmazanie ──
   function minNaVstup(m) { return pad(Math.floor(m / 60)) + ":" + pad(m % 60); }
   function vstupNaMin(v) { var m = /^(\d{1,2}):(\d{2})$/.exec(v || ""); return m ? (+m[1]) * 60 + (+m[2]) : null; }
-  function uprav(id) {
-    var r = rid(), o = nacitaj(r), e = null;
-    (o.ev || []).forEach(function (x) { if (x.id === id) e = x; });
+  function uprav(id, novy) {
+    var r = rid(), o = nacitaj(r), e = novy || null;
+    if (!e) (o.ev || []).forEach(function (x) { if (x.id === id) e = x; });
     if (!e) return;
     var ov = document.createElement("div");
     ov.className = "dp-edit-ov";
-    ov.innerHTML = '<div class="dp-edit"><div class="dp-edit-t">Úprava služby</div>' +
+    var opt = TYPY.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + "</option>"; }).join("");
+    ov.innerHTML = '<div class="dp-edit"><div class="dp-edit-t">' + (novy ? "Nový záznam" : "Úprava záznamu") + "</div>" +
+      '<label>Druh<select id="dpTyp">' + opt + "</select></label>" +
+      '<label class="dp-edit-cely" id="dpCelyL"><input type="checkbox" id="dpCely"> Celý deň</label>' +
       '<label>Od<input type="time" id="dpOd"></label><label>Do<input type="time" id="dpDo"></label>' +
-      '<label class="dp-edit-pjo"><input type="checkbox" id="dpPjo"> PJO (odpočíta sa 30 min)</label>' +
-      '<div class="dp-edit-b"><button type="button" id="dpUloz" class="dp-b-hl">Uložiť</button><button type="button" id="dpZrus">Zrušiť</button><button type="button" id="dpZmaz" class="dp-b-zmaz">Zmazať</button></div></div>';
+      '<label class="dp-edit-pjo" id="dpPjoL"><input type="checkbox" id="dpPjo"> PJO (odpočíta sa 30 min)</label>' +
+      '<div class="dp-edit-b"><button type="button" id="dpUloz" class="dp-b-hl">Uložiť</button><button type="button" id="dpZrus">Zrušiť</button>' + (novy ? "" : '<button type="button" id="dpZmaz" class="dp-b-zmaz">Zmazať</button>') + "</div></div>";
     document.body.appendChild(ov);
-    var iod = ov.querySelector("#dpOd"), ido = ov.querySelector("#dpDo"), ip = ov.querySelector("#dpPjo");
+    var q = function (x) { return ov.querySelector(x); };
+    var iod = q("#dpOd"), ido = q("#dpDo"), ip = q("#dpPjo"), ityp = q("#dpTyp"), icely = q("#dpCely");
+    ityp.value = e.typ || "sluzba";
     if (e.od != null) iod.value = minNaVstup(e.od);
     if (e["do"] != null) ido.value = e["do"] >= 1440 ? "23:59" : minNaVstup(e["do"]);
+    icely.checked = e.od == null && ityp.value !== "sluzba";
     ip.checked = !!e.pjo;
+    function prepni() {
+      var sl = ityp.value === "sluzba";
+      q("#dpPjoL").style.display = sl ? "" : "none";
+      q("#dpCelyL").style.display = sl ? "none" : "";
+      if (sl) icely.checked = false;
+      var skry = icely.checked;
+      iod.parentNode.style.display = skry ? "none" : ""; ido.parentNode.style.display = skry ? "none" : "";
+    }
+    ityp.addEventListener("change", prepni); icely.addEventListener("change", prepni); prepni();
     function zavri() { ov.remove(); }
     function uloz2(zmaz) {
-      var a = vstupNaMin(iod.value), b = vstupNaMin(ido.value);
-      if (!zmaz && (a == null || b == null || b <= a)) { if (window._showToast) window._showToast("Skontroluj časy (do musí byť po od)", 3000); return; }
-      (o.ev || []).forEach(function (x) {
-        if (x.id !== id) return;
-        if (zmaz) x.zmazana = true; else { x.od = a; x["do"] = b; x.pjo = ip.checked; }
-        x.upr = true;
-      });
-      uloz(r, o); zavri(); document.dispatchEvent(new Event("dpb-druha-praca"));
+      var a = vstupNaMin(iod.value), b = vstupNaMin(ido.value), sl = ityp.value === "sluzba", cely = !sl && icely.checked;
+      if (!zmaz && !cely && (a == null || b == null || b <= a)) { if (window._showToast) window._showToast("Skontroluj časy (do musí byť po od)", 3000); return; }
+      var ciel = e;
+      if (zmaz) ciel.zmazana = true;
+      else {
+        ciel.typ = ityp.value; ciel.t = typNazov(ityp.value);
+        ciel.od = cely ? null : a; ciel["do"] = cely ? null : b; ciel.pjo = sl && ip.checked;
+      }
+      ciel.upr = true;
+      if (novy) o.ev.push(ciel);
+      uloz(r, o);
+      try { localStorage.setItem(PREF + "on_" + r, "1"); } catch (e2) {}
+      zavri(); document.dispatchEvent(new Event("dpb-druha-praca"));
     }
-    ov.querySelector("#dpUloz").addEventListener("click", function () { uloz2(false); });
-    ov.querySelector("#dpZrus").addEventListener("click", zavri);
-    ov.querySelector("#dpZmaz").addEventListener("click", function () { if (window.confirm("Zmazať túto službu?")) uloz2(true); });
+    q("#dpUloz").addEventListener("click", function () { uloz2(false); });
+    q("#dpZrus").addEventListener("click", zavri);
+    if (q("#dpZmaz")) q("#dpZmaz").addEventListener("click", function () { if (window.confirm("Zmazať tento záznam?")) uloz2(true); });
     ov.addEventListener("click", function (ev) { if (ev.target === ov) zavri(); });
+  }
+  function pridaj(den) {
+    uprav(null, { id: "man-" + Date.now(), d: den, t: "Služba", typ: "sluzba", od: null, "do": null, pjo: false, upr: true });
   }
 
   // ── obrázok na karte (vlastné logo): len v zariadení, zmenšený ──
@@ -178,8 +219,15 @@
       if (naDalsiu) k.classList.add("dp-prekryv-dole");
       k.dataset.od = e.od == null ? "" : String(e.od);
       if (e["do"] != null) k.dataset["do"] = String(e["do"]);
-      if (pred) rodic.insertBefore(k, pred); else rodic.appendChild(k);
+      if (e.od == null) rodic.insertBefore(k, rodic.firstChild); // celodenný záznam (dovolenka…) navrchu
+      else if (pred) rodic.insertBefore(k, pred); else rodic.appendChild(k);
     });
+    if (povolene()) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "dp-pridat"; b.textContent = "＋ Druhá práca";
+      b.addEventListener("click", function () { pridaj(den); });
+      rodic.appendChild(b);
+    }
     return ev.length;
   }
 
@@ -225,5 +273,5 @@
   });
   document.addEventListener("DOMContentLoaded", obnovProfil);
 
-  window.DpbDruhaPraca = { obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
+  window.DpbDruhaPraca = { pridaj: pridaj, povolene: povolene, obrazokZDisku: obrazokZDisku, parseIcs: parseIcs, zTextov: zTextov, pre: pre, vloz: vloz, cisty: cisty, info: info, zmaz: zmaz };
 })();
