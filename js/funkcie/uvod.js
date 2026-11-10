@@ -38,6 +38,8 @@
     });
     osoby = m;
     if (uloz) try { localStorage.setItem(KLUC, text); } catch (e) {}
+    // OSOBY.csv dobehol z Disku až po prihlásení (napr. prvý štart na novom telefóne): ukáž úvod dodatočne
+    if (uloz) setTimeout(function () { var r = window.appState && window.appState.currentDriver; if (r && !_ukazane && !ov) zobraz(r, new Date()); }, 0);
     return true;
   }
 
@@ -171,6 +173,7 @@
     return { id: "zn:" + Date.now(), em: "🚋", nadpis: roky >= 1 ? "Si s nami už " + roky + " " + pl(roky, "rok", "roky", "rokov") : "Si s nami už " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní"),
       text: (roky >= 1 ? "To je " + cislo(dni) + " " + pl(dni, "deň", "dni", "dní") + ". " : "") + "Ďakujeme, že si s nami.", konfety: false };
   }
+  var _ukazane = false;
   function zobraz(rid, dnes) {
     try {
       if (ov) return;
@@ -181,6 +184,7 @@
       if (zk) karty.unshift(zk);
       karty = karty.slice(0, 3);
       if (!karty.length) return;
+      _ukazane = true;
       ukaz(karty, 0);
     } catch (e) {}
   }

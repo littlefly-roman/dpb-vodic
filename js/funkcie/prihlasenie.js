@@ -57,9 +57,9 @@
           document.getElementById("loginScreen").classList.add("hidden");
           if (window.DpbPrava) window.DpbPrava.pouzi();
           if (window.Notif && Notif.nastavVodica) Notif.nastavVodica(sel.value);
+          if (window.DpbUvod) DpbUvod.zobraz(sel.value, new Date()); // úvod ide pred zobrazením dňa
           window._render();
           if (window.DpbZmeny) DpbZmeny.skontroluj();
-          if (window.DpbUvod) DpbUvod.zobraz(sel.value);
         });
       });
     
