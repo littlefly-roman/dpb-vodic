@@ -88,9 +88,9 @@
             const f = (m) => (m === Infinity ? "" : Math.floor(m / 60) + ":" + String(Math.round(m % 60)).padStart(2, "0") + "\u00a0hod");
             const pred = r.skrateny.pred !== Infinity && r.skrateny.pred < O.DEN_OK ? f(r.skrateny.pred) : "";
             const po = r.skrateny.po !== Infinity && r.skrateny.po < O.DEN_OK ? f(r.skrateny.po) : "";
-            if (pred && po) skr = "Odpočinok: " + pred + " pred, " + po + " po";
-            else if (pred) skr = "Odpočinok: " + pred;
-            else if (po) skr = "Odpočinok po službe: " + po;
+            if (pred && po) skr = "Voľna budeš mať len " + pred + " pred službou a " + po + " po nej.";
+            else if (pred) skr = "Pred službou budeš mať len " + pred + " voľna.";
+            else if (po) skr = "Po službe budeš mať len " + po + " voľna.";
           }
           return { ok: r.ok, skrateny: skr, delena: r.delena };
         }
