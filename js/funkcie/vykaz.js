@@ -8,6 +8,8 @@
 
   function p2(n) { return String(n).padStart(2, "0"); }
   function kluc(d) { return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
+  // so znamienkom: záporné hodnoty s mínusom a v červenom
+  function fs(min) { return min < 0 ? '<span class="neg">−' + f(-min) + "</span>" : f(min); }
   function f(min) { return Math.floor(min / 60) + ":" + p2(min % 60); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   // zarovnanie na dvojbodku / lomku / bodku: pevná šírka pred oddeľovačom, číslice rovnakej šírky
@@ -148,11 +150,11 @@
       if (dq.getDay() !== 0 && dq.getDay() !== 6) pd++; // sviatok v pracovný deň sa do úväzku počíta
     }
     T.fond = dp ? pd * denMin : Math.round(pd * tyz / 5 * 60);
-    T.nadcas = Math.max(0, T.cisty + T.plat - T.fond);
+    T.nadcas = T.cisty + T.plat - T.fond; // záporné = chýba do úväzku
     return { dp: dp, v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
-  var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:4ch;text-align:right;margin-right:8px}.vk tr.spolu td{border-top:2px solid #000;font-weight:700;background:#f2f2f2}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
+  var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:4ch;text-align:right;margin-right:8px}.vk tr.spolu td{border-top:2px solid #000;font-weight:700;background:#f2f2f2}.vk .neg{color:#d00000;font-weight:700}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
     ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
     ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 28%}.vk .tot b{display:block;font-size:18px}" +
     ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 3px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
@@ -160,7 +162,7 @@
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
   function teloDp(D) {
-    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
+    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", fs(T.nadcas)]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
@@ -210,7 +212,7 @@
     (D.rows || []).forEach(function (r) { if (r.nepr && r.kredit > 0 && !rx.dov.test(r.sl) && !rx.lek.test(r.sl) && !rx.dop.test(r.sl)) iny[r.sl] = (iny[r.sl] || 0) + 1; });
     return '<div class="sumb">' +
       bx("Úväzok", f(D.T.fond)) +
-      bx("Nadčas", f(D.T.nadcas)) +
+      bx("Nadčas", fs(D.T.nadcas)) +
       bx("Dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
       bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
       bx("Doprovod", sum(D.nepr, rx.dop), rok.dop + " d") +
