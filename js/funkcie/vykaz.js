@@ -133,7 +133,7 @@
       if (d < 1) continue;
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : "", voz: [] });
-      for (var qi = r0; qi < rows.length; qi++) { rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
+      for (var qi = r0; qi < rows.length; qi++) { rows[qi].dow = dt.getDay(); rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
       // delená: dve služby v jeden deň, druhá začína neskôr, než prvá skončila (dĺžka prestávky sa nerieši) – počítame sami, nie z DB
       casy.sort(function (x, y) { return x[0] - y[0]; });
       var delDen = casy.some(function (c, i) { return i > 0 && c[0] > casy[i - 1][1]; });
@@ -152,10 +152,10 @@
     return { dp: dp, v: v, rows: rows, T: T, nepr: nepr, nadpis: MESIACE[m].charAt(0).toUpperCase() + MESIACE[m].slice(1) + " " + y };
   }
 
-  var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
-    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
+  var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:4ch;text-align:right;margin-right:8px}.vk tr.spolu td{border-top:2px solid #000;font-weight:700;background:#f2f2f2}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
+    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
     ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 28%}.vk .tot b{display:block;font-size:18px}" +
-    ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 5px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
+    ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 3px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
     ".vk th{background:#222;color:#fff}.vk tr.n td{border-top:2px solid #999}.vk .t{background:#f90;padding:0 5px;border-radius:3px}.vk p{margin:8px 0}" +
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
@@ -175,23 +175,21 @@
   }
   function telo(D) {
     if (D.dp) return teloDp(D);
-    var T = D.T, tl = [["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Víkendy (so / ne)", f(T.so) + " / " + f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Príplatok za delenú", T.del || 0], ["Platené neprítomnosti", f(T.plat)], ["Nadčas", f(T.nadcas)]];
-    var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
+    var T = D.T;
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
-      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td></td></tr>";
+      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + "</td>" + "<td></td>".repeat(11) + "</tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td>" + "<td></td>".repeat(6) + "<td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td></td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td></tr>";
-        else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>' + cell + '</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.dow === 6 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.dow === 0 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td></tr>";
+        else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>' + cell + '</td>' + "<td></td>".repeat(7) + '</tr>';
       });
       return out;
     }).join("");
     return '<div class="vk"><div class="hd"><div><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1><div class=\"kto\">" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div></div>" + sumHlavicka(D) + "</div>" +
-      '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
-      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>D</th><th>Sviatok</th><th>Stravné</th><th>Oddych</th></tr></thead><tbody>" + (tr || '<tr><td colspan="10">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
+      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>So</th><th>Ne</th><th>D</th><th>Sviatok</th><th>Stravné</th><th>Oddych</th></tr></thead><tbody>" + (tr || '<tr><td colspan="12">V tomto mesiaci nie sú služby.</td></tr>') + '<tr class="spolu"><td colspan="3">Spolu</td><td>' + f(T.cisty) + "</td><td>" + f(T.voz) + "</td><td>" + f(T.noc) + "</td><td>" + f(T.so) + "</td><td>" + f(T.ne) + "</td><td>" + (T.del || 0) + "</td><td>" + f(T.sv) + "</td><td>" + T.str + "</td><td></td></tr></tbody></table>" +
       "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. Dovolenka, lekár, doprovod: tento mesiac / od januára.</p></div>";
   }
 
@@ -207,12 +205,17 @@
         if (X.T.dni > 0 || Object.keys(X.nepr || {}).length) rok.fond += X.T.fond; rok.dov += sum(X.nepr, rx.dov); rok.lek += sum(X.nepr, rx.lek); rok.dop += sum(X.nepr, rx.dop);
       } catch (e) {}
     }
-    function bx(n, a, b) { return "<div>" + n + "<b>" + a + (b == null ? "" : " / " + b) + "</b></div>"; }
+    function bx(n, a, b) { return '<div><span title="' + esc(n) + '">' + esc(n) + "</span><b>" + a + (b == null ? "" : " / " + b) + "</b></div>"; }
+    var iny = {}; // iné platené neprítomnosti (nie dovolenka, lekár, doprovod): dni
+    (D.rows || []).forEach(function (r) { if (r.nepr && r.kredit > 0 && !rx.dov.test(r.sl) && !rx.lek.test(r.sl) && !rx.dop.test(r.sl)) iny[r.sl] = (iny[r.sl] || 0) + 1; });
     return '<div class="sumb">' +
       bx("Úväzok", f(D.T.fond)) +
+      bx("Nadčas", f(D.T.nadcas)) +
       bx("Dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
       bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
       bx("Doprovod", sum(D.nepr, rx.dop), rok.dop + " d") +
+      Object.keys(iny).map(function (k) { return bx(k, iny[k] + " d"); }).join("") +
+      bx("Platené", f(D.T.plat)) +
       "</div>";
   }
 
