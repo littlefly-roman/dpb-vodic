@@ -153,8 +153,8 @@
   }
 
   var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
-    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:96px;border:1px solid #ccc;border-radius:6px;padding:3px 7px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
-    ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 20%}.vk .tot b{display:block;font-size:18px}" +
+    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
+    ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 28%}.vk .tot b{display:block;font-size:18px}" +
     ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 5px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
     ".vk th{background:#222;color:#fff}.vk tr.n td{border-top:2px solid #999}.vk .t{background:#f90;padding:0 5px;border-radius:3px}.vk p{margin:8px 0}" +
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
@@ -175,8 +175,7 @@
   }
   function telo(D) {
     if (D.dp) return teloDp(D);
-    var T = D.T, tl = [["Dni v službe", T.dni], ["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Soboty", f(T.so)], ["Nedele", f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Platené neprítomnosti", f(T.plat)], ["Mesačný úväzok", f(T.fond)], ["Nadčas", f(T.nadcas)]];
-    tl.splice(8, 0, ["Príplatok za delenú", T.del || 0]);
+    var T = D.T, tl = [["Čistý výkon", f(T.cisty)], ["S vozom", f(T.voz)], ["Nočné", f(T.noc)], ["Víkendy (so / ne)", f(T.so) + " / " + f(T.ne)], ["Sviatky", f(T.sv)], ["Stravné", T.str], ["Príplatok za delenú", T.del || 0], ["Platené neprítomnosti", f(T.plat)], ["Nadčas", f(T.nadcas)]];
     var nep = Object.keys(D.nepr).map(function (k) { return esc(k) + ": <b>" + D.nepr[k] + " d</b>"; }).join(" · ") || "žiadne";
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
@@ -210,6 +209,7 @@
     }
     function bx(n, a, b) { return "<div>" + n + "<b>" + a + (b == null ? "" : " / " + b) + "</b></div>"; }
     return '<div class="sumb">' +
+      bx("Dni služby", D.T.dni) +
       bx("Úväzok", f(D.T.fond)) +
       bx("Dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
       bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
