@@ -5,7 +5,7 @@
      podľa obsahu, takže zmenené dáta sa stiahnu znova a staré sa zmažú. */
 // BUILD sa prepisuje pri každom zostavení (tools/pwa-build.mjs): zmena tohto riadku je to, čo prehliadaču
 // povie, že je nová verzia, a zároveň obíde vyrovnávaciu pamäť pri sťahovaní zoznamu súborov.
-const BUILD = "76846055965a";
+const BUILD = "e0a2d3e6096e";
 importScripts("pwa-manifest.js?v=" + BUILD);
 const P = self.PWA;
 const BASE = new URL("./", self.location.href).href;

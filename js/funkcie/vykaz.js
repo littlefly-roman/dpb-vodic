@@ -153,7 +153,7 @@
   }
 
   var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:5ch;text-align:right;margin-right:22px}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
-    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sum{font-size:15px;border-collapse:collapse;width:auto;margin-left:auto}.vk .hd .sum th,.vk .hd .sum td{padding:0 0 0 14px;border:0;background:none;color:#000;font-size:15px;text-align:right;white-space:nowrap}.vk .hd .sum th{font-weight:400;color:#555;font-size:13px}.vk .hd .sum td:first-child,.vk .hd .sum th:first-child{text-align:left;padding-left:0}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
+    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{border:1px solid #ccc;border-radius:6px;padding:4px 8px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
     ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 20%}.vk .tot b{display:block;font-size:18px}" +
     ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 5px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
     ".vk th{background:#222;color:#fff}.vk tr.n td{border-top:2px solid #999}.vk .t{background:#f90;padding:0 5px;border-radius:3px}.vk p{margin:8px 0}" +
@@ -193,7 +193,7 @@
     return '<div class="vk"><div class="hd"><div><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1><div class=\"kto\">" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div></div>" + sumHlavicka(D) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
       "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Oddych</th><th>D</th><th>Sviatok</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="10">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
-      "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. *Rok = súčet mesiacov od januára.</p></div>";
+      "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. Boxy v hlavičke: tento mesiac / od januára.</p></div>";
   }
 
   // Pravá strana hlavičky: plánovaný úväzok a čerpanie dovolenky, lekára a doprovodu (mesiac | rok)
@@ -208,13 +208,13 @@
         if (X.T.dni > 0 || Object.keys(X.nepr || {}).length) rok.fond += X.T.fond; rok.dov += sum(X.nepr, rx.dov); rok.lek += sum(X.nepr, rx.lek); rok.dop += sum(X.nepr, rx.dop);
       } catch (e) {}
     }
-    function r(n, a, b) { return "<tr><td>" + n + "</td><td><b>" + a + "</b></td><td><b>" + b + "</b></td></tr>"; }
-    return '<table class="sum"><thead><tr><th></th><th>mesiac</th><th>rok*</th></tr></thead><tbody>' +
-      r("Plánovaný úväzok", f(D.T.fond), f(rok.fond)) +
-      r("Čerpaná dovolenka", sum(D.nepr, rx.dov) + " d", rok.dov + " d") +
-      r("Lekár", sum(D.nepr, rx.lek) + " d", rok.lek + " d") +
-      r("Doprovod", sum(D.nepr, rx.dop) + " d", rok.dop + " d") +
-      "</tbody></table>";
+    function bx(n, a, b) { return "<div>" + n + "<b>" + a + " / " + b + "</b></div>"; }
+    return '<div class="sumb">' +
+      bx("Plánovaný úväzok", f(D.T.fond), f(rok.fond)) +
+      bx("Čerpaná dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
+      bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
+      bx("Doprovod", sum(D.nepr, rx.dop), rok.dop + " d") +
+      "</div>";
   }
 
   function tlac(D) {
