@@ -542,22 +542,27 @@
             var vyp = [], poznamka = "";
             var nastupPo = ok.nastupPo != null && ok.nastupPo > 0 && ok.nastupPo < 1440 ? ok.nastupPo : null;
             var koncDo = ok.ukoncenieDo != null && ok.ukoncenieDo > 0 && ok.ukoncenieDo < 1440 ? ok.ukoncenieDo : null;
-            if (ok.nemozne) poznamka = "V tento deň sa služba nedá: nebol by splnený odpočinok (denný alebo týždenných 35 h).";
+            var preco = "Aby si mal dosť voľna.";
+            if (ok.nemozne) poznamka = "V tento deň službu urobiť nemôžeš.|Nezostal by ti dosť voľna.";
             else if (ok.plny) { /* len denný odpočinok, nižšie */ }
-            else if (ok.ina) { poznamka = "Kvôli odpočinku (aj týždenných 35 h) je možná len kratšia služba, napr. od " + hh(ok.ina.od) + " do " + hh(ok.ina.do) + "."; nastupPo = null; koncDo = null; }
+            else if (ok.ina) { poznamka = "V tento deň je možná len kratšia služba, napríklad od " + hh(ok.ina.od) + " do " + hh(ok.ina.do) + ".|" + preco; nastupPo = null; koncDo = null; }
             else if (ok.poobedna && ok.ranna) {
-              poznamka = "Kvôli týždennému odpočinku 35 h: ranná najneskôr do " + hh(ok.ranna.do) + ", alebo poobedná najskôr od " + hh(ok.poobedna.od) + ".";
+              poznamka = (ok.ranna.do > ok.poobedna.od ? "Službu môžeš mať od " + hh(ok.poobedna.od) + " do " + hh(ok.ranna.do) + "." : "Službu môžeš mať len do " + hh(ok.ranna.do) + " alebo až od " + hh(ok.poobedna.od) + ".") + "|" + preco;
               nastupPo = null; koncDo = null;
-            } else if (ok.poobedna) { nastupPo = ok.poobedna.od; poznamka = "Kvôli týždennému odpočinku 35 h je možná len poobedná, nástup najskôr o " + hh(ok.poobedna.od) + "."; }
-            else if (ok.ranna) { koncDo = ok.ranna.do; nastupPo = ok.nastupPo > 0 ? ok.nastupPo : null; poznamka = "Kvôli týždennému odpočinku 35 h je možná len ranná, koniec najneskôr o " + hh(ok.ranna.do) + "."; }
+            } else if (ok.poobedna) { nastupPo = ok.poobedna.od; poznamka = "Službu môžeš mať najskôr od " + hh(ok.poobedna.od) + ".|" + preco; }
+            else if (ok.ranna) { koncDo = ok.ranna.do; nastupPo = ok.nastupPo > 0 ? ok.nastupPo : null; poznamka = "Službu môžeš mať najneskôr do " + hh(ok.ranna.do) + ".|" + preco; }
             if (!ok.nemozne) {
               if (nastupPo != null) { ch.cas(0, hm(nastupPo)); vyp.push("nástup po " + hh(nastupPo)); }
               if (koncDo != null) { ch.cas(1, hm(koncDo)); vyp.push("ukončenie do " + hh(koncDo)); }
               if (nastupPo != null && nastupPo >= 10 * 60) ch.zaskrtni("kedy", "Poobedná");
               else if (koncDo != null && koncDo <= 16 * 60) ch.zaskrtni("kedy", "Ranná");
             }
-            var text = poznamka;
-            if (text) ch.box.insertBefore(el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", text), ch.box.children[1]);
+            if (poznamka) {
+              var cz = poznamka.split("|"), blok = el("div", "margin-bottom:8px");
+              blok.appendChild(el("div", "font-size:15px;font-weight:600;color:" + (ok.nemozne ? "var(--chyba)" : "var(--text)"), cz[0]));
+              if (cz[1]) blok.appendChild(el("div", "font-size:13px;color:var(--text-2)", cz[1]));
+              ch.box.insertBefore(blok, ch.box.children[1]);
+            }
           } catch (e) {}
         }
         t.appendChild(ch.box); t.appendChild(nch.box);
