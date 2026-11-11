@@ -180,18 +180,18 @@
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
       if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td></td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
         var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td></tr>";
         else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>' + cell + '</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
       });
       return out;
     }).join("");
     return '<div class="vk"><div class="hd"><div><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1><div class=\"kto\">" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div></div>" + sumHlavicka(D) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
-      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>Oddych</th><th>D</th><th>Sviatok</th><th>Stravné</th></tr></thead><tbody>" + (tr || '<tr><td colspan="10">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
+      "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Čistý výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>D</th><th>Sviatok</th><th>Stravné</th><th>Oddych</th></tr></thead><tbody>" + (tr || '<tr><td colspan="10">V tomto mesiaci nie sú služby.</td></tr>') + "</tbody></table>" +
       "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. Dovolenka, lekár, doprovod: tento mesiac / od januára.</p></div>";
   }
 
