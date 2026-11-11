@@ -451,6 +451,7 @@
           vyber[r.k][m] = !vyber[r.k][m];
           c.style.background = vyber[r.k][m] ? "var(--red)" : "var(--surface-2)";
           c.style.color = vyber[r.k][m] ? "#fff" : "var(--text-1)";
+          c.classList.toggle("chip-on", !!vyber[r.k][m]);
         });
         rad.appendChild(c);
       });
@@ -478,6 +479,7 @@
       striedac = !striedac;
       sb.style.background = striedac ? "var(--red)" : "var(--surface-2)";
       sb.style.color = striedac ? "#fff" : "var(--text-1)";
+      sb.classList.toggle("chip-on", striedac);
     });
     rl.appendChild(lin); rl.appendChild(sb);
     box.appendChild(rl);
@@ -487,7 +489,7 @@
       cas: function (i, v) { st.casy[i][0].value = v; },
       zaskrtni: function (rk, m) {
         var c = cipy[rk + "|" + m]; if (!c) return;
-        vyber[rk][m] = true; c.style.background = "var(--red)"; c.style.color = "#fff";
+        vyber[rk][m] = true; c.style.background = "var(--red)"; c.style.color = "#fff"; c.classList.add("chip-on");
       },
       zber: function () {
         var o = { linka: lin.value.trim(), casy: [], striedac: striedac };
@@ -698,6 +700,7 @@
         prvky[k].style.color = on ? "#fff" : "var(--text-1)";
         prvky[k].style.fontWeight = on ? "700" : "400";
         prvky[k].style.borderColor = on ? "var(--red)" : "var(--border)";
+        prvky[k].classList.toggle("chip-on", on);
         prvky[k].textContent = (on ? "✓ " : "") + k;
       });
     }

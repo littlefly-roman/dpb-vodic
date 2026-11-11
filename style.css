@@ -3871,3 +3871,6 @@ img{-webkit-user-drag:none}
 
 #btnZoznam2[hidden]{display:none}
 #btnZoznam2 .zoznam2-dpb{width:28px;height:28px;color:var(--red,#e8001a)}
+
+/* Zapnuté voľby (Ranná, Poobedná, Striedač…) v oknách žiadostí: červená aj popri pravidle pre tlačidlá s okrajom */
+body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--red)!important;color:#fff!important}
