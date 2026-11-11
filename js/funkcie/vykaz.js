@@ -209,7 +209,6 @@
     }
     function bx(n, a, b) { return "<div>" + n + "<b>" + a + (b == null ? "" : " / " + b) + "</b></div>"; }
     return '<div class="sumb">' +
-      bx("Dni služby", D.T.dni) +
       bx("Úväzok", f(D.T.fond)) +
       bx("Dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
       bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
