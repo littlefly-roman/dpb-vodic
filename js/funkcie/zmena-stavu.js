@@ -632,8 +632,7 @@
           var cb = el("input", "width:24px;height:24px;accent-color:var(--red);flex-shrink:0"); cb.type = "checkbox";
           var tx = el("div", "flex:1;min-width:0");
           tx.appendChild(el("div", "font-size:16px;font-weight:700", titul));
-          if (teraz) tx.appendChild(el("div", "font-size:15px;color:var(--text-2)", "Aktuálne: " + teraz));
-          h.appendChild(cb); h.appendChild(tx); w.appendChild(h);
+                    h.appendChild(cb); h.appendChild(tx); w.appendChild(h);
           var telo = el("div", "display:none;margin-top:10px"); w.appendChild(telo);
           cb.addEventListener("change", function () { telo.style.display = cb.checked ? "block" : "none"; w.style.borderColor = cb.checked ? "var(--red)" : "var(--border)"; });
           t.appendChild(w);
@@ -647,7 +646,13 @@
         STAVY.forEach(function (x) { var o = el("option", "", x); o.value = x; sel.appendChild(o); });
         var sluz = el("input", VSTUP_CSS); sluz.type = "text"; sluz.placeholder = "Správna služba (napr. 3/17)";
         bs.telo.appendChild(sel); bs.telo.appendChild(sluz);
+        // predvyplnenie z karty
+        var sel0 = "", sluz0 = "";
+        if (jeSluzba) { sel0 = "Služba"; sluz0 = String(sv.line || ""); }
+        else { var tp = String(stavTeraz).toLowerCase(); STAVY.forEach(function (x) { if (!sel0 && x !== "Iné" && tp.indexOf(x.toLowerCase()) === 0) sel0 = x; }); if (!sel0 && vzor === "NEPRÍTOMNOSŤ") sel0 = "Iné"; if (!sel0 && !sv) sel0 = "Voľno"; }
+        sel.value = sel0; sluz.value = sluz0;
         bs.zber = function () {
+          if (sel.value === sel0 && sluz.value.trim() === sluz0) return { chyba: "Pri Stave zmeň stav alebo službu na správnu hodnotu." };
           if (!sel.value && !sluz.value.trim()) return { chyba: "Pri Stave vyber správny stav alebo napíš správnu službu." };
           return { r: ["Stav: v systéme " + stavTeraz + ", správne " + [sel.value, sluz.value.trim()].filter(Boolean).join(", ")] };
         };
@@ -661,7 +666,7 @@
             var l = el("label", "display:flex;align-items:center;gap:8px;font-size:15px;margin-bottom:4px;cursor:pointer");
             var c = el("input", "width:20px;height:20px;accent-color:var(--red)"); c.type = "checkbox";
             l.appendChild(c); l.appendChild(el("span", "", x[0]));
-            var i = cas(); i.disabled = true; i.style.opacity = ".5";
+            var i = cas(); i.value = hm(x[1]); i.disabled = true; i.style.opacity = ".5";
             c.addEventListener("change", function () { i.disabled = !c.checked; i.style.opacity = c.checked ? "1" : ".5"; });
             w.appendChild(l); w.appendChild(i); rc.appendChild(w);
             cas2.push({ n: x[0], t: x[1], c: c, i: i });
@@ -672,6 +677,7 @@
             for (var q = 0; q < cas2.length; q++) {
               if (!cas2[q].c.checked) continue;
               if (!cas2[q].i.value) return { chyba: "Pri časoch doplň správny čas (" + cas2[q].n + ")." };
+              if (cas2[q].i.value === hm(cas2[q].t)) return { chyba: "Pri časoch zmeň " + cas2[q].n + " na správnu hodnotu." };
               r.push(cas2[q].n + ": v systéme " + (cas2[q].t ? DPBData.fmt(cas2[q].t) : "—") + ", správne " + cas2[q].i.value);
             }
             return r.length ? { r: r } : { chyba: "Pri časoch zaškrtni Nástup alebo Ukončenie." };
@@ -700,6 +706,9 @@
               r.push("Vozidlo " + (c || "?") + (o.od.value || o["do"].value ? " (" + (o.od.value || "?") + " – " + (o["do"].value || "?") + ")" : ""));
             });
             if (!r.length) return { chyba: "Pri vozidle doplň číslo a časy." };
+            var terazTxt = vozRiadky.map(function (o) { return o.c + "|" + o.od + "|" + o["do"]; }).join(";");
+            var novyTxt = riadky.filter(function (o) { return o.v.value.trim() || o.od.value || o["do"].value; }).map(function (o) { return o.v.value.trim() + "|" + o.od.value + "|" + o["do"].value; }).join(";");
+            if (terazTxt === novyTxt) return { chyba: "Pri vozidle zmeň číslo alebo časy na správne." };
             return { r: ["Vozidlá: v systéme " + (vozy.join(", ") || "žiadne") + "; správne " + r.join(", ")] };
           };
           }
