@@ -540,7 +540,7 @@
       podtitul: "Aktuálne: voľno",
       telo: function (t) {
         t.appendChild(el("div", "font-size:16px;font-weight:600;color:var(--chyba);margin-bottom:10px", vetaNemozne(nem)));
-        pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); pz.placeholder = "Ak chceš, napíš dispečingu poznámku";
+        pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); pz.placeholder = "Ak chceš, napíš výpravcovi poznámku";
         t.appendChild(pz);
         t.appendChild(chybaPole());
       },
