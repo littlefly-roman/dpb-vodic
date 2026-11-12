@@ -525,11 +525,50 @@
     return c.join(", ");
   }
 
+  function vetaNemozne(nem) {
+    if (nem.dovod === "tyzden") {
+      var d = nem.dniPred || 0;
+      var dni = d >= 5 ? (d === 5 ? "piatich" : d === 6 ? "šiestich" : d + "") + " dňoch" : "predchádzajúcich dňoch";
+      return "V tento deň máš voľno po " + dni + " služby za sebou, preto službu urobiť nemôžeš.";
+    }
+    return "V tento deň službu urobiť nemôžeš. Nezostalo by ti dosť voľna medzi službami.";
+  }
+  function ziadostNemozne(ctx, nem, nazov) {
+    var pz;
+    otvor({
+      titul: nazov + " na " + pekne(ctx.date),
+      podtitul: "Aktuálne: voľno",
+      telo: function (t) {
+        t.appendChild(el("div", "font-size:16px;font-weight:600;color:var(--chyba);margin-bottom:10px", vetaNemozne(nem)));
+        pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); pz.placeholder = "Ak chceš, napíš dispečingu poznámku";
+        t.appendChild(pz);
+        t.appendChild(chybaPole());
+      },
+      tlacidla: [
+        { text: "Pripraviť hlásenie", primarny: true, klik: function () {
+          var poz = pz.value.trim();
+          if (!poz) { var ch = pz.parentNode.lastChild; ch.textContent = "Napíš poznámku, alebo okno zavri."; return; }
+          var r = window.appState && window.appState.currentDriver;
+          var riadky = ["Žiadosť o službu", "Vodič: " + (menoVodica(r) || "—") + " (os. č. " + r + ")", "Dátum: " + kratko(ctx.date), "Appka hlási: " + vetaNemozne(nem), "Poznámka: " + poz];
+          zavriVsetko();
+          odosli(riadky.join("\n"), "Žiadosť o službu");
+        } },
+        { text: "Zavrieť", klik: zavriVsetko },
+      ],
+    });
+  }
+
   function ziadostSluzby(ctx) {
     var zmena = !!ctx.zmena;
     var nazov = zmena ? "Zmena služby" : "Žiadosť o službu";
     var sv = ctx.service;
     var povodna = sv && sv._vzor !== "NEPRÍTOMNOSŤ" ? (sv.line || "") + (sv.time ? " · " + sv.time : "") : "";
+    // Deň, v ktorom služba nejde (odpočinok): bez formulára – vysvetlenie a len textové pole
+    if (!povodna && !zmena && window.DpbOdpocinok && window.RAW && window.appState) {
+      var nem = null;
+      try { nem = window.DpbOdpocinok.okno2(window.DpbOdpocinok.praceVodica(window.RAW.models, window.appState.currentDriver), ctx.date); } catch (e) {}
+      if (nem && nem.nemozne) { ziadostNemozne(ctx, nem, nazov); return; }
+    }
     otvor({
       titul: nazov + " na " + pekne(ctx.date),
       podtitul: "Aktuálne: " + (povodna || "voľno"),

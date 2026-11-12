@@ -143,6 +143,23 @@
   // Vráti {nastupPo, ukoncenieDo, plny, nemozne, poobedna:{od}|null, ranna:{do}|null}:
   //  plny = celý rozsah nastupPo–ukoncenieDo je v poriadku; inak je týždenný odpočinok obmedzením a platí
   //  poobedna.od (najskorší nástup, služba až do konca rozsahu) alebo ranna.do (najneskorší koniec, služba od začiatku rozsahu).
+  // Prečo to nejde: "tyzden" = týždenné voľno po sérii dní (dniPred = počet dní služby tesne pred), inak "den" (málo voľna medzi službami)
+  function priradDovod(prace, dateKey, d0, amin, bmax, res) {
+    res.dovod = "den";
+    if (bmax - amin >= 60) {
+      var r = skontroluj(prace, { od: d0 + amin, do: d0 + amin + 60 }, true);
+      if (!r.ok && /35 h/.test(r.dovod || "")) res.dovod = "tyzden";
+    }
+    if (res.dovod === "tyzden") {
+      var n = 0, dm = d0;
+      for (;;) {
+        dm -= 1440;
+        if (!prace.some(function (x) { return x.od >= dm && x.od < dm + 1440; })) break;
+        n++; if (n > 14) break;
+      }
+      res.dniPred = n;
+    }
+  }
   function okno2(prace, dateKey) {
     var o = okno(prace, dateKey), d0 = abs(dateKey, 0);
     var amin = o.nastupPo != null ? Math.max(0, o.nastupPo) : 0;
@@ -159,6 +176,7 @@
         for (var b2 = a2 + 60; b2 <= bmax; b2 += 15) if (ok(a2, b2)) { res.ina = { od: a2, do: b2 }; break; }
       if (!res.ina) res.nemozne = true;
     }
+    if (res.nemozne) priradDovod(prace, dateKey, d0, amin, bmax, res);
     return res;
   }
 
