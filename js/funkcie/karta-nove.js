@@ -286,7 +286,8 @@
     function zapnute() {
       var u = nacitajUpoz(), c = u.karty[kluc(service)], m = ma(service), O = window.DpbOdpocet;
       var vrch = !!(c && (c.pred.some(Boolean) || (m.vyj && c.vyj.some(Boolean))));
-      return vrch || !!(O && planKindy().some(function (kk) { return O.planJe(kk); }));
+      // plán odchodov (odpocet.js) platí len pre dnešok – na tej istej službe v iný deň zvonček zapnutý nie je
+      return vrch || !!(jeDnes(service) && O && planKindy().some(function (kk) { return O.planJe(kk); }));
     }
     function obnov() {
       clearTimeout(t);
