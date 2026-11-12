@@ -601,70 +601,130 @@
 
 
   // ---------- Reklamácia (minulý deň) ----------
-  // Položky podľa typu karty; zaškrtneš, čo reklamuješ, a doplníš správnu hodnotu.
+  // Štyri bloky: Stav, Časy služby, Vozidlá, Zácvik (+ hradenie pri 944). Zaškrtneš, čo reklamuješ, a doplníš správnu hodnotu.
   var STAVY = ["Služba", "Dovolenka", "PN", "Lekár", "Voľno", "Iné"];
   function reklamacia(ctx) {
     var sv = ctx.service || null, k = (sv && sv._karta) || {};
     var vzor = sv ? sv._vzor : "";
     var jeSluzba = ["SLUŽBA", "944", "STRIEDAČ", "POHOTOVOSŤ", "TRKR"].indexOf(vzor) >= 0;
     var popisKarty = !sv ? "Voľno" : (vzor === "NEPRÍTOMNOSŤ" ? (k.popis || "Neprítomnosť") : (sv.line || "") + (sv.time ? " · " + sv.time : ""));
-    var polozky = [{ k: "stav", t: "Stav", teraz: popisKarty }];
-    if (jeSluzba) {
-      polozky.push({ k: "nastup", t: "Čas nástupu", teraz: k.od ? DPBData.fmt(k.od) : "" });
-      polozky.push({ k: "ukoncenie", t: "Čas ukončenia", teraz: k.do ? DPBData.fmt(k.do) : "" });
-      var vozy = [];
-      ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c && vozy.indexOf(String(c)) < 0) vozy.push(String(c)); });
-      if (!vozy.length && sv.vehicle && sv.vehicle !== "—") vozy.push(String(sv.vehicle));
-      polozky.push({ k: "vozidlo", t: vozy.length ? "Vozidlo (nesprávne)" : "Vozidlo (chýba)", teraz: vozy.join(", "), viac: vozy.length > 1, chyba: !vozy.length });
-      if (vzor === "944") polozky.push({ k: "hradenie", t: "Chýbajúce hradenie", teraz: "" });
-      if (vzor !== "STRIEDAČ") polozky.push({ k: "zacvik", t: "Chýbajúci vykonaný zácvik", teraz: "" });
-    }
-    var polia = {};
+    var stavTeraz = jeSluzba ? "prítomnosť na " + (sv.line || "službe") : popisKarty;
+    var casTeraz = (k.od && k.do) ? DPBData.fmt(k.od) + " – " + DPBData.fmt(k.do) : "";
+    var vozy = [];
+    ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c && vozy.indexOf(String(c)) < 0) vozy.push(String(c)); });
+    if (!vozy.length && sv && sv.vehicle && sv.vehicle !== "—") vozy.push(String(sv.vehicle));
+    var CHYBA = "font-size:15px;color:var(--text-2);margin-bottom:3px";
+    function cas() { var i = el("input", VSTUP_CSS + ";padding:10px 6px"); i.type = "time"; return i; }
+    function stlpec(popis, prvok) { var w = el("div", "flex:1;min-width:0"); w.appendChild(el("div", CHYBA, popis)); w.appendChild(prvok); return w; }
+    var bloky = [];
     otvor({
-      titul: "Reklamácia",
-      podtitul: pekne(ctx.date) + (popisKarty ? " · " + popisKarty : "") + " · čo reklamuješ?",
+      titul: "Reklamácia dňa " + kratko(ctx.date),
+      podtitul: "Čo chceš reklamovať?",
       telo: function (t) {
-        polozky.forEach(function (p) {
-          var w = el("div", "border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px");
-          var hlav = el("label", "display:flex;align-items:center;gap:10px;font-size:15px;cursor:pointer");
-          var cb = el("input", "width:20px;height:20px;accent-color:var(--red);flex-shrink:0"); cb.type = "checkbox";
-          hlav.appendChild(cb);
+        function blok(id, titul, teraz) {
+          var w = el("div", "border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px");
+          var h = el("label", "display:flex;align-items:center;gap:12px;cursor:pointer");
+          var cb = el("input", "width:24px;height:24px;accent-color:var(--red);flex-shrink:0"); cb.type = "checkbox";
           var tx = el("div", "flex:1;min-width:0");
-          tx.appendChild(el("div", "", p.t));
-          if (p.teraz) tx.appendChild(el("div", "font-size:15px;color:var(--text-2)", "v systéme: " + p.teraz));
-          hlav.appendChild(tx);
-          w.appendChild(hlav);
-          var pole, vstup;
-          if (p.k === "stav") {
-            vstup = el("select", VSTUP_CSS);
-            vstup.appendChild(el("option", "", "— správny stav —")).value = "";
-            STAVY.forEach(function (x) { var o = el("option", "", x); o.value = x; vstup.appendChild(o); });
-          } else if (p.k === "nastup" || p.k === "ukoncenie") {
-            vstup = el("input", VSTUP_CSS); vstup.type = "time";
-          } else {
-            vstup = el("input", VSTUP_CSS); vstup.type = "text";
-            vstup.placeholder = p.k === "vozidlo" ? (p.chyba ? "Číslo vozidla, ktoré si šoféroval" : p.viac ? "Ktoré vozidlo je nesprávne a aké je správne" : "Správne vozidlo (číslo)") : p.k === "hradenie" ? "Čo chýba (kurz, vozidlo, čas)" : "Kedy a kde bol zácvik";
-          }
-          pole = el("div", "display:none;margin-top:8px");
-          pole.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", p.k === "nastup" || p.k === "ukoncenie" ? "Správny čas" : p.k === "stav" ? "Správny stav" : p.k === "vozidlo" ? (p.chyba ? "Vozidlo" : "Správne vozidlo") : "Doplň"));
-          pole.appendChild(vstup);
-          w.appendChild(pole);
-          cb.addEventListener("change", function () { pole.style.display = cb.checked ? "block" : "none"; });
-          polia[p.k] = { cb: cb, vstup: vstup, p: p };
+          tx.appendChild(el("div", "font-size:16px;font-weight:700", titul));
+          if (teraz) tx.appendChild(el("div", "font-size:15px;color:var(--text-2)", "Aktuálne: " + teraz));
+          h.appendChild(cb); h.appendChild(tx); w.appendChild(h);
+          var telo = el("div", "display:none;margin-top:10px"); w.appendChild(telo);
+          cb.addEventListener("change", function () { telo.style.display = cb.checked ? "block" : "none"; w.style.borderColor = cb.checked ? "var(--red)" : "var(--border)"; });
           t.appendChild(w);
-        });
+          var b = { id: id, titul: titul, teraz: teraz, cb: cb, telo: telo };
+          bloky.push(b); return b;
+        }
+        // 1. Stav
+        var bs = blok("stav", "Stav", stavTeraz);
+        var sel = el("select", VSTUP_CSS + ";margin-bottom:8px");
+        sel.appendChild(el("option", "", "— správny stav —")).value = "";
+        STAVY.forEach(function (x) { var o = el("option", "", x); o.value = x; sel.appendChild(o); });
+        var sluz = el("input", VSTUP_CSS); sluz.type = "text"; sluz.placeholder = "Správna služba (napr. 3/17)";
+        bs.telo.appendChild(sel); bs.telo.appendChild(sluz);
+        bs.zber = function () {
+          if (!sel.value && !sluz.value.trim()) return { chyba: "Pri Stave vyber správny stav alebo napíš správnu službu." };
+          return { r: ["Stav: v systéme " + stavTeraz + ", správne " + [sel.value, sluz.value.trim()].filter(Boolean).join(", ")] };
+        };
+        if (jeSluzba) {
+          // 2. Časy služby – dva zaškrtávacie stĺpce vedľa seba
+          var bc = blok("casy", "Časy služby", casTeraz);
+          var rc = el("div", "display:flex;gap:10px");
+          var cas2 = [];
+          [["Nástup", k.od], ["Ukončenie", k.do]].forEach(function (x) {
+            var w = el("div", "flex:1;min-width:0");
+            var l = el("label", "display:flex;align-items:center;gap:8px;font-size:15px;margin-bottom:4px;cursor:pointer");
+            var c = el("input", "width:20px;height:20px;accent-color:var(--red)"); c.type = "checkbox";
+            l.appendChild(c); l.appendChild(el("span", "", x[0]));
+            var i = cas(); i.disabled = true; i.style.opacity = ".5";
+            c.addEventListener("change", function () { i.disabled = !c.checked; i.style.opacity = c.checked ? "1" : ".5"; });
+            w.appendChild(l); w.appendChild(i); rc.appendChild(w);
+            cas2.push({ n: x[0], t: x[1], c: c, i: i });
+          });
+          bc.telo.appendChild(rc);
+          bc.zber = function () {
+            var r = [];
+            for (var q = 0; q < cas2.length; q++) {
+              if (!cas2[q].c.checked) continue;
+              if (!cas2[q].i.value) return { chyba: "Pri časoch doplň správny čas (" + cas2[q].n + ")." };
+              r.push(cas2[q].n + ": v systéme " + (cas2[q].t ? DPBData.fmt(cas2[q].t) : "—") + ", správne " + cas2[q].i.value);
+            }
+            return r.length ? { r: r } : { chyba: "Pri časoch zaškrtni Nástup alebo Ukončenie." };
+          };
+          // 3. Vozidlá – riadky: vozidlo + od + do, dole „+ Pridať vozidlo“
+          var bv = blok("vozidla", vozy.length > 1 ? "Vozidlá" : "Vozidlo", vozy.length ? vozy.join(", ") : "žiadne");
+          var riadky = [], zoz = el("div", "");
+          function riadokVoz() {
+            var v = el("input", VSTUP_CSS + ";padding:10px 8px"); v.type = "text"; v.placeholder = "Číslo";
+            var r = el("div", "display:flex;gap:8px;margin-bottom:8px");
+            var o = { v: v, od: cas(), "do": cas() };
+            [["Vozidlo", v, 1.1], ["Od", o.od, 1], ["Do", o["do"], 1]].forEach(function (x) { var c = stlpec(x[0], x[1]); c.style.flex = String(x[2]); r.appendChild(c); });
+            riadky.push(o); zoz.appendChild(r);
+          }
+          riadokVoz();
+          var plus = el("button", "padding:9px 14px;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--text-1);font-size:15px;cursor:pointer", "+ Pridať vozidlo");
+          plus.type = "button"; plus.addEventListener("click", riadokVoz);
+          bv.telo.appendChild(zoz); bv.telo.appendChild(plus);
+          bv.zber = function () {
+            var r = [];
+            riadky.forEach(function (o) {
+              var c = o.v.value.trim(); if (!c && !o.od.value && !o["do"].value) return;
+              r.push("Vozidlo " + (c || "?") + (o.od.value || o["do"].value ? " (" + (o.od.value || "?") + " – " + (o["do"].value || "?") + ")" : ""));
+            });
+            if (!r.length) return { chyba: "Pri vozidle doplň číslo a časy." };
+            return { r: ["Vozidlá: v systéme " + (vozy.join(", ") || "žiadne") + "; správne " + r.join(", ")] };
+          };
+          // 3b. Hradenie (len 944)
+          if (vzor === "944") {
+            var bh = blok("hradenie", "Chýbajúce hradenie", "");
+            var th = el("input", VSTUP_CSS); th.type = "text"; th.placeholder = "Čo chýba (kurz, vozidlo, čas)";
+            bh.telo.appendChild(th);
+            bh.zber = function () { return th.value.trim() ? { r: ["Chýbajúce hradenie: " + th.value.trim()] } : { chyba: "Pri hradení doplň, čo chýba." }; };
+          }
+          // 4. Zácvik
+          if (vzor !== "STRIEDAČ") {
+            var bz = blok("zacvik", "Chýbajúci vykonaný zácvik", "");
+            var meno = el("input", VSTUP_CSS + ";margin-bottom:8px"); meno.type = "text"; meno.placeholder = "Meno zacvičovaného";
+            var zr = el("div", "display:flex;gap:10px"); var zo = cas(), zd = cas();
+            zr.appendChild(stlpec("Od", zo)); zr.appendChild(stlpec("Do", zd));
+            bz.telo.appendChild(meno); bz.telo.appendChild(zr);
+            bz.zber = function () {
+              if (!meno.value.trim()) return { chyba: "Pri zácviku doplň meno zacvičovaného." };
+              return { r: ["Zácvik: " + meno.value.trim() + (zo.value || zd.value ? " (" + (zo.value || "?") + " – " + (zd.value || "?") + ")" : "")] };
+            };
+          }
+        }
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
         var chyba = chybaPole();
         t.appendChild(chyba);
         reklamacia._z = function () {
           var r = [];
-          for (var i = 0; i < polozky.length; i++) {
-            var q = polia[polozky[i].k];
-            if (!q.cb.checked) continue;
-            var v = q.vstup.value.trim();
-            if (!v) { chyba.textContent = "Doplň hodnotu pri: " + q.p.t; return null; }
-            r.push(q.p.t + (q.p.teraz ? ": v systéme " + q.p.teraz + ", správne " : ": ") + v);
+          for (var i = 0; i < bloky.length; i++) {
+            if (!bloky[i].cb.checked) continue;
+            var x = bloky[i].zber();
+            if (x.chyba) { chyba.textContent = x.chyba; return null; }
+            r = r.concat(x.r);
           }
           if (!r.length) { chyba.textContent = "Zaškrtni, čo reklamuješ."; return null; }
           return { r: r, poz: pz.value.trim() };
