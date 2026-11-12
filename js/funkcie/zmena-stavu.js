@@ -636,7 +636,7 @@
           var telo = el("div", "display:none;margin-top:10px"); w.appendChild(telo);
           cb.addEventListener("change", function () { telo.style.display = cb.checked ? "block" : "none"; w.style.borderColor = cb.checked ? "var(--red)" : "var(--border)"; });
           t.appendChild(w);
-          var b = { id: id, titul: titul, teraz: teraz, cb: cb, telo: telo };
+          var b = { id: id, titul: titul, teraz: teraz, cb: cb, telo: telo, w: w };
           bloky.push(b); return b;
         }
         // 1. Stav
@@ -656,7 +656,9 @@
           if (!sel.value && !sluz.value.trim()) return { chyba: "Pri Stave vyber správny stav alebo napíš správnu službu." };
           return { r: ["Stav: v systéme " + stavTeraz + ", správne " + [sel.value, sluz.value.trim()].filter(Boolean).join(", ")] };
         };
-        if (jeSluzba) {
+        var ev = jeSluzba ? vzor : "SLUŽBA";   // pri pridaní služby na voľno/neprítomnosť sa berie ako bežná služba
+        var nStav = bloky.length;
+        {
           // 2. Časy služby – dva zaškrtávacie stĺpce vedľa seba
           var bc = blok("casy", "Časy služby", casTeraz);
           var rc = el("div", "display:flex;gap:10px");
@@ -683,7 +685,7 @@
             return r.length ? { r: r } : { chyba: "Pri časoch zaškrtni Nástup alebo Ukončenie." };
           };
           // Vozidlá: len pri bežnej službe, 944 a pohotovosti, kde sa niečo robilo (nie striedač, nie výpravca)
-          if (vzor === "SLUŽBA" || vzor === "944" || (vzor === "POHOTOVOSŤ" && vozRiadky.length)) {
+          if (ev === "SLUŽBA" || ev === "944" || (ev === "POHOTOVOSŤ" && vozRiadky.length)) {
           // 3. Vozidlá – riadky: vozidlo + od + do, dole „+ Pridať vozidlo“
           var bv = blok("vozidla", vozy.length > 1 ? "Vozidlá" : "Vozidlo", vozy.length ? vozy.join(", ") : "žiadne");
           var riadky = [], zoz = el("div", "");
@@ -713,14 +715,14 @@
           };
           }
           // 3b. Hradenie (len 944)
-          if (vzor === "944") {
+          if (ev === "944") {
             var bh = blok("hradenie", "Chýbajúce hradenie", "");
             var th = el("input", VSTUP_CSS); th.type = "text"; th.placeholder = "Čo chýba (kurz, vozidlo, čas)";
             bh.telo.appendChild(th);
             bh.zber = function () { return th.value.trim() ? { r: ["Chýbajúce hradenie: " + th.value.trim()] } : { chyba: "Pri hradení doplň, čo chýba." }; };
           }
           // 4. Zácvik
-          if (vzor !== "STRIEDAČ") {
+          if (ev !== "STRIEDAČ") {
             var bz = blok("zacvik", "Chýbajúci vykonaný zácvik", "");
             var meno = el("input", VSTUP_CSS + ";margin-bottom:8px"); meno.type = "text"; meno.placeholder = "Meno zacvičovaného";
             var zr = el("div", "display:flex;gap:10px"); var zo = cas(), zd = cas();
@@ -732,6 +734,13 @@
             };
           }
         }
+        // Karta bez služby (voľno, neprítomnosť): časy, vozidlá a zácvik sa ukážu, až keď sa v Stave zmení na „Služba“
+        function ukazDalsie() {
+          var on = jeSluzba || (bs.cb.checked && sel.value === "Služba");
+          bloky.forEach(function (b, ix) { if (ix >= nStav) b.w.style.display = on ? "" : "none"; });
+        }
+        sel.addEventListener("change", ukazDalsie); bs.cb.addEventListener("change", ukazDalsie);
+        ukazDalsie();
         var pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:56px"); pz.placeholder = "Poznámka (nepovinné)";
         t.appendChild(pz);
         var chyba = chybaPole();
@@ -739,7 +748,7 @@
         reklamacia._z = function () {
           var r = [];
           for (var i = 0; i < bloky.length; i++) {
-            if (!bloky[i].cb.checked) continue;
+            if (!bloky[i].cb.checked || bloky[i].w.style.display === "none") continue;
             var x = bloky[i].zber();
             if (x.chyba) { chyba.textContent = x.chyba; return null; }
             r = r.concat(x.r);
