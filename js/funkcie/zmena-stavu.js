@@ -676,6 +676,8 @@
             }
             return r.length ? { r: r } : { chyba: "Pri časoch zaškrtni Nástup alebo Ukončenie." };
           };
+          // Vozidlá: len pri bežnej službe, 944 a pohotovosti, kde sa niečo robilo (nie striedač, nie výpravca)
+          if (vzor === "SLUŽBA" || vzor === "944" || (vzor === "POHOTOVOSŤ" && vozRiadky.length)) {
           // 3. Vozidlá – riadky: vozidlo + od + do, dole „+ Pridať vozidlo“
           var bv = blok("vozidla", vozy.length > 1 ? "Vozidlá" : "Vozidlo", vozy.length ? vozy.join(", ") : "žiadne");
           var riadky = [], zoz = el("div", "");
@@ -700,6 +702,7 @@
             if (!r.length) return { chyba: "Pri vozidle doplň číslo a časy." };
             return { r: ["Vozidlá: v systéme " + (vozy.join(", ") || "žiadne") + "; správne " + r.join(", ")] };
           };
+          }
           // 3b. Hradenie (len 944)
           if (vzor === "944") {
             var bh = blok("hradenie", "Chýbajúce hradenie", "");
