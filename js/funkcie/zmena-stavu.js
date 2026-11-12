@@ -613,6 +613,11 @@
     var vozy = [];
     ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c && vozy.indexOf(String(c)) < 0) vozy.push(String(c)); });
     if (!vozy.length && sv && sv.vehicle && sv.vehicle !== "—") vozy.push(String(sv.vehicle));
+    // údaje z karty na predvyplnenie: číslo + časy pridelenia (HH:MM)
+    function hm(x) { var m = /^(\d{1,2}):(\d{2})/.exec(String(x || "")); return m ? (m[1].length < 2 ? "0" : "") + m[1] + ":" + m[2] : ""; }
+    var vozRiadky = [];
+    ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c) vozRiadky.push({ c: String(c), od: hm(x.od), "do": hm(x["do"]) }); });
+    if (!vozRiadky.length && vozy.length) vozRiadky.push({ c: vozy[0], od: "", "do": "" });
     var CHYBA = "font-size:15px;color:var(--text-2);margin-bottom:3px";
     function cas() { var i = el("input", VSTUP_CSS + ";padding:10px 6px"); i.type = "time"; return i; }
     function stlpec(popis, prvok) { var w = el("div", "flex:1;min-width:0"); w.appendChild(el("div", CHYBA, popis)); w.appendChild(prvok); return w; }
@@ -674,16 +679,17 @@
           // 3. Vozidlá – riadky: vozidlo + od + do, dole „+ Pridať vozidlo“
           var bv = blok("vozidla", vozy.length > 1 ? "Vozidlá" : "Vozidlo", vozy.length ? vozy.join(", ") : "žiadne");
           var riadky = [], zoz = el("div", "");
-          function riadokVoz() {
+          function riadokVoz(pre) {
             var v = el("input", VSTUP_CSS + ";padding:10px 8px"); v.type = "text"; v.placeholder = "Číslo";
             var r = el("div", "display:flex;gap:8px;margin-bottom:8px");
             var o = { v: v, od: cas(), "do": cas() };
             [["Vozidlo", v, 1.1], ["Od", o.od, 1], ["Do", o["do"], 1]].forEach(function (x) { var c = stlpec(x[0], x[1]); c.style.flex = String(x[2]); r.appendChild(c); });
+            if (pre && typeof pre === "object") { v.value = pre.c; o.od.value = pre.od; o["do"].value = pre["do"]; }
             riadky.push(o); zoz.appendChild(r);
           }
-          riadokVoz();
+          if (vozRiadky.length) vozRiadky.forEach(riadokVoz); else riadokVoz();
           var plus = el("button", "padding:9px 14px;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--text-1);font-size:15px;cursor:pointer", "+ Pridať vozidlo");
-          plus.type = "button"; plus.addEventListener("click", riadokVoz);
+          plus.type = "button"; plus.addEventListener("click", function () { riadokVoz(); });
           bv.telo.appendChild(zoz); bv.telo.appendChild(plus);
           bv.zber = function () {
             var r = [];
