@@ -3894,3 +3894,10 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-plat.blizi .pf-hod { color: #b8860b; font-weight: 700; animation: pf-blik 1.6s ease-in-out infinite; }
 .pf-plat.po { border: 2px solid #e07b00; border-radius: 10px; padding: 4px 8px; animation: pf-blik 1.2s ease-in-out infinite; }
 .pf-plat.po .pf-hod { color: #e07b00; font-weight: 700; }
+.pf-rok { display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 17px; font-weight: 700; margin: 4px 0 10px; }
+.pf-rok button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 20px; }
+.pf-vyber { display: grid; gap: 6px; margin-bottom: 10px; }
+.pf-vyber.m12 { grid-template-columns: repeat(4, 1fr); }
+.pf-vyber.q4 { grid-template-columns: repeat(2, 1fr); }
+.pf-vyber button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 15px; }
+.pf-vyber button.on { background: var(--red); color: #fff; border-color: var(--red); }

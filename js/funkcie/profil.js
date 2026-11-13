@@ -151,13 +151,37 @@
   window.Profil = { otvor: otvor, otvorNastavenia: otvorNastavenia, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
 
-// Profil: prepínač obdobia štatistiky (zatiaľ len vzhľad, polia sa naplnia neskôr z FS DB alebo METISu)
+// Profil: výber obdobia štatistiky – Rok, 4 štvrťroky alebo 12 mesiacov (polia sa naplnia neskôr z FS DB alebo METISu)
 (function () {
-  var box = document.getElementById("profilObdobie");
-  if (!box) return;
+  var box = document.getElementById("profilObdobie"), vyber = document.getElementById("profilVyber");
+  if (!box || !vyber) return;
+  var MES = ["Jan", "Feb", "Mar", "Apr", "Máj", "Jún", "Júl", "Aug", "Sep", "Okt", "Nov", "Dec"];
+  var now = new Date(), st = { ob: "mesiac", rok: now.getFullYear(), mes: now.getMonth(), q: Math.floor(now.getMonth() / 3) };
+  function kresli() {
+    document.getElementById("profilRokTxt").textContent = st.rok;
+    vyber.innerHTML = "";
+    vyber.style.display = st.ob === "rok" ? "none" : "";
+    var n = st.ob === "mesiac" ? 12 : st.ob === "stvrtrok" ? 4 : 0;
+    for (var i = 0; i < n; i++) {
+      var b = document.createElement("button");
+      b.type = "button"; b.dataset.i = i;
+      b.textContent = st.ob === "mesiac" ? MES[i] : (i + 1) + ". štvrťrok";
+      if ((st.ob === "mesiac" ? st.mes : st.q) === i) b.className = "on";
+      vyber.appendChild(b);
+    }
+    vyber.className = "pf-vyber " + (st.ob === "mesiac" ? "m12" : "q4");
+    box.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x.dataset.ob === st.ob); });
+  }
   box.addEventListener("click", function (e) {
-    var b = e.target.closest("button[data-ob]");
-    if (!b) return;
-    box.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+    var b = e.target.closest("button[data-ob]"); if (!b) return;
+    st.ob = b.dataset.ob; kresli();
   });
+  vyber.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-i]"); if (!b) return;
+    if (st.ob === "mesiac") st.mes = +b.dataset.i; else st.q = +b.dataset.i;
+    kresli();
+  });
+  document.getElementById("profilRokMinus").addEventListener("click", function () { st.rok--; kresli(); });
+  document.getElementById("profilRokPlus").addEventListener("click", function () { st.rok++; kresli(); });
+  kresli();
 })();
