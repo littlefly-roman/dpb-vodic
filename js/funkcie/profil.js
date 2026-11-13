@@ -204,6 +204,34 @@
     }
     document.getElementById("profilZvolene").textContent =
       st.ob === "rok" ? "Rok " + st.rok : st.ob === "stvrtrok" ? RIM[st.i] + ". štvrťrok " + st.rok : MES[st.i].charAt(0).toUpperCase() + MES[st.i].slice(1) + " " + st.rok;
+    dopln();
+  }
+  // štatistika zvoleného obdobia: súčet mesačných výkazov (DpbVykaz._zber)
+  function hm(min) { var z = min < 0 ? "−" : "", a = Math.abs(Math.round(min)); return z + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0"); }
+  function dopln() {
+    var mes = st.ob === "rok" ? [0,1,2,3,4,5,6,7,8,9,10,11] : st.ob === "stvrtrok" ? [st.i * 3, st.i * 3 + 1, st.i * 3 + 2] : [st.i];
+    var S = { vykon: 0, nadcas: 0, svozom: 0, nocne: 0, sone: 0, sviatky: 0, stravne: 0, pocet: 0, dov: 0, pn: 0, lek: 0, dop: 0, ine: 0 }, mal = false;
+    if (window.DpbVykaz && DpbVykaz._zber) mes.forEach(function (mm) {
+      try {
+        var X = DpbVykaz._zber(new Date(st.rok, mm, 1)), T = X.T, kl = Object.keys(X.nepr || {});
+        if (!(T.dni > 0 || kl.length)) return;
+        mal = true;
+        S.vykon += T.cisty; S.nadcas += T.nadcas; S.svozom += T.voz; S.nocne += T.noc; S.sone += T.so + T.ne; S.sviatky += T.sv; S.stravne += T.str; S.pocet += T.dni;
+        kl.forEach(function (k) {
+          var d = X.nepr[k];
+          if (/dovolen/i.test(k)) S.dov += d;
+          else if (/nemoc|karant|izol/i.test(k)) S.pn += d;
+          else if (/lek[aá]r|prehliadk|psycholog/i.test(k)) S.lek += d;
+          else if (/doprov|sprievod/i.test(k)) S.dop += d;
+          else S.ine += d;
+        });
+      } catch (e) {}
+    });
+    var HM = { vykon: 1, nadcas: 1, svozom: 1, nocne: 1, sone: 1, sviatky: 1 };
+    Object.keys(S).forEach(function (k) {
+      var el = document.querySelector("[data-pf=st_" + { vykon: "vykon", nadcas: "nadcas", svozom: "svozom", nocne: "nocne", sone: "sone", sviatky: "sviatky", stravne: "stravne", pocet: "pocet", dov: "dov", pn: "pn", lek: "lek", dop: "dop", ine: "ine" }[k] + "]");
+      if (el) el.textContent = !mal ? "–" : HM[k] ? hm(S[k]) : String(S[k]);
+    });
   }
   vyber.addEventListener("click", function (e) {
     var b = e.target.closest("button[data-ob]"); if (!b) return;
