@@ -151,36 +151,37 @@
   window.Profil = { otvor: otvor, otvorNastavenia: otvorNastavenia, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
 
-// Profil: výber obdobia štatistiky – Rok, 4 štvrťroky alebo 12 mesiacov (polia sa naplnia neskôr z FS DB alebo METISu)
+// Profil: výber obdobia štatistiky – ťuk na rok, štvrťrok (I–IV) alebo mesiac (1–12); polia sa naplnia neskôr z FS DB alebo METISu
 (function () {
-  var box = document.getElementById("profilObdobie"), vyber = document.getElementById("profilVyber");
-  if (!box || !vyber) return;
-  var MES = ["Jan", "Feb", "Mar", "Apr", "Máj", "Jún", "Júl", "Aug", "Sep", "Okt", "Nov", "Dec"];
-  var now = new Date(), st = { ob: "mesiac", rok: now.getFullYear(), mes: now.getMonth(), q: Math.floor(now.getMonth() / 3) };
+  var vyber = document.getElementById("profilVyber");
+  if (!vyber) return;
+  var RIM = ["I", "II", "III", "IV"];
+  var MES = ["január", "február", "marec", "apríl", "máj", "jún", "júl", "august", "september", "október", "november", "december"];
+  var now = new Date(), st = { ob: "mesiac", rok: now.getFullYear(), i: now.getMonth() };
   function kresli() {
-    document.getElementById("profilRokTxt").textContent = st.rok;
+    var rb = document.getElementById("profilRokTxt");
+    rb.textContent = st.rok; rb.classList.toggle("on", st.ob === "rok");
     vyber.innerHTML = "";
-    vyber.style.display = st.ob === "rok" ? "none" : "";
-    var n = st.ob === "mesiac" ? 12 : st.ob === "stvrtrok" ? 4 : 0;
-    for (var i = 0; i < n; i++) {
-      var b = document.createElement("button");
-      b.type = "button"; b.dataset.i = i;
-      b.textContent = st.ob === "mesiac" ? MES[i] : (i + 1) + ". štvrťrok";
-      if ((st.ob === "mesiac" ? st.mes : st.q) === i) b.className = "on";
-      vyber.appendChild(b);
+    for (var q = 0; q < 4; q++) {
+      var bq = document.createElement("button");
+      bq.type = "button"; bq.dataset.ob = "stvrtrok"; bq.dataset.i = q; bq.textContent = RIM[q];
+      bq.className = "pf-q" + (st.ob === "stvrtrok" && st.i === q ? " on" : "");
+      vyber.appendChild(bq);
+      for (var m = q * 3; m < q * 3 + 3; m++) {
+        var bm = document.createElement("button");
+        bm.type = "button"; bm.dataset.ob = "mesiac"; bm.dataset.i = m; bm.textContent = m + 1;
+        if (st.ob === "mesiac" && st.i === m) bm.className = "on";
+        vyber.appendChild(bm);
+      }
     }
-    vyber.className = "pf-vyber " + (st.ob === "mesiac" ? "m12" : "q4");
-    box.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x.dataset.ob === st.ob); });
+    document.getElementById("profilZvolene").textContent =
+      st.ob === "rok" ? "Rok " + st.rok : st.ob === "stvrtrok" ? RIM[st.i] + ". štvrťrok " + st.rok : MES[st.i].charAt(0).toUpperCase() + MES[st.i].slice(1) + " " + st.rok;
   }
-  box.addEventListener("click", function (e) {
-    var b = e.target.closest("button[data-ob]"); if (!b) return;
-    st.ob = b.dataset.ob; kresli();
-  });
   vyber.addEventListener("click", function (e) {
-    var b = e.target.closest("button[data-i]"); if (!b) return;
-    if (st.ob === "mesiac") st.mes = +b.dataset.i; else st.q = +b.dataset.i;
-    kresli();
+    var b = e.target.closest("button[data-ob]"); if (!b) return;
+    st.ob = b.dataset.ob; st.i = +b.dataset.i; kresli();
   });
+  document.getElementById("profilRokTxt").addEventListener("click", function () { st.ob = "rok"; kresli(); });
   document.getElementById("profilRokMinus").addEventListener("click", function () { st.rok--; kresli(); });
   document.getElementById("profilRokPlus").addEventListener("click", function () { st.rok++; kresli(); });
   kresli();

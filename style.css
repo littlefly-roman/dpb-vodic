@@ -3901,3 +3901,8 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-vyber.q4 { grid-template-columns: repeat(2, 1fr); }
 .pf-vyber button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 15px; }
 .pf-vyber button.on { background: var(--red); color: #fff; border-color: var(--red); }
+.pf-rok-btn { width: auto !important; padding: 0 22px; font-size: 20px; font-weight: 700; }
+.pf-rok-btn.on { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
+.pf-vyber { grid-template-columns: 1.1fr repeat(3, 1fr) !important; }
+.pf-vyber button.pf-q { font-weight: 700; }
+.pf-zvolene { font-size: 15px; font-weight: 700; color: var(--text-2); margin: 2px 0 8px; text-align: center; }
