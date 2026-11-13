@@ -210,7 +210,7 @@
   function hm(min) { var z = min < 0 ? "−" : "", a = Math.abs(Math.round(min)); return z + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0"); }
   function dopln() {
     var mes = st.ob === "rok" ? [0,1,2,3,4,5,6,7,8,9,10,11] : st.ob === "stvrtrok" ? [st.i * 3, st.i * 3 + 1, st.i * 3 + 2] : [st.i];
-    var S = { vykon: 0, nadcas: 0, svozom: 0, nocne: 0, sone: 0, sviatky: 0, stravne: 0, pocet: 0, dov: 0, pn: 0, lek: 0, dop: 0, ine: 0 }, mal = false;
+    var S = { vykon: 0, nadcas: 0, svozom: 0, nocne: 0, sone: 0, sviatky: 0, stravne: 0, pocet: 0, dov: 0, pn: 0, lek: 0, dop: 0, ine: 0 }, mal = false, ineD = {};
     if (window.DpbVykaz && DpbVykaz._zber) mes.forEach(function (mm) {
       try {
         var X = DpbVykaz._zber(new Date(st.rok, mm, 1)), T = X.T, kl = Object.keys(X.nepr || {});
@@ -223,7 +223,7 @@
           else if (/nemoc|karant|izol/i.test(k)) S.pn += d;
           else if (/lek[aá]r|prehliadk|psycholog/i.test(k)) S.lek += d;
           else if (/doprov|sprievod/i.test(k)) S.dop += d;
-          else S.ine += d;
+          else { S.ine += d; ineD[k] = (ineD[k] || 0) + d; }
         });
       } catch (e) {}
     });
@@ -232,6 +232,23 @@
       var el = document.querySelector("[data-pf=st_" + { vykon: "vykon", nadcas: "nadcas", svozom: "svozom", nocne: "nocne", sone: "sone", sviatky: "sviatky", stravne: "stravne", pocet: "pocet", dov: "dov", pn: "pn", lek: "lek", dop: "dop", ine: "ine" }[k] + "]");
       if (el) el.textContent = !mal ? "–" : HM[k] ? hm(S[k]) : String(S[k]);
     });
+    vypisIne(mal ? ineD : {});
+  }
+  // „Iné voľno“ sa dá rozbaliť: vypíše jednotlivé druhy a počet dní
+  var ineEl = document.querySelector("[data-pf=st_ine]"), ineRad = ineEl && ineEl.parentNode, ineBox = null;
+  if (ineRad) {
+    ineBox = document.createElement("div"); ineBox.className = "pf-ine"; ineBox.hidden = true;
+    ineRad.parentNode.insertBefore(ineBox, ineRad.nextSibling);
+    ineRad.classList.add("pf-klik");
+    ineRad.addEventListener("click", function () { if (ineRad.classList.contains("maobsah")) { ineBox.hidden = !ineBox.hidden; ineRad.classList.toggle("otvorene", !ineBox.hidden); } });
+  }
+  function vypisIne(ineD) {
+    if (!ineBox) return;
+    var k = Object.keys(ineD);
+    ineBox.innerHTML = "";
+    k.forEach(function (n) { var r = document.createElement("div"); r.className = "employer-detail-row"; r.innerHTML = "<span></span><span class='pf-hod'></span>"; r.firstChild.textContent = n; r.lastChild.textContent = ineD[n]; ineBox.appendChild(r); });
+    ineRad.classList.toggle("maobsah", k.length > 0);
+    if (!k.length) { ineBox.hidden = true; ineRad.classList.remove("otvorene"); }
   }
   vyber.addEventListener("click", function (e) {
     var b = e.target.closest("button[data-ob]"); if (!b) return;

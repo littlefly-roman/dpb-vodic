@@ -3914,3 +3914,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-rad button.on { background: var(--red); color: #fff; border-color: var(--red); }
 .pf-rad button.pf-q { background: var(--text-1); color: var(--surface); border-color: var(--text-1); font-weight: 700; letter-spacing: .04em; }
 .pf-rad button.pf-q.on { background: var(--red); color: #fff; border-color: var(--red); }
+/* Profil: rozbaliteľné „Iné voľno“ */
+.pf-klik.maobsah{cursor:pointer}
+.pf-klik.maobsah>span:first-child::after{content:" ▾";color:var(--red)}
+.pf-klik.maobsah.otvorene>span:first-child::after{content:" ▴"}
+.pf-ine{margin:0 0 4px 14px;padding-left:10px;border-left:3px solid var(--red)}
+.pf-ine .employer-detail-row span:first-child{font-size:15px}
