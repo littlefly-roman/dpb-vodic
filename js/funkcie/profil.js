@@ -157,8 +157,31 @@
   if (!vyber) return;
   var RIM = ["I", "II", "III", "IV"];
   var MES = ["január", "február", "marec", "apríl", "máj", "jún", "júl", "august", "september", "október", "november", "december"];
-  var now = new Date(), st = { ob: "mesiac", rok: now.getFullYear(), i: now.getMonth() };
+  var now = new Date(), st = { ob: "mesiac", rok: now.getFullYear(), i: now.getMonth() }, hotovo = false;
+  // mesiace, za ktoré má prihlásený vodič nejaké dáta ("YYYY-M", mesiac 0–11); ostatné obdobia sú neviditeľné
+  function dostupne() {
+    var out = {}, rid = window.appState && window.appState.currentDriver, m = window.RAW && window.RAW.models && window.RAW.models[rid];
+    (m || []).forEach(function (d) {
+      var x = /^(\d{4})-(\d{2})/.exec(String(d.datum || ""));
+      if (x) out[+x[1] + "-" + (+x[2] - 1)] = 1;
+    });
+    return out;
+  }
   function kresli() {
+    var D = dostupne(), roky = Object.keys(D).map(function (k) { return +k.split("-")[0]; });
+    var maRok = function (r) { return roky.indexOf(r) >= 0; };
+    var maM = function (r, mm) { return !!D[r + "-" + mm]; };
+    var maQ = function (r, q) { return maM(r, q * 3) || maM(r, q * 3 + 1) || maM(r, q * 3 + 2); };
+    if (!hotovo && roky.length) {   // prvé zobrazenie s dátami: aktuálny mesiac, inak najnovší dostupný
+      hotovo = true;
+      if (!maM(st.rok, st.i)) {
+        var posl = Object.keys(D).map(function (k) { var a = k.split("-"); return +a[0] * 12 + +a[1]; }).sort(function (a, b) { return a - b; }).pop();
+        st.rok = Math.floor(posl / 12); st.i = posl % 12; st.ob = "mesiac";
+      }
+    }
+    var mn = roky.length ? Math.min.apply(null, roky) : st.rok, mx = roky.length ? Math.max.apply(null, roky) : st.rok;
+    document.getElementById("profilRokMinus").style.visibility = st.rok > mn ? "" : "hidden";
+    document.getElementById("profilRokPlus").style.visibility = st.rok < mx ? "" : "hidden";
     var rb = document.getElementById("profilRokTxt");
     rb.textContent = st.rok; rb.classList.toggle("on", st.ob === "rok");
     vyber.innerHTML = "";
@@ -166,11 +189,13 @@
       var bq = document.createElement("button");
       bq.type = "button"; bq.dataset.ob = "stvrtrok"; bq.dataset.i = q; bq.textContent = RIM[q];
       bq.className = "pf-q" + (st.ob === "stvrtrok" && st.i === q ? " on" : "");
+      if (!maQ(st.rok, q)) bq.style.visibility = "hidden";
       vyber.appendChild(bq);
       for (var m = q * 3; m < q * 3 + 3; m++) {
         var bm = document.createElement("button");
         bm.type = "button"; bm.dataset.ob = "mesiac"; bm.dataset.i = m; bm.textContent = m + 1;
         if (st.ob === "mesiac" && st.i === m) bm.className = "on";
+        if (!maM(st.rok, m)) bm.style.visibility = "hidden";
         vyber.appendChild(bm);
       }
     }
@@ -185,4 +210,7 @@
   document.getElementById("profilRokMinus").addEventListener("click", function () { st.rok--; kresli(); });
   document.getElementById("profilRokPlus").addEventListener("click", function () { st.rok++; kresli(); });
   kresli();
+  // pri otvorení Profilu a po načítaní dát sa dostupné obdobia obnovia
+  document.addEventListener("click", function (e) { if (e.target.closest("[data-nav=profil]")) setTimeout(kresli, 50); });
+  window.DpbProfilStat = { obnov: kresli };
 })();
