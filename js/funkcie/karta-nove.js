@@ -261,7 +261,10 @@
       ok.appendChild(el("div", "", "Pridelené vozidlo na linku " + (k.kurz || "")));
       ok.firstChild.className = "voz-okno-t";
       var vv = el("div", "", cislo); vv.className = "voz-okno-v"; ok.appendChild(vv);
-      var pl = el("div", ""); pl.className = "voz-okno-pl"; pl.innerHTML = svg("poloha", 22) + "<span>Poloha vozidla</span>"; ok.appendChild(pl);
+      var pl = el("div", ""); pl.className = "voz-okno-pl"; // textová poloha vozidla (napr. „Hala 2, stojisko 14“) – zatiaľ z poľa poloha na vozidle, zdroj dopojíme neskôr; bez textu ostáva prázdne políčko
+      var polTxt = v && v.poloha ? String(v.poloha).trim() : "";
+      pl.innerHTML = svg("poloha", 22) + "<span></span>"; pl.lastChild.textContent = polTxt || "Poloha vozidla";
+      if (polTxt) pl.classList.add("je"); ok.appendChild(pl);
       var bt = el("button", "", "Rozumiem"); bt.type = "button"; bt.className = "voz-okno-b";
       bt.addEventListener("click", function () { bg.remove(); });
       ok.appendChild(bt); bg.appendChild(ok); document.body.appendChild(bg);

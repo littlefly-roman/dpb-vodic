@@ -3806,6 +3806,7 @@ img{-webkit-user-drag:none}
 .voz-okno-t{font-size:17px;color:var(--text-2,#555)}
 .voz-okno-v{font-size:48px;font-weight:800;margin:6px 0 14px;font-variant-numeric:tabular-nums}
 .voz-okno-pl{display:flex;align-items:center;justify-content:center;gap:10px;border:2px dashed var(--border,#999);border-radius:14px;padding:12px;font-size:17px;color:var(--text-3,#888);margin-bottom:14px}
+.voz-okno-pl svg{flex:none}.voz-okno-pl.je{border-style:solid;border-color:#ff9f0a;color:var(--text-1,#111);font-weight:700;font-size:19px;line-height:1.25}
 .voz-okno-b{width:100%;min-height:50px;border:0;border-radius:12px;background:#ff9f0a;color:#111;font-size:18px;font-weight:800;font-family:inherit}
 
 /* VS – porovnanie služieb s kolegami */
