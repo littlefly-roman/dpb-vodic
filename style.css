@@ -3906,3 +3906,11 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-vyber { grid-template-columns: 1.1fr repeat(3, 1fr) !important; }
 .pf-vyber button.pf-q { font-weight: 700; }
 .pf-zvolene { font-size: 15px; font-weight: 700; color: var(--text-2); margin: 2px 0 8px; text-align: center; }
+
+/* Štvrťroky: tmavý štítok vľavo v podfarbenom rade, mesiace v ňom ako svetlé tlačidlá */
+.pf-vyber { display: block !important; }
+.pf-rad { display: grid; grid-template-columns: 1.1fr repeat(3, 1fr); gap: 6px; padding: 6px; margin-bottom: 8px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
+.pf-rad button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-1); font-size: 15px; }
+.pf-rad button.on { background: var(--red); color: #fff; border-color: var(--red); }
+.pf-rad button.pf-q { background: var(--text-1); color: var(--surface); border-color: var(--text-1); font-weight: 700; letter-spacing: .04em; }
+.pf-rad button.pf-q.on { background: var(--red); color: #fff; border-color: var(--red); }

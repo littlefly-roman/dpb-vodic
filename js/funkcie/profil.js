@@ -186,18 +186,21 @@
     rb.textContent = st.rok; rb.classList.toggle("on", st.ob === "rok");
     vyber.innerHTML = "";
     for (var q = 0; q < 4; q++) {
+      var rad = document.createElement("div");
+      rad.className = "pf-rad";
       var bq = document.createElement("button");
       bq.type = "button"; bq.dataset.ob = "stvrtrok"; bq.dataset.i = q; bq.textContent = RIM[q];
       bq.className = "pf-q" + (st.ob === "stvrtrok" && st.i === q ? " on" : "");
-      if (!maQ(st.rok, q)) bq.style.visibility = "hidden";
-      vyber.appendChild(bq);
+      if (!maQ(st.rok, q)) { bq.style.visibility = "hidden"; rad.style.visibility = "hidden"; }
+      rad.appendChild(bq);
       for (var m = q * 3; m < q * 3 + 3; m++) {
         var bm = document.createElement("button");
         bm.type = "button"; bm.dataset.ob = "mesiac"; bm.dataset.i = m; bm.textContent = m + 1;
         if (st.ob === "mesiac" && st.i === m) bm.className = "on";
         if (!maM(st.rok, m)) bm.style.visibility = "hidden";
-        vyber.appendChild(bm);
+        rad.appendChild(bm);
       }
+      vyber.appendChild(rad);
     }
     document.getElementById("profilZvolene").textContent =
       st.ob === "rok" ? "Rok " + st.rok : st.ob === "stvrtrok" ? RIM[st.i] + ". štvrťrok " + st.rok : MES[st.i].charAt(0).toUpperCase() + MES[st.i].slice(1) + " " + st.rok;
