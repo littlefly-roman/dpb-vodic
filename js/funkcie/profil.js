@@ -150,3 +150,14 @@
   }
   window.Profil = { otvor: otvor, otvorNastavenia: otvorNastavenia, odhlas: odhlas, obnovInfo: obnovInfoODatach };
 })();
+
+// Profil: prepínač obdobia štatistiky (zatiaľ len vzhľad, polia sa naplnia neskôr z FS DB alebo METISu)
+(function () {
+  var box = document.getElementById("profilObdobie");
+  if (!box) return;
+  box.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-ob]");
+    if (!b) return;
+    box.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+  });
+})();
