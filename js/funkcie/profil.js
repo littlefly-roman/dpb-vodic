@@ -208,47 +208,54 @@
   }
   // štatistika zvoleného obdobia: súčet mesačných výkazov (DpbVykaz._zber)
   function hm(min) { var z = min < 0 ? "−" : "", a = Math.abs(Math.round(min)); return z + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0"); }
+  var NAZ = { dov: "Dovolenka", pn: "PN", ocr: "OČR", lek: "Lekár", dop: "Doprovod", ine: "Iné neprítomnosti" };
+  function druh(n) {
+    if (/dovolen/i.test(n)) return "dov";
+    if (/nemoc|karant|izol/i.test(n)) return "pn";
+    if (/ošetrov/i.test(n)) return "ocr";
+    if (/lek[aá]r|prehliadk|psycholog/i.test(n)) return "lek";
+    if (/doprov|sprievod/i.test(n)) return "dop";
+    return "ine";
+  }
+  // riadok, ktorý sa po ťuknutí rozbalí a vypíše podpoložky
+  function rozbalitelny(key) {
+    var el = document.querySelector("[data-pf=st_" + key + "]"), rad = el && el.parentNode, box = null;
+    if (!rad) return function () {};
+    box = document.createElement("div"); box.className = "pf-ine"; box.hidden = true;
+    rad.parentNode.insertBefore(box, rad.nextSibling);
+    rad.classList.add("pf-klik");
+    rad.addEventListener("click", function () { if (rad.classList.contains("maobsah")) { box.hidden = !box.hidden; rad.classList.toggle("otvorene", !box.hidden); } });
+    return function (polozky) {
+      box.innerHTML = "";
+      polozky.forEach(function (p) { var r = document.createElement("div"); r.className = "employer-detail-row"; r.innerHTML = "<span></span><span class='pf-hod'></span>"; r.firstChild.textContent = p[0]; r.lastChild.textContent = p[1]; box.appendChild(r); });
+      rad.classList.toggle("maobsah", polozky.length > 0);
+      if (!polozky.length) { box.hidden = true; rad.classList.remove("otvorene"); }
+    };
+  }
+  var vypisIne = rozbalitelny("ine"), vypisPlat = rozbalitelny("plat");
   function dopln() {
     var mes = st.ob === "rok" ? [0,1,2,3,4,5,6,7,8,9,10,11] : st.ob === "stvrtrok" ? [st.i * 3, st.i * 3 + 1, st.i * 3 + 2] : [st.i];
-    var S = { vykon: 0, nadcas: 0, svozom: 0, nocne: 0, sone: 0, sviatky: 0, stravne: 0, pocet: 0, dov: 0, pn: 0, lek: 0, dop: 0, ine: 0, plat: 0, uvazok: 0 }, mal = false, ineD = {};
+    var S = { vykon: 0, nadcas: 0, svozom: 0, nocne: 0, so: 0, ne: 0, sviatky: 0, stravne: 0, pocet: 0, dov: 0, pn: 0, ocr: 0, lek: 0, dop: 0, ine: 0, plat: 0, uvazok: 0 }, mal = false, ineD = {}, platD = {};
     if (window.DpbVykaz && DpbVykaz._zber) mes.forEach(function (mm) {
       try {
         var X = DpbVykaz._zber(new Date(st.rok, mm, 1)), T = X.T, kl = Object.keys(X.nepr || {});
         if (!(T.dni > 0 || kl.length)) return;
         mal = true;
-        S.vykon += T.cisty; S.nadcas += T.nadcas; S.svozom += T.voz; S.nocne += T.noc; S.sone += T.so + T.ne; S.sviatky += T.sv; S.stravne += T.str; S.pocet += T.dni; S.plat += T.plat; S.uvazok += T.fond || 0;
+        S.vykon += T.cisty; S.nadcas += T.nadcas; S.svozom += T.voz; S.nocne += T.noc; S.so += T.so; S.ne += T.ne; S.sviatky += T.sv; S.stravne += T.str; S.pocet += T.dni; S.plat += T.plat; S.uvazok += T.fond || 0;
+        (X.rows || []).forEach(function (r) { if (r.nepr && r.kredit > 0) { var d = druh(r.sl || ""); platD[d] = (platD[d] || 0) + r.kredit; } });
         kl.forEach(function (k) {
-          var d = X.nepr[k];
-          if (/dovolen/i.test(k)) S.dov += d;
-          else if (/nemoc|karant|izol/i.test(k)) S.pn += d;
-          else if (/lek[aá]r|prehliadk|psycholog/i.test(k)) S.lek += d;
-          else if (/doprov|sprievod/i.test(k)) S.dop += d;
-          else { S.ine += d; ineD[k] = (ineD[k] || 0) + d; }
+          var d = druh(k); S[d] += X.nepr[k];
+          if (d === "ine") ineD[k] = (ineD[k] || 0) + X.nepr[k];
         });
       } catch (e) {}
     });
-    var HM = { uvazok: 1, plat: 1, vykon: 1, nadcas: 1, svozom: 1, nocne: 1, sone: 1, sviatky: 1 };
+    var HM = { uvazok: 1, plat: 1, vykon: 1, nadcas: 1, svozom: 1, nocne: 1, so: 1, ne: 1, sviatky: 1 };
     Object.keys(S).forEach(function (k) {
-      var el = document.querySelector("[data-pf=st_" + { vykon: "vykon", nadcas: "nadcas", svozom: "svozom", nocne: "nocne", sone: "sone", sviatky: "sviatky", stravne: "stravne", pocet: "pocet", dov: "dov", pn: "pn", lek: "lek", dop: "dop", ine: "ine", plat: "plat", uvazok: "uvazok" }[k] + "]");
+      var el = document.querySelector("[data-pf=st_" + k + "]");
       if (el) el.textContent = !mal ? "–" : HM[k] ? hm(S[k]) : String(S[k]);
     });
-    vypisIne(mal ? ineD : {});
-  }
-  // „Iné voľno“ sa dá rozbaliť: vypíše jednotlivé druhy a počet dní
-  var ineEl = document.querySelector("[data-pf=st_ine]"), ineRad = ineEl && ineEl.parentNode, ineBox = null;
-  if (ineRad) {
-    ineBox = document.createElement("div"); ineBox.className = "pf-ine"; ineBox.hidden = true;
-    ineRad.parentNode.insertBefore(ineBox, ineRad.nextSibling);
-    ineRad.classList.add("pf-klik");
-    ineRad.addEventListener("click", function () { if (ineRad.classList.contains("maobsah")) { ineBox.hidden = !ineBox.hidden; ineRad.classList.toggle("otvorene", !ineBox.hidden); } });
-  }
-  function vypisIne(ineD) {
-    if (!ineBox) return;
-    var k = Object.keys(ineD);
-    ineBox.innerHTML = "";
-    k.forEach(function (n) { var r = document.createElement("div"); r.className = "employer-detail-row"; r.innerHTML = "<span></span><span class='pf-hod'></span>"; r.firstChild.textContent = n; r.lastChild.textContent = ineD[n]; ineBox.appendChild(r); });
-    ineRad.classList.toggle("maobsah", k.length > 0);
-    if (!k.length) { ineBox.hidden = true; ineRad.classList.remove("otvorene"); }
+    vypisIne(mal ? Object.keys(ineD).map(function (n) { return [n, ineD[n]]; }) : []);
+    vypisPlat(mal ? Object.keys(NAZ).filter(function (d) { return platD[d] > 0; }).map(function (d) { return [NAZ[d], hm(platD[d])]; }) : []);
   }
   vyber.addEventListener("click", function (e) {
     var b = e.target.closest("button[data-ob]"); if (!b) return;
