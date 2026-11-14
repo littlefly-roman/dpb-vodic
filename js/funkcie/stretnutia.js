@@ -18,18 +18,21 @@
   }
 
   // Načíta a rozparsuje všetky električkové obehy daného dňa: { "009281": [spoj, ...] }; spoj = { linka, stops:[{st,pl,arr,dep}] }
-  async function nacitajObehy(dateKey) {
+  async function nacitajObehy(dateKey, ina) {
     var P = window.GrafikonParsery;
     var folders = window._dataFolders ? window._dataFolders() : [];
     var folder = window.Calendar.findDataFolder(dateKey, folders);
     if (!folder) return null;
     var typ = window.Calendar.getDayType(new Date(+dateKey.slice(0, 4), +dateKey.slice(5, 7) - 1, +dateKey.slice(8, 10)));
-    var kluc = folder + "|" + typ;
+    // bežne len električky (LINKY); pre zastávkový CP a minigrafikon sa môže pridať aj iná linka (autobus)
+    var linky = LINKY.slice();
+    if (ina && linky.indexOf(+ina) < 0) linky.push(+ina);
+    var kluc = folder + "|" + typ + "|" + linky.join(",");
     if (_cache[kluc]) return _cache[kluc];
     var base = "data/" + folder + "/";
     var obehy = {};
-    var texty = await Promise.all(LINKY.map(function (l) { return P.loadText(base + l + ".JR"); }));
-    var smTexty = await Promise.all(LINKY.map(function (l) { return P.loadText(base + l + ".SM", true); }));
+    var texty = await Promise.all(linky.map(function (l) { return P.loadText(base + l + ".JR"); }));
+    var smTexty = await Promise.all(linky.map(function (l) { return P.loadText(base + l + ".SM", true); }));
     // trasy: "L009_S03" -> [V uzla0, V uzla1, ...] (vzdialenosť od predchádzajúceho uzla v metroch)
     var trasy = {};
     smTexty.forEach(function (txt) {
@@ -275,7 +278,7 @@
 
   // Poloha kurzu v čase sec: 7 zastávok (3 pred, aktuálna, 3 za) z rozbehnutého spoja (alebo najbližšieho)
   async function poloha(kurz, dateKey, sec, poSluzbe) {
-    var d = await nacitajObehy(dateKey);
+    var d = await nacitajObehy(dateKey, String(kurz).split("/")[0]);
     if (!d) return { chyba: "Dáta grafikonu nie sú dostupné." };
     var p = String(kurz).split("/");
     var kod = String(p[0]).padStart(3, "0") + String(p[1]).padStart(2, "0") + d.typ;
@@ -309,7 +312,7 @@
   // Miesto kurzu v čase (sekundy): zastávka, v ktorej alebo pri ktorej (±2,5 min) kurz v tom čase je, inak prázdne.
   // Vráti { od: "Názov", do: "Názov" } pre začiatok a koniec úseku kurzu, alebo null (bez grafikonu).
   async function miesto(kurz, dateKey, od, do_) {
-    var d = await nacitajObehy(dateKey);
+    var d = await nacitajObehy(dateKey, String(kurz).split("/")[0]);
     if (!d) return null;
     var p = String(kurz).split("/");
     if (!p[1]) return null;
