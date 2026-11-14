@@ -224,12 +224,12 @@
     box = document.createElement("div"); box.className = "pf-ine"; box.hidden = true;
     rad.parentNode.insertBefore(box, rad.nextSibling);
     rad.classList.add("pf-klik");
-    rad.addEventListener("click", function () { if (rad.classList.contains("maobsah")) { box.hidden = !box.hidden; rad.classList.toggle("otvorene", !box.hidden); } });
+    rad.addEventListener("click", function () { if (rad.classList.contains("maobsah")) { box.hidden = !box.hidden; rad.classList.toggle("otvorene", !box.hidden); el.style.display = box.hidden ? "" : "none"; } });
     return function (polozky) {
       box.innerHTML = "";
       polozky.forEach(function (p) { var r = document.createElement("div"); r.className = "employer-detail-row"; r.innerHTML = "<span></span><span class='pf-hod'></span>"; r.firstChild.textContent = p[0]; r.lastChild.textContent = p[1]; box.appendChild(r); });
       rad.classList.toggle("maobsah", polozky.length > 0);
-      if (!polozky.length) { box.hidden = true; rad.classList.remove("otvorene"); }
+      if (!polozky.length) { box.hidden = true; rad.classList.remove("otvorene"); el.style.display = ""; }
     };
   }
   var vypisIne = rozbalitelny("ine"), vypisPlat = rozbalitelny("plat");
@@ -260,6 +260,17 @@
     ZAM.forEach(function (d) { sp += platD[d] || 0; });
     var elp = document.querySelector("[data-pf=st_plat]"); if (elp) elp.textContent = mal ? hm(sp) : "–";
     vypisPlat(mal ? ZAM.filter(function (d) { return platD[d] > 0; }).map(function (d) { return [NAZP[d], hm(platD[d])]; }) : []);
+    // nulové hodnoty sa nezobrazujú, ani ich riadky (a nadpis bloku, ak v ňom nič nezostane)
+    S.plat = sp;
+    var zivych = 0, nepr = 0;
+    Object.keys(S).forEach(function (k) {
+      var el = document.querySelector("[data-pf=st_" + k + "]"), rad = el && el.parentNode; if (!rad) return;
+      var skry = !mal || Math.round(S[k]) === 0;
+      rad.style.display = skry ? "none" : "";
+      if (!skry) { zivych++; if (/^(dov|pn|ocr|lek|dop|ine)$/.test(k)) nepr++; }
+    });
+    var nad = document.getElementById("profilNeprNadpis"); if (nad) nad.style.display = nepr ? "" : "none";
+    var pr = document.getElementById("profilStatPrazdno"); if (pr) pr.style.display = zivych ? "none" : "";
   }
   vyber.addEventListener("click", function (e) {
     var b = e.target.closest("button[data-ob]"); if (!b) return;

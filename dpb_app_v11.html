@@ -340,6 +340,7 @@
           <div class="pf-rok"><button type="button" id="profilRokMinus" aria-label="Predchádzajúci rok">‹</button><button type="button" id="profilRokTxt" class="pf-rok-btn">2026</button><button type="button" id="profilRokPlus" aria-label="Nasledujúci rok">›</button></div>
           <div class="pf-vyber" id="profilVyber"></div>
           <div class="pf-zvolene" id="profilZvolene"></div>
+          <div class="profil-pozn" id="profilStatPrazdno" style="display:none">Za toto obdobie nie sú žiadne dáta.</div>
           <div class="employer-detail-row"><span>Úväzok</span><span class="pf-hod" data-pf="st_uvazok">–</span></div>
           <div class="employer-detail-row"><span>Výkon</span><span class="pf-hod" data-pf="st_vykon">–</span></div>
           <div class="employer-detail-row"><span>Platené neprítomnosti</span><span class="pf-hod" data-pf="st_plat">–</span></div>
@@ -351,7 +352,7 @@
           <div class="employer-detail-row"><span>S vozom</span><span class="pf-hod" data-pf="st_svozom">–</span></div>
           <div class="employer-detail-row"><span>Stravné</span><span class="pf-hod" data-pf="st_stravne">–</span></div>
           <div class="employer-detail-row"><span>Počet služieb</span><span class="pf-hod" data-pf="st_pocet">–</span></div>
-          <div class="pf-nadpis">Neprítomnosti (dni)</div>
+          <div class="pf-nadpis" id="profilNeprNadpis">Neprítomnosti (dni)</div>
           <div class="employer-detail-row"><span>Dovolenka</span><span class="pf-hod" data-pf="st_dov">–</span></div>
           <div class="employer-detail-row"><span>PN</span><span class="pf-hod" data-pf="st_pn">–</span></div>
           <div class="employer-detail-row"><span>OČR</span><span class="pf-hod" data-pf="st_ocr">–</span></div>
@@ -726,7 +727,7 @@
     <script src="js/data/odpocinok.js?v=10"></script>
     <script src="js/data/adapter-csv.js?v=62"></script>
 
-    <script src="js/funkcie/profil.js?v=72"></script>
+    <script src="js/funkcie/profil.js?v=73"></script>
     <script src="js/funkcie/ikony-dopravy.js?v=3"></script>
     <script src="js/funkcie/import-csv.js"></script>
     <script src="js/funkcie/disk-google-config.js?v=2"></script>
