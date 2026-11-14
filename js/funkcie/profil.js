@@ -255,7 +255,11 @@
       if (el) el.textContent = !mal ? "–" : HM[k] ? hm(S[k]) : String(S[k]);
     });
     vypisIne(mal ? Object.keys(ineD).map(function (n) { return [n, ineD[n]]; }) : []);
-    vypisPlat(mal ? Object.keys(NAZ).filter(function (d) { return platD[d] > 0; }).map(function (d) { return [NAZ[d], hm(platD[d])]; }) : []);
+    // „Platené neprítomnosti“ = len tie, ktoré platí zamestnávateľ (bez PN a OČR, tie platí Sociálna poisťovňa)
+    var ZAM = ["dov", "lek", "dop", "ine"], NAZP = { dov: "Dovolenka", lek: "Lekár", dop: "Doprovod", ine: "Iné platené neprítomnosti" }, sp = 0;
+    ZAM.forEach(function (d) { sp += platD[d] || 0; });
+    var elp = document.querySelector("[data-pf=st_plat]"); if (elp) elp.textContent = mal ? hm(sp) : "–";
+    vypisPlat(mal ? ZAM.filter(function (d) { return platD[d] > 0; }).map(function (d) { return [NAZP[d], hm(platD[d])]; }) : []);
   }
   vyber.addEventListener("click", function (e) {
     var b = e.target.closest("button[data-ob]"); if (!b) return;
