@@ -195,7 +195,7 @@
     var box = document.createElement("div");
     box.style.cssText = "position:relative;background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
-      '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="ik-i"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></g><polyline class="ik-hore" points="6 15 12 9 18 15"/></svg></button>' +
+      '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg></button>' +
       '<div style="font-size:15px;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
       '<div style="font-size:17px;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
       '<div class="odp-cislo" style="font-size:72px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
