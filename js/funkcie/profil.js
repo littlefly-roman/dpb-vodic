@@ -279,6 +279,36 @@
   document.getElementById("profilRokTxt").addEventListener("click", function () { st.ob = "rok"; kresli(); });
   document.getElementById("profilRokMinus").addEventListener("click", function () { st.rok--; kresli(); });
   document.getElementById("profilRokPlus").addEventListener("click", function () { st.rok++; kresli(); });
+  // swipe v zozname štatistiky: mesiac ±1 mesiac, štvrťrok ±1 štvrťrok, rok ±1 rok (len na obdobia s dátami)
+  function posun(smer) {
+    var D = dostupne(), maM = function (r, mm) { return !!D[r + "-" + mm]; };
+    var maQ = function (r, q) { return maM(r, q * 3) || maM(r, q * 3 + 1) || maM(r, q * 3 + 2); };
+    var roky = Object.keys(D).map(function (k) { return +k.split("-")[0]; });
+    if (!roky.length) return;
+    var r = st.rok, i = st.i;
+    for (var n = 0; n < 60; n++) {
+      if (st.ob === "rok") r += smer;
+      else if (st.ob === "stvrtrok") { i += smer; if (i < 0) { i = 3; r--; } else if (i > 3) { i = 0; r++; } }
+      else { i += smer; if (i < 0) { i = 11; r--; } else if (i > 11) { i = 0; r++; } }
+      if (r < Math.min.apply(null, roky) || r > Math.max.apply(null, roky)) return;
+      var ok = st.ob === "rok" ? roky.indexOf(r) >= 0 : st.ob === "stvrtrok" ? maQ(r, i) : maM(r, i);
+      if (ok) { st.rok = r; st.i = i; kresli(); return; }
+    }
+  }
+  (function () {
+    var sek = document.getElementById("profilStatistika"), x0 = 0, y0 = 0, sled = false;
+    if (!sek) return;
+    sek.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) { sled = false; return; }
+      sled = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    sek.addEventListener("touchend", function (e) {
+      if (!sled) return; sled = false;
+      var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
+      posun(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  })();
   kresli();
   // pri otvorení Profilu a po načítaní dát sa dostupné obdobia obnovia
   document.addEventListener("click", function (e) { if (e.target.closest("[data-nav=profil]")) setTimeout(kresli, 50); });
