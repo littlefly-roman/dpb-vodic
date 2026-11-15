@@ -26,7 +26,7 @@
   var akt = null;          // { key, dep (s od polnoci), nazov, cas, spustene:{120,60,30,0} }
   var tik = null, wl = null, ctx = null, ov = null;
 
-  var IK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  var IK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>';
 
   function sekHms(t) {
     var p = String(t || "").split(":");
@@ -400,7 +400,7 @@
     toast("Upozornenia zapnuté (" + buduce.length + "). Obrazovka ostane zapnutá.");
   }
   // Zvonček do hlavičky bloku na karte. items = [{ cas:"HH:MM", nazov }]
-  var IK_PLAN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/></svg>';
+  var IK_PLAN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>';
   function planTlacidlo(kind, items, typ, pop) {
     var b = document.createElement("button");
     b.type = "button";
