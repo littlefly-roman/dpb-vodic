@@ -3921,3 +3921,12 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-klik.maobsah.otvorene>span:first-child::after{content:" ▴"}
 .pf-ine{margin:0 0 4px 14px;padding-left:10px;border-left:3px solid var(--red)}
 .pf-ine .employer-detail-row span:first-child{font-size:15px}
+
+/* Štatistika: kompaktnejší výber obdobia; názov obdobia vľavo, odkaz na výkaz vpravo */
+.pf-rok { gap: 14px; margin: 0 0 6px; font-size: 16px; }
+.pf-rok button { width: 34px; height: 30px; border-radius: 8px; font-size: 18px; line-height: 1; padding: 0; }
+.pf-rok-btn { height: 30px !important; font-size: 17px !important; padding: 0 18px !important; }
+.pf-rad { padding: 4px; gap: 4px; margin-bottom: 4px; border-radius: 12px; }
+.pf-rad button { padding: 4px 4px; font-size: 15px; line-height: 1.2; border-radius: 8px; }
+.pf-zvolene { display: flex; align-items: center; justify-content: space-between; text-align: left; margin: 4px 0 6px; }
+.pf-vykaz-odkaz { border: 0; background: transparent; color: var(--red); font-size: 15px; font-weight: 700; padding: 6px 0 6px 12px; }

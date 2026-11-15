@@ -202,8 +202,17 @@
       }
       vyber.appendChild(rad);
     }
-    document.getElementById("profilZvolene").textContent =
+    var zv = document.getElementById("profilZvolene"), popis =
       st.ob === "rok" ? "Rok " + st.rok : st.ob === "stvrtrok" ? RIM[st.i] + ". štvrťrok " + st.rok : MES[st.i].charAt(0).toUpperCase() + MES[st.i].slice(1) + " " + st.rok;
+    zv.innerHTML = "";
+    var zt = document.createElement("span"); zt.textContent = popis; zv.appendChild(zt);
+    if (st.ob === "mesiac") {   // odkaz na výkaz zvoleného mesiaca
+      var vb = document.createElement("button");
+      vb.type = "button"; vb.className = "pf-vykaz-odkaz"; vb.textContent = "Výkaz ›";
+      var rk = st.rok, mi = st.i;
+      vb.addEventListener("click", function (e) { e.stopPropagation(); if (window.DpbVykaz) window.DpbVykaz.otvor(new Date(rk, mi, 1)); });
+      zv.appendChild(vb);
+    }
     dopln();
   }
   // štatistika zvoleného obdobia: súčet mesačných výkazov (DpbVykaz._zber)
