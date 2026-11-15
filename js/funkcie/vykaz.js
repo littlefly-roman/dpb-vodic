@@ -57,6 +57,7 @@
   function vzorK(s) { return s._vzor || (s._karta && s._karta.vzor) || ""; }
 
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
+  function pushS(s, o) { o._s = s; return this.push(o); }
   function zber(datum, zdroj) {
     var dp = zdroj === "dp";
     var v = vodic(), y = datum.getFullYear(), m = datum.getMonth(), n = new Date(y, m + 1, 0).getDate();
@@ -77,7 +78,7 @@
             if (dt.getDay() === 0) T.ne += rv;
             if (sviatok) T.sv += rv;
             if (rv) rekMal = true;
-            rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: "Reklamácia", d: rd, cas: "", cisty: rv, voz: [], noc: rk.noc || 0, oddych: null });
+            pushS.call(rows, s, { dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: "Reklamácia", d: rd, cas: "", cisty: rv, voz: [], noc: rk.noc || 0, oddych: null });
             prvy = false; return;
           }
           if (PRACA[kod]) { // iný druh práce: je to výkon
@@ -86,7 +87,7 @@
             if (pa == null || pb == null) return;
             if (pb <= pa) pb += 1440;
             mal = true; den += pb - pa; T.cisty += pb - pa; T.noc += ov(pa, pb, 0, NOC_DO) + ov(pa, pb, NOC_OD, 1440 + NOC_DO);
-            rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: "", sl: nm, cas: ft(pa % 1440) + " – " + ft(pb % 1440), cisty: pb - pa, voz: [], noc: 0, oddych: null });
+            pushS.call(rows, s, { dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: "", sl: nm, cas: ft(pa % 1440) + " – " + ft(pb % 1440), cisty: pb - pa, voz: [], noc: 0, oddych: null });
             prvy = false; return;
           }
           nepr[nm] = (nepr[nm] || 0) + 1;
@@ -94,7 +95,7 @@
           if (!NEPLATENE[kod] && !(LEN_PO_PI[kod] && (dt.getDay() === 0 || dt.getDay() === 6))) kr = Math.round(kredit(k, denMin));
           T.plat += kr;
           if (STRAVNE_NEPR[kod]) strNepr = true;
-          rows.push({ dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
+          pushS.call(rows, s, { dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy, znacka: prvy ? (sviatok ? "sviatok" : "") : "", sl: nm, nepr: true, kredit: kr, voz: [] });
           prvy = false;
           return;
         }
@@ -125,7 +126,7 @@
         if (dt.getDay() === 6) T.so += cisty;
         if (dt.getDay() === 0) T.ne += cisty;
         if (sviatok) T.sv += cisty;
-        rows.push({
+        pushS.call(rows, s, {
           dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
           znacka: prvy ? (sviatok ? "sviatok" : "") : "",
           sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc, oddych: oddych,
@@ -135,7 +136,7 @@
       if (d < 1) continue;
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : "", voz: [] });
-      for (var qi = r0; qi < rows.length; qi++) { rows[qi].dow = dt.getDay(); rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
+      for (var qi = r0; qi < rows.length; qi++) { rows[qi].dkey = kluc(dt); rows[qi].dow = dt.getDay(); rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok && !rows[qi].vik; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
       // delená: dve služby v jeden deň, druhá začína neskôr, než prvá skončila (dĺžka prestávky sa nerieši) – počítame sami, nie z DB
       casy.sort(function (x, y) { return x[0] - y[0]; });
       var delDen = casy.some(function (c, i) { return i > 0 && c[0] > casy[i - 1][1]; });
@@ -167,8 +168,8 @@
     var tr = D.rows.map(function (r) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
       if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
-      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
-      return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "") + "</td><td></td><td></td><td></td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
+      return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + esc(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + (r.noc ? ft(r.noc) : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td></tr>";
     }).join("");
     return '<div class="vk"><div class="hd"><h1>Pracovný výkaz – druhá práca – ' + esc(D.nadpis) + "</h1>" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div>" +
       '<div class="tot">' + tl.map(function (x) { return "<div>" + x[0] + "<b>" + x[1] + "</b></div>"; }).join("") + "</div><p>Neprítomnosti: " + nep + "</p>" +
@@ -178,14 +179,14 @@
   function telo(D) {
     if (D.dp) return teloDp(D);
     var T = D.T;
-    var tr = D.rows.map(function (r) {
+    var tr = D.rows.map(function (r, ri) {
       var tc = (r.prvy ? "n" : "") + (r.vik ? " vik" : "") + (r.sv ? " sv" : "");
-      if (r.prazdny) return '<tr class="' + tc + '"><td><b>' + fdat(r.dat) + "</b>" + "</td>" + "<td></td>".repeat(11) + "</tr>";
-      if (r.nepr) return '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "–") + "</td>" + "<td></td>".repeat(6) + "<td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td></td></tr>";
+      if (r.prazdny) return '<tr class="' + tc + '" data-r="' + ri + '"><td><b>' + fdat(r.dat) + "</b>" + "</td>" + "<td></td>".repeat(11) + "</tr>";
+      if (r.nepr) return '<tr class="' + tc + '" data-r="' + ri + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + '</td><td colspan="2"><i>' + esc(r.sl) + '</i></td><td class="kr">' + (r.kredit ? ft(r.kredit) : "") + "</td>" + "<td></td>".repeat(6) + "<td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td></td></tr>";
       var vv = r.voz.length ? r.voz : [null], out = "";
       vv.forEach(function (x, i) {
-        var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "–";
-        if (i === 0) out += '<tr class="' + tc + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "–") + "</td><td>" + (r.dow === 6 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.dow === 0 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "–") + "</td></tr>";
+        var cell = x ? '<span class="vc"><b>' + esc(x.c) + "</b></span>" + ft(x.min) : "";
+        if (i === 0) out += '<tr class="' + tc + '" data-r="' + ri + '"><td>' + (r.dat ? "<b>" + fdat(r.dat) + "</b>" : "") + "</td><td>" + fsl(r.sl) + "</td><td>" + r.cas + "</td><td><b>" + ft(r.cisty) + "</b></td><td>" + cell + "</td><td>" + (r.noc ? ft(r.noc) : "") + "</td><td>" + (r.dow === 6 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.dow === 0 && r.cisty ? ft(r.cisty) : "") + "</td><td>" + (r.svh ? ft(r.svh) : "") + "</td><td>" + (r.d ? "<b>" + r.d + "</b>" : "") + "</td><td>" + (r.str ? "<b>" + r.str + "</b>" : "") + "</td><td>" + (r.oddych != null && r.oddych >= 0 ? ft(r.oddych) : "") + "</td></tr>";
         else out += '<tr class="' + tc.replace("n", "").trim() + '"><td></td><td></td><td></td><td></td><td>' + cell + '</td>' + "<td></td>".repeat(7) + '</tr>';
       });
       return out;
@@ -236,9 +237,9 @@
   function otvor(datum, zdroj) {
     var D = zber(datum, zdroj);
     var st = document.createElement("style"); st.textContent = CSS +
-      ".vk-ov{position:fixed;inset:0;z-index:99999;background:#555;display:flex;flex-direction:column}" +
+      ".vk-ov{position:fixed;inset:0;z-index:9990;background:#555;display:flex;flex-direction:column}" +
       ".vk-bar{display:flex;gap:8px;padding:8px;background:#111;align-items:center}.vk-bar button{font:700 16px system-ui;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#e8001a;color:#fff}.vk-bar .sv{background:#444}.vk-bar span{flex:1;color:#fff;font-size:15px}" +
-      ".vk-ov{-webkit-text-size-adjust:100%;text-size-adjust:100%}.vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
+      ".vk-ov tr[data-r]{cursor:pointer}.vk-ov tr[data-r]:active td{background:#ffe9a8}.vk-ov{-webkit-text-size-adjust:100%;text-size-adjust:100%}.vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
     var ov_ = document.createElement("div"); ov_.className = "vk-ov";
     ov_.innerHTML = '<div class="vk-bar"><button class="sv" data-a="x">Zavrieť</button><span>' + (zdroj === "dp" ? "Výkaz – druhá práca" : "Výkaz") + '</span><button class="sv" data-a="-">−</button><button class="sv" data-a="+">+</button><button data-a="p">Tlačiť</button></div><div class="vk-sc"><div class="vk-in">' + telo(D) + "</div></div>";
     document.head.appendChild(st); document.body.appendChild(ov_);
@@ -251,7 +252,35 @@
     }
     z = Math.min(1, window.innerWidth / (inn.scrollWidth || 760)); nastav(z);
     function zavri() { ov_.remove(); st.remove(); }
+    // ťuknutie na riadok výkazu: menu (karta dňa / reklamácia); nie vo výkaze druhej práce
+    function menuDna(r) {
+      var bg = document.createElement("div");
+      bg.setAttribute("data-spat-prekryv", "1");
+      bg.style.cssText = "position:absolute;inset:0;z-index:5;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px";
+      var bx = document.createElement("div");
+      bx.style.cssText = "background:#fff;color:#111;border-radius:16px;width:100%;max-width:340px;padding:16px;font:16px system-ui";
+      var dp = r.dkey.split("-"), t = document.createElement("div");
+      t.style.cssText = "font-weight:700;font-size:17px;margin-bottom:10px";
+      t.textContent = parseInt(dp[2], 10) + ". " + parseInt(dp[1], 10) + ". " + dp[0] + (r.sl && !r.prazdny ? " · " + String(r.sl).replace(/<[^>]*>/g, "") : "");
+      bx.appendChild(t);
+      function tl(txt, fn, pozn) {
+        var q = document.createElement("button"); q.type = "button"; q.textContent = txt;
+        q.style.cssText = "display:block;width:100%;min-height:48px;margin-top:8px;border:0;border-radius:10px;background:#f1f1f1;color:#111;font:700 16px system-ui";
+        q.addEventListener("click", function (ev) { ev.stopPropagation(); fn(); });
+        bx.appendChild(q);
+      }
+      tl("Zobraziť kartu dňa", function () { zavri(); if (window.DpbIdiNa) window.DpbIdiNa({ den: r.dkey }); });
+      tl(r.prazdny || r.nepr ? "Reklamovať (stav / chýbajúca služba)" : "Reklamovať", function () {
+        bg.remove();
+        if (window.DpbReklamacia) window.DpbReklamacia.otvor({ date: r.dkey, service: r.prazdny ? null : r._s || null });
+      });
+      tl("Zavrieť", function () { bg.remove(); });
+      bg.addEventListener("click", function () { bg.remove(); });
+      bg.appendChild(bx); ov_.appendChild(bg);
+    }
     ov_.addEventListener("click", function (e) {
+      var tr = !D.dp && e.target.closest && e.target.closest("tr[data-r]");
+      if (tr && D.rows[+tr.getAttribute("data-r")]) { menuDna(D.rows[+tr.getAttribute("data-r")]); return; }
       var a = e.target.getAttribute && e.target.getAttribute("data-a");
       if (a === "x") zavri(); else if (a === "+") nastav(z * 1.25); else if (a === "-") nastav(z / 1.25); else if (a === "p") tlac(D);
     });

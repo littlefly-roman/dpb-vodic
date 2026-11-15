@@ -12,6 +12,8 @@
     if (O && O.pocet && O.pocet() > 0) { O.zavriVrch(); return true; }
     var pr = document.querySelector("[data-spat-prekryv]");
     if (pr) { pr.click(); return true; }
+    var vk = document.querySelector(".vk-ov [data-a=x]");   // výkaz
+    if (vk) { vk.click(); return true; }
     var z = $("ziadostModal");
     if (z && viditelne(z) && z.style.display !== "") { var b = $("ziadostZrusit"); if (b) b.click(); else z.style.display = "none"; return true; }
     var g = $("grafikonModal");
