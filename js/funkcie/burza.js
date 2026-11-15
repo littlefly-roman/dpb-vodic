@@ -772,7 +772,7 @@
               if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
               const p = state.denFilter.split("-").map(Number);
               const d = new Date(p[0], p[1] - 1, p[2] + (dx < 0 ? 1 : -1));
-              state.denFilter = state.denKarty = dateKey(d);
+              state.denFilter = state.denKarty = d.getFullYear() + "-" + padZ(d.getMonth() + 1) + "-" + padZ(d.getDate());
               const b = document.querySelector("#burza-filter-hdr [data-rozsah=den]");
               if (b) b.textContent = "Z dňa " + d.getDate() + ". " + (d.getMonth() + 1) + ". ";
               render();
