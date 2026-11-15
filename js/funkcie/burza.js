@@ -755,6 +755,29 @@
             });
           }
 
+          // swipe v režime dňa posunie deň o ±1 (aj keď v ten deň nič nie je)
+          const bv = document.getElementById("burzaView");
+          if (bv && !bv._swipeDen) {
+            bv._swipeDen = true;
+            let x0 = 0, y0 = 0, sled = false;
+            bv.addEventListener("touchstart", function (e) {
+              if (e.touches.length !== 1) { sled = false; return; }
+              sled = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+            }, { passive: true });
+            bv.addEventListener("touchend", function (e) {
+              if (!sled) return; sled = false;
+              if (!state.denFilter || state.aktZalozka !== "volne") return;
+              const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+              if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
+              const p = state.denFilter.split("-").map(Number);
+              const d = new Date(p[0], p[1] - 1, p[2] + (dx < 0 ? 1 : -1));
+              state.denFilter = state.denKarty = dateKey(d);
+              const b = document.querySelector("#burza-filter-hdr [data-rozsah=den]");
+              if (b) b.textContent = "Z dňa " + d.getDate() + ". " + (d.getMonth() + 1) + ". ";
+              render();
+            }, { passive: true });
+          }
+
           render();
         }
 
