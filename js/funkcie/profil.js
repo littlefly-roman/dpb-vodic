@@ -296,18 +296,43 @@
     }
   }
   (function () {
-    var sek = document.getElementById("profilStatistika"), x0 = 0, y0 = 0, sled = false;
-    if (!sek) return;
+    var sek = document.getElementById("profilStatistika"), telo = document.getElementById("profilStatTelo"), x0 = 0, y0 = 0, sled = false, tahaj = false, bezi = false;
+    if (!sek || !telo) return;
     sek.addEventListener("touchstart", function (e) {
-      if (e.touches.length !== 1) { sled = false; return; }
-      sled = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      if (e.touches.length !== 1 || bezi) { sled = false; return; }
+      sled = true; tahaj = false; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
     }, { passive: true });
-    sek.addEventListener("touchend", function (e) {
-      if (!sled) return; sled = false;
-      var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
-      if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
-      posun(dx < 0 ? 1 : -1);
+    // údaje sa hýbu spolu s prstom
+    sek.addEventListener("touchmove", function (e) {
+      if (!sled) return;
+      var dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!tahaj && (Math.abs(dx) < 12 || Math.abs(dx) < 1.5 * Math.abs(dy))) return;
+      tahaj = true; sek.style.overflowX = "hidden";
+      telo.style.transition = "none"; telo.style.transform = "translateX(" + dx + "px)"; telo.style.opacity = String(Math.max(0.3, 1 - Math.abs(dx) / 400));
     }, { passive: true });
+    ["touchend", "touchcancel"].forEach(function (ev) {
+      sek.addEventListener(ev, function (e) {
+        if (!sled) return; sled = false;
+        if (!tahaj) return;
+        var dx = e.changedTouches[0].clientX - x0, sir = sek.clientWidth || 360;
+        var koniec = function () { telo.style.transition = ""; telo.style.transform = ""; telo.style.opacity = ""; sek.style.overflowX = ""; bezi = false; };
+        bezi = true;
+        if (Math.abs(dx) < 50 || ev === "touchcancel") {
+          telo.style.transition = "transform .18s ease-out, opacity .18s ease-out"; telo.style.transform = ""; telo.style.opacity = "";
+          setTimeout(koniec, 190); return;
+        }
+        var smer = dx < 0 ? 1 : -1;
+        telo.style.transition = "transform .15s ease-in, opacity .15s ease-in";
+        telo.style.transform = "translateX(" + (-smer * sir) + "px)"; telo.style.opacity = "0";
+        setTimeout(function () {
+          posun(smer);   // prepíše údaje na nové obdobie
+          telo.style.transition = "none"; telo.style.transform = "translateX(" + (smer * sir) + "px)"; telo.style.opacity = "0";
+          void telo.offsetWidth;
+          telo.style.transition = "transform .18s ease-out, opacity .18s ease-out"; telo.style.transform = ""; telo.style.opacity = "";
+          setTimeout(koniec, 190);
+        }, 150);
+      }, { passive: true });
+    });
   })();
   kresli();
   // pri otvorení Profilu a po načítaní dát sa dostupné obdobia obnovia
