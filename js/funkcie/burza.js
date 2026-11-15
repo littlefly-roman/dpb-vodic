@@ -759,12 +759,13 @@
           const bv = document.getElementById("burzaView");
           if (bv && !bv._swipeDen) {
             bv._swipeDen = true;
+            bv.style.touchAction = "pan-y"; // vodorovné ťahanie si nezoberie prehliadač (inak dotyk zruší)
             let x0 = 0, y0 = 0, sled = false;
             bv.addEventListener("touchstart", function (e) {
               if (e.touches.length !== 1) { sled = false; return; }
               sled = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
             }, { passive: true });
-            bv.addEventListener("touchend", function (e) {
+            ["touchend", "touchcancel"].forEach(function (ev) { bv.addEventListener(ev, function (e) {
               if (!sled) return; sled = false;
               if (!state.denFilter || state.aktZalozka !== "volne") return;
               const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
@@ -775,7 +776,7 @@
               const b = document.querySelector("#burza-filter-hdr [data-rozsah=den]");
               if (b) b.textContent = "Z dňa " + d.getDate() + ". " + (d.getMonth() + 1) + ". ";
               render();
-            }, { passive: true });
+            }, { passive: true }); });
           }
 
           render();
