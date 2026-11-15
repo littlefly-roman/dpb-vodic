@@ -11,7 +11,7 @@
     zvonec: '<circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/>',
     budik: '<circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/>',
     cas: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-    sip: '<polyline points="6 9 12 15 18 9"/>',
+    sip: '<g class="ik-i"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></g><polyline class="ik-hore" points="6 15 12 9 18 15"/>',
     kava: '<path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M7 2v3M11 2v3M15 2v3"/>',
     poloha: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
   };

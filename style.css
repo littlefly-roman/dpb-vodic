@@ -3943,3 +3943,13 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .card-vehicle .veh-sip { top: 0; }
 .card-vehicle .veh-sip svg { transform: none !important; }
 .card-vehicle .veh-txt { line-height: 1.5; }
+
+/* Rozbaľovacie šípky na kartách sú „i“ (informácia); po rozbalení šípka hore. Šípka dole ostáva len pre menu karty. */
+.ik-hore { display: none; }
+.str-row.open .ik-i, .prs-sip.open .ik-i { display: none; }
+.str-row.open .ik-hore, .prs-sip.open .ik-hore { display: inline; }
+.str-row.open .str-chevron, .prs-sip.open svg { transform: none !important; }
+.str-chevron svg { width: 20px !important; height: 20px !important; }
+.driver-name.open .ik-i, .odp-nast-otv .ik-i { display: none; }
+.driver-name.open .ik-hore, .odp-nast-otv .ik-hore { display: inline; }
+.driver-name.open .chevron, .odp-nast-otv svg { transform: none !important; }
