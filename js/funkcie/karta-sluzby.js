@@ -893,12 +893,12 @@
               service._upoz = service._upoz || {};
               service._upoz.striedac = function () {
                     // striedania + odchody z konečnej spojov kurzov, ktoré striedač jazdí
-                    var it = _kurzy.filter(function (s) { return s.prebera; }).map(function (s) { return { cas: s.prebera, nazov: "Striedanie " + s.kurz }; });
+                    var it = _kurzy.filter(function (s) { return s.prebera; }).map(function (s, i, a) { return { cas: s.prebera, od: i > 0 ? (a[i - 1].odovzdava || "") : "", nazov: "Striedanie " + s.kurz }; });
                     var DS = window.DpbStretnutia;
                     if (!DS || !DS.odchodyZKonecnej) return Promise.resolve(it);
                     return Promise.all(_kurzy.filter(function (s) { return s.kurz && s.prebera && s.odovzdava; }).map(function (s) {
                       return DS.odchodyZKonecnej(s.kurz, service.date, s.prebera, s.odovzdava).then(function (l) {
-                        return l.map(function (x) { return { cas: x.cas, nazov: x.nazov, typ: "konecna", pop: "Odchod o" }; });
+                        return l.map(function (x) { return { cas: x.cas, od: x.od, nazov: x.nazov, typ: "konecna", pop: "Odchod o" }; });
                       });
                     })).then(function (v) { return it.concat([].concat.apply([], v)); });
                   };
@@ -992,7 +992,7 @@
               pb.appendChild(ph);
               service._upoz = service._upoz || {};
               service._upoz.prestavkaOkna = _rel.map(function (p) { return { od: p.prebera, "do": p.odovzdava }; });
-              service._upoz.prestavka = _rel.map(function (p) { return { cas: p.odovzdava, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : ""), typ: "prestavka", pop: "Koniec prestávky o" }; });
+              service._upoz.prestavka = _rel.map(function (p) { return { cas: p.odovzdava, od: p.prebera, nazov: "Koniec prestávky" + (p["zastávka"] ? " · " + p["zastávka"] : ""), typ: "prestavka", pop: "Koniec prestávky o" }; });
               var pz = document.createElement("div");
               pz.className = "card-prs-zas";
               if (_kn) pz.innerHTML = '<span class="prs-h-ik prs-z-ik">' + _kn.svg("poloha", 18) + '</span>';

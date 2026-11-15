@@ -356,9 +356,12 @@
     if (plan.d !== dnesKey()) { plan = null; planUloz(); if (planTik) { clearInterval(planTik); planTik = null; } if (!akt) vypniObrazovku(); obnov(); return; }
     if (!akt) {
       var n = planDalsi();
-      if (n) {
+      // odpočet sa zobrazí hneď po plánovanom príchode (item.od); bez neho ide od zapnutia
+      if (n && (!n.item.od || zostava(sekHms(n.item.od)) <= 0)) {
+        var _zaciatok = !!n.item.od;
         zapni({ key: "plan|" + n.item.kind + "|" + n.item.cas, cas: n.item.cas, nazov: n.item.nazov, typ: n.item.typ, pop: n.item.pop });
         akt.plan = n.item.kind; akt.planCas = n.item.cas;
+        if (_zaciatok) otvorOkno();
       }
     }
     obnov();
@@ -392,7 +395,7 @@
     if (!buduce.length) { toast("Dnes už nie je žiadny čas, na ktorý by sa dalo upozorniť"); return; }
     if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
     audio();
-    buduce.forEach(function (i) { plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind }); });
+    buduce.forEach(function (i) { plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, od: i.od || "", kind: kind }); });
     planUloz(); planStart();
     toast("Upozornenia zapnuté (" + buduce.length + "). Obrazovka ostane zapnutá.");
   }
@@ -463,7 +466,7 @@
         if (cb.checked) {
           if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
           audio();
-          plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind });
+          plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, od: i.od || "", kind: kind });
           planUloz(); planStart();
         } else if (plan) {
           plan.items = plan.items.filter(function (x) { return !(x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ)); });
@@ -515,7 +518,7 @@
       if (planZapnuta(kind, i, typ) || zostava(sekHms(i.cas)) <= 0) return;
       if (!plan || plan.d !== dnesKey()) plan = { d: dnesKey(), items: [], skip: {} };
       audio();
-      plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, kind: kind });
+      plan.items.push({ cas: i.cas, nazov: i.nazov, typ: i.typ || typ, pop: i.pop || pop, od: i.od || "", kind: kind });
       planUloz(); planStart();
     } else if (plan) {
       plan.items = plan.items.filter(function (x) { return !(x.kind === kind && x.cas === i.cas && x.typ === (i.typ || typ)); });

@@ -356,17 +356,22 @@
     if (odS == null || doS == null) return [];
     if (doS <= odS) doS += 86400;
     var out = [];
+    var _sorted = obeh.filter(function (sp) { return sp.stops.length >= 2 && cas(sp.stops[0]) != null; }).sort(function (a, b) { return cas(a.stops[0]) - cas(b.stops[0]); });
     obeh.forEach(function (sp) {
       if (sp.stops.length < 2) return;
       var t0 = cas(sp.stops[0]), l = sp.stops[sp.stops.length - 1];
       if (t0 == null) return;
       var t = t0 < odS && t0 + 86400 >= odS ? t0 + 86400 : t0;
       if (t < odS || t >= doS) return;
+      // príchod na konečnú = koniec predchádzajúceho spoju (ak nadväzuje)
+      var _pi = _sorted.indexOf(sp), _pr = null;
+      if (_pi > 0) { var _pl = _sorted[_pi - 1].stops; var _ta = cas(_pl[_pl.length - 1]); if (_ta != null && _ta <= t0 && t0 - _ta < 7200) _pr = _ta; }
+      var _od = _pr == null ? "" : Math.floor(_pr / 3600) + ":" + String(Math.floor((_pr % 3600) / 60)).padStart(2, "0") + ":" + String(_pr % 60).padStart(2, "0");
       var hh = Math.floor(t0 / 3600), mm = Math.floor((t0 % 3600) / 60), ss = t0 % 60;
-      out.push({ t: t, cas: hh + ":" + String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0"), nazov: "Odchod z konečnej " + kurz + " \u2192 " + nazovStanice(d.stanice, l.st) });
+      out.push({ t: t, od: _od, cas: hh + ":" + String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0"), nazov: "Odchod z konečnej " + kurz + " \u2192 " + nazovStanice(d.stanice, l.st) });
     });
     out.sort(function (a, b) { return a.t - b.t; });
-    return out.map(function (x) { return { cas: x.cas, nazov: x.nazov }; });
+    return out.map(function (x) { return { cas: x.cas, od: x.od, nazov: x.nazov }; });
   }
 
   // Výjazd z depa: ak prvý spoj služby začína na zastávke Dp./Depo, vráti { cas:"H:MM:SS", sek }, inak null.
