@@ -79,14 +79,16 @@
           var f = document.createDocumentFragment();
           f.appendChild(sod); f.appendChild(document.createTextNode(" – ")); f.appendChild(sdo);
           tn.parentNode.replaceChild(f, tn);
-          [[sod, ".card-route-od"], [sdo, ".card-route-do"]].forEach(function (p) {
-            var tm = null;
+          var tm = null, pary = [[sod, ".card-route-od"], [sdo, ".card-route-do"]];
+          var zhasni = function () { pary.forEach(function (q) { q[0].classList.remove("zel"); var st = rw.querySelector(q[1]); if (st) st.classList.remove("zel"); }); };
+          pary.forEach(function (p) {
             p[0].addEventListener("click", function (e) {
               var st = rw.querySelector(p[1]); if (!st) return;
               e.stopPropagation();
-              p[0].classList.add("zel"); st.classList.add("zel");
               clearTimeout(tm);
-              tm = setTimeout(function () { p[0].classList.remove("zel"); st.classList.remove("zel"); }, 8000);
+              zhasni();   // druhá dvojica zhasne hneď
+              p[0].classList.add("zel"); st.classList.add("zel");
+              tm = setTimeout(zhasni, 8000);
             });
           });
         }
