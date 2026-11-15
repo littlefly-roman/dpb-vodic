@@ -713,8 +713,9 @@
             sip.type = "button";
             sip.setAttribute("aria-label", "Vodič");
             sip.setAttribute("aria-expanded", otvorene ? "true" : "false");
-            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 0 4px 2px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;transform:rotate(" + (otvorene ? "90deg" : "0deg") + ")";
-            sip.textContent = "\u203A";
+            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 0 4px 2px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;";
+            var _sipI = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>', _sipH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>';
+            sip.innerHTML = otvorene ? _sipH : _sipI;
             // ikonka: celý kurz spoja v malom okne so zoomom na aktuálny čas (ako v Hľadať)
             if (o.den === 0 && window.DpbMiniGrafikon) {
               var ik = document.createElement("button");
@@ -744,7 +745,7 @@
               _vodOtv[kl] = !_vodOtv[kl];
               var ot = _vsetciVodici || _vodOtv[kl];
               det.style.display = ot ? "block" : "none";
-              sip.style.transform = "rotate(" + (ot ? "90deg" : "0deg") + ")";
+              sip.innerHTML = ot ? _sipH : _sipI;
               sip.setAttribute("aria-expanded", ot ? "true" : "false");
             });
             if (mozeVod) row.style.cursor = "pointer";
