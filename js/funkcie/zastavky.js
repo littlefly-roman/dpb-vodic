@@ -575,6 +575,14 @@
         function vodicOdchodu(o) {
           if (o.den !== 0) return null;
           var kurz = (o.sluz || o.lraw || o.linka) + "/" + o.kurz;
+          try {   // jednotný zdroj (vrátane hradení na 944)
+            if (window.DpbKurzKto) {
+              var _d = new Date(); _d.setDate(_d.getDate() + (o.sd || 0));
+              var _dk = _d.getFullYear() + "-" + String(_d.getMonth() + 1).padStart(2, "0") + "-" + String(_d.getDate()).padStart(2, "0");
+              var _kt = window.DpbKurzKto.kto(kurz, _dk, o.casN * 60);
+              if (_kt && _kt.meno) return { meno: _kt.meno };
+            }
+          } catch (e) {}
           var iv = vodiciDna(o.sd)[kurz];
           if (!iv) return null;
           var t = Math.floor(o.casN / 60) + (o.casN < ZACIATOK_DNA ? 1440 : 0);

@@ -120,6 +120,11 @@
       var popis = pred ? "Služba ešte nezačala – začiatok" : po ? "Služba skončila – koniec služby" : r.stav === "bezi" ? (jeDnes ? "● teraz na trase" : "") : r.stav === "caka" ? "Najbližší spoj" + (r.odchodSpoja ? " o " + r.odchodSpoja : "") : "Služba skončila";
       if (segmenty && segmenty.length) popis = (medzi ? "Najbližšie striedanie" : popis) + " · kurz " + kurzP;
       status.textContent = (popis ? popis + " · " : "") + "smer " + r.ciel;
+      try {   // vozidlo a vodič platné v tomto čase
+        var K = window.DpbKurzKto, kt = K && K.kto(kurzP, dateKey, sec);
+        var kx = kt ? [kt.voz ? "vozidlo " + kt.voz : "", K.menoSmie(kt)].filter(Boolean).join(" · ") : "";
+        if (kx) status.textContent += " · " + kx;
+      } catch (e) {}
       dalsiK = jeDnes ? dalsiCas(r.polozky.map(function (z) { return z.cas; }), terazSek()) : null;
       var kk = koleso(r.polozky.map(function (z) { return { cas: z.cas, nazov: z.nazov, pod: "" }; }), r.stred, stavK);
       box.appendChild(kk.el);

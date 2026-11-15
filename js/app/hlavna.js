@@ -1292,6 +1292,7 @@
             service.kurz || service.line.split("/")[1],
           ).padStart(2, "0");
           const typ = service.typ || Calendar.getDayType(service.datum || appState.selectedDate);
+          appState._grafDateKey = dateKey;
           const obehCode = "#" + String(linka).padStart(3, "0") + kurz + typ;
 
           const [jr, sm, cileText, staniceText] = await Promise.all([
@@ -1353,6 +1354,15 @@
               typ,
             );
             if (!appState.grafikonFollow) grafikonContent.scrollTop = ulozenaPozicia;
+            // hlavička: vozidlo platné v danom čase (nie jedno číslo na celý kurz)
+            try {
+              const K = window.DpbKurzKto;
+              if (K) {
+                const sekH = today ? nowSec : (startSec != null ? startSec : spoje[0] && spoje[0].zastavky.length ? timeToSeconds(spoje[0].zastavky[0].time) : null);
+                const kt = K.kto(linka + "/" + parseInt(kurz, 10), dateKey, sekH);
+                if (kt && kt.voz) grafikonRight.textContent = "Vozidlo " + kt.voz;
+              }
+            } catch (e) {}
           }
 
           draw();
@@ -1452,6 +1462,20 @@
             dir.appendChild(_lav);
             dir.appendChild(_smerEl);
             fragment.appendChild(dir);
+            // vozidlo a vodič platné pre tento spoj
+            try {
+              const K = window.DpbKurzKto;
+              if (K && spoj.zastavky.length) {
+                const kt = K.kto(linka + "/" + parseInt(kurz, 10), appState._grafDateKey, timeToSeconds(spoj.zastavky[0].time));
+                const txt = kt ? [kt.voz, K.menoSmie(kt)].filter(Boolean).join("  ·  ") : "";
+                if (txt) {
+                  const kl = document.createElement("div");
+                  kl.className = "g-kto";
+                  kl.textContent = txt;
+                  fragment.appendChild(kl);
+                }
+              }
+            } catch (e) {}
 
             spoj.zastavky.forEach((z) => {
               const stopSec = timeToSeconds(z.time);
