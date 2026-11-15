@@ -241,6 +241,32 @@
   // ---------- Okno „Pridelené vozidlo“ pred nástupom (len služby so začiatkom v depe) ----------
   // Ukáže sa 15 minút pred nástupom a v čase nástupu znova; pri zmene vozidla sa ukáže nanovo.
   var _vozTimery = {};
+  // Dá sa okno vozidla ukázať? (dnes, výjazd z depa, vozidlo pridelené, ešte pred výjazdom)
+  function vozOknoMozne(service) {
+    var k = (service && service._karta) || {};
+    if (!jeDnes(service) || !service._zDepa || !k.od) return false;
+    var v = (k.vozidla || [])[0];
+    if (!(v && v.cislo)) return false;
+    var n = new Date();
+    return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds() < sekOd(k.od);
+  }
+  function vozOknoTeraz(service, vibruj) {
+    var k = (service && service._karta) || {}, v = (k.vozidla || [])[0], cislo = v && v.cislo ? String(v.cislo) : "";
+    if (!cislo || document.querySelector(".voz-okno-bg")) return;
+    var bg = el("div", ""); bg.className = "voz-okno-bg";
+    var ok = el("div", ""); ok.className = "voz-okno";
+    ok.appendChild(el("div", "", "Pridelené vozidlo na linku " + (k.kurz || "")));
+    ok.firstChild.className = "voz-okno-t";
+    var vv = el("div", "", cislo); vv.className = "voz-okno-v"; ok.appendChild(vv);
+    var pl = el("div", ""); pl.className = "voz-okno-pl";
+    var polTxt = v && v.poloha ? String(v.poloha).trim() : "";
+    pl.innerHTML = svg("poloha", 22) + "<span></span>"; pl.lastChild.textContent = polTxt || "Poloha vozidla";
+    if (polTxt) pl.classList.add("je"); ok.appendChild(pl);
+    var bt = el("button", "", "Rozumiem"); bt.type = "button"; bt.className = "voz-okno-b";
+    bt.addEventListener("click", function () { bg.remove(); });
+    ok.appendChild(bt); bg.appendChild(ok); document.body.appendChild(bg);
+    if (vibruj) { try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {} }
+  }
   function oknoVozidla(service) {
     var k = (service && service._karta) || {};
     if (!jeDnes(service) || !service._zDepa || !k.od) return;
@@ -255,20 +281,7 @@
       var kk = kl + "|" + slot;
       if (sl.m[kk] === cislo) return;
       sl.m[kk] = cislo; try { localStorage.setItem("dpb_voz_okno", JSON.stringify(sl)); } catch (e) {}
-      if (document.querySelector(".voz-okno-bg")) return;
-      var bg = el("div", ""); bg.className = "voz-okno-bg";
-      var ok = el("div", ""); ok.className = "voz-okno";
-      ok.appendChild(el("div", "", "Pridelené vozidlo na linku " + (k.kurz || "")));
-      ok.firstChild.className = "voz-okno-t";
-      var vv = el("div", "", cislo); vv.className = "voz-okno-v"; ok.appendChild(vv);
-      var pl = el("div", ""); pl.className = "voz-okno-pl"; // textová poloha vozidla (napr. „Hala 2, stojisko 14“) – zatiaľ z poľa poloha na vozidle, zdroj dopojíme neskôr; bez textu ostáva prázdne políčko
-      var polTxt = v && v.poloha ? String(v.poloha).trim() : "";
-      pl.innerHTML = svg("poloha", 22) + "<span></span>"; pl.lastChild.textContent = polTxt || "Poloha vozidla";
-      if (polTxt) pl.classList.add("je"); ok.appendChild(pl);
-      var bt = el("button", "", "Rozumiem"); bt.type = "button"; bt.className = "voz-okno-b";
-      bt.addEventListener("click", function () { bg.remove(); });
-      ok.appendChild(bt); bg.appendChild(ok); document.body.appendChild(bg);
-      try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+      vozOknoTeraz(service, true);
     }
     var t = _vozTimery[kl]; if (t) t.forEach(clearTimeout);
     _vozTimery[kl] = [];
@@ -537,7 +550,7 @@
     s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.DpbKartaNove = { volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  window.DpbKartaNove = { volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, vozOkno: vozOknoTeraz, vozOknoMozne: vozOknoMozne, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
   // Podržanie prsta nesmie otvárať menu prehliadača (okrem polí na písanie)
   document.addEventListener("contextmenu", function (e) {
     var t = e.target;

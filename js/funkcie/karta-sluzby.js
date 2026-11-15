@@ -68,7 +68,7 @@
           riadok.insertBefore(i, riadok.firstChild);
         }
         // Vozidlá na karte: zbalené len čísla vedľa seba; po kliknutí na šípku pod sebou a ich časy „od–do“ vedľa nich
-        function pridajVozidla(center, zoznam) {
+        function pridajVozidla(center, zoznam, service) {
           if (!zoznam || !zoznam.length) return;
           var cisla = zoznam.map(function (v) { return String(v.cislo); }); // aj rovnaké číslo s inými časmi = dve vozidlá
           var hm = function (t) { return String(t).replace(/^0(\d:)/, "$1"); };
@@ -97,6 +97,22 @@
           kresli(false);
           pridajIkonu(d, druhVozidla(zoznam[0].cislo));
           center.appendChild(d);
+          // dlhé podržanie: okno s pridelením vozidla a polohou – len pred výjazdom
+          (function () {
+            var tm = null, pot = false, x0 = 0, y0 = 0, KN = window.DpbKartaNove;
+            if (!service || !KN || !KN.vozOkno) return;
+            var zrus = function () { if (tm) { clearTimeout(tm); tm = null; } };
+            d.addEventListener("pointerdown", function (e) {
+              if (e.pointerType === "mouse" && e.button !== 0) return;
+              x0 = e.clientX; y0 = e.clientY; pot = false; zrus();
+              if (!KN.vozOknoMozne(service)) return;
+              tm = setTimeout(function () { tm = null; pot = true; try { if (navigator.vibrate) navigator.vibrate(30); } catch (er) {} KN.vozOkno(service, false); }, 550);
+            });
+            d.addEventListener("pointermove", function (e) { if (tm && (Math.abs(e.clientX - x0) > 8 || Math.abs(e.clientY - y0) > 8)) zrus(); });
+            ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { d.addEventListener(n, zrus); });
+            d.addEventListener("contextmenu", function (e) { if (KN.vozOknoMozne(service)) e.preventDefault(); });
+            d.addEventListener("click", function (e) { if (pot) { pot = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+          })();
           if (!maDetail) return;
           var sip = document.createElement("span");
           sip.className = "veh-sip";
@@ -606,7 +622,7 @@
                 }
               });
               poradie.sort(function (x, y) { return (x.od || "") < (y.od || "") ? -1 : 1; });
-              pridajVozidla(center, poradie);
+              pridajVozidla(center, poradie, service);
               if (!poradie.length && k.vozidloOd) {
                 var dh = document.createElement("div");
                 dh.className = "card-vehicle";
@@ -945,6 +961,7 @@
             pridajVozidla(
               center,
               k.vozidla || (k.vozidlo ? [{ cislo: k.vozidlo, od: "", do: "" }] : []),
+              service,
             );
             if (k.vozidloOd && !(k.vozidla && k.vozidla.length)) {
               const dh = document.createElement("div");
