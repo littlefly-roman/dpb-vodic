@@ -697,6 +697,7 @@
             ciel.textContent = "\u2192 " + (o.ciel || "");
             row.appendChild(ciel);
             // šípka na konci riadku: rozbalí meno vodiča
+            var mozeVod = !window.DpbPrava || window.DpbPrava.moze("vodic_cp");
             var vod = vodicOdchodu(o);
             var kl = o.typ + "|" + o.linka + "|" + o.kurz + "|" + o.cas + "|" + o.den;
             var otvorene = _vsetciVodici || _vodOtv[kl];
@@ -717,11 +718,11 @@
                 e.stopPropagation();
                 var dd = new Date(); dd.setDate(dd.getDate() + (o.sd || 0));
                 var dk = dd.getFullYear() + "-" + String(dd.getMonth() + 1).padStart(2, "0") + "-" + String(dd.getDate()).padStart(2, "0");
-                window.DpbMiniGrafikon.otvor((o.sluz || o.lraw || o.linka) + "/" + o.kurz, dk, vod ? vod.meno : "", null);
+                window.DpbMiniGrafikon.otvor((o.sluz || o.lraw || o.linka) + "/" + o.kurz, dk, vod && mozeVod ? vod.meno : "", null);
               });
               row.appendChild(ik);
             }
-            row.appendChild(sip);
+            if (mozeVod) row.appendChild(sip);
             var wrap = document.createElement("div");
             wrap.appendChild(row);
             var det = document.createElement("div");
@@ -730,15 +731,16 @@
               det.appendChild(document.createTextNode("Vodič: "));
               det.appendChild(window.DpbKartaNove.meno(vod.meno, { rola: "Vodič kurzu", bezFotky: true }));
             } else det.textContent = vod ? "Vodič: " + vod.meno : (o.den === 0 ? "Vodič nie je známy" : "Vodič je známy len pre dnešný deň");
-            wrap.appendChild(det);
-            row.addEventListener("click", function () {
+            if (mozeVod) wrap.appendChild(det);
+            if (mozeVod) row.addEventListener("click", function () {
               _vodOtv[kl] = !_vodOtv[kl];
               var ot = _vsetciVodici || _vodOtv[kl];
               det.style.display = ot ? "block" : "none";
               sip.style.transform = "rotate(" + (ot ? "90deg" : "0deg") + ")";
               sip.setAttribute("aria-expanded", ot ? "true" : "false");
             });
-            row.style.cursor = "pointer";
+            if (mozeVod) row.style.cursor = "pointer";
+            else wrap.style.cssText = "border-bottom:1px solid var(--border)";
             cont.appendChild(wrap);
             if (isNext) cont._dalsi = wrap;
           });
@@ -851,7 +853,7 @@
           vodCb.addEventListener("change", function () { _vsetciVodici = vodCb.checked; renderRows(""); });
           vodLab.appendChild(vodCb);
           vodLab.appendChild(document.createTextNode("Vodiči"));
-          hdr.appendChild(vodLab);
+          if (!window.DpbPrava || window.DpbPrava.moze("vodic_cp")) hdr.appendChild(vodLab);
           hdr.appendChild(hviezda);
           staOdchody.appendChild(hdr);
           _fNast = {};

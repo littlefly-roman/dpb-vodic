@@ -1,5 +1,6 @@
 /* Viditeľnosť funkcií podľa PRAVA.csv (z Disku Google, vedľa D_VYPR_POL.csv).
-   Stĺpce: SUBJEKT;POPIS;hladat;stretnutia;zmena_sluzby;vs;vozidlo_min
+   Stĺpce: SUBJEKT;POPIS;hladat;stretnutia;zmena_sluzby;vs;vodic_cp;statistika;vozidlo_min
+   (vodic_cp = meno vodiča v zastávkovom CP a v hlavičke detailu poriadku; statistika = Štatistika v Profile)
    SUBJEKT: os:<osobné číslo> | stredisko:<číslo> | pp:<pracovný pomer> | skupina:<názov> (členovia sú v súbore SKUPINY.csv: SKUPINA;OSOBNE_CISLO;MENO – jeden vodič na riadok) | *
    Funkcie: 1 = povolené (súčet cez všetky riadky, ktoré vodiča zahŕňajú); bez riadku = skryté.
    vozidlo_min: číslo = vozidlo sa ukáže až toľko minút pred nástupom; prázdne = bez obmedzenia.
@@ -7,8 +8,8 @@
    POZOR: je to len skrytie v appke (nie bezpečnosť) – dáta sú v zariadení. */
 (function () {
   var KLUC = "dpb_prava_csv";
-  var VS_PRE_VSETKYCH = true;
-  var FUNKCIE = ["hladat", "stretnutia", "zmena_sluzby", "vs"];
+  var VS_PRE_VSETKYCH = false;
+  var FUNKCIE = ["hladat", "stretnutia", "zmena_sluzby", "vs", "vodic_cp", "statistika"];
   var KLUC_S = "dpb_skupiny_csv";
   var clenovia = {}; // názov skupiny (malé písmená) -> { osobné číslo: true }
   var riadky = null; // null = súbor sa nenačítal -> všetko povolené (nič sa neskrýva)
@@ -136,6 +137,9 @@
     var b = document.querySelector('[data-nav="hladat"]');
     if (b) b.style.display = moze("hladat") ? "" : "none";
     // VS: zatiaľ viditeľné pre všetkých (VS_PRE_VSETKYCH = true). Na „len povolení“ (stĺpec vs v PRAVA.csv) stačí dať false.
+    // Štatistika v Profile: len pre povolených (stĺpec statistika); bez načítaného PRAVA.csv sa nič neskrýva
+    var st = document.getElementById("profilStatistika");
+    if (st) st.style.display = moze("statistika") ? "" : "none";
     var v = document.querySelector('[data-nav="vs"]');
     if (v) v.style.display = VS_PRE_VSETKYCH || (riadky !== null && moze("vs")) ? "" : "none";
   }
