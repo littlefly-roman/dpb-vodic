@@ -760,22 +760,77 @@
           if (bv && !bv._swipeDen) {
             bv._swipeDen = true;
             bv.style.touchAction = "pan-y"; // vodorovné ťahanie si nezoberie prehliadač (inak dotyk zruší)
-            let x0 = 0, y0 = 0, sled = false;
+            let x0 = 0, y0 = 0, sled = false, tahaj = false, bezi = false, duch = null, duchSmer = 0;
+            const obsah = function () { return document.getElementById("burzaContent"); };
+            const aktivny = function () { return !!state.denFilter && state.aktZalozka === "volne"; };
+            const susedny = function (smer) {
+              const p = state.denFilter.split("-").map(Number), d = new Date(p[0], p[1] - 1, p[2] + smer);
+              return { d: d, key: d.getFullYear() + "-" + padZ(d.getMonth() + 1) + "-" + padZ(d.getDate()) };
+            };
+            // náhľad susedného dňa (ako na hlavnej karte): vykreslí sa do kópie vedľa obsahu
+            const zrusDucha = function () { if (duch) { duch.remove(); duch = null; } duchSmer = 0; };
+            const urobDucha = function (smer) {
+              zrusDucha();
+              const c = obsah(), povodny = state.denFilter;
+              state.denFilter = susedny(smer).key;
+              render();
+              duch = c.cloneNode(false);
+              duch.removeAttribute("id");
+              while (c.firstChild) duch.appendChild(c.firstChild);
+              state.denFilter = povodny;
+              render();
+              const sir = bv.clientWidth || 360;
+              duch.style.cssText = "position:absolute;left:" + c.offsetLeft + "px;top:" + c.offsetTop + "px;width:" + c.offsetWidth + "px;height:" + c.offsetHeight + "px;overflow:hidden;pointer-events:none;transition:none;transform:translateX(" + (smer * sir) + "px)";
+              bv.style.position = "relative";
+              c.parentNode.appendChild(duch);
+              duchSmer = smer;
+            };
+            const nastav = function (dx) {
+              const c = obsah(), sir = bv.clientWidth || 360;
+              c.style.transition = "none"; c.style.transform = "translateX(" + dx + "px)";
+              if (duch) { duch.style.transition = "none"; duch.style.transform = "translateX(" + (dx + duchSmer * sir) + "px)"; }
+            };
+            const animuj = function (dx, hotovo) {
+              const c = obsah(), tr = "transform .2s ease-out";
+              c.style.transition = tr; c.style.transform = dx ? "translateX(" + dx + "px)" : "";
+              if (duch) { duch.style.transition = tr; duch.style.transform = "translateX(" + (dx + duchSmer * (bv.clientWidth || 360)) + "px)"; }
+              setTimeout(hotovo, 210);
+            };
             bv.addEventListener("touchstart", function (e) {
-              if (e.touches.length !== 1) { sled = false; return; }
-              sled = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+              if (e.touches.length !== 1 || bezi) { sled = false; return; }
+              sled = true; tahaj = false; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+            }, { passive: true });
+            bv.addEventListener("touchmove", function (e) {
+              if (!sled || !aktivny()) return;
+              const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+              if (!tahaj && (Math.abs(dx) < 12 || Math.abs(dx) < 1.5 * Math.abs(dy))) return;
+              tahaj = true;
+              const smer = dx < 0 ? 1 : -1;
+              if (smer !== duchSmer) urobDucha(smer);
+              nastav(dx);
             }, { passive: true });
             ["touchend", "touchcancel"].forEach(function (ev) { bv.addEventListener(ev, function (e) {
               if (!sled) return; sled = false;
-              if (!state.denFilter || state.aktZalozka !== "volne") return;
-              const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
-              if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
-              const p = state.denFilter.split("-").map(Number);
-              const d = new Date(p[0], p[1] - 1, p[2] + (dx < 0 ? 1 : -1));
-              state.denFilter = state.denKarty = d.getFullYear() + "-" + padZ(d.getMonth() + 1) + "-" + padZ(d.getDate());
-              const b = document.querySelector("#burza-filter-hdr [data-rozsah=den]");
-              if (b) b.textContent = "Z dňa " + d.getDate() + ". " + (d.getMonth() + 1) + ". ";
-              render();
+              const c = obsah();
+              if (!tahaj || !aktivny()) { zrusDucha(); c.style.transition = ""; c.style.transform = ""; return; }
+              const dx = e.changedTouches[0].clientX - x0, sir = bv.clientWidth || 360;
+              if (Math.abs(dx) < 50 || ev === "touchcancel") {
+                bezi = true;
+                animuj(0, function () { zrusDucha(); c.style.transition = ""; bezi = false; });
+                return;
+              }
+              const smer = dx < 0 ? 1 : -1;
+              bezi = true;
+              animuj(-smer * sir, function () {
+                const n = susedny(smer);
+                state.denFilter = state.denKarty = n.key;
+                const b = document.querySelector("#burza-filter-hdr [data-rozsah=den]");
+                if (b) b.textContent = "Z dňa " + n.d.getDate() + ". " + (n.d.getMonth() + 1) + ". ";
+                zrusDucha();
+                c.style.transition = "none"; c.style.transform = "";
+                render();
+                bezi = false;
+              });
             }, { passive: true }); });
           }
 
