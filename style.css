@@ -3933,3 +3933,12 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 
 /* Grafikon: vozidlo a vodič spoja */
 .g-kto { font-size: 15px; font-weight: 600; color: var(--text-2); padding: 2px 4px 6px; }
+
+/* Karta: pomlčky okolo staníc, zelené zvýraznenie začiatku/konca, šípka vozidiel ako „i“, zarovnanie ikony vozidla */
+.card-route-od::after { content: " –"; }
+.card-route-do::before { content: "– "; }
+.t-zk { cursor: pointer; border-radius: 6px; transition: color .2s; }
+.t-zk.zel, .card-route-od.zel, .card-route-do.zel { color: #2e9e5b !important; }
+.card-vehicle.s-ikonou .card-ic { top: .75em; transform: translateY(-50%); }
+.card-vehicle .veh-sip { top: 0; }
+.card-vehicle .veh-sip svg { transform: none !important; }

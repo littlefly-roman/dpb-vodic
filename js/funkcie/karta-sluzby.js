@@ -67,6 +67,29 @@
             SVG_IK[druh] + "</svg>";
           riadok.insertBefore(i, riadok.firstChild);
         }
+        // Pomôcka: ťuk na čas začiatku / konca zafarbí čas aj stanicu na zeleno na 8 s
+        function zvyrazniZK(tr, rw) {
+          if (!tr || !rw) return;
+          var tn = Array.prototype.filter.call(tr.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); })[0];
+          if (!tn) return;
+          var m = tn.nodeValue.trim().split(/\s*[–-]\s*/);
+          if (m.length !== 2) return;
+          var sod = document.createElement("span"), sdo = document.createElement("span");
+          sod.className = "t-zk"; sod.textContent = m[0]; sdo.className = "t-zk"; sdo.textContent = m[1];
+          var f = document.createDocumentFragment();
+          f.appendChild(sod); f.appendChild(document.createTextNode(" – ")); f.appendChild(sdo);
+          tn.parentNode.replaceChild(f, tn);
+          [[sod, ".card-route-od"], [sdo, ".card-route-do"]].forEach(function (p) {
+            var tm = null;
+            p[0].addEventListener("click", function (e) {
+              var st = rw.querySelector(p[1]); if (!st) return;
+              e.stopPropagation();
+              p[0].classList.add("zel"); st.classList.add("zel");
+              clearTimeout(tm);
+              tm = setTimeout(function () { p[0].classList.remove("zel"); st.classList.remove("zel"); }, 8000);
+            });
+          });
+        }
         // Vozidlá na karte: zbalené len čísla vedľa seba; po kliknutí na šípku pod sebou a ich časy „od–do“ vedľa nich
         function pridajVozidla(center, zoznam, service) {
           if (!zoznam || !zoznam.length) return;
@@ -116,7 +139,9 @@
           if (!maDetail) return;
           var sip = document.createElement("span");
           sip.className = "veh-sip";
-          sip.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+          var IKO_I = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>';
+          var IKO_HORE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>';
+          sip.innerHTML = IKO_I;
           d.appendChild(sip);
           d.classList.add("veh-klik");
           d.setAttribute("role", "button");
@@ -125,6 +150,7 @@
             var open = !d.classList.contains("open");
             d.classList.toggle("open", open);
             d.setAttribute("aria-expanded", open ? "true" : "false");
+            sip.innerHTML = open ? IKO_HORE : IKO_I;
             kresli(open);
           });
         }
@@ -599,13 +625,15 @@
             pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
           } else if (vzor === "944") {
             addTitle(center, k.kurz);
-            pridajIkonu(addRow(center, "card-time", DPBData.fmtRange(k.od, k.do)), "cas"); pridajZvonec(center.lastChild);
+            const _tr944 = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
+            pridajIkonu(_tr944, "cas"); pridajZvonec(center.lastChild);
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
               rw.className = "card-route-wrap";
               rw.innerHTML = `<span class="card-route-od">${k.stan_od}</span><span class="card-route-do">${k.stan_do}</span>`;
               pridajIkonu(rw, "poloha");
               center.appendChild(rw);
+              zvyrazniZK(_tr944, rw);
             }
             // vozidlo 944: od prvého výskytu na 944/x po koniec posledného úseku vrátane hradení tým istým vodičom
             (function () {
@@ -937,17 +965,16 @@
           } else {
             // SLUŽBA
             addTitle(center, k.kurz);
-            (function () {
-              const tr = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
-              pridajIkonu(tr, "cas");
-              pridajZvonec(tr);
-            })();
+            const _trS = addRow(center, "card-time", DPBData.fmtRange(k.od, k.do));
+            pridajIkonu(_trS, "cas");
+            pridajZvonec(_trS);
             if (k.stan_od && k.stan_do) {
               const rw = document.createElement("div");
               rw.className = "card-route-wrap";
               rw.innerHTML = `<span class="card-route-od">${k.stan_od}</span><span class="card-route-do">${k.stan_do}</span>`;
               pridajIkonu(rw, "poloha");
               center.appendChild(rw);
+              zvyrazniZK(_trS, rw);
               // Vodič robil len časť úseku: miesto podľa grafikonu v čase karty (export má stanice celého úseku)
               if ((k.graf_od || k.graf_do) && /^\d+\/\d+$/.test(k.kurz || "") && window.DpbStretnutia && window.DpbStretnutia.miesto && service.date) {
                 window.DpbStretnutia.miesto(k.kurz, service.date, k.od, k.do).then(function (m) {
