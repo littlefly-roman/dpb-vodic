@@ -75,7 +75,7 @@
       if (!d.length) { zastavPas(); pas.classList.add("hidden"); pas.innerHTML = ""; }
       else {
         pas.classList.remove("hidden");
-        var t = d.map(function (x) { return esc(x.nadpis); }).join(" &nbsp;•&nbsp; ");
+        var t = d.map(function (x) { return esc(x.pas || x.nadpis); }).join(" &nbsp;•&nbsp; ");
         pas.innerHTML = '<svg class="spravy-pas-ik" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v5M12 18v.5"/></svg>' +
           '<div class="spravy-pas-okno"><span class="spravy-pas-track"><span class="spravy-pas-kopia">' + t + " &nbsp;›</span></span></div>";
         spustiPas();
@@ -144,7 +144,7 @@
 
   // ---------- detail: prečítané po doskrolovaní na koniec
   function detail(s) {
-    var tel = esc(s.text).replace(/\n/g, "<br>");
+    var tel = esc(s.text).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[\s>])_([^_\n]+)_(?=$|[\s<.,;:])/g, "$1<i>$2</i>").replace(/\n/g, "<br>");
     ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +

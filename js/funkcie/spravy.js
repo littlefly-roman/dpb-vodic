@@ -8,6 +8,8 @@
      DOLEZITE  – 1/ano = beží nad kartou na Dnes, kým nie je prečítaná
    POVINNE   – (voliteľný stĺpec) počet sekúnd, napr. 8: správa prebije všetko, ukáže sa pri prvom spustení appky v daný deň
                a dá sa zavrieť až po uplynutí tohto času (potom je prečítaná)
+   PAS       – (voliteľný stĺpec) text, ktorý beží v páse na Dnes (inak sa použije NADPIS); napr. hlavičky bodov príkazu
+   V TEXT: **tučné**, _kurzíva_ a riadky začínajúce „• “ sa zobrazia formátované.
    UVOD      – (voliteľný stĺpec) 1/ano = správa sa ukáže ako „karta dňa“ po logu pri prihlásení (raz)
    V TEXT sa riadok zalomí zápisom \n. */
 (function () {
@@ -63,6 +65,7 @@
         preKoho: g("pre_koho").split("|").map(function (x) { return x.trim(); }).filter(Boolean),
         dolezite: /^(1|ano|áno|x)$/i.test(g("dolezite")),
         uvod: /^(1|ano|áno|x)$/i.test(g("uvod")),
+        pas: g("pas"),
         povinne: Math.max(0, Math.min(60, parseInt(g("povinne"), 10) || 0))
       });
     });
