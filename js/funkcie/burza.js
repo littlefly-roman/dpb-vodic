@@ -57,6 +57,7 @@
               nazov: x.nazov || x.line,
               podnazov: x.podnazov || "",
               pohotovost: !!x.pohotovost,
+              plan: !!x.plan,
               cas: x.cas,
               odMin: x.odMin,
               doMin: x.doMin,
@@ -99,6 +100,9 @@
           if (s.stav === "obsadena") return false;
           if (s.stav === "rezervovana") return true; // vlastná rezervácia ostáva vidieť
           if (s.startMs <= Date.now()) return false; // len od aktuálneho času
+          const vsetky = !!(window.DpbPrava && window.DpbPrava.vsetkyVolne && window.DpbPrava.vsetkyVolne());
+          if (s.plan) return vsetky; // linky z plánu (S tabuľky) vidí len ten, kto má právo vsetky_volne
+          if (vsetky) return true; // bez filtra trakcie, neprítomnosti a odpočinku
           const rid = window.appState && window.appState.currentDriver;
           if (rid && typeof DPBData !== "undefined") {
             const tr = DPBData.getTrakciaKod ? DPBData.getTrakciaKod(rid) : null;
@@ -383,7 +387,7 @@
                     r.stav === "schvalena"),
               );
 
-              const mozeRezervovat = !rezervovana && !uzRezervovanyDen;
+              const mozeRezervovat = !rezervovana && !uzRezervovanyDen && !s.plan;
 
               row.className = "burza-row" + (rezervovana ? " rezervovana" : "");
               row.dataset.id = s.id;
@@ -392,13 +396,14 @@
         <div class="burza-row-main">
           <div class="burza-row-left">
             <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
-            <span class="burza-cas">${IK_CAS}${s.cas}</span>
+            ${s.plan ? `<span class="burza-cas">podľa plánu</span>` : `<span class="burza-cas">${IK_CAS}${s.cas}</span>`}
             ${s.upozornenie ? `<span class="burza-upoz">${s.upozornenie}</span>` : ""}
           </div>
           <div class="burza-row-right burza-row-actions">
             ${
               rezervovana
                 ? `<span class="burza-stav-badge">v riešení</span><span class="burza-kriz">✕</span>`
+                : s.plan ? ``
                 : uzRezervovanyDen
                   ? `<span class="burza-uz-rez">Nedostupné</span>`
                   : `<button class="burza-btn-rez">Rezervovať</button>`
@@ -418,7 +423,7 @@
               row
                 .querySelector(".burza-row-main")
                 .addEventListener("click", (e) => {
-                  if (e.target.closest(".burza-btn-rez")) return;
+                  if (e.target.closest(".burza-btn-rez") || s.plan) return;
                   toggleDetail(s.id);
                 });
 
@@ -481,7 +486,7 @@
 
         function rezervuj(sluzbaId) {
           const sluzba = state.sluzby.find((s) => s.id === sluzbaId);
-          if (!sluzba || sluzba.stav !== "volna") return;
+          if (!sluzba || sluzba.stav !== "volna" || sluzba.plan) return;
 
           sluzba.stav = "rezervovana";
 

@@ -9,7 +9,7 @@
 (function () {
   var KLUC = "dpb_prava_csv";
   var VS_PRE_VSETKYCH = false;
-  var FUNKCIE = ["hladat", "stretnutia", "zmena_sluzby", "vs", "vodic_cp", "statistika"];
+  var FUNKCIE = ["hladat", "stretnutia", "zmena_sluzby", "vs", "vodic_cp", "statistika", "vsetky_volne"];
   var KLUC_S = "dpb_skupiny_csv";
   var clenovia = {}; // názov skupiny (malé písmená) -> { osobné číslo: true }
   var riadky = null; // null = súbor sa nenačítal -> všetko povolené (nič sa neskrýva)
@@ -97,6 +97,8 @@
     if (riadky === null) return true;
     return moje().some(function (x) { return /^(1|ano|áno|x)$/i.test(x.r[f] || ""); });
   }
+  // všetky voľné služby v Burze (bez filtra trakcie/odpočinku + linky z plánu) – len na výslovné povolenie
+  function vsetkyVolne() { return riadky !== null && moze("vsetky_volne"); }
   // počet minút (číslo) alebo null = bez obmedzenia
   function vozidloMin() {
     if (riadky === null) return null;
@@ -147,5 +149,5 @@
   try { var u2 = localStorage.getItem(KLUC_S); if (u2) nastavSkupiny(u2, false); } catch (e) {}
   document.addEventListener("dpb-prava", pouzi);
   document.addEventListener("DOMContentLoaded", pouzi);
-  window.DpbPrava = { zahrna: zahrna, info: info, nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
+  window.DpbPrava = { zahrna: zahrna, info: info, nastav: nastav, nastavSkupiny: nastavSkupiny, moze: moze, vsetkyVolne: vsetkyVolne, vozidloMin: vozidloMin, vozidloViditelne: vozidloViditelne, vozidloOdText: vozidloOdText, pouzi: pouzi, FUNKCIE: FUNKCIE };
 })();

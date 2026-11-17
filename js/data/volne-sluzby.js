@@ -51,13 +51,15 @@
       });
       if (obsadena) return;
       // Plán dopredu (bez dispečingu): voľné miesta tam nie sú skutočné voľné služby, Burza končí tam, kde končia D_ dáta.
-      if (us.some(function (u) { return u.plan; })) return;
+      // (výnimka: kto má právo vsetky_volne, vidí z plánu aj holé linky – bez pohotovostí a bez časov)
+      var jePlan = us.some(function (u) { return u.plan; });
       // reprezentant: najnižšie PORADI, ktoré má použiteľný čas
       us.sort(function (a, b) {
         return a.poradi - b.poradi;
       });
       var u = us[0];
       if (!jeStandardna(u.kurz)) return;
+      if (jePlan && jePohotovost(u.kurz)) return;
       var odM = u.od ? u.odMin : minuty(u.nastup);
       var doM = u.od ? u.doMin : minuty(u.konec);
       if (odM == null || doM == null) return;
@@ -86,15 +88,16 @@
         trideni: u.trideni,
         od: hm(odM),
         do: hm(doM),
-        cas: hm(odM) + " – " + hm(doM),
+        cas: jePlan ? "" : hm(odM) + " – " + hm(doM),
+        plan: jePlan,
         odMin: odM,
         doMin: doM,
         startMs: new Date(p[0], p[1] - 1, p[2], 0, odM).getTime(),
         pohotovost: jePohotovost(u.kurz),
         nazov: jePohotovost(u.kurz) ? "Dispozičný vodič" : u.kurz,
         podnazov: jePohotovost(u.kurz) ? "Sedavá záloha" : "",
-        stanicaOd: stOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
-        stanicaDo: stDo,
+        stanicaOd: jePlan ? "" : stOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
+        stanicaDo: jePlan ? "" : stDo,
         trakcia: (u.zdroj.TYPDOPRAVY || "").trim(),
       });
     });
