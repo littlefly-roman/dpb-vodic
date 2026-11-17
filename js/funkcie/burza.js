@@ -396,14 +396,14 @@
         <div class="burza-row-main">
           <div class="burza-row-left">
             <span class="burza-linka ${rezervovana ? "italic" : ""}">${s.nazov || s.line}${s.podnazov ? `<span class="burza-podnazov">${s.podnazov}</span>` : ""}</span>
-            ${s.plan ? `<span class="burza-cas">podľa plánu</span>` : `<span class="burza-cas">${IK_CAS}${s.cas}</span>`}
+            <span class="burza-cas">${IK_CAS}${s.cas}</span>
             ${s.upozornenie ? `<span class="burza-upoz">${s.upozornenie}</span>` : ""}
           </div>
           <div class="burza-row-right burza-row-actions">
             ${
               rezervovana
                 ? `<span class="burza-stav-badge">v riešení</span><span class="burza-kriz">✕</span>`
-                : s.plan ? ``
+                : s.plan ? `<span class="burza-uz-rez">Plán</span>`
                 : uzRezervovanyDen
                   ? `<span class="burza-uz-rez">Nedostupné</span>`
                   : `<button class="burza-btn-rez">Rezervovať</button>`
@@ -423,7 +423,7 @@
               row
                 .querySelector(".burza-row-main")
                 .addEventListener("click", (e) => {
-                  if (e.target.closest(".burza-btn-rez") || s.plan) return;
+                  if (e.target.closest(".burza-btn-rez")) return;
                   toggleDetail(s.id);
                 });
 

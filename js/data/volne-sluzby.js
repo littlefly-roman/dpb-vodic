@@ -88,7 +88,7 @@
         trideni: u.trideni,
         od: hm(odM),
         do: hm(doM),
-        cas: jePlan ? "" : hm(odM) + " – " + hm(doM),
+        cas: hm(odM) + " – " + hm(doM),
         plan: jePlan,
         odMin: odM,
         doMin: doM,
@@ -96,8 +96,8 @@
         pohotovost: jePohotovost(u.kurz),
         nazov: jePohotovost(u.kurz) ? "Dispozičný vodič" : u.kurz,
         podnazov: jePohotovost(u.kurz) ? "Sedavá záloha" : "",
-        stanicaOd: jePlan ? "" : stOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
-        stanicaDo: jePlan ? "" : stDo,
+        stanicaOd: stOd || (jePohotovost(u.kurz) ? miestoPohotovosti(u.kurz) : ""),
+        stanicaDo: stDo,
         trakcia: (u.zdroj.TYPDOPRAVY || "").trim(),
       });
     });
