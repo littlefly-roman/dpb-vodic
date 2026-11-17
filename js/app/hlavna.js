@@ -393,7 +393,10 @@
               "-" +
               String(appState.selectedDate.getDate()).padStart(2, "0");
             const jeVBuduco = appState.selectedDate > new Date();
-            const burzaSluzby = jeVBuduco ? getBurzaSluzbyPreDen(selKey) : [];
+            const jeDnesV = isToday(appState.selectedDate);
+            const burzaSluzby = jeVBuduco || jeDnesV ? getBurzaSluzbyPreDen(selKey) : [];
+            // dnes: ak v ten deň nič nie je, ale sú vhodné služby v iné dni, ukáž všeobecný oznam (ako pri dni so službou)
+            const maVseobecne = jeDnesV && !burzaSluzby.length && typeof Burza !== "undefined" && Burza.pocetVhodnych && Burza.pocetVhodnych() > 0;
             const maVBurze = burzaSluzby.length > 0;
 
             const volno = document.createElement("div");
@@ -412,6 +415,13 @@
               r.className = "burza-link-row";
               r.textContent = burzaVolneText(burzaSluzby.length);
               r.addEventListener("click", () => otvorBurzuPreDen(selKey));
+              container.appendChild(r);
+            } else if (maVseobecne) {
+              const r = document.createElement("button");
+              r.type = "button";
+              r.className = "burza-link-row";
+              r.textContent = "Sú dostupné voľné služby  ›";
+              r.addEventListener("click", () => otvorBurzuPreDen());
               container.appendChild(r);
             }
             return;
