@@ -707,7 +707,7 @@ function dpbDenJednaNepritomnost(arr) {
             const date = new Date(year, month, d), key = formatDateKey(date), ev = DpbDruhaPraca.pre(key);
             const dow = date.getDay(), isHoliday = window.Calendar && window.Calendar.isHoliday(date);
             const group = document.createElement("div");
-            group.className = "list-day-group" + (isHoliday ? " is-holiday" : dow === 0 || dow === 6 ? " is-weekend" : "");
+            group.className = "list-day-group" + (isHoliday ? " is-holiday" : "") + (dow === 0 || dow === 6 ? " is-weekend" : "");
             const klik = (row) => row.addEventListener("click", () => { appState.selectedDate = date; appState.viewMode = "cards"; render(); });
             if (!ev.length) {
               const row = buildListRow(d, DAY_NAMES[dow], "Voľno", "", isToday(date), true, false);
@@ -762,7 +762,7 @@ function dpbDenJednaNepritomnost(arr) {
             const group = document.createElement("div");
             group.className =
               "list-day-group" +
-              (isHoliday ? " is-holiday" : isWeekend ? " is-weekend" : "");
+              (isHoliday ? " is-holiday" : "") + (isWeekend ? " is-weekend" : "");
 
             if (services.length === 0) {
               const row = buildListRow(
