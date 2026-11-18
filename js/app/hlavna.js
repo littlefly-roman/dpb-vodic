@@ -1486,20 +1486,6 @@ function dpbDenJednaNepritomnost(arr) {
             dir.appendChild(_lav);
             dir.appendChild(_smerEl);
             fragment.appendChild(dir);
-            // vozidlo a vodič platné pre tento spoj
-            try {
-              const K = window.DpbKurzKto;
-              if (K && spoj.zastavky.length) {
-                const kt = K.kto(linka + "/" + parseInt(kurz, 10), appState._grafDateKey, timeToSeconds(spoj.zastavky[0].time));
-                const txt = kt ? [kt.voz, K.menoSmie(kt)].filter(Boolean).join("  ·  ") : "";
-                if (txt) {
-                  const kl = document.createElement("div");
-                  kl.className = "g-kto";
-                  kl.textContent = txt;
-                  fragment.appendChild(kl);
-                }
-              }
-            } catch (e) {}
 
             spoj.zastavky.forEach((z) => {
               const stopSec = timeToSeconds(z.time);
