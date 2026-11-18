@@ -16,15 +16,12 @@
       { sel: [".clickable-line", ".card-title"], nadpis: "Služba", text: "Ťukni na linku alebo čas služby a otvorí sa grafikon s odchodmi." },
       { sel: [".card-zvonec"], nadpis: "Upozornenia", text: "Budík ti pripomenie odchod. Ťukni naň a vyber, kedy ťa má appka upozorniť." },
       { sel: [".str-chevron", ".card-vehicle .ik-i", ".card-vehicle"], nadpis: "Doplňujúce informácie", text: "Ikona „i“ rozbalí podrobnosti: vozidlo, vodiča a ďalšie údaje. Meno vodiča môžeš ťuknúť a zobrazí sa fotka alebo telefón." },
-      { sel: [".card-menu-btn"], nadpis: "Menu karty", text: "Šípka dole otvorí menu karty, napríklad grafikon alebo zmenu stavu." },
+      { sel: [".card-menu-btn"], nadpis: "Menu karty", text: "Šípka dole otvorí menu karty. Nájdeš v ňom grafikon, zmenu stavu (nahlásenie alebo žiadosť o neprítomnosť), reklamáciu, žiadosť o službu a prehľad voľných služieb. Všetky položky sú červené, lebo sa dajú ťuknúť." },
       { sel: [".bottom-nav"], nadpis: "Dolné menu", text: "Prepínaš nimi medzi obrazovkami. Aktívna je červená." }
     ],
     prehlad: [
       { sel: ["#cpBtnZastavkovyRoz"], nadpis: "Zastávkový poriadok", text: "Odchody z vybranej zastávky. Zadaj názov zastávky a ťukni na odchod." },
       { sel: ["#cpBtnSluzobny"], nadpis: "Službový poriadok", text: "Poriadok tvojej služby. Ťukni na spoj a otvorí sa grafikon." }
-    ],
-    hladat: [
-      { sel: ["#hladatDatum"], nadpis: "Deň", text: "Ťukni na dátum a vyber deň. Šípky ‹ › ho posúvajú o jeden deň." }
     ],
     profil: [
       { sel: ["#profilView summary"], nadpis: "Sekcie profilu", text: "Ťukni na červený nadpis a sekcia sa rozbalí. Nájdeš v nich osobné a pracovné údaje aj štatistiku." }
