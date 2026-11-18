@@ -4009,12 +4009,26 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #grafikonContent .grafikon-row.highlight .g-my { display: none; }
 
 /* ===== sprievodca / pomoc ===== */
-#pomocOv { position: fixed; inset: 0; z-index: 100000; }
-#pomocOv .pm-spot { position: absolute; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.72); outline: 3px solid #fff; transition: left .25s, top .25s, width .25s, height .25s; pointer-events: none; }
-#pomocOv .pm-bub { position: absolute; background: var(--surface); color: var(--text-1); border-radius: 16px; padding: 16px 18px; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); max-width: 440px; margin: 0 auto; }
-#pomocOv .pm-n { font-size: 15px; color: var(--text-3); }
-#pomocOv .pm-h { font-size: 20px; font-weight: 700; margin: 2px 0 6px; }
-#pomocOv .pm-t { font-size: 16px; line-height: 1.45; color: var(--text-2); }
-#pomocOv .pm-p { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
-#pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 16px; color: var(--text-3); padding: 10px 4px; cursor: pointer; }
-#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 700; padding: 12px 24px; cursor: pointer; }
+#pomocOv { position: fixed; inset: 0; z-index: 100000; animation: pmFade .22s ease-out; }
+#pomocOv .pm-spot { position: absolute; border-radius: 14px; pointer-events: none;
+  box-shadow: 0 0 0 100vmax rgba(8, 10, 16, 0.7), 0 0 0 2px rgba(255, 255, 255, 0.92), 0 0 26px 6px rgba(255, 255, 255, 0.22);
+  transition: left .28s cubic-bezier(.2,.8,.2,1), top .28s cubic-bezier(.2,.8,.2,1), width .28s cubic-bezier(.2,.8,.2,1), height .28s cubic-bezier(.2,.8,.2,1); }
+#pomocOv .pm-bub { position: absolute; max-width: 420px; margin: 0 auto; padding: 20px 22px 16px; border-radius: 22px;
+  background: var(--surface); color: var(--text-1); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: pmPop .26s cubic-bezier(.2,.8,.2,1); }
+#pomocOv .pm-bub::before { content: ""; position: absolute; width: 14px; height: 14px; background: var(--surface); transform: rotate(45deg); left: var(--ax, 24px); display: none; border-radius: 3px; }
+#pomocOv .pm-bub[data-side="dole"]::before { display: block; top: -6px; }
+#pomocOv .pm-bub[data-side="hore"]::before { display: block; bottom: -6px; }
+#pomocOv .pm-n { display: flex; gap: 6px; margin-bottom: 12px; }
+#pomocOv .pm-n i { width: 6px; height: 6px; border-radius: 3px; background: var(--border); transition: width .2s, background .2s; }
+#pomocOv .pm-n i.ho { background: var(--text-3); opacity: .5; }
+#pomocOv .pm-n i.on { width: 20px; background: var(--red); }
+#pomocOv .pm-h { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; margin: 0 0 6px; }
+#pomocOv .pm-t { font-size: 16px; line-height: 1.5; color: var(--text-2); }
+#pomocOv .pm-p { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+#pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 15px; color: var(--text-3); padding: 10px 2px; cursor: pointer; }
+#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 999px; font: inherit; font-size: 16px; font-weight: 700; padding: 12px 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(232, 0, 26, 0.3); white-space: pre; }
+#pomocOv .pm-next:active { transform: scale(.97); }
+@keyframes pmFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pmPop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #pomocOv, #pomocOv .pm-bub, #pomocOv .pm-spot { animation: none; transition: none; } }

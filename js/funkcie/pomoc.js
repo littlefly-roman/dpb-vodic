@@ -56,7 +56,7 @@
     var i = 0;
     ov = document.createElement("div");
     ov.id = "pomocOv";
-    ov.innerHTML = '<div class="pm-spot"></div><div class="pm-bub" role="dialog" aria-live="polite"><div class="pm-n"></div><div class="pm-h"></div><div class="pm-t"></div><div class="pm-p"><button type="button" class="pm-skip">Preskočiť</button><button type="button" class="pm-next"></button></div></div>';
+    ov.innerHTML = '<div class="pm-spot"></div><div class="pm-bub" role="dialog" aria-live="polite"><div class="pm-n" role="img"></div><div class="pm-h"></div><div class="pm-t"></div><div class="pm-p"><button type="button" class="pm-skip">Preskočiť</button><button type="button" class="pm-next"></button></div></div>';
     document.body.appendChild(ov);
     document.addEventListener("keydown", kl, true);
     var spot = ov.querySelector(".pm-spot"), bub = ov.querySelector(".pm-bub");
@@ -66,17 +66,17 @@
 
     function ukaz() {
       var k = kroky[i], el = najdi(k);
-      bub.querySelector(".pm-n").textContent = (i + 1) + " / " + kroky.length;
+      var pn = bub.querySelector(".pm-n"); pn.setAttribute("aria-label", "Krok " + (i + 1) + " z " + kroky.length); pn.innerHTML = kroky.map(function (_, j) { return '<i class="' + (j === i ? "on" : j < i ? "ho" : "") + '"></i>'; }).join("");
       bub.querySelector(".pm-h").textContent = k.nadpis;
       bub.querySelector(".pm-t").textContent = k.text;
-      ov.querySelector(".pm-next").textContent = i === kroky.length - 1 ? "Hotovo" : "Ďalej";
+      ov.querySelector(".pm-next").textContent = i === kroky.length - 1 ? "Hotovo" : "Ďalej  →";
       ov.querySelector(".pm-skip").style.visibility = i === kroky.length - 1 ? "hidden" : "visible";
       if (el) {
         try { el.scrollIntoView({ block: "center", behavior: "instant" }); } catch (e) { el.scrollIntoView(); }
         setTimeout(function () { polož(el); }, 60);
       } else {
         spot.style.cssText = "left:50%;top:50%;width:0;height:0;border-radius:0";
-        bub.style.cssText = "left:50%;top:50%;right:auto;transform:translate(-50%,-50%);width:min(360px,calc(100vw - 24px))";
+        bub.style.cssText = "left:50%;top:50%;right:auto;transform:translate(-50%,-50%);width:min(360px,calc(100vw - 24px))"; bub.dataset.side = "";
       }
     }
     function polož(el) {
@@ -88,6 +88,10 @@
       var bh = bub.offsetHeight, dole = H - (y + h) - 12, hore = y - 12;
       var top = dole >= bh ? y + h + 12 : hore >= bh ? y - bh - 12 : Math.max(8, (H - bh) / 2);
       bub.style.left = "12px"; bub.style.right = "12px"; bub.style.top = top + "px";
+      var pod = dole >= bh, nad = !pod && hore >= bh;
+      bub.dataset.side = pod ? "dole" : nad ? "hore" : "";
+      var bl = bub.getBoundingClientRect().left;
+      bub.style.setProperty("--ax", Math.max(18, Math.min(bub.offsetWidth - 32, r.left + r.width / 2 - bl - 7)) + "px");
     }
     ukaz();
   }
