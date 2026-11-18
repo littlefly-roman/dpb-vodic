@@ -3958,6 +3958,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .card-zvonec, #btnList.day-icon, .str-chevron, .prest-ik.klik, .vyp-nadpis, .meno-v, .meno-v .meno-ik { color: var(--red-text); }
 .vyp-nadpis { color: var(--red-text) !important; }
 #todayDate .date-day, #todayDate .date-date { color: var(--red-text) !important; }
+/* aktuálny deň tučne, iný deň normálne */
+#todayDate .date-day, #todayDate .date-date { font-weight: 400; }
+#todayDate.je-dnes .date-day, #todayDate.je-dnes .date-date { font-weight: 800; }
 /* iba informácia → neutrálne */
 .vyp-typ, .vyp-blk-h, .burza-filter-hdr strong, .notif-kat-red { color: var(--text-1); }
 .grafikon-row.highlight .g-time, .grafikon-row.nepreprava.highlight .g-time { color: var(--text-1); }
