@@ -16,7 +16,7 @@
       { sel: [".clickable-line", ".card-title"], nadpis: "Služba", text: "Ťukni na linku alebo čas služby a otvorí sa grafikon s odchodmi." },
       { sel: [".card-zvonec"], nadpis: "Upozornenia", text: "Budík ti pripomenie odchod. Ťukni naň a vyber, kedy ťa má appka upozorniť." },
       { sel: [".str-chevron", ".card-vehicle .ik-i", ".card-vehicle"], nadpis: "Doplňujúce informácie", text: "Ikona „i“ rozbalí podrobnosti: vozidlo, vodiča a ďalšie údaje. Meno vodiča môžeš ťuknúť a zobrazí sa fotka alebo telefón." },
-      { sel: [".card-menu-btn"], nadpis: "Menu karty", text: "Šípka dole otvorí menu karty. Nájdeš v ňom grafikon, zmenu stavu (nahlásenie alebo žiadosť o neprítomnosť), reklamáciu, žiadosť o službu a prehľad voľných služieb. Všetky položky sú červené, lebo sa dajú ťuknúť." },
+      { sel: [".card-menu-btn"], nadpis: "Menu karty", text: "Šípka dole otvorí menu karty. Nájdeš v ňom grafikon, zmenu stavu (nahlásenie alebo žiadosť o neprítomnosť), reklamáciu, žiadosť o službu, prehľad voľných služieb a nastavenie upozornení k aktuálnej službe. Všetky položky sú červené, lebo sa dajú ťuknúť." },
       { sel: [".bottom-nav"], nadpis: "Dolné menu", text: "Prepínaš nimi medzi obrazovkami. Aktívna je červená." }
     ],
     prehlad: [
