@@ -4033,3 +4033,5 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 @keyframes pmPop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { #pomocOv, #pomocOv .pm-bub, #pomocOv .pm-spot { animation: none; transition: none; } }
 .menu-item, .menu-item.menu-item-cancel { color: var(--red-text) !important; }
+/* ikona „i“ (doplňujúce info) je všade červená */
+.veh-sip, .prs-sip, .str-chevron, button[aria-label="Vodič"], svg:has(.ik-i), .ik-i { color: var(--red-text) !important; }
