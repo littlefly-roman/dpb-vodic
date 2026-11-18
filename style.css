@@ -36,7 +36,9 @@
           --np-bg: #8b93a7;
           --np-fg: #0d0e11;
           --red-soft: rgba(232, 0, 26, 0.1);
-          --red-text: #ff6b7d;
+          --red: #cc0f26; /* tmavý režim: brand červená o niečo tmavšia, nech nekričí */
+          --red-dark: #a80d20;
+          --red-text: #f4566a;
           --chyba: #fb923c;
           --chyba-soft: rgba(251, 146, 60, 0.16);
           --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.28);
@@ -57,7 +59,9 @@
           --np-bg: #8b93a7;
           --np-fg: #0d0e11;
           --red-soft: rgba(232, 0, 26, 0.1);
-          --red-text: #ff6b7d;
+          --red: #cc0f26; /* tmavý režim: brand červená o niečo tmavšia, nech nekričí */
+          --red-dark: #a80d20;
+          --red-text: #f4566a;
           --chyba: #fb923c;
           --chyba-soft: rgba(251, 146, 60, 0.16);
           --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.28);
