@@ -8,6 +8,23 @@
           isSameDay,
           timeToSeconds,
         } = window.DpbCas;
+/* Delená služba s tou istou neprítomnosťou na oboch častiach (napr. Nemoc 6:24–8:50 aj 12:56–19:11) = jedna karta */
+function dpbDenJednaNepritomnost(arr) {
+  if (!arr || arr.length < 2) return arr;
+  const jedna = {}, out = [];
+  arr.forEach(function (x) {
+    if (!x || x._vzor !== "NEPRÍTOMNOSŤ") { out.push(x); return; }
+    const k = (x.line || "") + "|" + ((x._karta && x._karta.kod) || "");
+    const f = jedna[k];
+    if (!f) { jedna[k] = x; out.push(x); return; }
+    const od = (f.time || "").split("–")[0].trim(), dox = (x.time || "").split("–")[1];
+    const c = Object.assign({}, f, { _karta: Object.assign({}, f._karta) }); // kópia, aby sa nezmenili dáta pre výkaz
+    if (od && dox) c.time = od + " – " + dox.trim();
+    if (x._karta && x._karta.do) c._karta.do = x._karta.do;
+    out[out.indexOf(f)] = c; jedna[k] = c;
+  });
+  return out;
+}
         const { loadText, loadJR, doplnSM, popisSpoja, skolskaLinka, cielSkolskehoSpoja, jeSluzobna, jeDp, extractObeh, parseSpoje, parseKV, parseSM } =
           window.GrafikonParsery;
 
@@ -366,7 +383,7 @@
 
         function renderCards() {
           const key = formatDateKey(appState.selectedDate);
-          const services = appState.servicesByDate[key] || [];
+          const services = dpbDenJednaNepritomnost(appState.servicesByDate[key] || []);
           window._menuScroll = null;
 
           dateHeader.innerHTML = formatDisplayDate(appState.selectedDate);
@@ -735,7 +752,7 @@
           for (let d = 1; d <= lastDay; d++) {
             const date = new Date(year, month, d);
             const key = formatDateKey(date);
-            const services = appState.servicesByDate[key] || [];
+            const services = dpbDenJednaNepritomnost(appState.servicesByDate[key] || []);
             const today = isToday(date);
             const dayName = DAY_NAMES[date.getDay()];
             const dow = date.getDay();
@@ -856,7 +873,7 @@
             }
             // header
             // cards — shallow clone of what renderCards would produce (no date header — stays fixed above)
-            const services = appState.servicesByDate[key] || [];
+            const services = dpbDenJednaNepritomnost(appState.servicesByDate[key] || []);
             if (services.length === 0) {
               const v = document.createElement("div");
               v.className = "volno-card";
@@ -1244,6 +1261,7 @@
             if (window.DpbKalZnacky) DpbKalZnacky.pridaj(cell, appState.servicesByDate[key] || []);
             else if ((appState.servicesByDate[key] || []).length > 0) cell.classList.add("has-service");
             if (Calendar.isHoliday(cellDate)) cell.classList.add("is-holiday");
+            else if (cellDate.getDay() === 0 || cellDate.getDay() === 6) cell.classList.add("is-weekend");
             cell.addEventListener("click", () => {
               appState.selectedDate = cellDate;
               appState.viewMode = "cards";

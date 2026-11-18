@@ -3950,3 +3950,28 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .str-row.open .ik-hore, .prs-sip.open .ik-hore { display: inline; }
 .str-row.open .str-chevron, .prs-sip.open svg { transform: none !important; }
 .str-chevron svg { width: 20px !important; height: 20px !important; }
+
+/* ===== Červená = klikateľné (návrh) =====
+   Pravidlo: červená farba značí, že sa na prvok dá ťuknúť. Informácie sú čierne/sivé.
+   Zvýraznenie „teraz / dnes / moja služba“ = hrubšia línia, nie červený text. */
+/* klikateľné → červené */
+.card-zvonec, #btnList.day-icon, .str-chevron, .prest-ik.klik, .vyp-nadpis, .meno-v, .meno-v .meno-ik { color: var(--red-text); }
+.vyp-nadpis { color: var(--red-text) !important; }
+#todayDate .date-day, #todayDate .date-date { color: var(--red-text) !important; }
+/* iba informácia → neutrálne */
+.vyp-typ, .vyp-blk-h, .burza-filter-hdr strong, .notif-kat-red { color: var(--text-1); }
+.grafikon-row.highlight .g-time, .grafikon-row.nepreprava.highlight .g-time { color: var(--text-1); }
+.grafikon-row.highlight .g-my, .grafikon-row.nepreprava.highlight .g-my { display: none; }
+.grafikon-row.highlight { box-shadow: inset 5px 0 0 var(--red); }
+/* sviatok = tučne; sobota/nedeľa = jemne zelenkastý podklad */
+.list-day-group.is-holiday .list-date, .list-day-group.is-weekend .list-date { color: var(--text-1); font-weight: 800; }
+.list-line.sviatok-sluzba { color: var(--text-1); font-weight: 800; }
+.calendar-cell.is-holiday { color: var(--text-1); font-weight: 800; }
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group.is-holiday, .list-day-group.is-holiday { background: var(--surface); }
+:is(#servicesContainer,.swipe-slide-ghost) > .list-day-group.is-weekend, .list-day-group.is-weekend,
+.calendar-cell.is-weekend:not(.selected) { background: linear-gradient(rgba(34,160,90,.10), rgba(34,160,90,.10)), var(--surface); }
+.calendar-cell.is-weekend:not(.selected) { background: rgba(34,160,90,.12); }
+/* dnes / teraz = hrubšia línia */
+.calendar-cell.today:not(.selected) { color: var(--text-1); box-shadow: inset 0 0 0 3px var(--red); }
+.hl-teraz { color: var(--text-1); font-weight: 800; }
+.hl-riadok.hl-dnes { border-width: 3px; }
