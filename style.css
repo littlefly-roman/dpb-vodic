@@ -4044,3 +4044,10 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 /* Cestovné poriadky: okno začína pod hlavičkou appky (logo, ?, téma, správy ostanú vidieť) */
 #cpModal { top: calc(64px + env(safe-area-inset-top, 0px)); }
 #cpModal .grafikon-header { padding-top: 0; }
+/* Správy: originál príkazu */
+.spravy-orig-ln{display:flex;gap:8px;margin:0 4px 10px}
+.spravy-orig{border:1.5px solid var(--red);background:var(--surface);color:var(--red-text);border-radius:12px;padding:9px 14px;font-size:15px;font-weight:600;cursor:pointer}
+.spravy-orig:disabled{opacity:.6}
+.spravy-orig-ov{position:fixed;inset:0;z-index:2100;background:rgba(10,12,16,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(64px + env(safe-area-inset-top,0px)) 10px calc(10px + env(safe-area-inset-bottom,0px))}
+.spravy-orig-ov .spravy-modal{height:100%}
+.spravy-orig-fr{flex:1;min-height:0;width:100%;border:0;border-radius:14px;background:#fff}

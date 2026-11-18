@@ -10,6 +10,8 @@
                a dá sa zavrieť až po uplynutí tohto času (potom je prečítaná)
    PAS       – (voliteľný stĺpec) text, ktorý beží v páse na Dnes (inak sa použije NADPIS); napr. hlavičky bodov príkazu
    V TEXT: **tučné**, _kurzíva_ a riadky začínajúce „• “ sa zobrazia formátované.
+   ORIGINAL  – (voliteľný stĺpec) názvy súborov originálu na Disku vedľa SPRAVY.csv, oddelené |: napr. PRIK-68-2026.html|PRIK-68-2026.pdf
+               (v detaile je tlačidlo „Zobraziť originál“; .html sa ukáže v appke, .pdf sa otvorí vo vlastnom okne)
    UVOD      – (voliteľný stĺpec) 1/ano = správa sa ukáže ako „karta dňa“ po logu pri prihlásení (raz)
    V TEXT sa riadok zalomí zápisom \n. */
 (function () {
@@ -66,6 +68,7 @@
         dolezite: /^(1|ano|áno|x)$/i.test(g("dolezite")),
         uvod: /^(1|ano|áno|x)$/i.test(g("uvod")),
         pas: g("pas"),
+        original: g("original").split("|").map(function (x) { return x.trim(); }).filter(Boolean),
         povinne: Math.max(0, Math.min(60, parseInt(g("povinne"), 10) || 0))
       });
     });
