@@ -4007,3 +4007,14 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #grafikonContent .grafikon-row.highlight:not(.nepreprava):not(.my-service) { background: transparent; box-shadow: none; }
 #grafikonContent .grafikon-row.highlight .g-time { color: var(--text-3); font-weight: 500; }
 #grafikonContent .grafikon-row.highlight .g-my { display: none; }
+
+/* ===== sprievodca / pomoc ===== */
+#pomocOv { position: fixed; inset: 0; z-index: 100000; }
+#pomocOv .pm-spot { position: absolute; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.72); outline: 3px solid #fff; transition: left .25s, top .25s, width .25s, height .25s; pointer-events: none; }
+#pomocOv .pm-bub { position: absolute; background: var(--surface); color: var(--text-1); border-radius: 16px; padding: 16px 18px; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); max-width: 440px; margin: 0 auto; }
+#pomocOv .pm-n { font-size: 15px; color: var(--text-3); }
+#pomocOv .pm-h { font-size: 20px; font-weight: 700; margin: 2px 0 6px; }
+#pomocOv .pm-t { font-size: 16px; line-height: 1.45; color: var(--text-2); }
+#pomocOv .pm-p { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+#pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 16px; color: var(--text-3); padding: 10px 4px; cursor: pointer; }
+#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 700; padding: 12px 24px; cursor: pointer; }
