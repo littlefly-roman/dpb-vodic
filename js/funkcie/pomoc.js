@@ -11,8 +11,9 @@
   var KROKY = {
     today: [
       { nadpis: "Červené sa dá ťuknúť", text: "Všetko červené je klikateľné a niečo urobí. Čierne a sivé texty sú len informácia. Tento sprievodca sa dá kedykoľvek spustiť znova tlačidlom ? hore." },
-      { sel: ["#todayDate"], nadpis: "Dátum", text: "Ťukni na dátum a otvorí sa kalendár. Deň zmeníš aj potiahnutím karty doľava alebo doprava." },
-      { sel: ["#btnList"], nadpis: "Zoznam mesiaca", text: "Prepne na zoznam služieb celého mesiaca. Tam nájdeš aj export výkazu, Excelu a kalendára." },
+      { sel: ["#todayDate"], nadpis: "Dátum", text: "Ťukni na dátum a otvorí sa kalendár. V kalendári potiahni prstom doľava alebo doprava a prepneš mesiac." },
+      { sel: ["#swipeWrapper"], nadpis: "Potiahni kartu", text: "Potiahnutím karty doľava alebo doprava prepneš na ďalší alebo predchádzajúci deň. V zozname mesiaca tým istým gestom prepínaš mesiace." },
+      { sel: ["#btnList"], nadpis: "Zoznam mesiaca", text: "Prepne na zoznam služieb celého mesiaca. Potiahnutím doľava alebo doprava prepneš mesiac. Tam nájdeš aj výkaz: ťuknutím na riadok dňa otvoríš jeho menu a dvoma prstami výkaz priblížiš alebo oddiališ." },
       { sel: [".clickable-line", ".card-title"], nadpis: "Služba", text: "Ťukni na linku alebo čas služby a otvorí sa grafikon s odchodmi." },
       { sel: [".card-zvonec"], nadpis: "Upozornenia", text: "Budík ti pripomenie odchod. Ťukni naň a vyber, kedy ťa má appka upozorniť." },
       { sel: [".str-chevron", ".card-vehicle .ik-i", ".card-vehicle"], nadpis: "Doplňujúce informácie", text: "Ikona „i“ rozbalí podrobnosti: vozidlo, vodiča a ďalšie údaje. Meno vodiča môžeš ťuknúť a zobrazí sa fotka alebo telefón." },
@@ -24,7 +25,7 @@
       { sel: ["#cpBtnSluzobny"], nadpis: "Službový poriadok", text: "Poriadok tvojej služby. Ťukni na spoj a otvorí sa grafikon." }
     ],
     profil: [
-      { sel: ["#profilView summary"], nadpis: "Sekcie profilu", text: "Ťukni na červený nadpis a sekcia sa rozbalí. Nájdeš v nich osobné a pracovné údaje aj štatistiku." }
+      { sel: ["#profilView summary"], nadpis: "Sekcie profilu", text: "Ťukni na červený nadpis a sekcia sa rozbalí. Nájdeš v nich osobné a pracovné údaje aj štatistiku. V štatistike potiahnutím doľava alebo doprava prepneš mesiac." }
     ]
   };
 
