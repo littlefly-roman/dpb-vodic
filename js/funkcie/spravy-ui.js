@@ -148,7 +148,7 @@
     ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +
-      (s.original && s.original.length ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="html">Zobraziť originál</button>' + (s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<button type="button" class="spravy-orig" data-o="pdf">PDF</button>' : "") + "</div>" : "") +
+      (s.original && s.original.length ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="' + (s.original.some(function (x) { return /\.html?$/i.test(x); }) ? "html" : "pdf") + '">Zobraziť originál</button></div>' : "") +
       '<div class="spravy-sc spravy-cl"><div class="spravy-art">' + (tel || "<span style=\"opacity:.6\">(bez textu)</span>") + "</div></div>" +
       (s.precitana ? "" : '<div class="spravy-pozn">Prečítané sa označí, keď doskroluješ na koniec ↓</div>') + "</div>";
     ov.querySelector(".spravy-x").onclick = zavri;
