@@ -3989,3 +3989,31 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #hladatPred, #hladatDalej, #hladatDatum { color: var(--red-text); }
 #profilView summary, #profilView .pf-rok-btn, #profilView .profil-odhlasit, #profilView .pf-klik, #profilView .pf-klik .pf-hod { color: var(--red-text); }
 #profilView .profil-odhlasit { color: var(--red-text) !important; border-color: var(--red) !important; }
+
+/* ===== spodné menu: biele, červené ikony a nápisy; aktívne okno reverzne ===== */
+.bottom-nav { background: var(--surface); }
+.bottom-nav button { color: var(--red-text); margin: 6px 3px; border-radius: 14px; min-height: 0; transition: background .15s, color .15s; }
+.bottom-nav button.active { background: var(--red); color: #fff; }
+.bottom-nav button.active .nav-icon { background: transparent; padding: 0; }
+.bottom-nav button.active .nav-label { color: #fff; }
+
+/* ===== grafikon: jemnejší vzhľad, úseky striedačov odtiahnuté od kraja ===== */
+#grafikonContent .grafikon-row { padding: 10px 18px; border-bottom-color: var(--border-2); }
+#grafikonContent .g-time { font-weight: 400; color: var(--text-2); }
+#grafikonContent .g-stop { font-weight: 400; }
+#grafikonContent .grafikon-direction { background: var(--surface-2); color: var(--text-2); border-bottom-color: var(--border-2); font-weight: 600; letter-spacing: .3px; }
+#grafikonContent .grafikon-direction.aktualny { background: var(--text-2); color: var(--surface); }
+#grafikonContent .grafikon-direction.np { background: var(--surface-2); color: var(--text-3); }
+#grafikonContent .grafikon-row.past { opacity: .5; }
+#grafikonContent .grafikon-row.my-service, #grafikonContent .grafikon-row.highlight {
+  box-shadow: none; position: relative; margin-left: 18px; margin-right: 18px; border-radius: 10px;
+  background: linear-gradient(rgba(232,0,26,.045), rgba(232,0,26,.045)), var(--surface);
+}
+#grafikonContent .grafikon-row.my-service::before, #grafikonContent .grafikon-row.highlight::before {
+  content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; border-radius: 3px; background: var(--red);
+}
+#grafikonContent .grafikon-row.my-service { padding-left: 24px; }
+#grafikonContent .grafikon-row.my-service .g-time { font-weight: 600; }
+#grafikonContent .grafikon-row.my-service.teraz { margin-left: 10px; margin-right: 10px; }
+#grafikonContent .grafikon-row.my-service.teraz::before { display: none; }
+#grafikonContent .g-kto { padding-left: 28px; font-weight: 500; }
