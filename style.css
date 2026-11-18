@@ -4035,3 +4035,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .menu-item, .menu-item.menu-item-cancel { color: var(--red-text) !important; }
 /* ikona „i“ (doplňujúce info) je všade červená */
 .veh-sip, .prs-sip, .str-chevron, button[aria-label="Vodič"], svg:has(.ik-i), .ik-i { color: var(--red-text) !important; }
+/* odchody striedača (aj keď sú v mojej službe): bez podkladu a pásika, len odsadenie */
+#grafikonContent .grafikon-row.highlight, #grafikonContent .grafikon-row.highlight.my-service {
+  background: transparent; box-shadow: none; border-radius: 0; }
+#grafikonContent .grafikon-row.highlight.my-service:not(.teraz)::before { display: none; }
+#grafikonContent .grafikon-row.highlight .g-time, #grafikonContent .grafikon-row.highlight.my-service .g-time { color: var(--text-3); font-weight: 500; }
+#grafikonContent .grafikon-row.highlight .g-stop { font-weight: 500; }
