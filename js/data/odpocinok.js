@@ -1,8 +1,8 @@
 // Kontrola odpočinku pre ponuku služieb z burzy (zákon 462/2007 Z. z., § 28 + týždenný odpočinok 24 + 11 h).
 // Čistá logika bez DOM, všetko v CELÝCH MINÚTACH (bez posúvania okien):
 //  - denný odpočinok medzi službami: >= 11 h v poriadku, 6–11 h skrátený (ukáže sa s upozornením), < 6 h nie
-//  - týždenný: v KAŽDOM 7-dňovom okne (168 h), ktoré sa dotkne ponúkanej služby, musí byť aspoň jeden
-//    nepretržitý odpočinok >= 35 h (vypočítané presne cez intervaly, nie vzorkovaním)
+//  - týždenný (zákon 462/2007 § 2 ods. 6 a § 5 ods. 4: 24 h + denný 11 h = 35 h): v KAŽDOM kalendárnom týždni (po 00:00 – ne 24:00),
+//    ktorého sa ponúkaná služba dotkne, musí byť celý nepretržitý odpočinok >= 35 h v rámci toho týždňa
 // Čas mimo známych dát sa berie ako voľný.
 (function (root) {
   var DEN_OK = 11 * 60, DEN_MIN = 6 * 60, PRACA_MAX = 12 * 60, TYD = 35 * 60, OKNO = 7 * 24 * 60;
@@ -30,6 +30,11 @@
       cur = Math.max(cur, B[i].do);
     }
     return b - cur >= TYD;
+  }
+  // Začiatok kalendárneho týždňa (pondelok 00:00) v absolútnych minútach; deň 0 (1.1.1970) bol štvrtok
+  function tyzden(m) {
+    var d = Math.floor(m / 1440), s = d - ((d + 3) % 7);
+    return [s * 1440, (s + 7) * 1440];
   }
   // Má KAŽDÉ 7-dňové okno [t, t+7 dní] pre t od 'od' do 'do' nepretržitý odpočinok >= 35 h? (B = zlúčená práca, zoradená)
   // Každá voľná medzera (g0,g1) dlhá >= 35 h pokrýva okná s t v [g0+35h-7d, g1-35h]; okná musia byť pokryté zjednotením medzier.
@@ -99,8 +104,10 @@
     }
     // týždenný odpočinok: každé 7-dňové okno, ktoré sa dotkne služby, musí obsahovať nepretržitý odpočinok >= 35 h
     var B = spoj(P.concat([{ od: k.od, do: k.do }]));
-    // všetky 7-dňové okná, ktoré sa dotýkajú služby (nie len okno tesne pred nástupom a tesne po konci)
-    if (!oknaOk(B, k.od - OKNO, k.do)) return { ok: false, dovod: "v 7-dňovom období by nebol odpočinok 35 h", skrateny: null };
+    // kalendárne týždne (po–ne), ktorých sa služba dotkne (nástup aj koniec, ak ide cez polnoc v nedeľu)
+    var t1 = tyzden(k.od), t2 = tyzden(k.do - 1);
+    if (!maRest(B, t1[0], t1[1]) || (t2[0] !== t1[0] && !maRest(B, t2[0], t2[1])))
+      return { ok: false, dovod: "v kalendárnom týždni by nebol odpočinok 35 h", skrateny: null };
     return res;
   }
 
