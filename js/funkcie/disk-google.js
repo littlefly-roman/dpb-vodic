@@ -131,6 +131,19 @@
     }).catch(function (e) { return "chyba: " + (e && e.message ? e.message : "?"); });
   }
 
+  // jeden súbor z Disku podľa názvu (napr. originál dopravného príkazu) -> Promise<Blob>
+  function suborZDisku(nazov) {
+    if (!nastavene()) return Promise.reject(new Error("Disk Google nie je nastavený"));
+    return dajToken(false).then(function () {
+      var q = "name='" + String(nazov).replace(/['\\]/g, "") + "' and trashed=false";
+      return api("https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) + "&orderBy=modifiedTime%20desc&pageSize=1&fields=files(id)");
+    }).then(function (j) {
+      var f = (j.files || [])[0];
+      if (!f) throw new Error("Súbor sa na Disku nenašiel");
+      return api("https://www.googleapis.com/drive/v3/files/" + f.id + "?alt=media", "blob");
+    });
+  }
+
   function stav(t) { var e = el("profilDiskStav"); if (e) e.textContent = t; }
   function obnovStav() {
     if (!nastavene()) return;
@@ -218,5 +231,5 @@
     if (b) b.addEventListener("click", function () { skontroluj(!pripojene(), false); });
     obnovStav();
   });
-  window.DpbDisk = { druhaPraca: druhaPracaZDisku, skontroluj: skontroluj, auto: auto, obnovStav: obnovStav };
+  window.DpbDisk = { subor: suborZDisku, druhaPraca: druhaPracaZDisku, skontroluj: skontroluj, auto: auto, obnovStav: obnovStav };
 })();

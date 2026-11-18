@@ -148,10 +148,18 @@
     ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +
+      (s.original && s.original.length ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="html">Zobraziť originál</button>' + (s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<button type="button" class="spravy-orig" data-o="pdf">PDF</button>' : "") + "</div>" : "") +
       '<div class="spravy-sc spravy-cl"><div class="spravy-art">' + (tel || "<span style=\"opacity:.6\">(bez textu)</span>") + "</div></div>" +
       (s.precitana ? "" : '<div class="spravy-pozn">Prečítané sa označí, keď doskroluješ na koniec ↓</div>') + "</div>";
     ov.querySelector(".spravy-x").onclick = zavri;
     ov.querySelector(".spravy-spat").onclick = function () { stav.detail = null; vykresli(); };
+    ov.querySelectorAll(".spravy-orig").forEach(function (b) {
+      b.onclick = function () {
+        var pdf = b.getAttribute("data-o") === "pdf";
+        var nazov = s.original.filter(function (x) { return pdf ? /\.pdf$/i.test(x) : /\.html?$/i.test(x); })[0] || s.original[0];
+        ukazOriginal(nazov, s.nadpis, b);
+      };
+    });
     var sc = ov.querySelector(".spravy-cl"), bar = ov.querySelector(".spravy-prog i"), pozn = ov.querySelector(".spravy-pozn"), hotovo = s.precitana;
     function over() {
       var max = sc.scrollHeight - sc.clientHeight, p = max <= 2 ? 1 : Math.min(1, sc.scrollTop / max);
@@ -164,6 +172,31 @@
     }
     sc.addEventListener("scroll", over);
     requestAnimationFrame(over);
+  }
+
+  // originál príkazu: stiahne sa z Disku Google; HTML sa ukáže v appke, PDF sa otvorí vo vlastnom okne
+  function ukazOriginal(nazov, nadpis, tl) {
+    if (!window.DpbDisk || !DpbDisk.subor) { if (window._showToast) _showToast("Originál nie je dostupný", 3000); return; }
+    var txt = tl.textContent; tl.disabled = true; tl.textContent = "Sťahujem…";
+    DpbDisk.subor(nazov).then(function (blob) {
+      if (/\.pdf$/i.test(nazov)) {
+        var u = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+        var a = document.createElement("a"); a.href = u; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+        return;
+      }
+      return blob.text().then(function (h) {
+        var o = document.createElement("div");
+        o.className = "spravy-orig-ov"; o.setAttribute("data-spat-prekryv", "1");
+        o.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(nadpis) + '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div><iframe class="spravy-orig-fr" sandbox="" title="Originál"></iframe></div>';
+        o.querySelector("iframe").srcdoc = h;
+        o.querySelector(".spravy-spat").onclick = o.querySelector(".spravy-x").onclick = function () { o.remove(); };
+        o.addEventListener("click", function (e) { if (e.target === o) o.remove(); });
+        document.body.insertBefore(o, ov || null);   // pred správami: tlačidlo Späť zatvorí najprv originál
+      });
+    }).catch(function (e) {
+      if (window._showToast) _showToast("Originál sa nepodarilo načítať: " + (e && e.message ? e.message : "chyba") + ". Skús to s pripojením na internet.", 4500);
+    }).then(function () { tl.disabled = false; tl.textContent = txt; });
   }
 
   function pripoj() {
