@@ -3981,3 +3981,11 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 /* hlavná karta: linka/poradie a mená (ak majú fotku alebo čísla) sú klikateľné → červené, nie tučné */
 .card-title { color: var(--red-text); font-weight: 500; }
 .meno-v:not(.meno-bez), .meno-v:not(.meno-bez) .meno-ik { color: var(--red-text); font-weight: 400; }
+/* ===== červená = klikateľné: ďalšie obrazovky ===== */
+.day-icon, #btnList, #btnExport, #notifClose, .card-menu-btn.service-menu-trigger { color: var(--red-text); }
+.export-menu button { color: var(--red-text); }
+.str-kurz { color: var(--red-text); }
+.list-line:not(.volno) { color: var(--red-text); }
+#hladatPred, #hladatDalej, #hladatDatum { color: var(--red-text); }
+#profilView summary, #profilView .pf-rok-btn, #profilView .profil-odhlasit, #profilView .pf-klik, #profilView .pf-klik .pf-hod { color: var(--red-text); }
+#profilView .profil-odhlasit { color: var(--red-text) !important; border-color: var(--red) !important; }
