@@ -4045,3 +4045,11 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .spravy-zoom img{max-width:100%;max-height:100%;transform-origin:center center;will-change:transform;pointer-events:none}
 .spravy-zx{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:1.3rem;z-index:2}
 .spravy-zh{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:rgba(255,255,255,.65);font-size:.78rem;pointer-events:none}
+
+/* body dopravného príkazu: v zozname a ako obsah v detaile */
+.spravy-it-b{display:block;font-size:13px;color:var(--text-2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spravy-toc{margin:0 0 14px;padding:4px 0 6px;border-bottom:1px solid var(--border-2)}
+.spravy-toc-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding:2px 0 6px}
+.spravy-toc-i{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-size:15px;line-height:1.35;padding:8px 2px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.spravy-toc-i:active{background:rgba(128,128,128,.15)}
+.spravy-toc-i b{font-weight:700}

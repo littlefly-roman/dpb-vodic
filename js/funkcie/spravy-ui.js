@@ -137,19 +137,34 @@
     });
     ov.querySelectorAll("[data-id]").forEach(function (b) { b.onclick = function () { stav.detail = b.getAttribute("data-id"); vykresli(); }; });
   }
+  // body dopravného príkazu = riadky „**N. nadpis**“ v texte; v zozname a v detaile ich ukazujeme každý na vlastnom riadku
+  function body(s) {
+    var r = [];
+    String(s.text || "").split("\n").forEach(function (l) {
+      var m = /^\*\*(\d{1,2})\.\s+(.+?)\*\*\s*$/.exec(l.trim());
+      if (m) r.push({ n: m[1], t: m[2] });
+    });
+    return r;
+  }
+  function cislo(t) { return String(t || "").replace(/^(Dopravn\S+ pr[ií]kaz č\. ?\d+\/\d+)\s*[–-].*$/i, "$1"); }
+
   function polozka(s, sekcia) {
-    var m = [sekcia, meta(s)].filter(Boolean).join(" · ");
-    return '<button class="spravy-it' + (s.precitana ? "" : " un") + '" data-id="' + esc(s.id) + '"><span class="spravy-it-t">' + esc(s.nadpis) + "</span>" + (m ? "<small>" + esc(m) + "</small>" : "") + "</button>";
+    var m = [sekcia, meta(s)].filter(Boolean).join(" · "), b = body(s);
+    return '<button class="spravy-it' + (s.precitana ? "" : " un") + '" data-id="' + esc(s.id) + '"><span class="spravy-it-t">' + esc(b.length ? cislo(s.nadpis) : s.nadpis) + "</span>" +
+      b.map(function (x) { return '<span class="spravy-it-b">' + esc(x.n + ". " + x.t) + "</span>"; }).join("") +
+      (m ? "<small>" + esc(m) + "</small>" : "") + "</button>";
   }
 
   // ---------- detail: prečítané po doskrolovaní na koniec
   function detail(s) {
-    var tel = esc(s.text).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[\s>])_([^_\n]+)_(?=$|[\s<.,;:])/g, "$1<i>$2</i>").replace(/!\[\]\(([\w.\-]+\.(?:png|jpe?g|gif|webp|bmp))\)/gi, '<span class="spravy-im" data-n="$1" role="button" tabindex="0"><em>Načítavam obrázok…</em></span>').replace(/\n/g, "<br>");
-    ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(s.nadpis) +
+    var tel = esc(s.text).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[\s>])_([^_\n]+)_(?=$|[\s<.,;:])/g, "$1<i>$2</i>").replace(/!\[\]\(([\w.\-]+\.(?:png|jpe?g|gif|webp|bmp))\)/gi, '<span class="spravy-im" data-n="$1" role="button" tabindex="0"><em>Načítavam obrázok…</em></span>').replace(/\n/g, "<br>").replace(/(^|<br>)<b>(\d{1,2})\.\s/g, '$1<b class="spravy-bod" data-b="$2">$2. ');
+    var bd = body(s);
+    var toc = bd.length > 1 ? '<div class="spravy-toc"><div class="spravy-toc-h">Body príkazu</div>' + bd.map(function (x) { return '<button type="button" class="spravy-toc-i" data-b="' + esc(x.n) + '"><b>' + esc(x.n) + '.</b> ' + esc(x.t) + "</button>"; }).join("") + "</div>" : "";
+    ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(bd.length ? cislo(s.nadpis) : s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +
       (s.original && s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="pdf">Zobraziť originál</button></div>' : "") +
-      '<div class="spravy-sc spravy-cl"><div class="spravy-art">' + (tel || "<span style=\"opacity:.6\">(bez textu)</span>") + "</div></div>" +
+      '<div class="spravy-sc spravy-cl"><div class="spravy-art">' + toc + (tel || "<span style=\"opacity:.6\">(bez textu)</span>") + "</div></div>" +
       (s.precitana ? "" : '<div class="spravy-pozn">Prečítané sa označí, keď doskroluješ na koniec ↓</div>') + "</div>";
     ov.querySelector(".spravy-x").onclick = zavri;
     ov.querySelector(".spravy-spat").onclick = function () { stav.detail = null; vykresli(); };
@@ -159,6 +174,12 @@
       };
     });
     ov.querySelectorAll(".spravy-im").forEach(nacitajObr);
+    ov.querySelectorAll(".spravy-toc-i").forEach(function (b) {
+      b.onclick = function () {
+        var el = ov.querySelector('.spravy-bod[data-b="' + b.getAttribute("data-b") + '"]'), sc0 = ov.querySelector(".spravy-cl");
+        if (el && sc0) sc0.scrollTo({ top: sc0.scrollTop + el.getBoundingClientRect().top - sc0.getBoundingClientRect().top - 8, behavior: "smooth" });
+      };
+    });
     var sc = ov.querySelector(".spravy-cl"), bar = ov.querySelector(".spravy-prog i"), pozn = ov.querySelector(".spravy-pozn"), hotovo = s.precitana;
     function over() {
       var max = sc.scrollHeight - sc.clientHeight, p = max <= 2 ? 1 : Math.min(1, sc.scrollTop / max);
