@@ -163,13 +163,14 @@
     ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(bd.length ? cislo(s.nadpis) : s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +
-      (s.original && s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="pdf">Zobraziť originál</button></div>' : "") +
+      (s.original && s.original.some(function (x) { return /\.(pdf|json)$/i.test(x); }) ? '<div class="spravy-orig-ln">' + (s.original.some(function (x) { return /\.json$/i.test(x); }) ? '<button type="button" class="spravy-orig spravy-cit" data-o="json">Čítať predpis</button> ' : "") + (s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<button type="button" class="spravy-orig" data-o="pdf">Zobraziť originál</button>' : "") + "</div>" : "") +
       '<div class="spravy-sc spravy-cl"><div class="spravy-art">' + toc + (tel || "<span style=\"opacity:.6\">(bez textu)</span>") + "</div></div>" +
       (s.precitana ? "" : '<div class="spravy-pozn">Prečítané sa označí, keď doskroluješ na koniec ↓</div>') + "</div>";
     ov.querySelector(".spravy-x").onclick = zavri;
     ov.querySelector(".spravy-spat").onclick = function () { stav.detail = null; vykresli(); };
     ov.querySelectorAll(".spravy-orig").forEach(function (b) {
       b.onclick = function () {
+        if (b.getAttribute("data-o") === "json") { if (window.DpbPredpis) DpbPredpis.otvor(s.original.filter(function (x) { return /\.json$/i.test(x); })[0], s.nadpis); return; }
         ukazOriginal(s.original.filter(function (x) { return /\.pdf$/i.test(x); })[0], s.nadpis, b);
       };
     });
@@ -210,6 +211,8 @@
     if (window.DpbDisk && DpbDisk.subor) return DpbDisk.subor(n);
     return fetch("./" + n).then(function (r) { if (!r.ok) throw new Error("nenájdené"); return r.blob(); });
   }
+  window.DpbSpravyFile = suborObr;
+  window.DpbZoom = function (u, p) { zoomObr(u, p); };
   function nacitajObr(el) {
     var n = el.getAttribute("data-n");
     el.innerHTML = "<em>Načítavam obrázok…</em>";
@@ -225,7 +228,7 @@
       el.onclick = function () { nacitajObr(el); };
     });
   }
-  function zoomObr(url) {
+  function zoomObr(url, pred) {
     var o = document.createElement("div");
     o.className = "spravy-zoom"; o.setAttribute("data-spat-prekryv", "1");
     o.innerHTML = '<img alt="" draggable="false"><button type="button" class="spravy-zx" aria-label="Zavrieť">✕</button><div class="spravy-zh">Dva prsty = zoom · ťukni dvakrát = priblížiť</div>';
@@ -265,8 +268,9 @@
     o.addEventListener("pointerup", koniec); o.addEventListener("pointercancel", koniec);
     o.addEventListener("wheel", function (e) { e.preventDefault(); zmen(k * (e.deltaY < 0 ? 1.2 : 1 / 1.2), e.clientX, e.clientY); }, { passive: false });
     o.querySelector(".spravy-zx").onclick = function () { o.remove(); };
+    o.addEventListener("click", function (e) { if (e.target === o && e.detail === 0) o.remove(); });
     im.addEventListener("load", pouzi);
-    document.body.insertBefore(o, ov || null);   // pred správami: Späť zatvorí najprv obrázok
+    document.body.insertBefore(o, pred || ov || null);   // pred správami: Späť zatvorí najprv obrázok
   }
 
   // originál príkazu (PDF): stiahne sa z Disku Google a otvorí vo vlastnom okne

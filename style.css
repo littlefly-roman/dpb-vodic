@@ -4053,3 +4053,35 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .spravy-toc-i{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-size:15px;line-height:1.35;padding:8px 2px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .spravy-toc-i:active{background:rgba(128,128,128,.15)}
 .spravy-toc-i b{font-weight:700}
+
+/* ===== Čítač predpisu ===== */
+.spravy-cit{font-weight:700}
+.pr-ov{position:fixed;inset:0;z-index:2100;background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch}
+.pr-ov.pr-rd{display:flex;flex-direction:column;overflow:hidden;z-index:2110}
+.pr-hl{position:sticky;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px;background:var(--surface);border-bottom:1px solid var(--border-2);flex:none}
+.pr-hl b{flex:1;font-size:16px;line-height:1.25}
+.pr-hl button{border:0;background:none;color:inherit;font-size:22px;width:38px;height:38px;border-radius:50%;cursor:pointer}
+.pr-sr{padding:10px 12px;position:sticky;top:60px;z-index:2;background:var(--bg)}
+.pr-sr input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid var(--border-2);font-size:16px;background:var(--surface);color:inherit}
+.pr-wr{padding:0 12px calc(30px + env(safe-area-inset-bottom,0px))}
+.pr-cast{background:var(--surface);border-radius:14px;margin:9px 0;overflow:hidden}
+.pr-cast>button{all:unset;box-sizing:border-box;display:flex;width:100%;padding:14px;gap:8px;cursor:pointer;align-items:center}
+.pr-cast>button b{flex:1;font-size:15px}.pr-cast>button small{color:var(--text-3)}
+.pr-pl button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 14px;border-top:1px solid var(--border-2);font-size:15px;cursor:pointer}
+.pr-pl button b{display:inline-block;min-width:48px;color:var(--text-3);font-weight:600}
+.pr-hit{background:var(--surface);border-radius:12px;padding:11px 14px;margin:8px 0;cursor:pointer;font-size:14.5px}
+.pr-hit h6{margin:0 0 3px;font-size:12px;color:var(--text-3);font-weight:600}
+.pr-ov mark{background:#ffd84d;color:#000;border-radius:3px;padding:0 1px}
+.pr-cnt{color:var(--text-3);font-size:13.5px;padding:8px 2px}
+.pr-znova{border:0;background:none;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
+.pr-rdb{flex:1;overflow:auto;padding:8px 12px 14px;-webkit-overflow-scrolling:touch;position:relative}
+.pr-cs{font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin:6px 0 2px}
+.pr-rdb h1{font-size:21px;margin:0 0 10px}
+.pr-art{background:var(--surface);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.5}
+.pr-it{margin:0 0 10px;padding-left:34px;text-indent:-34px}.pr-it b{display:inline-block;min-width:30px;text-indent:0;font-weight:700}
+.pr-l2{padding-left:60px;text-indent:-26px}.pr-l3{padding-left:76px;text-indent:-16px;color:var(--text-2)}.pr-l0{padding-left:0;text-indent:0}
+.pr-im{display:block;margin:8px 0 6px;text-align:center;cursor:zoom-in}.pr-im img{max-width:100%;border:1px solid var(--border-2);border-radius:8px;background:#fff}
+.pr-im small{display:block;color:var(--text-3);font-size:12px;margin-top:2px}
+.pr-nv{flex:none;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border-2)}
+.pr-nv button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--border-2);background:var(--bg);font-size:15px;color:inherit;cursor:pointer}
+.pr-nv button:disabled{opacity:.35}
