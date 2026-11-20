@@ -531,7 +531,8 @@
             if (window.DpbZmenaStavu && window.DpbZmenaStavu.ukaz) window.DpbZmenaStavu.ukaz(riadky.join("\n"), "Žiadosť o službu z burzy");
           } catch (e) {}
 
-          simulujSchvalenie(rez.id);
+          // Simulácia odpovede je odpojená: rezervácia ostáva „odoslaná“, kým ju nezmení reálna odpoveď zo servera.
+          // (funkcia simulujSchvalenie je ponechaná vyššie len ako vzor pre napojenie servera)
         }
 
         function zrusRezervaciju(rezId) {
