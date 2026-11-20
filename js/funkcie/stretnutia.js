@@ -110,6 +110,11 @@
 
   // Kto jazdí kurz ("3/12") v čase t (sekundy) podľa CSV; vráti { meno, rid, vozidlo } alebo null
   function vodicKurzu(dateKey, kurz, t) {
+    // jediné pravidlo „kto jazdí kurz v danom čase“ je v kurz-obsadenie.js (striedač, striedač na prestávke, hradenia, SLUŽBA)
+    if (window.DpbKurzKto) {
+      var r = window.DpbKurzKto.kto(kurz, dateKey, t);
+      return r && r.meno ? { meno: r.meno, rid: r.rid, voz: r.voz } : (r ? { meno: "", rid: "", voz: r.voz } : null);
+    }
     var D = window.DPBData;
     var m = (function () {
       var c = _cache["csv|" + dateKey];
