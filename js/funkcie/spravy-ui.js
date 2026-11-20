@@ -137,18 +137,15 @@
     });
     ov.querySelectorAll("[data-id]").forEach(function (b) { b.onclick = function () { stav.detail = b.getAttribute("data-id"); vykresli(); }; });
   }
-  // dopravné príkazy: v zozname a v hlavičke len „Dopravný príkaz č. X/rok“ (bez dodatku za pomlčkou), aby boli všetky rovnaké
-  function nadp(t) { return String(t || "").replace(/^(Dopravn\S+ pr[ií]kaz č\. ?\d+\/\d+)\s*[–-].*$/i, "$1"); }
-
   function polozka(s, sekcia) {
     var m = [sekcia, meta(s)].filter(Boolean).join(" · ");
-    return '<button class="spravy-it' + (s.precitana ? "" : " un") + '" data-id="' + esc(s.id) + '"><span class="spravy-it-t">' + esc(nadp(s.nadpis)) + "</span>" + (m ? "<small>" + esc(m) + "</small>" : "") + "</button>";
+    return '<button class="spravy-it' + (s.precitana ? "" : " un") + '" data-id="' + esc(s.id) + '"><span class="spravy-it-t">' + esc(s.nadpis) + "</span>" + (m ? "<small>" + esc(m) + "</small>" : "") + "</button>";
   }
 
   // ---------- detail: prečítané po doskrolovaní na koniec
   function detail(s) {
     var tel = esc(s.text).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[\s>])_([^_\n]+)_(?=$|[\s<.,;:])/g, "$1<i>$2</i>").replace(/!\[\]\(([\w.\-]+\.(?:png|jpe?g|gif|webp|bmp))\)/gi, '<span class="spravy-im" data-n="$1" role="button" tabindex="0"><em>Načítavam obrázok…</em></span>').replace(/\n/g, "<br>");
-    ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(nadp(s.nadpis)) +
+    ov.innerHTML = '<div class="spravy-modal"><div class="spravy-mh"><button class="spravy-spat" aria-label="Späť">‹</button><b class="spravy-dn">' + esc(s.nadpis) +
       '</b><button class="spravy-x" aria-label="Zavrieť">✕</button></div>' +
       '<div class="spravy-meta">' + [esc(s.sekcia), esc(meta(s))].filter(Boolean).join(" · ") + '</div><div class="spravy-prog"><i></i></div>' +
       (s.original && s.original.some(function (x) { return /\.pdf$/i.test(x); }) ? '<div class="spravy-orig-ln"><button type="button" class="spravy-orig" data-o="pdf">Zobraziť originál</button></div>' : "") +
