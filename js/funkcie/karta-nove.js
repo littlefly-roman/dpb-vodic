@@ -486,15 +486,15 @@
       var cs = t.map(function () { var i = document.createElement("i"); box.appendChild(i); return i; });
       var men = card.querySelector(":scope > .driver-section.before");   // meno striedaného je nad pásom
       card.insertBefore(box, men ? men.nextSibling : card.firstChild);
-      var dnes = jeDnes(service), tm = null;
+      var dnes = jeDnes(service), minulost = !dnes && String(service.date || "") < dnesKluc(), tm = null;
       function obnov() {
         clearTimeout(tm);
         if (!box.isConnected) return;
         var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
         if (sec + 43200 < t[0].a) sec += 86400;
-        var bezi = -1;
-        if (dnes) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
-        cs.forEach(function (c, i) { c.className = (t[i].str ? (t[i].str === true ? "str " : t[i].str) : "") + (dnes && sec >= t[i].b ? "hotovo" : (i === bezi ? "bezi" : "")); });
+        var bezi = -1;   // pri službe pás začne dýchať až od prvého odchodu
+        if (dnes && (vz === "STRIEDAČ" || sec >= t[0].a)) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
+        cs.forEach(function (c, i) { c.className = (t[i].str ? (t[i].str === true ? "str " : t[i].str) : "") + (minulost || (dnes && sec >= t[i].b) ? "hotovo" : (i === bezi ? "bezi" : "")); });
         if (vz === "STRIEDAČ") {   // rovnaké zvýraznenie aj v zozname striedaní: prebiehajúce / najbližšie = červené a dýcha
           var riadky = card.querySelectorAll(".str-row");
           for (var r = 0; r < riadky.length; r++) riadky[r].classList.toggle("str-teraz", bezi >= 0 && t[bezi].i === r);
