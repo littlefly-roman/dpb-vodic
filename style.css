@@ -4095,3 +4095,7 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 @keyframes dep-dych{0%,100%{opacity:.3}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.dep-strip i.bezi{animation:none}}
 .dep-strip i.str{background:#f08c00}
+.str-row.str-teraz .str-main{animation:dep-dych-t 2.6s ease-in-out infinite}
+.str-row.str-teraz .str-kurz,.str-row.str-teraz .str-cas,.str-row.str-teraz .str-voz{color:var(--red-text,var(--red)) !important;font-weight:800 !important}
+@keyframes dep-dych-t{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.str-row.str-teraz .str-main{animation:none}}

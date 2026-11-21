@@ -469,7 +469,7 @@
     var DS = window.DpbStretnutia, zdroj;
     function kon(t, a) { var b = sekOd(t); return b <= a ? b + 86400 : b; }
     if (vz === "STRIEDAČ") {
-      zdroj = Promise.resolve((service._kurzy || k.kurzy || []).map(function (r) { var a = sekOd(r.prebera); return /\d/.test(String(r.prebera || "")) && /\d/.test(String(r.odovzdava || "")) ? { a: a, b: kon(r.odovzdava, a) } : null; }).filter(Boolean).sort(function (x, y) { return x.a - y.a; }));
+      zdroj = Promise.resolve((service._kurzy || k.kurzy || []).map(function (r, idx) { var a = sekOd(r.prebera); return /\d/.test(String(r.prebera || "")) && /\d/.test(String(r.odovzdava || "")) ? { a: a, b: kon(r.odovzdava, a), i: idx } : null; }).filter(Boolean).sort(function (x, y) { return x.a - y.a; }));
     } else if (k.kurz && DS && DS.odchodyPruh) {
       zdroj = DS.odchodyPruh(k.kurz, service.date, k.od, k.do).then(function (l) {
         var okna = ((service._upoz && service._upoz.prestavkaOkna) || (k["prestávka"] || []).map(function (w) { return { od: w.prebera, "do": w.odovzdava }; })).map(function (w) { var a = sekOd(w.od); return /\d/.test(String(w.od || "")) ? [a, kon(w["do"], a)] : null; }).filter(Boolean);
@@ -490,6 +490,10 @@
         var bezi = -1;
         if (dnes) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
         cs.forEach(function (c, i) { c.className = (t[i].str ? "str " : "") + (dnes && sec >= t[i].b ? "hotovo" : (i === bezi ? "bezi" : "")); });
+        if (vz === "STRIEDAČ") {   // rovnaké zvýraznenie aj v zozname striedaní: prebiehajúce / najbližšie = červené a dýcha
+          var riadky = card.querySelectorAll(".str-row");
+          for (var r = 0; r < riadky.length; r++) riadky[r].classList.toggle("str-teraz", bezi >= 0 && t[bezi].i === r);
+        }
         if (dnes) tm = setTimeout(obnov, 20000);
       }
       document.addEventListener("visibilitychange", function () { if (!document.hidden) obnov(); });
