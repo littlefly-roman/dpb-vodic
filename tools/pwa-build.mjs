@@ -26,6 +26,7 @@ function dajSubory(dir, pred = () => true) {
   return out;
 }
 for (const p of dajSubory(path.join(koren, "img"))) shell.add(path.relative(koren, p).split(path.sep).join("/"));
+for (const p of dajSubory(path.join(koren, "fonts"), (x) => x.endsWith(".woff2"))) shell.add(path.relative(koren, p).split(path.sep).join("/"));
 const shellList = [...shell].filter((u) => fs.existsSync(path.join(koren, u.split("?")[0])));
 const chybajuce = [...shell].filter((u) => !fs.existsSync(path.join(koren, u.split("?")[0])));
 if (chybajuce.length) console.warn("Preskočené (neexistujú):", chybajuce.join(", "));
