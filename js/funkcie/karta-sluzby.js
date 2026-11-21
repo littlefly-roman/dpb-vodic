@@ -912,6 +912,7 @@
                       };
                     });
                   })();
+            service._kurzy = _kurzy;   // pre pruh odchodov na karte
             if (_kurzy.length) {
               // „V premávke“ pre zvonček = začiatok prvého striedania
               (function () {
@@ -1113,6 +1114,13 @@
           if (aft) card.appendChild(aft);
           attachMenu(card, mb, service);
           return card;
+        };
+        // pruh odchodov na vrchu karty (SLUŽBA / STRIEDAČ)
+        var _buildNewCard = window.buildNewCard;
+        window.buildNewCard = function (service) {
+          var c = _buildNewCard(service);
+          try { if (window.DpbKartaNove && window.DpbKartaNove.pruh) window.DpbKartaNove.pruh(service, c); } catch (e) {}
+          return c;
         };
       })();
     

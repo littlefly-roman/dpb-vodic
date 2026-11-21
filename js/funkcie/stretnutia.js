@@ -379,6 +379,33 @@
     return out.map(function (x) { return { cas: x.cas, od: x.od, nazov: x.nazov }; });
   }
 
+  // Odchody pre pruh na karte: jazdy kurzu v rozsahu služby, BEZ výjazdu a príjazdu do depa (jazda s dvoma zastávkami, ktorá začína alebo končí v Dp.).
+  // Vráti [{ a, b }] (sekundy: odchod z konečnej, príchod na druhý koniec), zoradené.
+  async function odchodyPruh(kurz, dateKey, od, do_) {
+    var d = await nacitajObehy(dateKey);
+    if (!d) return [];
+    var p = String(kurz).split("/");
+    if (!p[1]) return [];
+    var obeh = d.obehy[String(p[0]).padStart(3, "0") + String(p[1]).padStart(2, "0") + d.typ];
+    if (!obeh) return [];
+    var odS = typeof od === "number" ? od : sek(od), doS = typeof do_ === "number" ? do_ : sek(do_);
+    if (odS == null || doS == null) return [];
+    if (doS <= odS) doS += 86400;
+    var out = [];
+    obeh.forEach(function (sp) {
+      // výjazd a príjazd = jazda len s dvoma zastávkami, ktorá začína alebo končí v depe (Dp.)
+      if (sp.stops.length <= 2 && sp.stops.some(function (z) { return /^(Dp|Depo)[.\s]/i.test(String(nazovStanice(d.stanice, z.st) || "")); })) return;
+      var t0 = cas(sp.stops[0]), t1 = prich(sp.stops[sp.stops.length - 1]);
+      if (t0 == null || t1 == null) return;
+      var sh = t0 < odS && t0 + 86400 >= odS ? 86400 : 0, a = t0 + sh, b = t1 + sh;
+      if (b < a) b += 86400;
+      if (a < odS || a >= doS) return;
+      out.push({ a: a, b: b });
+    });
+    out.sort(function (x, y) { return x.a - y.a; });
+    return out;
+  }
+
   // Výjazd z depa: ak prvý spoj služby začína na zastávke Dp./Depo, vráti { cas:"H:MM:SS", sek }, inak null.
   async function vyjazdZDepa(kurz, dateKey, od, do_) {
     var d = await nacitajObehy(dateKey);
@@ -427,5 +454,5 @@
     }).sort(function (x, y) { return x.a - y.a; });
   }
 
-  window.DpbStretnutia = { vyjazdZDepa: vyjazdZDepa, segmentyStriedaca: segmentyStriedaca, odchodyZKonecnej: odchodyZKonecnej, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
+  window.DpbStretnutia = { vyjazdZDepa: vyjazdZDepa, segmentyStriedaca: segmentyStriedaca, odchodyZKonecnej: odchodyZKonecnej, odchodyPruh: odchodyPruh, najdi: najdi, poloha: poloha, miesto: miesto, _t: { nacitajObehy: nacitajObehy, spojeObehu: spojeObehu, stretnutiaSpojov: stretnutiaSpojov, cas: cas, prich: prich } };
 })();

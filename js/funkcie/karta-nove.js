@@ -461,6 +461,42 @@
       else if (pokusy > 25 || !stav) clearInterval(t);
     }, 150);
   }
+  // Pruh odchodov na vrchu karty: SLUŽBA = odchody z konečných (bez výjazdu a príjazdu), STRIEDAČ = jednotlivé striedania.
+  // Odchody počas prestávky vodiča (robí ich striedač) sú oranžové. Čiarky na začiatku svietia všetky, odbehnuté zhasínajú, práve prebiehajúca (alebo najbližšia nasledujúca) „dýcha“.
+  function pruh(service, card) {
+    var k = (service && service._karta) || {}, vz = service && service._vzor;
+    if (!card || (vz !== "SLUŽBA" && vz !== "STRIEDAČ")) return;
+    var DS = window.DpbStretnutia, zdroj;
+    function kon(t, a) { var b = sekOd(t); return b <= a ? b + 86400 : b; }
+    if (vz === "STRIEDAČ") {
+      zdroj = Promise.resolve((service._kurzy || k.kurzy || []).map(function (r) { var a = sekOd(r.prebera); return /\d/.test(String(r.prebera || "")) && /\d/.test(String(r.odovzdava || "")) ? { a: a, b: kon(r.odovzdava, a) } : null; }).filter(Boolean).sort(function (x, y) { return x.a - y.a; }));
+    } else if (k.kurz && DS && DS.odchodyPruh) {
+      zdroj = DS.odchodyPruh(k.kurz, service.date, k.od, k.do).then(function (l) {
+        var okna = ((service._upoz && service._upoz.prestavkaOkna) || (k["prestávka"] || []).map(function (w) { return { od: w.prebera, "do": w.odovzdava }; })).map(function (w) { var a = sekOd(w.od); return /\d/.test(String(w.od || "")) ? [a, kon(w["do"], a)] : null; }).filter(Boolean);
+        return (l || []).map(function (x) { x.str = okna.some(function (w) { return x.a >= w[0] && x.a < w[1]; }); return x; });   // odchody počas prestávky robí striedač: oranžové
+      });
+    } else return;
+    zdroj.then(function (t) {
+      if (!t || !t.length) return;
+      var box = document.createElement("div"); box.className = "dep-strip"; box.setAttribute("aria-hidden", "true");
+      var cs = t.map(function () { var i = document.createElement("i"); box.appendChild(i); return i; });
+      card.insertBefore(box, card.firstChild);
+      var dnes = jeDnes(service), tm = null;
+      function obnov() {
+        clearTimeout(tm);
+        if (!box.isConnected) return;
+        var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
+        if (sec + 43200 < t[0].a) sec += 86400;
+        var bezi = -1;
+        if (dnes) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
+        cs.forEach(function (c, i) { c.className = (t[i].str ? "str " : "") + (dnes && sec >= t[i].b ? "hotovo" : (i === bezi ? "bezi" : "")); });
+        if (dnes) tm = setTimeout(obnov, 20000);
+      }
+      document.addEventListener("visibilitychange", function () { if (!document.hidden) obnov(); });
+      obnov();
+    }).catch(function () {});
+  }
+
   function ozdob(ctx) {
     var gm = document.getElementById("grafikonModal");
     if (!gm || !ctx) return;
@@ -551,7 +587,7 @@
     s.obs.observe(gm, { attributes: true, attributeFilter: ["class"] });
   }
 
-  window.DpbKartaNove = { volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, vozOkno: vozOknoTeraz, vozOknoMozne: vozOknoMozne, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
+  window.DpbKartaNove = { pruh: pruh, volne: volne, ozdob: ozdob, osoba: osoba, meno: meno, zvonec: zvonec, vozOkno: vozOknoTeraz, vozOknoMozne: vozOknoMozne, ziadosti: ziadosti, upozornenia: upozornenia, svg: svg };
   // Podržanie prsta nesmie otvárať menu prehliadača (okrem polí na písanie)
   document.addEventListener("contextmenu", function (e) {
     var t = e.target;
