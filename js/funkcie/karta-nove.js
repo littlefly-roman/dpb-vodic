@@ -491,9 +491,9 @@
         clearTimeout(tm);
         if (!box.isConnected) return;
         var n = new Date(), sec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
-        if (sec + 43200 < t[0].a) sec += 86400;
-        var bezi = -1;   // pri službe pás začne dýchať až od prvého odchodu
-        if (dnes && (vz === "STRIEDAČ" || sec >= t[0].a)) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
+        if (sec + 43200 < t[0].a && sec + 86400 < t[t.length - 1].b) sec += 86400;   // po polnoci len pri jazde, ktorá ešte beží
+        var bezi = -1;   // pás začne dýchať až od začiatku grafikonu: pri službe prvý odchod, pri striedačovi nástup služby
+        if (dnes && sec >= (vz === "STRIEDAČ" ? sekOd(((service._karta || {}).od) || "") : t[0].a)) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
         cs.forEach(function (c, i) { c.className = (t[i].str ? (t[i].str === true ? "str " : t[i].str) : "") + (minulost || (dnes && sec >= t[i].b) ? "hotovo" : (i === bezi ? "bezi" : "")); });
         if (vz === "STRIEDAČ") {   // rovnaké zvýraznenie aj v zozname striedaní: prebiehajúce / najbližšie = červené a dýcha
           var riadky = card.querySelectorAll(".str-row");
