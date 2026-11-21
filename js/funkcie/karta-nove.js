@@ -484,7 +484,8 @@
       if (!t || !t.length) return;
       var box = document.createElement("div"); box.className = "dep-strip"; box.setAttribute("aria-hidden", "true");
       var cs = t.map(function () { var i = document.createElement("i"); box.appendChild(i); return i; });
-      card.insertBefore(box, card.firstChild);
+      var men = card.querySelector(":scope > .driver-section.before");   // meno striedaného je nad pásom
+      card.insertBefore(box, men ? men.nextSibling : card.firstChild);
       var dnes = jeDnes(service), tm = null;
       function obnov() {
         clearTimeout(tm);
