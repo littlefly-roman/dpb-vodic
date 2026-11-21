@@ -473,7 +473,11 @@
     } else if (k.kurz && DS && DS.odchodyPruh) {
       zdroj = DS.odchodyPruh(k.kurz, service.date, k.od, k.do).then(function (l) {
         var okna = ((service._upoz && service._upoz.prestavkaOkna) || (k["prestávka"] || []).map(function (w) { return { od: w.prebera, "do": w.odovzdava }; })).map(function (w) { var a = sekOd(w.od); return /\d/.test(String(w.od || "")) ? [a, kon(w["do"], a)] : null; }).filter(Boolean);
-        return (l || []).map(function (x) { x.str = okna.some(function (w) { return x.a >= w[0] && x.a < w[1]; }); return x; });   // odchody počas prestávky robí striedač: oranžové
+        return (l || []).map(function (x) {   // x.a = odchod, x.b = príchod na konečnú: celý v okne = celá modrá, len odchod = ľavá polovica, len príchod = pravá polovica
+            var o = okna.some(function (w) { return x.a >= w[0] && x.a < w[1]; }), p = okna.some(function (w) { return x.b > w[0] && x.b <= w[1]; });
+            x.str = o && p ? "str " : o ? "str str-l " : p ? "str str-p " : "";
+            return x;
+          });   // odchody počas prestávky robí striedač: oranžové
       });
     } else return;
     zdroj.then(function (t) {
@@ -489,7 +493,7 @@
         if (sec + 43200 < t[0].a) sec += 86400;
         var bezi = -1;
         if (dnes) { for (var i = 0; i < t.length; i++) if (t[i].a <= sec && sec < t[i].b) { bezi = i; break; } if (bezi < 0) for (i = 0; i < t.length; i++) if (t[i].a > sec) { bezi = i; break; } }
-        cs.forEach(function (c, i) { c.className = (t[i].str ? "str " : "") + (dnes && sec >= t[i].b ? "hotovo" : (i === bezi ? "bezi" : "")); });
+        cs.forEach(function (c, i) { c.className = (t[i].str ? (t[i].str === true ? "str " : t[i].str) : "") + (dnes && sec >= t[i].b ? "hotovo" : (i === bezi ? "bezi" : "")); });
         if (vz === "STRIEDAČ") {   // rovnaké zvýraznenie aj v zozname striedaní: prebiehajúce / najbližšie = červené a dýcha
           var riadky = card.querySelectorAll(".str-row");
           for (var r = 0; r < riadky.length; r++) riadky[r].classList.toggle("str-teraz", bezi >= 0 && t[bezi].i === r);

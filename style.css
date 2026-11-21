@@ -4111,3 +4111,6 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .dep-strip i.str{background:#1c6ef2}
 .service-card .driver-section{font-size:1.5em}
 .service-card .driver-section .arrow svg{width:26px;height:26px}
+
+.dep-strip i.str-l{background:linear-gradient(90deg,#1c6ef2 50%,var(--red,#e2001a) 50%)}
+.dep-strip i.str-p{background:linear-gradient(90deg,var(--red,#e2001a) 50%,#1c6ef2 50%)}
