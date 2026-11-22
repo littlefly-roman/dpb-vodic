@@ -4166,3 +4166,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .header-logo-btn,.theme-btn,.notif-btn,.app-header button{color:var(--red-text)}
 .app-header span{color:var(--red-text) !important}
 .notif-badge{border:2px solid var(--surface)}
+
+/* spodné menu: biele, červené ikony; aktívna položka jemným červeným podkladom */
+.bottom-nav{box-shadow:none;border-top:1px solid var(--border-2);background:var(--surface)}
+.bottom-nav button.active{background:rgba(232,0,26,.10);color:var(--red-text)}
+.bottom-nav button.active .nav-label{color:var(--red-text)}
+:root[data-theme=dark] .bottom-nav button.active{background:rgba(244,86,106,.16)}
