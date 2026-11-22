@@ -4210,3 +4210,15 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 :root[data-theme=dark] .gm-sheet .live-badge{color:#fff !important;background:rgba(255,255,255,.12) !important}
 :root[data-theme=dark] #grafikonContent .grafikon-row.teraz *{color:#fff !important}
 :root[data-theme=dark] #grafikonModal #closeGrafikon,:root[data-theme=dark] #grafikonModal .grafikon-footer *{color:#fff !important}
+
+/* Sivé menu, tenší dátum, karta bez tieňa */
+html{background:var(--surface) !important}
+.bottom-nav button{color:var(--text-3) !important}
+.bottom-nav button .nav-label{color:var(--text-3) !important}
+.bottom-nav button.active,.bottom-nav button.active .nav-label{color:var(--red-text) !important}
+.bottom-nav button.active{background:rgba(232,0,26,.08) !important}
+:root[data-theme=dark] .bottom-nav button,:root[data-theme=dark] .bottom-nav button .nav-label{color:var(--text-3) !important}
+:root[data-theme=dark] .bottom-nav button.active,:root[data-theme=dark] .bottom-nav button.active .nav-label{color:#fff !important}
+.section-header.je-dnes .date-day,.section-header.je-dnes .date-date{font-weight:500 !important}
+.section-header .date-day,.section-header .date-date{font-weight:400 !important}
+.service-card{box-shadow:none !important}
