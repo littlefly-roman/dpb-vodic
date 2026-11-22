@@ -1261,7 +1261,8 @@ function dpbDenJednaNepritomnost(arr) {
             if (window.DpbKalZnacky) DpbKalZnacky.pridaj(cell, appState.servicesByDate[key] || []);
             else if ((appState.servicesByDate[key] || []).length > 0) cell.classList.add("has-service");
             if (Calendar.isHoliday(cellDate)) cell.classList.add("is-holiday");
-            else if (cellDate.getDay() === 0 || cellDate.getDay() === 6) cell.classList.add("is-weekend");
+            // sviatok (deň pracovného pokoja) aj víkend majú zelený podklad – aj keď sa prekrývajú
+            if (Calendar.isHoliday(cellDate) || cellDate.getDay() === 0 || cellDate.getDay() === 6) cell.classList.add("is-weekend");
             cell.addEventListener("click", () => {
               appState.selectedDate = cellDate;
               appState.viewMode = "cards";

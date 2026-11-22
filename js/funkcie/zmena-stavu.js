@@ -145,7 +145,7 @@
           if (key === dnes) c.classList.add("today");
           if (window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) c.classList.add("is-holiday");
           var zakaz = o.min && key < o.min;
-          if (o.rozsahOd && o.hodnota && key >= o.rozsahOd && key <= o.hodnota) c.style.background = "rgba(220,40,40,.12)";
+          if (o.rozsahOd && o.hodnota && key >= o.rozsahOd && key <= o.hodnota) c.style.background = "rgba(120,120,128,.2)";
           if (key === o.hodnota) c.classList.add("selected");
           if (window.DpbKalZnacky) DpbKalZnacky.pridaj(c, DpbKalZnacky.nacitaj(rid, key));
           if (zakaz) c.style.opacity = "0.3";
@@ -219,7 +219,7 @@
           if (key === dnes) c.classList.add("today");
           if (window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) c.classList.add("is-holiday");
           var zakaz = st.akt === "do" && st.od && key < st.od;
-          if (st.od && st.do && key >= st.od && key <= st.do) c.style.background = "rgba(220,40,40,.12)";
+          if (st.od && st.do && key >= st.od && key <= st.do) c.style.background = "rgba(120,120,128,.2)";
           if (key === st[st.akt]) c.classList.add("selected");
           if (window.DpbKalZnacky) DpbKalZnacky.pridaj(c, DpbKalZnacky.nacitaj(rid, key));
           if (zakaz) c.style.opacity = "0.3";
