@@ -323,12 +323,12 @@
       r1.push("Žiadam o pridelenie služby v tento deň: " + (st.sluzba ? "áno" : "nie"));
     } else if (!st.od && st.do) {
       r1.push("Hlásim koniec – Do: " + kratko(st.do));
-    } else if (st.kind === "lekar" && st.od) {
+    } else if ((st.kind === "lekar" || st.jenDen) && st.od) {
       r1.push("Dátum: " + kratko(st.od));
     } else if (st.od) {
       r1.push("Od: " + kratko(st.od));
       if (st.do) r1.push("Do: " + kratko(st.do) + (st.do === st.od ? "" : ""));
-      else if (st.kind !== "lekar") r1.push("Do: zatiaľ neznáme");
+      else if (st.kind !== "lekar" && !st.jenDen) r1.push("Do: zatiaľ neznáme");
     } else r1.push("Dátum: " + kratko(ctx.date));
     if (st.poznamka) r1.push("Poznámka: " + st.poznamka);
     return r1.join("\n");
@@ -894,60 +894,93 @@
   // Žiadosti z menu karty: jedno okno so záložkami „Zmena stavu“ | „Zmena služby“.
   // Zmena stavu: zoznam typov, po ťuknutí sa rozbalí formulár (Od/Do + kalendár) priamo v okne.
   // Dole: Odoslať žiadosť | Zrušiť. (Vrstvenie viacerých žiadostí sa môže doplniť neskôr.)
-  var TYPY_STAVU = [
-    { kod: "dovolenka", nazov: "Dovolenka", doPovinne: true },
-    { kod: "pn", nazov: "PN", doPovinne: false, nepovinneOd: true },
-    { kod: "lekar", nazov: "Lekár", jenDen: true },
-    { kod: "volno", nazov: "Voľno", doPovinne: true },
-    { kod: "ine", nazov: "Iné", doPovinne: true, poznamka: true },
+  // Skupiny: každá má záložky (vybrať sa dá len jedna); typy s `pol` majú prepínač Celý deň | Pol dňa.
+  var SKUPINY_STAVU = [
+    { nazov: "Dovolenka / Voľno", typy: [
+      { kod: "dovolenka", nazov: "Dovolenka", doPovinne: true, pol: true },
+      { kod: "volno", nazov: "Voľno", doPovinne: true, pol: true } ] },
+    { nazov: "Lekár / Sprievod", typy: [
+      { kod: "lekar", nazov: "Lekár", jenDen: true, pol: true },
+      { kod: "sprievod", nazov: "Sprievod", jenDen: true, pol: true } ] },
+    { nazov: "PN / OČR", typy: [
+      { kod: "pn", nazov: "PN", doPovinne: false, nepovinneOd: true },
+      { kod: "ocr", nazov: "OČR", doPovinne: false, nepovinneOd: true } ] },
+    { nazov: "Iné", typy: [ { kod: "ine", nazov: "Iné", doPovinne: true, poznamka: true } ] },
   ];
+  // jedno políčko (záložka) skupiny: Od/Do alebo len deň, poznámka, kontrola
+  function stavTyp(ctx, ty, pol) {
+    var jenDen = !!ty.jenDen || !!pol;
+    var telo = el("div", "");
+    var roz = rozsahDatumov(ctx.date, { doPovinne: ty.doPovinne && !pol, jenDen: jenDen, nepovinneOd: ty.nepovinneOd });
+    telo.appendChild(roz.el);
+    var pz = null;
+    if (ty.poznamka) {
+      telo.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
+      pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); telo.appendChild(pz);
+    }
+    if (ty.nepovinneOd) telo.appendChild(el("div", "font-size:0.875rem;color:var(--text-2);margin-top:10px", "Zadaj začiatok " + ty.nazov + ", koniec " + ty.nazov + ", alebo oboje (aspoň jedno)."));
+    return { el: telo, zber: function () {
+      var od = roz.od(), dod = roz.do();
+      if (ty.nepovinneOd) {
+        if (!od && !dod) return { chyba: "Zadaj začiatok alebo koniec (aspoň jeden)." };
+      } else if (!od) return { chyba: "Zadaj dátum." };
+      if (ty.doPovinne && !pol && !dod) return { chyba: "Zadaj koniec." };
+      if (od && dod && dod < od) return { chyba: "Koniec nemôže byť pred začiatkom." };
+      if (pz && !pz.value.trim()) return { chyba: "Popíš dôvod." };
+      return { polozka: { t: "stav", kind: ty.kod, nazov: ty.nazov + (pol ? " 1/2 dňa" : ""), od: od, do: jenDen ? "" : (dod || ""), jenDen: jenDen, poznamka: pz ? pz.value.trim() : "" } };
+    } };
+  }
+  function prepinac(moznosti, vybrane, zmena) {
+    var kor = el("div", "display:flex;background:var(--surface);border-radius:10px;padding:3px;margin-bottom:12px");
+    var bt = [];
+    moznosti.forEach(function (m, i) {
+      var b = el("button", "flex:1;padding:8px;border:0;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-2)", m);
+      b.type = "button";
+      b.addEventListener("click", function () { if (vybrane === i) return; vybrane = i; kresli(); zmena(i); });
+      bt.push(b); kor.appendChild(b);
+    });
+    function kresli() { bt.forEach(function (b, i) { var on = i === vybrane; b.style.background = on ? "var(--surface-2)" : "transparent"; b.style.color = on ? "var(--text-1)" : "var(--text-2)"; b.style.boxShadow = on ? "0 1px 3px rgba(0,0,0,.25)" : "none"; }); }
+    kresli();
+    return kor;
+  }
   function stavPanel(ctx, zmena) {
     var kor = el("div", "");
-    var riadky = [], otvorene = null, aktivny = null;
-    TYPY_STAVU.forEach(function (ty) {
+    var riadky = [], otvorena = null;
+    SKUPINY_STAVU.forEach(function (sk) {
       var r = el("div", "margin-bottom:8px;border-radius:14px;background:var(--surface-2);overflow:hidden");
       var h = el("button", "display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:none;border:0;color:var(--text-1);font-size:1rem;font-weight:600;cursor:pointer;text-align:left");
       h.type = "button";
-      var nz = el("span", "", ty.nazov);
       var sip = el("span", "color:var(--text-3);font-size:1.25rem;transition:transform .15s", "›");
-      h.appendChild(nz); h.appendChild(sip);
+      h.appendChild(el("span", "", sk.nazov)); h.appendChild(sip);
       var telo = el("div", "display:none;padding:0 14px 14px");
-      var f = null;
+      var zalozka = 0, pol = 0, hotovo = false, obsah = el("div", ""), aktivny = null;
+      function prekresli() {
+        obsah.innerHTML = "";
+        var ty = sk.typy[zalozka];
+        if (ty.pol) obsah.appendChild(prepinac(["Celý deň", "Pol dňa"], pol, function (i) { pol = i; prekresli(); zmena && zmena(); }));
+        aktivny = stavTyp(ctx, ty, ty.pol && pol === 1);
+        obsah.appendChild(aktivny.el);
+      }
       function postav() {
-        var roz = rozsahDatumov(ctx.date, { doPovinne: ty.doPovinne, jenDen: ty.jenDen, nepovinneOd: ty.nepovinneOd });
-        telo.appendChild(roz.el);
-        var pz = null;
-        if (ty.poznamka) {
-          telo.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
-          pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); telo.appendChild(pz);
-        }
-        if (ty.kod === "pn") telo.appendChild(el("div", "font-size:0.875rem;color:var(--text-2);margin-top:10px", "Zadaj začiatok PN, koniec PN, alebo oboje (aspoň jedno)."));
-        f = { zber: function () {
-          var od = roz.od(), dod = roz.do();
-          if (ty.nepovinneOd) {
-            if (!od && !dod) return { chyba: "Zadaj začiatok alebo koniec (aspoň jeden)." };
-          } else if (!od) return { chyba: "Zadaj dátum." };
-          if (ty.doPovinne && !dod) return { chyba: "Zadaj koniec." };
-          if (od && dod && dod < od) return { chyba: "Koniec nemôže byť pred začiatkom." };
-          if (pz && !pz.value.trim()) return { chyba: "Popíš dôvod." };
-          return { polozka: { t: "stav", kind: ty.kod, nazov: ty.nazov, od: od, do: dod || "", poznamka: pz ? pz.value.trim() : "" } };
-        } };
+        if (sk.typy.length > 1) telo.appendChild(prepinac(sk.typy.map(function (x) { return x.nazov; }), 0, function (i) { zalozka = i; pol = 0; prekresli(); zmena && zmena(); }));
+        telo.appendChild(obsah); prekresli();
       }
       h.addEventListener("click", function () {
-        var chcem = otvorene !== r;
+        var chcem = otvorena !== riadok;
         riadky.forEach(function (x) { x.telo.style.display = "none"; x.sip.style.transform = ""; x.r.style.boxShadow = ""; });
-        otvorene = null; aktivny = null;
+        otvorena = null;
         if (chcem) {
-          if (!f) postav();
+          if (!hotovo) { postav(); hotovo = true; }
           telo.style.display = "block"; sip.style.transform = "rotate(90deg)"; r.style.boxShadow = "inset 0 0 0 2px var(--red)";
-          otvorene = r; aktivny = f;
+          otvorena = riadok;
         }
         zmena && zmena();
       });
+      var riadok = { r: r, telo: telo, sip: sip, zber: function () { return aktivny ? aktivny.zber() : null; } };
       r.appendChild(h); r.appendChild(telo); kor.appendChild(r);
-      riadky.push({ r: r, telo: telo, sip: sip });
+      riadky.push(riadok);
     });
-    return { el: kor, zber: function () { return aktivny ? aktivny.zber() : null; } };
+    return { el: kor, zber: function () { return otvorena ? otvorena.zber() : null; } };
   }
 
   function ziadostiZalozky(service) {
@@ -957,7 +990,7 @@
     var kosik = [], mod = "a", tab = 0, panel = null;
     function popis(p) {
       if (p.t === "sluzba") return "Zmena služby (" + kratko(ctx.date) + "): " + [p.ch ? "chcem " + p.ch : "", p.nch ? "nechcem " + p.nch : ""].filter(Boolean).join("; ") + (p.poz ? " – " + p.poz : "");
-      var d = p.kind === "lekar" ? kratko(p.od) : (p.do ? (p.do === p.od ? kratko(p.od) : kratko(p.od) + " – " + kratko(p.do)) : kratko(p.od) + " – zatiaľ neznáme");
+      var d = p.kind === "lekar" || p.jenDen ? kratko(p.od) : (p.do ? (p.do === p.od ? kratko(p.od) : kratko(p.od) + " – " + kratko(p.do)) : kratko(p.od) + " – zatiaľ neznáme");
       return p.nazov + ": " + d + (p.poznamka ? " – " + p.poznamka : "");
     }
     function text(polozky) {
@@ -1036,7 +1069,7 @@
           tl.appendChild(b);
         }
         function overPn(pol) {
-          if (pol.length > 1 && pol.some(function (p) { return p.kind === "pn"; })) { chyba.textContent = "PN sa nahlasuje samostatne – nedá sa spojiť s inými žiadosťami."; return false; }
+          if (pol.length > 1 && pol.some(function (p) { return p.kind === "pn" || p.kind === "ocr"; })) { chyba.textContent = "PN a OČR sa nahlasujú samostatne – nedá sa spojiť s inými žiadosťami."; return false; }
           return true;
         }
         tlacidlo("Odoslať žiadosť", true, function () {
