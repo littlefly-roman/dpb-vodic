@@ -4172,3 +4172,30 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .bottom-nav button.active{background:rgba(232,0,26,.10);color:var(--red-text)}
 .bottom-nav button.active .nav-label{color:var(--red-text)}
 :root[data-theme=dark] .bottom-nav button.active{background:rgba(244,86,106,.16)}
+
+/* Grafikon – svetlý vzhľad */
+/* grafikon (cestovný poriadok) v svetlom štýle appky */
+.gm-sheet .grafikon-header{background:var(--surface) !important;color:var(--text-1) !important;border-bottom:1px solid var(--border-2);box-shadow:none !important;min-height:52px}
+.gm-sheet .grafikon-header>div{font-size:1.25rem !important;font-weight:400 !important;color:var(--text-1) !important}
+.gm-sheet .live-badge{background:rgba(232,0,26,.10) !important;color:var(--red-text) !important;font-size:.8125rem !important;font-weight:400 !important}
+.gm-ouska button{font-size:.9375rem !important;font-weight:400 !important}
+.gm-ouska button.on{font-weight:400 !important;color:var(--red-text)}
+.grafikon-direction{background:var(--surface-2) !important;color:var(--text-1) !important;border:1px solid var(--border-2);border-radius:14px !important;font-size:.9375rem !important;font-weight:400 !important;min-height:44px;margin:6px 0 !important;box-shadow:none !important}
+.grafikon-direction *{font-size:.9375rem !important;font-weight:400 !important;color:var(--text-1) !important}
+.grafikon-row{font-size:.9375rem !important;border-left:0 !important;background:transparent !important;border-bottom:1px solid var(--border-2);border-radius:0 !important;min-height:44px}
+.grafikon-row .g-time{font-size:.9375rem !important;font-weight:400 !important;color:var(--text-2) !important;font-variant-numeric:tabular-nums}
+.grafikon-row .g-stop{font-size:.9375rem !important;font-weight:400 !important;color:var(--text-1) !important}
+.grafikon-row.past .g-time,.grafikon-row.past .g-stop{color:var(--text-3) !important}
+.grafikon-row.nepreprava{background:var(--surface-2) !important}
+.grafikon-footer #closeGrafikon{background:var(--surface) !important;color:var(--red-text) !important;border:1px solid var(--border-2) !important;font-size:.9375rem !important;font-weight:400 !important;box-shadow:none !important}
+
+#grafikonContent .grafikon-row.my-service{background:rgba(120,120,128,.10) !important;box-shadow:none !important}
+#grafikonContent .grafikon-row.my-service .g-time,#grafikonContent .grafikon-row.my-service .g-stop{color:var(--text-1) !important;font-weight:400 !important}
+#grafikonContent .grafikon-row.my-service.teraz,#grafikonContent .grafikon-row.teraz{background:rgba(120,120,128,.10) !important;border:1.5px solid var(--red-text) !important;border-radius:14px !important;box-shadow:none !important;margin:4px 10px !important}
+#grafikonContent .grafikon-row.teraz .g-time,#grafikonContent .grafikon-row.teraz .g-stop{color:var(--text-1) !important;font-weight:400 !important}
+#grafikonContent .grafikon-row.teraz [class*=teraz],#grafikonContent .grafikon-row.teraz .g-badge,#grafikonContent .grafikon-row.teraz .g-teraz{background:transparent !important;color:var(--red-text) !important;font-weight:400 !important}
+#grafikonModal .grafikon-header,#grafikonModal .grafikon-header *,#grafikonModal .gm-ouska button,#grafikonModal .gm-ouska button.on,#grafikonContent .grafikon-direction,#grafikonContent .grafikon-direction *,#grafikonContent .grafikon-row,#grafikonContent .grafikon-row *{font-weight:400 !important}
+#grafikonContent .grafikon-row.teraz .g-time,#grafikonContent .grafikon-row.teraz .g-stop{font-weight:700 !important}
+#grafikonContent .grafikon-row.my-service.teraz,#grafikonContent .grafikon-row.teraz{border:0 !important;background:transparent !important;border-radius:0 !important;margin:0 !important}
+#grafikonContent .grafikon-row.my-service.teraz,#grafikonContent .grafikon-row.teraz{margin:0 10px !important}
+#grafikonContent .grafikon-row.teraz .g-time,#grafikonContent .grafikon-row.teraz .g-stop{font-size:1.125rem !important}

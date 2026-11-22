@@ -526,7 +526,7 @@
     s.paneK = el("div", ""); s.paneK.className = "gm-pane"; s.paneK.style.display = "none";
     obsah.parentNode.insertBefore(s.paneZ, obsah.nextSibling);
     obsah.parentNode.insertBefore(s.paneK, s.paneZ.nextSibling);
-    var ouska = [{ id: "cp", t: "CP linky / poradia" }];
+    var ouska = [{ id: "cp", t: "CP služby" }];
     if (panelZ && ctx.date === dnes) ouska.push({ id: "zast", t: "Zastávkový CP" });
     if (mozeKto) ouska.push({ id: "kto", t: "Koho stretávam" });
     s.tabs = el("div", ""); s.tabs.className = "gm-ouska";
