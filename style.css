@@ -4222,3 +4222,26 @@ html{background:var(--surface) !important}
 .section-header.je-dnes .date-day,.section-header.je-dnes .date-date{font-weight:500 !important}
 .section-header .date-day,.section-header .date-date{font-weight:400 !important}
 .service-card{box-shadow:none !important}
+
+/* Bez červenej: len logo, dispečing, zapnuté budíky a sviatky */
+/* Bez červenej: len logo, dispečing a zapnuté budíky */
+:root{--red:#2b2e35;--red-dark:#17181d;--red-text:#2b2e35;--red-soft:rgba(120,120,128,.12)}
+:root[data-theme=dark]{--red:#4b4e58;--red-dark:#3a3d46;--red-text:#e9eaee;--red-soft:rgba(255,255,255,.10)}
+/* hard-coded červené podklady -> šedé */
+.bottom-nav button.active{background:rgba(120,120,128,.14) !important;color:var(--red-text) !important}
+:root[data-theme=dark] .bottom-nav button.active{background:rgba(255,255,255,.14) !important}
+.gm-sheet .live-badge{background:rgba(120,120,128,.14) !important;color:var(--text-1) !important}
+:root[data-theme=dark] .gm-sheet .live-badge{background:rgba(255,255,255,.12) !important;color:#fff !important}
+.calendar-cell.selected{box-shadow:none}
+.zmena-mini-h{color:var(--text-1) !important}
+#grafikonContent .grafikon-row.my-service{background:rgba(120,120,128,.10) !important;box-shadow:none !important}
+/* logo ostáva červené aj v tmavom režime */
+:root[data-theme=dark] .header-logo-btn img,:root[data-theme=dark] .header-logo-btn svg{filter:none !important}
+/* výnimky: dispečing a zapnutý budík */
+.dispecing-pas .vyp-hl-nazov,.dispecing-pas .vyp-hl-cislo,.dispecing-pas .vyp-tel,.dispecing-pas .vyp-tel svg{color:#e8001a !important}
+:root[data-theme=dark] .dispecing-pas .vyp-hl-nazov,:root[data-theme=dark] .dispecing-pas .vyp-hl-cislo,:root[data-theme=dark] .dispecing-pas .vyp-tel,:root[data-theme=dark] .dispecing-pas .vyp-tel svg{color:#f4566a !important}
+.card-zvonec.zap,.card-zvonec.zap svg{color:#e8001a !important;stroke:#e8001a !important}
+:root[data-theme=dark] .card-zvonec.zap,:root[data-theme=dark] .card-zvonec.zap svg{color:#f4566a !important;stroke:#f4566a !important}
+/* výnimka: sviatky (zoznam, kalendár; výkaz má vlastnú červenú) */
+.list-day-group.is-holiday,.list-day-group.is-holiday *,.calendar-cell.is-holiday{color:#e8001a !important}
+:root[data-theme=dark] .list-day-group.is-holiday,:root[data-theme=dark] .list-day-group.is-holiday *,:root[data-theme=dark] .calendar-cell.is-holiday{color:#f4566a !important}
