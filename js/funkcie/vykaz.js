@@ -56,6 +56,49 @@
   var EXTRA_SV = { "2026-05-08": 1, "2026-09-15": 1 }; // sviatok, ale nie deň pracovného pokoja
   function vzorK(s) { return s._vzor || (s._karta && s._karta.vzor) || ""; }
 
+  // Rozpis karty na časti podľa času: vnorené služby/hradenia ako vlastné riadky, zvyšok (pohotovosť / 944) rozrezaný podľa vozidiel.
+  function rozpisCasti(a, b, subs, ownVoz, diery, cisty, tm) {
+    function al(o, e) { if (o == null || e == null) return null; if (e <= o) e += 1440; while (o < a) { o += 1440; e += 1440; } return [o, e]; }
+    var parts = [], holes = (diery || []).map(function (x) { return [x[0], x[1]]; });
+    subs.forEach(function (s) {
+      var iv = al(tm(s.od), tm(s.do)); if (!iv) return;
+      iv = [Math.max(iv[0], a), Math.min(iv[1], b)]; if (iv[1] <= iv[0]) return;
+      holes.push(iv);
+      var len = iv[1] - iv[0];
+      parts.push({ sl: s.sl, a: iv[0], b: iv[1], sub: true, voz: (s.voz || []).map(function (x) {
+        var w = al(tm(x.od), tm(x.do)); return { c: x.cislo, min: w ? Math.min(w[1] - w[0], len) : 0 };
+      }) });
+    });
+    holes.sort(function (x, y) { return x[0] - y[0]; });
+    var gaps = [], cur = a;
+    holes.forEach(function (h) { if (h[0] > cur) gaps.push([cur, h[0]]); if (h[1] > cur) cur = h[1]; });
+    if (cur < b) gaps.push([cur, b]);
+    var ov2 = (ownVoz || []).map(function (x) { var w = al(tm(x.od), tm(x.do)); return w ? { c: x.cislo, o: w[0], e: w[1] } : null; }).filter(Boolean);
+    gaps.forEach(function (g) {
+      var pts = [g[0], g[1]];
+      ov2.forEach(function (x) { if (x.o > g[0] && x.o < g[1]) pts.push(x.o); if (x.e > g[0] && x.e < g[1]) pts.push(x.e); });
+      pts.sort(function (x, y) { return x - y; });
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i], q0 = pts[i + 1]; if (q0 <= p0) continue;
+        var vv = ov2.filter(function (x) { return x.o <= p0 && x.e >= q0; })[0];
+        parts.push({ sl: null, a: p0, b: q0, sub: false, voz: vv ? [{ c: vv.c, min: q0 - p0 }] : [] });
+      }
+    });
+    parts.sort(function (x, y) { return x.a - y.a; });
+    parts.forEach(function (q) { q.cisty = q.b - q.a; });
+    var ded = parts.reduce(function (s, q) { return s + q.cisty; }, 0) - cisty;
+    if (ded > 0) { // PJO z najdlhšieho úseku (nie zo zásahu/hradenia, ak sa dá)
+      var cand = parts.filter(function (q) { return !q.sub; }); if (!cand.length) cand = parts;
+      var im = cand[0]; cand.forEach(function (q) { if (q.cisty > im.cisty) im = q; });
+      im.cisty = Math.max(0, im.cisty - ded);
+    }
+    parts.forEach(function (q) {
+      var sv = q.voz.reduce(function (s, x) { return s + x.min; }, 0);
+      if (sv > q.cisty && q.voz.length) { var j = 0; q.voz.forEach(function (x, i) { if (x.min > q.voz[j].min) j = i; }); q.voz[j].min = Math.max(0, q.voz[j].min - (sv - q.cisty)); }
+    });
+    return parts;
+  }
+
   // Údaje mesiaca: riadky (jedna služba = jeden riadok, vozidlá pod ňou) + súčty.
   function pushS(s, o) { o._s = s; return this.push(o); }
   function zber(datum, zdroj) {
@@ -134,6 +177,30 @@
           });
           if (cisty < 0) cisty = 0;
           if (noc < 0) noc = 0;
+        }
+        var subs = [];
+        if (vz === "POHOTOVOSŤ" && k.segmenty && k.segmenty.length) subs = k.segmenty.map(function (sg) { return { sl: sg.kurz, od: sg.od, do: sg.do, voz: sg.vozidla || [] }; });
+        else if (vz === "944" && k.hradenia && k.hradenia.length) subs = k.hradenia.map(function (h) { return { sl: h.kurz, od: h.od, do: h.do, voz: h.vozidla || [] }; });
+        var casti = subs.length ? rozpisCasti(a, b, subs, k.vozidla || [], vz === "POHOTOVOSŤ" && !k._dp ? vnoreneI : [], cisty, tmin) : null;
+        if (casti && casti.length) {
+          mal = true;
+          if (vz !== "POHOTOVOSŤ" && !dp) casy.push([a, b]);
+          den += cisty;
+          casti.forEach(function (q, qi) {
+            var qn = ov(q.a, q.b, 0, NOC_DO) + ov(q.a, q.b, NOC_OD, 1440 + NOC_DO);
+            T.cisty += q.cisty; T.noc += qn;
+            T.voz += q.voz.reduce(function (acc, x) { return acc + x.min; }, 0);
+            if (dt.getDay() === 6) T.so += q.cisty;
+            if (dt.getDay() === 0) T.ne += q.cisty;
+            if (sviatok) T.sv += q.cisty;
+            pushS.call(rows, s, {
+              dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
+              znacka: prvy ? (sviatok ? "sviatok" : "") : "",
+              sl: q.sl || (vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || "")), cas: ft(q.a % 1440) + " – " + ft(q.b % 1440), cisty: q.cisty, voz: q.voz, noc: qn, oddych: qi === 0 ? oddych : null,
+            });
+            prvy = false;
+          });
+          return;
         }
         var voz = [], vs = k.vozidla || [];
         if (vs.length === 1 && tmin(vs[0].od) === a % 1440 && tmin(vs[0].do) === b % 1440) voz = [{ c: vs[0].cislo, min: cisty }];
