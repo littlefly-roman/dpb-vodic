@@ -938,7 +938,7 @@
       b.addEventListener("click", function () { if (vybrane === i) return; vybrane = i; kresli(); zmena(i); });
       bt.push(b); kor.appendChild(b);
     });
-    function kresli() { bt.forEach(function (b, i) { var on = i === vybrane; b.style.background = on ? "var(--surface-2)" : "transparent"; b.style.color = on ? "var(--text-1)" : "var(--text-2)"; b.style.boxShadow = on ? "0 1px 3px rgba(0,0,0,.25)" : "none"; }); }
+    function kresli() { bt.forEach(function (b, i) { var on = i === vybrane; b.style.background = on ? "var(--red)" : "transparent"; b.style.color = on ? "#fff" : "var(--text-2)"; b.style.boxShadow = "none"; }); }
     kresli();
     return kor;
   }
