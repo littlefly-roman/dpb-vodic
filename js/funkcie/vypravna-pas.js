@@ -7,6 +7,7 @@
     get dispecing() { return window.DpbKontakty.dispecing; },
     get KR() { return window.DpbKontakty.vypravne.KR; },
     get TR() { return window.DpbKontakty.vypravne.TR; },
+    get OS() { return window.DpbKontakty.osetrenie; },
   };
   var TEL_SVG =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.93 19.79 19.79 0 0 1 1.61 3.3 2 2 0 0 1 3.6 1.11h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.7A16 16 0 0 0 14 15.76l.94-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17z"/></svg>';
@@ -45,6 +46,15 @@
     sheet.innerHTML = html;
     sheet.querySelector(".vyp-sheet-zrus").addEventListener("click", zavriSheet);
     sheet.classList.add("active");
+  }
+
+  // Denné ošetrenie: číslo sa dopĺňa v js/data/kontakty.js (osetrenie.cisla); bez čísla ukáže „—"
+  function osetrenieRiadok() {
+    var c = CISLA.OS.cisla || [];
+    return (
+      '<' + (c.length ? 'button type="button" data-vyp="OS"' : 'div') + ' class="vyp-row vyp-os"><span class="vyp-typ">Denné ošetrenie</span>' +
+      '<span class="vyp-teraz">' + (c.length ? c[0] : "—") + "</span></" + (c.length ? "button" : "div") + ">"
+    );
   }
 
   function riadokPevny(g, r) {
@@ -149,7 +159,7 @@
     pas.innerHTML =
       '<div class="vyp-box' + (otvorene ? " otvorena" : "") + (otvorene && mizne ? " mizne" : "") + '"><button type="button" class="vyp-nadpis" aria-expanded="' +
       (otvorene ? "true" : "false") +
-      '"><span>VÝPRAVŇA</span><span class="vyp-sipka">▼</span></button>' +
+      '"><span>VÝPRAVŇA</span><span class="vyp-sipka"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button>' +
       (otvorene
         ? (posledneM
             ? podrobne(posledneKluc, posledneM)
@@ -159,6 +169,7 @@
             : '<div class="vyp-popisky"><span class="vyp-pk-typ"></span><span>Denná</span><span>Nočná</span></div>' +
               riadokPevny("KR", posledneDN.KR) + riadokPevny("TR", posledneDN.TR))
         : "") +
+      (otvorene ? osetrenieRiadok() : "") +
       "</div>";
     pas.querySelector(".vyp-nadpis").addEventListener("click", function () {
       otvorene = !otvorene;

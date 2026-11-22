@@ -4108,3 +4108,11 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .dep-strip i{height:1px;border-radius:1px}
 .dep-strip i.str{height:3px;border-radius:2px}
 .dep-strip i.bezi{height:8px;border-radius:4px}
+
+/* Výpravňa pod dispečingom (dole zostáva len menu); šípka ako inde v appke */
+.vypravna-pas{border-top:none;border-bottom:1px solid var(--border);padding:6px 12px 8px}
+.vyp-sipka{display:inline-flex;align-items:center;color:var(--text-3)}
+.vyp-sipka svg{display:block}
+.vyp-os{border-top:1px solid var(--border-2);margin-top:4px;padding-top:8px}
+.vyp-os .vyp-typ{flex:1;color:var(--text-2);font-weight:700}
+.vyp-os .vyp-teraz{flex:0 0 auto;font-weight:700}
