@@ -155,12 +155,13 @@
               voz.push({ c: x.cislo, min: e - o });
             });
           });
-          var sumV = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
-          if (sumV > cisty && voz.length) {
-            var imax = 0;
-            voz.forEach(function (x, i) { if (x.min > voz[imax].min) imax = i; });
-            voz[imax].min = Math.max(0, voz[imax].min - (sumV - cisty));
-          }
+        }
+        // výkon s vozidlom nemôže byť väčší ako výkon: prestávku (PJO) uberáme z najdlhšieho úseku vozidla
+        var sumV = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
+        if (sumV > cisty && voz.length) {
+          var imax = 0;
+          voz.forEach(function (x, i) { if (x.min > voz[imax].min) imax = i; });
+          voz[imax].min = Math.max(0, voz[imax].min - (sumV - cisty));
         }
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
