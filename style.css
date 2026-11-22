@@ -4245,3 +4245,8 @@ html{background:var(--surface) !important}
 /* výnimka: sviatky (zoznam, kalendár; výkaz má vlastnú červenú) */
 .list-day-group.is-holiday,.list-day-group.is-holiday *,.calendar-cell.is-holiday{color:#e8001a !important}
 :root[data-theme=dark] .list-day-group.is-holiday,:root[data-theme=dark] .list-day-group.is-holiday *,:root[data-theme=dark] .calendar-cell.is-holiday{color:#f4566a !important}
+
+/* Tmavšie pozadie za kartami (svetlý režim), neutrálny tieň tlačidla pomocníka */
+:root:not([data-theme=dark]){--surface-2:#e4e7ec}
+:root:not([data-theme=dark]) body{background:#e4e7ec !important}
+#pomocOv .pm-next{box-shadow:0 2px 8px rgba(0,0,0,.25) !important}
