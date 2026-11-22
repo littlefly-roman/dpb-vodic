@@ -705,9 +705,9 @@ function dpbDenJednaNepritomnost(arr) {
           const hm = (m) => Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0");
           for (let d = 1; d <= lastDay; d++) {
             const date = new Date(year, month, d), key = formatDateKey(date), ev = DpbDruhaPraca.pre(key);
-            const dow = date.getDay(), isHoliday = window.Calendar && window.Calendar.isHoliday(date);
+            const dow = date.getDay(), isHoliday = window.Calendar && window.Calendar.isSviatok(date), isPokoj = window.Calendar && window.Calendar.isHoliday(date);
             const group = document.createElement("div");
-            group.className = "list-day-group" + (isHoliday ? " is-holiday" : "") + (dow === 0 || dow === 6 ? " is-weekend" : "");
+            group.className = "list-day-group" + (isHoliday ? " is-holiday" : "") + (dow === 0 || dow === 6 || isPokoj ? " is-weekend" : "");
             const klik = (row) => row.addEventListener("click", () => { appState.selectedDate = date; appState.viewMode = "cards"; render(); });
             if (!ev.length) {
               const row = buildListRow(d, DAY_NAMES[dow], "Voľno", "", isToday(date), true, false);
@@ -758,11 +758,12 @@ function dpbDenJednaNepritomnost(arr) {
             const dow = date.getDay();
             const isWeekend = dow === 0 || dow === 6;
             const isHoliday =
-              window.Calendar && window.Calendar.isHoliday(date);
+              window.Calendar && window.Calendar.isSviatok(date);
+            const isPokoj = window.Calendar && window.Calendar.isHoliday(date);
             const group = document.createElement("div");
             group.className =
               "list-day-group" +
-              (isHoliday ? " is-holiday" : "") + (isWeekend ? " is-weekend" : "");
+              (isHoliday ? " is-holiday" : "") + (isWeekend || isPokoj ? " is-weekend" : "");
 
             if (services.length === 0) {
               const row = buildListRow(
@@ -1260,7 +1261,7 @@ function dpbDenJednaNepritomnost(arr) {
               appState.servicesByDate[key] = DPBData.getServicesForDate(appState.currentDriver, key);
             if (window.DpbKalZnacky) DpbKalZnacky.pridaj(cell, appState.servicesByDate[key] || []);
             else if ((appState.servicesByDate[key] || []).length > 0) cell.classList.add("has-service");
-            if (Calendar.isHoliday(cellDate)) cell.classList.add("is-holiday");
+            if (Calendar.isSviatok(cellDate)) cell.classList.add("is-holiday");
             // sviatok (deň pracovného pokoja) aj víkend majú zelený podklad – aj keď sa prekrývajú
             if (Calendar.isHoliday(cellDate) || cellDate.getDay() === 0 || cellDate.getDay() === 6) cell.classList.add("is-weekend");
             cell.addEventListener("click", () => {

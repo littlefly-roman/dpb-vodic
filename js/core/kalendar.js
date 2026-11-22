@@ -57,6 +57,12 @@
           return HOLIDAYS_2026.has(toKey(date));
         }
 
+        // sviatok s príplatkom = deň pracovného pokoja + sviatky, ktoré dňom pokoja nie sú (8.5., 15.9.)
+        const EXTRA_SVIATOK = new Set(["2026-05-08", "2026-09-15"]);
+        function isSviatok(date) {
+          return isHoliday(date) || EXTRA_SVIATOK.has(toKey(date));
+        }
+
         function isSchoolHoliday(date) {
           const key = toKey(date);
           return SCHOOL_HOLIDAYS.some(([from, to]) => key >= from && key <= to);
@@ -112,6 +118,7 @@
           getDayTypeLabel,
           findDataFolder,
           isHoliday,
+          isSviatok,
           isSchoolHoliday,
         };
         return window.Calendar;
