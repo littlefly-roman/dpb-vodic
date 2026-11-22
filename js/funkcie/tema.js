@@ -18,7 +18,7 @@
             m.name = "theme-color";
             document.head.appendChild(m);
           }
-          m.content = t === "dark" ? "#0d0e11" : "#e8001a";
+          m.content = t === "dark" ? "#17181d" : "#ffffff";
         }
         root.setAttribute("data-theme", current());
         meta(current());

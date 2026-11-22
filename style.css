@@ -4160,3 +4160,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .vypravna-pas .vyp-nadpis,.vypravna-pas .vyp-nadpis span,.burza-link-row{color:var(--text-1)}
 .vyp-sipka{color:var(--text-2)}
 .service-card{border-left:1px solid var(--border-2) !important}
+
+/* biela hlavička: logo, nápis a ikony červené (tmavý režim: tmavá hlavička) */
+.app-header{background:var(--surface);color:var(--red-text);box-shadow:none;border-bottom:1px solid var(--border-2)}
+.header-logo-btn,.theme-btn,.notif-btn,.app-header button{color:var(--red-text)}
+.app-header span{color:var(--red-text) !important}
+.notif-badge{border:2px solid var(--surface)}
