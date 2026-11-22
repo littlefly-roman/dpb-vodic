@@ -157,6 +157,17 @@
             });
           });
         }
+        // pohotovosť: vozidlá služieb odrobených v jej obálke (zásahy) sa pripočítajú k vozidlám pohotovosti
+        if (vz === "POHOTOVOSŤ" && k.segmenty && k.segmenty.length) {
+          k.segmenty.forEach(function (sg) {
+            (sg.vozidla || []).forEach(function (x) {
+              var o = tmin(x.od), e = tmin(x.do);
+              if (o == null || e == null) return;
+              if (e <= o) e += 1440;
+              voz.push({ c: x.cislo, min: e - o });
+            });
+          });
+        }
         // výkon s vozidlom nemôže byť väčší ako výkon: prestávku (PJO) uberáme z najdlhšieho úseku vozidla
         var sumV = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         if (sumV > cisty && voz.length) {

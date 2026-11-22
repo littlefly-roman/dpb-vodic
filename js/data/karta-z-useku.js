@@ -120,6 +120,7 @@
           od: k.od,
           do: k.do,
           vozidlo: k.vozidla && k.vozidla.length ? k.vozidla[0].cislo : null,
+          vozidla: k.vozidla || [], // všetky vozidlá zásahu s časmi (výkaz z nich počíta hodiny s vozidlom)
           is_poh: false,
         },
       ]);
