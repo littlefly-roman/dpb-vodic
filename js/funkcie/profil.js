@@ -217,7 +217,7 @@
   }
   // štatistika zvoleného obdobia: súčet mesačných výkazov (DpbVykaz._zber)
   function hm(min) { var z = min < 0 ? "−" : "", a = Math.abs(Math.round(min)); return z + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0"); }
-  var NAZ = { dov: "Dovolenka", pn: "PN", ocr: "OČR", lek: "Lekár", dop: "Doprovod", ine: "Iné neprítomnosti" };
+  var NAZ = { dov: "Dovolenka", pn: "PN", ocr: "OČR", lek: "Lekár", dop: "Sprievod", ine: "Iné neprítomnosti" };
   function druh(n) {
     if (/dovolen/i.test(n)) return "dov";
     if (/nemoc|karant|izol/i.test(n)) return "pn";
@@ -265,7 +265,7 @@
     });
     vypisIne(mal ? Object.keys(ineD).map(function (n) { return [n, ineD[n]]; }) : []);
     // „Platené neprítomnosti“ = len tie, ktoré platí zamestnávateľ (bez PN a OČR, tie platí Sociálna poisťovňa)
-    var ZAM = ["dov", "lek", "dop", "ine"], NAZP = { dov: "Dovolenka", lek: "Lekár", dop: "Doprovod", ine: "Iné platené neprítomnosti" }, sp = 0;
+    var ZAM = ["dov", "lek", "dop", "ine"], NAZP = { dov: "Dovolenka", lek: "Lekár", dop: "Sprievod", ine: "Iné platené neprítomnosti" }, sp = 0;
     ZAM.forEach(function (d) { sp += platD[d] || 0; });
     var elp = document.querySelector("[data-pf=st_plat]"); if (elp) elp.textContent = mal ? hm(sp) : "–";
     vypisPlat(mal ? ZAM.filter(function (d) { return platD[d] > 0; }).map(function (d) { return [NAZP[d], hm(platD[d])]; }) : []);

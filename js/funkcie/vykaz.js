@@ -327,12 +327,12 @@
     }).join("");
     return '<div class="vk"><div class="hd"><div><h1>Pracovný výkaz – ' + esc(D.nadpis) + "</h1><div class=\"kto\">" + esc(D.v.meno) + " · os. č. " + esc(D.v.rid) + "</div></div>" + sumHlavicka(D) + "</div>" +
       "<table><thead><tr><th>Deň</th><th>Služba</th><th>Nástup–koniec</th><th>Výkon</th><th>Vozidlo a hodiny</th><th>Noc</th><th>So</th><th>Ne</th><th>Sviatok</th><th>D</th><th>Stravné</th><th>Oddych</th></tr></thead><tbody>" + (tr || '<tr><td colspan="12">V tomto mesiaci nie sú služby.</td></tr>') + '<tr class="hdr2"><th colspan="3"></th><th>Výkon</th><th>S vozom</th><th>Noc</th><th>So</th><th>Ne</th><th>Sviatok</th><th>D</th><th>Stravné</th><th></th></tr><tr class="spolu"><td colspan="3">Spolu</td><td>' + f(T.cisty) + "</td><td>" + f(T.voz) + "</td><td>" + f(T.noc) + "</td><td>" + f(T.so) + "</td><td>" + f(T.ne) + "</td><td>" + f(T.sv) + "</td><td>" + (T.del || 0) + "</td><td>" + T.str + "</td><td></td></tr></tbody></table>" +
-      "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. Dovolenka, lekár, doprovod: tento mesiac / od januára.</p></div>";
+      "<p>Vytvorené " + new Date().toLocaleString("sk-SK") + " z DPB dashboardu. Údaje sú podľa posledne načítaných dát. Dovolenka, lekár, sprievod: tento mesiac / od januára.</p></div>";
   }
 
-  // Pravá strana hlavičky: plánovaný úväzok a čerpanie dovolenky, lekára a doprovodu (mesiac | rok)
+  // Pravá strana hlavičky: plánovaný úväzok a čerpanie dovolenky, lekára a sprievodu (mesiac | rok)
   function sumHlavicka(D) {
-    var rx = { dov: /dovolen/i, lek: /lek[aá]r/i, dop: /doprov/i };
+    var rx = { dov: /dovolen/i, lek: /lek[aá]r/i, dop: /doprov|sprievod/i };
     function sum(nepr, r) { var c = 0; Object.keys(nepr || {}).forEach(function (k) { if (r.test(k)) c += nepr[k]; }); return c; }
     var y = parseInt(D.nadpis.slice(-4), 10), mi = MESIACE.indexOf(D.nadpis.split(" ")[0].toLowerCase());
     var rok = { fond: 0, dov: 0, lek: 0, dop: 0 };
@@ -343,14 +343,14 @@
       } catch (e) {}
     }
     function bx(n, a, b) { return '<div><span title="' + esc(n) + '">' + esc(n) + "</span><b>" + a + (b == null ? "" : " / " + b) + "</b></div>"; }
-    var iny = {}; // iné platené neprítomnosti (nie dovolenka, lekár, doprovod): dni
+    var iny = {}; // iné platené neprítomnosti (nie dovolenka, lekár, sprievod): dni
     (D.rows || []).forEach(function (r) { if (r.nepr && r.kredit > 0 && !rx.dov.test(r.sl) && !rx.lek.test(r.sl) && !rx.dop.test(r.sl)) iny[r.sl] = (iny[r.sl] || 0) + 1; });
     return '<div class="sumb">' +
       bx("Úväzok", f(D.T.fond)) +
       bx("Nadčas", fs(D.T.nadcas)) +
       bx("Dovolenka", sum(D.nepr, rx.dov), rok.dov + " d") +
       bx("Lekár", sum(D.nepr, rx.lek), rok.lek + " d") +
-      bx("Doprovod", sum(D.nepr, rx.dop), rok.dop + " d") +
+      bx("Sprievod", sum(D.nepr, rx.dop), rok.dop + " d") +
       Object.keys(iny).map(function (k) { return bx(k, iny[k] + " d"); }).join("") +
       bx("Platené", f(D.T.plat)) +
       "</div>";

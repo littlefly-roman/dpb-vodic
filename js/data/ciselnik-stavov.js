@@ -170,7 +170,7 @@
   "28": {
     "nazov": "Sprievod rodinného príslušníka 1/2 dňa",
     "povodny": "Doprovod rodinného príslušníka 1/2 dne",
-    "zkratka": "Doprovod 1/2 dňa",
+    "zkratka": "Sprievod 1/2 dňa",
     "zobraz": true
   },
   "29": {
@@ -260,7 +260,7 @@
   "44": {
     "nazov": "Sprievod rodinného príslušníka",
     "povodny": "Doprovod rodinného príslušníka",
-    "zkratka": "Doprovod",
+    "zkratka": "Sprievod",
     "zobraz": true
   },
   "45": {
