@@ -918,7 +918,6 @@
       telo.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
       pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); telo.appendChild(pz);
     }
-    if (ty.nepovinneOd) telo.appendChild(el("div", "font-size:0.875rem;color:var(--text-2);margin-top:10px", "Zadaj začiatok " + ty.nazov + ", koniec " + ty.nazov + ", alebo oboje (aspoň jedno)."));
     return { el: telo, zber: function () {
       var od = roz.od(), dod = roz.do();
       if (ty.nepovinneOd) {
@@ -931,7 +930,7 @@
     } };
   }
   function prepinac(moznosti, vybrane, zmena) {
-    var kor = el("div", "display:flex;background:var(--surface);border-radius:10px;padding:3px;margin-bottom:12px");
+    var kor = el("div", "display:flex;background:var(--surface);border-radius:10px;padding:3px;margin-bottom:8px");
     var bt = [];
     moznosti.forEach(function (m, i) {
       var b = el("button", "flex:1;padding:8px;border:0;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-2)", m);
@@ -947,12 +946,13 @@
     var kor = el("div", "");
     var riadky = [], otvorena = null;
     SKUPINY_STAVU.forEach(function (sk) {
-      var r = el("div", "margin-bottom:8px;border-radius:14px;background:var(--surface-2);overflow:hidden");
-      var h = el("button", "display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:none;border:0;color:var(--text-1);font-size:1rem;font-weight:600;cursor:pointer;text-align:left");
-      h.type = "button";
-      var sip = el("span", "color:var(--text-3);font-size:1.25rem;transition:transform .15s", "›");
-      h.appendChild(el("span", "", sk.nazov)); h.appendChild(sip);
-      var telo = el("div", "display:none;padding:0 14px 14px");
+      var r = el("div", "margin-bottom:6px;border-radius:14px;background:var(--surface-2);overflow:hidden");
+      var h = el("div", "display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:10px 14px;color:var(--text-1);font-size:1rem;font-weight:600;cursor:pointer;text-align:left");
+      var nazov = el("span", "flex:1", sk.nazov);
+      var zal = el("div", "flex:1;display:none");
+      var sip = el("span", "color:var(--text-3);font-size:1.25rem;transition:transform .15s;padding:0 4px", "›");
+      h.appendChild(nazov); h.appendChild(zal); h.appendChild(sip);
+      var telo = el("div", "display:none;padding:0 12px 12px");
       var zalozka = 0, pol = 0, hotovo = false, obsah = el("div", ""), aktivny = null;
       function prekresli() {
         obsah.innerHTML = "";
@@ -962,21 +962,27 @@
         obsah.appendChild(aktivny.el);
       }
       function postav() {
-        if (sk.typy.length > 1) telo.appendChild(prepinac(sk.typy.map(function (x) { return x.nazov; }), 0, function (i) { zalozka = i; pol = 0; prekresli(); zmena && zmena(); }));
+        if (sk.typy.length > 1) {
+          var pr = prepinac(sk.typy.map(function (x) { return x.nazov; }), 0, function (i) { zalozka = i; pol = 0; prekresli(); zmena && zmena(); });
+          pr.style.margin = "0"; pr.style.background = "var(--surface)";
+          pr.addEventListener("click", function (e) { e.stopPropagation(); }); // prepínač v hlavičke nezatvára skupinu
+          zal.appendChild(pr);
+        }
         telo.appendChild(obsah); prekresli();
       }
-      h.addEventListener("click", function () {
-        var chcem = otvorena !== riadok;
-        riadky.forEach(function (x) { x.telo.style.display = "none"; x.sip.style.transform = ""; x.r.style.boxShadow = ""; });
+      function nastav(otvor) {
+        riadky.forEach(function (x) { x.telo.style.display = "none"; x.sip.style.transform = ""; x.r.style.boxShadow = ""; x.nazov.style.display = "block"; x.zal.style.display = "none"; });
         otvorena = null;
-        if (chcem) {
+        if (otvor) {
           if (!hotovo) { postav(); hotovo = true; }
           telo.style.display = "block"; sip.style.transform = "rotate(90deg)"; r.style.boxShadow = "inset 0 0 0 2px var(--red)";
+          if (sk.typy.length > 1) { nazov.style.display = "none"; zal.style.display = "block"; }
           otvorena = riadok;
         }
         zmena && zmena();
-      });
-      var riadok = { r: r, telo: telo, sip: sip, zber: function () { return aktivny ? aktivny.zber() : null; } };
+      }
+      h.addEventListener("click", function () { nastav(otvorena !== riadok); });
+      var riadok = { r: r, telo: telo, sip: sip, nazov: nazov, zal: zal, zber: function () { return aktivny ? aktivny.zber() : null; } };
       r.appendChild(h); r.appendChild(telo); kor.appendChild(r);
       riadky.push(riadok);
     });
