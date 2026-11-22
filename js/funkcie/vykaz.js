@@ -66,6 +66,23 @@
     for (var d = -4; d <= n; d++) { // dni pred mesiacom slúžia len na výpočet oddychu
       var dt = new Date(y, m, d), sv = (dp ? dpSluzby(kluc(dt)) : sluzbyDna(v.rid, kluc(dt))) || [], prvy = true, mal = false, r0 = rows.length, den = 0, strNepr = false, rekMal = false, casy = [];
       var sviatok = !!(window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) || !!EXTRA_SV[kluc(dt)]; // sviatok = deň pracovného pokoja + sviatky, ktoré ním nie sú
+      // Pohotovosť tvorí obálku: služba/striedač odrobený celý v nej sa už započítal v pohotovosti, preto ho z nej odpočítame (výkon sa počíta raz)
+      var minK = function (s) {
+        var k = s._karta || {};
+        var a = k.od_min != null ? k.od_min : tmin((s.time || "").split(/[–-]/)[0]);
+        var b = k.do_min != null ? k.do_min : tmin((s.time || "").split(/[–-]/)[1]);
+        if (a == null || b == null) return null;
+        if (b <= a) b += 1440;
+        return [a, b];
+      };
+      var pohI = null, vnoreneI = [];
+      sv.forEach(function (s) { if (!pohI && vzorK(s) === "POHOTOVOSŤ" && !(s._karta || {})._dp) pohI = minK(s); });
+      if (pohI) sv.forEach(function (s) {
+        var vz2 = vzorK(s);
+        if (vz2 === "POHOTOVOSŤ" || VOZ.indexOf(vz2) < 0 || (s._karta || {})._dp) return;
+        var ab = minK(s);
+        if (ab && ab[0] >= pohI[0] && ab[1] <= pohI[1]) vnoreneI.push(ab);
+      });
       sv.forEach(function (s) {
         var k = s._karta || {}, vz = vzorK(s);
         if (vz === "NEPRÍTOMNOSŤ") {
@@ -110,6 +127,14 @@
         var cc = window.DpbCistyCas && DpbCistyCas.zaKartu(k);
         var cisty = k._dp ? (k._dpCisty != null ? k._dpCisty : b - a) : cc ? cc.cisty : b - a;
         var noc = ov(a, b, 0, NOC_DO) + ov(a, b, NOC_OD, 1440 + NOC_DO);
+        if (vz === "POHOTOVOSŤ" && !k._dp && vnoreneI.length) {
+          vnoreneI.forEach(function (x) {
+            cisty -= x[1] - x[0];
+            noc -= ov(x[0], x[1], 0, NOC_DO) + ov(x[0], x[1], NOC_OD, 1440 + NOC_DO);
+          });
+          if (cisty < 0) cisty = 0;
+          if (noc < 0) noc = 0;
+        }
         var voz = [], vs = k.vozidla || [];
         if (vs.length === 1 && tmin(vs[0].od) === a % 1440 && tmin(vs[0].do) === b % 1440) voz = [{ c: vs[0].cislo, min: cisty }];
         else voz = vs.map(function (x) {
