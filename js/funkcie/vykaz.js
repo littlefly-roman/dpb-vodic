@@ -144,6 +144,24 @@
           return { c: x.cislo, min: e - o };
         });
         if (vz === "STRIEDAČ") voz = [{ c: vs.length ? vs[0].cislo : "", min: cisty }]; // striedač má voz vždy po celý čas v práci
+        // 944: hradenie linky s vozidlom sa tiež jazdí na vozidle – jeho minúty sa pripočítajú; spolu nesmie byť viac ako čistý výkon
+        // (prestávku PJO uberáme z najdlhšieho úseku)
+        if (vz === "944" && k.hradenia && k.hradenia.length) {
+          k.hradenia.forEach(function (h) {
+            (h.vozidla || []).forEach(function (x) {
+              var o = tmin(x.od), e = tmin(x.do);
+              if (o == null || e == null) return;
+              if (e <= o) e += 1440;
+              voz.push({ c: x.cislo, min: e - o });
+            });
+          });
+          var sumV = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
+          if (sumV > cisty && voz.length) {
+            var imax = 0;
+            voz.forEach(function (x, i) { if (x.min > voz[imax].min) imax = i; });
+            voz[imax].min = Math.max(0, voz[imax].min - (sumV - cisty));
+          }
+        }
         var vmin = voz.reduce(function (acc, x) { return acc + x.min; }, 0);
         mal = true;
         if (vz !== "POHOTOVOSŤ" && !dp) casy.push([a, b]);
