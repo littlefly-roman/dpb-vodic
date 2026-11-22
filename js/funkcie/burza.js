@@ -738,7 +738,7 @@
               b.type = "button";
               b.dataset.rozsah = x[0];
               b.textContent = x[1];
-              b.style.cssText = "flex:1;padding:9px 6px;border:0;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;";
+              b.style.cssText = "flex:1;padding:9px 6px;border:0;border-radius:9px;font-size:0.9375rem;font-weight:700;cursor:pointer;";
               b.addEventListener("click", function () {
                 state.denFilter = x[0] === "den" ? state.denKarty : null;
                 nastavPrepinac();

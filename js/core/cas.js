@@ -22,7 +22,7 @@ function formatDisplayDate(date) {
   });
   return (
     `<span class="date-day">${den.charAt(0).toUpperCase() + den.slice(1)}</span>` +
-    `<span class="date-date">${datum}</span>`
+    `<span class="date-date">${datum.replace(/\s+/g, "")}</span>`
   );
 }
 

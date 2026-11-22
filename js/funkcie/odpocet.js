@@ -196,9 +196,9 @@
     box.style.cssText = "position:relative;background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
       '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg></button>' +
-      '<div style="font-size:15px;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
-      '<div style="font-size:17px;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
-      '<div class="odp-cislo" style="font-size:72px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
+      '<div style="font-size:0.9375rem;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
+      '<div style="font-size:1.0625rem;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
+      '<div class="odp-cislo" style="font-size:4.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
       '<button type="button" class="odp-vyp">' + (akt.plan ? "Preskočiť toto upozornenie" : "Vypnúť odpočet") + '</button>' +
       '<button type="button" class="odp-zat">Zavrieť (odpočet beží ďalej)</button>';
     var panel = document.createElement("div");

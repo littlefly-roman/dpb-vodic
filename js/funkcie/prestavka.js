@@ -37,17 +37,17 @@
     var box = document.createElement("div");
     box.style.cssText = "background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px calc(40px + env(safe-area-inset-bottom,0px));box-sizing:border-box;max-height:90vh;overflow:auto";
     var h = document.createElement("div");
-    h.style.cssText = "font-size:17px;font-weight:600;color:var(--text-1);margin-bottom:4px";
+    h.style.cssText = "font-size:1.0625rem;font-weight:600;color:var(--text-1);margin-bottom:4px";
     h.textContent = "Nezabezpečená pracovná prestávka";
     var sub = document.createElement("div");
-    sub.style.cssText = "font-size:15px;color:var(--text-3);margin-bottom:14px";
+    sub.style.cssText = "font-size:0.9375rem;color:var(--text-3);margin-bottom:14px";
     sub.textContent = podnadpis;
     box.appendChild(h); box.appendChild(sub);
     var vyber = "";
     var tlacidla = [];
     var inp = document.createElement("textarea");
     inp.placeholder = "Popíš dôvod…";
-    inp.style.cssText = "width:100%;box-sizing:border-box;padding:10px 14px;font-size:15px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:70px;margin-top:8px;display:none";
+    inp.style.cssText = "width:100%;box-sizing:border-box;padding:10px 14px;font-size:0.9375rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:70px;margin-top:8px;display:none";
     var ok = document.createElement("button");
     function obnov() {
       tlacidla.forEach(function (b) {
@@ -64,7 +64,7 @@
       var b = document.createElement("button");
       b.type = "button";
       b.textContent = t;
-      b.style.cssText = "display:block;width:100%;padding:12px 16px;margin-bottom:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:15px;color:var(--text-1);text-align:left;cursor:pointer";
+      b.style.cssText = "display:block;width:100%;padding:12px 16px;margin-bottom:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:0.9375rem;color:var(--text-1);text-align:left;cursor:pointer";
       b.addEventListener("click", function () { vyber = t; obnov(); });
       tlacidla.push(b);
       box.appendChild(b);
@@ -75,11 +75,11 @@
     riadok.style.cssText = "display:flex;gap:10px;margin-top:16px";
     ok.type = "button";
     ok.textContent = "Pripraviť hlásenie";
-    ok.style.cssText = "flex:1;padding:14px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer";
+    ok.style.cssText = "flex:1;padding:14px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:0.9375rem;font-weight:600;cursor:pointer";
     var zr = document.createElement("button");
     zr.type = "button";
     zr.textContent = "Zrušiť";
-    zr.style.cssText = "flex:1;padding:14px;background:var(--surface-2);color:var(--text-1);border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer";
+    zr.style.cssText = "flex:1;padding:14px;background:var(--surface-2);color:var(--text-1);border:none;border-radius:12px;font-size:0.9375rem;font-weight:600;cursor:pointer";
     riadok.appendChild(ok); riadok.appendChild(zr);
     box.appendChild(riadok);
     ov.appendChild(box);

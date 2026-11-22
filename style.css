@@ -219,7 +219,7 @@
         height: 22px;
       }
       .nav-label {
-        font-size: 12px;
+        font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0;
         white-space: nowrap;
@@ -273,21 +273,12 @@
         background: rgba(47, 108, 176, 0.07);
       } }
 
-      /* Aktuálny deň (dnes): názov dňa aj dátum zelenou a najtučnejšie */
+      /* Aktuálny deň: tučne (farba ostáva čierna) */
       .je-dnes .date-day,
-      .je-dnes .date-date {
-        color: #16a34a;
-        font-weight: 900;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) .je-dnes .date-day,
-        :root:not([data-theme="light"]) .je-dnes .date-date { color: #4ade80; }
-      }
-      :root[data-theme="dark"] .je-dnes .date-day,
-      :root[data-theme="dark"] .je-dnes .date-date { color: #4ade80; }
+      .je-dnes .date-date { font-weight: 700; }
       .date-day {
-        font-size: 19px;
-        font-weight: 700;
+        font-size: 1.25rem;
+        font-weight: 400;
         color: var(--text-1);
         text-transform: capitalize;
         line-height: 1.3;
@@ -295,8 +286,8 @@
       }
 
       .date-date {
-        font-size: 25px;
-        font-weight: 700;
+        font-size: 1.25rem;
+        font-weight: 400;
         color: var(--text-1);
         line-height: 1.2;
       }
@@ -362,7 +353,7 @@
       .calendar-header button {
         border: none;
         background: none;
-        font-size: 20px;
+        font-size: 1.25rem;
         cursor: pointer;
         color: var(--red);
         min-width: 44px;
@@ -378,7 +369,7 @@
       } }
       .calendar-header .cal-title {
         font-weight: 600;
-        font-size: 15px;
+        font-size: 0.9375rem;
         text-transform: capitalize;
       }
 
@@ -390,7 +381,7 @@
       }
       .calendar-weekday {
         text-align: center;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-3);
         padding: 2px 0;
@@ -409,7 +400,7 @@
         padding: 7px 2px;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-1);
         min-height: 34px;
         display: flex;
@@ -497,18 +488,18 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       }
       .volno-card .volno-icon {
-        font-size: 36px;
+        font-size: 2.25rem;
         margin-bottom: 8px;
       }
       .volno-card .volno-text {
-        font-size: 34px;
+        font-size: 2.125rem;
         font-weight: 800;
         letter-spacing: -0.5px;
         line-height: 1;
         color: var(--text-1);
       }
       .volno-card .volno-sub {
-        font-size: 15px;
+        font-size: 0.9375rem;
         margin-top: 4px;
         color: var(--text-3);
       }
@@ -543,7 +534,7 @@
       }
 
       .service-title {
-        font-size: 30px;
+        font-size: 1.875rem;
         font-weight: 800;
         color: var(--text-1);
         cursor: pointer;
@@ -582,7 +573,7 @@
         height: 16px;
       }
       .service-meta-val {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 600;
         color: var(--text-1);
       }
@@ -637,7 +628,7 @@
 
       .driver-name {
         font-weight: 600;
-        font-size: 15px;
+        font-size: 0.9375rem;
         cursor: pointer;
         color: var(--text-1);
         display: flex;
@@ -655,7 +646,7 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
       }
       .drv-swap svg {
@@ -705,7 +696,7 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--red);
         text-decoration: none;
@@ -762,7 +753,7 @@
 
       .menu-item {
         padding: 11px 8px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--red);
         cursor: pointer;
         border-radius: 8px;
@@ -777,7 +768,7 @@
         background: var(--surface-2);
       } }
       .menu-item-icon {
-        font-size: 16px;
+        font-size: 1rem;
         width: 24px;
         text-align: center;
       }
@@ -803,7 +794,7 @@
       }
 
       .employer-name {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--text-1);
         margin-bottom: 12px;
@@ -814,7 +805,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 6px 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         border-bottom: 1px solid var(--surface-2);
         gap: 12px;
       }
@@ -823,7 +814,7 @@
       }
       .employer-detail-row span:first-child {
         color: var(--text-3);
-        font-size: 15px;
+        font-size: 0.9375rem;
         flex-shrink: 0;
       }
       .employer-detail-row a {
@@ -851,7 +842,7 @@
         border: none;
         background: var(--border);
         font-weight: 600;
-        font-size: 15px;
+        font-size: 0.9375rem;
         cursor: pointer;
         border-radius: 8px;
         color: var(--text-2);
@@ -888,7 +879,7 @@
       }
 
       .person-role {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -896,7 +887,7 @@
         margin-bottom: 4px;
       }
       .person-name {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-1);
         margin-bottom: 6px;
@@ -910,7 +901,7 @@
       .person-contacts a {
         color: var(--red);
         text-decoration: none;
-        font-size: 15px;
+        font-size: 0.9375rem;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -918,7 +909,7 @@
       }
 
       .hier-section-title {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         color: var(--text-3);
         text-transform: uppercase;
@@ -950,7 +941,7 @@
         align-items: center;
         padding: 16px 18px;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 1.125rem;
         border-bottom: 1px solid var(--surface-2);
         background: var(--red);
         color: white;
@@ -958,7 +949,7 @@
       }
 
       .live-badge {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         background: rgba(255, 255, 255, 0.2);
         padding: 4px 10px;
@@ -989,7 +980,7 @@
       /* pás spoja (linka/poradie + cieľ): inverzne */
       .grafikon-direction {
         font-weight: 700;
-        font-size: 18px;
+        font-size: 1.125rem;
         padding: 12px 18px 8px;
         color: var(--surface);
         text-transform: uppercase;
@@ -1019,7 +1010,7 @@
         display: flex;
         align-items: center;
         padding: 9px 18px;
-        font-size: 18px;
+        font-size: 1.125rem;
         border-bottom: 1px solid var(--surface-2);
         gap: 10px;
         min-height: 40px;
@@ -1032,7 +1023,7 @@
         width: 82px;
         flex-shrink: 0;
         font-variant-numeric: tabular-nums;
-        font-size: 18px;
+        font-size: 1.125rem;
         color: var(--text-3);
         font-weight: 500;
       }
@@ -1042,7 +1033,7 @@
       }
       .g-my {
         color: var(--red);
-        font-size: 15px;
+        font-size: 0.9375rem;
         flex-shrink: 0;
       }
 
@@ -1067,7 +1058,7 @@
         color: var(--np-fg);
       }
       .g-ciel {
-        font-size: 18px;
+        font-size: 1.125rem;
         font-weight: 700;
         letter-spacing: 0.3px;
         text-align: right;
@@ -1115,7 +1106,7 @@
       }
 
       .g-badge {
-        font-size: 15px;
+        font-size: 0.9375rem;
         padding: 2px 8px;
         border-radius: 10px;
         font-weight: 700;
@@ -1125,7 +1116,7 @@
       }
 
       .g-kolaj {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         padding: 2px 8px;
         border-radius: 6px;
@@ -1140,7 +1131,7 @@
       .grafikon-error {
         text-align: center;
         padding: 40px 20px;
-        font-size: 15px;
+        font-size: 0.9375rem;
       }
       .grafikon-loading {
         color: var(--text-3);
@@ -1164,7 +1155,7 @@
         background: var(--red);
         color: white;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 0.9375rem;
         cursor: pointer;
         transition:
           background 0.15s,
@@ -1201,7 +1192,7 @@
         display: flex;
         align-items: center;
         padding: 10px 12px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         cursor: pointer;
         border-bottom: 1px solid var(--border-2);
         gap: 10px;
@@ -1219,7 +1210,7 @@
         width: 28px;
         flex-shrink: 0;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-2);
         text-align: center;
       }
@@ -1231,7 +1222,7 @@
       .list-day-name {
         width: 26px;
         flex-shrink: 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-3);
         text-transform: uppercase;
@@ -1243,7 +1234,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         font-weight: 600;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-1);
       }
       .list-line.volno {
@@ -1256,7 +1247,7 @@
       }
       .list-time {
         flex-shrink: 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-variant-numeric: tabular-nums;
         color: var(--text-3);
         background: var(--surface-2);
@@ -1277,7 +1268,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 15px;
+        font-size: 0.9375rem;
       }
 
       /* ==========================
@@ -1293,7 +1284,7 @@
         color: white;
         padding: 10px 20px;
         border-radius: 20px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         white-space: nowrap;
         pointer-events: none;
@@ -1386,7 +1377,7 @@
         background: none;
         padding: 9px 6px;
         border-radius: 9px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-3);
         cursor: pointer;
@@ -1409,7 +1400,7 @@
         right: 4px;
         background: var(--red);
         color: white;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         min-width: 16px;
         height: 16px;
@@ -1436,7 +1427,7 @@
 
       /* Denná hlavička */
       .burza-day-header {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.8px;
@@ -1492,7 +1483,7 @@
       }
 
       .burza-linka {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 800;
         color: var(--text-1);
         letter-spacing: -0.3px;
@@ -1504,7 +1495,7 @@
       }
 
       .burza-cas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         color: var(--text-2);
         font-variant-numeric: tabular-nums;
@@ -1523,7 +1514,7 @@
         border: none;
         border-radius: 20px;
         padding: 7px 14px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         cursor: pointer;
         transition:
@@ -1537,14 +1528,14 @@
       }
 
       .burza-kriz {
-        font-size: 16px;
+        font-size: 1rem;
         color: var(--text-3);
         width: 32px;
         text-align: center;
       }
 
       .burza-stav-badge {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-3);
         font-style: italic;
@@ -1564,10 +1555,10 @@
         gap: 10px;
         align-items: baseline;
         padding: 4px 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
       }
       .burza-trasa-label {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -1591,7 +1582,7 @@
         border: 1px solid var(--border);
         border-radius: 10px;
         background: none;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-2);
         cursor: pointer;
@@ -1607,7 +1598,7 @@
         border: none;
         border-radius: 10px;
         background: var(--red);
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         color: white;
         cursor: pointer;
@@ -1650,7 +1641,7 @@
         gap: 2px;
       }
       .burza-datum-small {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         font-weight: 500;
       }
@@ -1683,7 +1674,7 @@
       }
 
       .burza-stav-text {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-2);
       }
@@ -1723,7 +1714,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 0.9375rem;
       }
       .burza-tl-dot {
         width: 8px;
@@ -1790,13 +1781,13 @@
         flex: 1;
       }
       .burza-notif-text {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         color: var(--text-1);
         line-height: 1.4;
       }
       .burza-notif-cas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         margin-top: 3px;
       }
@@ -1811,24 +1802,24 @@
         text-align: center;
       }
       .burza-empty-icon {
-        font-size: 36px;
+        font-size: 2.25rem;
         margin-bottom: 12px;
         opacity: 0.4;
       }
       .burza-empty-title {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--text-1);
         margin-bottom: 6px;
       }
       .burza-empty-sub {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         line-height: 1.5;
       }
 
       .burza-arrow {
-        font-size: 20px;
+        font-size: 1.25rem;
         color: var(--text-3);
         line-height: 1;
         flex-shrink: 0;
@@ -1842,7 +1833,7 @@
         border: 1px solid var(--text-1);
         border-radius: 10px;
         background: none;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-1);
         cursor: pointer;
@@ -1863,7 +1854,7 @@
 
       /* Už rezervované text */
       .burza-uz-rez {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-3);
         font-style: italic;
@@ -1897,7 +1888,7 @@
         margin-top: 12px;
         background: var(--red);
         color: white;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         padding: 7px 16px;
         border-radius: 20px;
@@ -1919,7 +1910,7 @@
         margin: 10px 0 0;
         padding: 12px 16px;
         font: inherit;
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--red);
         background: var(--card-bg, #fff);
@@ -1938,7 +1929,7 @@
         margin-bottom: 4px;
         background: var(--red-soft);
         border-radius: 10px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-1);
       }
       .burza-filter-hdr strong {
@@ -1947,7 +1938,7 @@
       .burza-filter-clear {
         background: none;
         border: none;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--red);
         cursor: pointer;
@@ -1962,7 +1953,7 @@
       .burza-filter-back {
         background: none;
         border: none;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         color: var(--red);
         cursor: pointer;
@@ -2008,7 +1999,7 @@
         right: 5px;
         background: white;
         color: var(--red);
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 800;
         min-width: 16px;
         height: 16px;
@@ -2066,14 +2057,14 @@
         flex-shrink: 0;
       }
       .notif-panel-title {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 800;
         color: var(--text-1);
       }
       .notif-panel-close {
         background: none;
         border: none;
-        font-size: 18px;
+        font-size: 1.125rem;
         color: var(--text-3);
         cursor: pointer;
         padding: 4px 8px;
@@ -2119,7 +2110,7 @@
 
       /* Kategória badge */
       .notif-kat {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -2141,7 +2132,7 @@
       }
 
       .notif-titul {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         color: var(--text-1);
         flex: 1;
@@ -2156,12 +2147,12 @@
       }
 
       .notif-item-text {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-2);
         line-height: 1.45;
       }
       .notif-item-cas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         margin-top: 5px;
       }
@@ -2178,11 +2169,11 @@
         gap: 8px;
       }
       .notif-empty-icon {
-        font-size: 28px;
+        font-size: 1.75rem;
         opacity: 0.3;
       }
       .notif-empty-text {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         font-weight: 500;
       }
@@ -2210,12 +2201,12 @@
         margin-bottom: 8px;
       }
       .login-title {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 700;
         color: var(--text-1);
       }
       .login-sub {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         margin-top: -12px;
       }
@@ -2227,7 +2218,7 @@
       .login-select-wrap select {
         width: 100%;
         padding: 14px 16px;
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 600;
         background: var(--surface);
         color: var(--text-1);
@@ -2254,7 +2245,7 @@
         padding: 14px;
         background: var(--red);
         color: white;
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 700;
         border: none;
         border-radius: 12px;
@@ -2288,7 +2279,7 @@
         align-items: center;
         gap: 10px;
         background: var(--surface-2);
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-2);
         min-height: 44px;
@@ -2300,7 +2291,7 @@
       }
       .driver-section .arrow {
         color: var(--red-text);
-        font-size: 18px;
+        font-size: 1.125rem;
         font-weight: 800;
         line-height: 1;
         flex-shrink: 0;
@@ -2365,7 +2356,7 @@
         flex-shrink: 0;
       }
       .card-label {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -2373,7 +2364,7 @@
         margin-bottom: 2px;
       }
       .card-title {
-        font-size: 34px;
+        font-size: 2.125rem;
         font-weight: 800;
         letter-spacing: -0.5px;
         line-height: 1;
@@ -2387,14 +2378,14 @@
         cursor: pointer;
       }
       .card-time {
-        font-size: 22px;
+        font-size: 1.375rem;
         font-weight: 400;
         letter-spacing: -0.3px;
         color: var(--text-1);
         margin-top: 4px;
       }
       .card-route {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 400;
         color: var(--text-2);
         display: block;
@@ -2409,7 +2400,7 @@
         color: var(--text-3);
       }
       .card-vehicle {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 400;
         color: var(--text-2);
         margin-top: 2px;
@@ -2419,7 +2410,7 @@
         white-space: nowrap;
       }
       .card-zacvik {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         color: var(--text-2);
         margin-top: 4px;
@@ -2430,7 +2421,7 @@
         font-weight: 300;
       }
       .card-vehicle .kolaj-lbl {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         color: var(--text-3);
         margin-right: 1px;
@@ -2461,7 +2452,7 @@
       }
       .seg-kurz {
         font-weight: 500;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-1);
         min-width: 44px;
       }
@@ -2470,13 +2461,13 @@
       }
       .seg-cas {
         color: var(--text-2);
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         white-space: nowrap;
       }
       .seg-voz {
         color: var(--text-3);
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         margin-left: auto;
       }
@@ -2485,7 +2476,7 @@
       .str-zastávka {
         width: 100%;
         margin-top: 4px;
-        font-size: 18px;
+        font-size: 1.125rem;
         font-weight: 400;
         color: var(--text-2);
         display: flex;
@@ -2530,13 +2521,13 @@
         background: var(--surface-2);
       } }
       .str-kurz {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         color: var(--text-1);
         min-width: 44px;
       }
       .str-cas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         color: var(--text-2);
         flex: 1;
@@ -2576,13 +2567,13 @@
         white-space: pre-line;
       }
       .str-detail-voz {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         color: var(--text-3);
         white-space: nowrap;
       }
       .str-detail-meno {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 400;
         color: var(--text-2);
         flex: 1;
@@ -2592,7 +2583,7 @@
         width: 100%;
         margin-top: 2px;
         text-align: center;
-        font-size: 20px;
+        font-size: 1.25rem;
         color: var(--text-2);
         line-height: 1.4;
       }
@@ -2607,7 +2598,7 @@
         border-top: 1px solid var(--border, rgba(0, 0, 0, 0.08));
       }
       .card-prs-hdr {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         letter-spacing: 0.08em;
         color: var(--text-3);
@@ -2615,7 +2606,7 @@
         margin-bottom: 2px;
       }
       .card-prs-zas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-1);
         margin-bottom: 3px;
@@ -2627,7 +2618,7 @@
         padding: 1px 0;
       }
       .prs-cas {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         color: var(--text-1);
         white-space: nowrap;
@@ -2636,14 +2627,14 @@
         flex-shrink: 0;
       }
       .prs-meno {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-2);
         flex: 1;
         min-width: 0;
         text-align: left;
       }
       .prs-kurz {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-3);
         white-space: nowrap;
         text-align: right;
@@ -2674,7 +2665,7 @@
       .cp-type-btn {
         flex: 1;
         padding: 14px 4px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         background: none;
         border: none;
@@ -2832,7 +2823,7 @@ body {
 /* ── Profil ── */
 #profilView.hidden { display: none; }
 #profilView { flex: 1; overflow-y: auto; }
-.profil-meno { font-size: 18px; font-weight: 700; color: var(--text-1); margin-bottom: 10px; }
+.profil-meno { font-size: 1.125rem; font-weight: 700; color: var(--text-1); margin-bottom: 10px; }
 .profil-odhlasit {
   width: 100%;
   margin-top: 8px;
@@ -2842,7 +2833,7 @@ body {
   border: 1px solid var(--text-1);
   background: transparent;
   color: var(--text-1);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -2857,12 +2848,12 @@ body {
   border: 0;
   background: var(--red);
   color: #fff;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
 }
 .profil-nacitat:disabled { opacity: 0.6; cursor: default; }
-#profilDataInfo { text-align: right; font-size: 15px; line-height: 1.3; }
+#profilDataInfo { text-align: right; font-size: 0.9375rem; line-height: 1.3; }
 
       /* ==========================
    PÁS VÝPRAVŇA (nad spodnými tlačidlami, nikdy sa neodroluje)
@@ -2890,7 +2881,7 @@ body {
         text-align: left;
         cursor: pointer;
         padding: 5px 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         min-height: 30px;
       }
       .vyp-hlavicka {
@@ -2898,19 +2889,19 @@ body {
       }
       .vyp-hl-nazov {
         flex: 1;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         letter-spacing: 0.8px;
         color: var(--text-2);
       }
       .vyp-hl-cislo {
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-2);
       }
       .vyp-typ {
         flex: 0 0 24px;
         font-weight: 800;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--red-text);
       }
       /* popisky stĺpcov v rozbalenej Výpravni */
@@ -2918,7 +2909,7 @@ body {
         display: flex;
         gap: 8px;
         padding: 2px 0 4px;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 700;
         letter-spacing: 0.6px;
         text-transform: uppercase;
@@ -2948,7 +2939,7 @@ body {
       .vyp-dalsi {
         flex: 1 1 0;
         min-width: 0;
-        font-size: 15px;
+        font-size: 0.9375rem;
         color: var(--text-2);
         white-space: nowrap;
         overflow: hidden;
@@ -2984,7 +2975,7 @@ body {
       }
       .vyp-sheet-title {
         font-weight: 700;
-        font-size: 15px;
+        font-size: 0.9375rem;
         margin-bottom: 10px;
         color: var(--text-1);
       }
@@ -2998,7 +2989,7 @@ body {
         border-radius: 12px;
         color: var(--text-1);
         text-decoration: none;
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 600;
       }
       .vyp-sheet-cislo svg {
@@ -3013,7 +3004,7 @@ body {
         border-radius: 12px;
         background: var(--surface-2);
         color: var(--text-1);
-        font-size: 15px;
+        font-size: 0.9375rem;
         cursor: pointer;
       }
 
@@ -3035,14 +3026,14 @@ body {
         min-height: 38px;
       }
       .dispecing-pas .vyp-hl-nazov {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 800;
         letter-spacing: 0.3px;
         white-space: nowrap;
         color: var(--red-text);
       }
       .dispecing-pas .vyp-hl-cislo {
-        font-size: 16px;
+        font-size: 1rem;
         white-space: nowrap;
         font-weight: 800;
         color: var(--red-text);
@@ -3056,7 +3047,7 @@ body {
 
       /* Striedač: vozidlo v riadku medzi kurzom a časom */
       .str-voz {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: var(--text-2);
         min-width: 38px;
@@ -3067,7 +3058,7 @@ body {
         white-space: nowrap;
       }
       .burza-linka {
-        font-size: 18px;
+        font-size: 1.125rem;
       }
 
       /* Burza: Dispozičný vodič + menší podnázov (Sedavá záloha) */
@@ -3077,7 +3068,7 @@ body {
         line-height: 1.15;
       }
       .burza-podnazov {
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 500;
         letter-spacing: 0;
         color: var(--text-3);
@@ -3119,7 +3110,7 @@ body {
         opacity: 0.4;
       }
       .card-route.card-nepritomnost {
-        font-size: 24px;
+        font-size: 1.5625rem;
         font-weight: 800;
         color: var(--text-1);
         margin-top: 6px;
@@ -3163,7 +3154,7 @@ body {
         border: none;
         background: transparent;
         font: inherit;
-        font-size: 15px;
+        font-size: 0.9375rem;
         font-weight: 800;
         letter-spacing: 1px;
         color: var(--text-3);
@@ -3172,12 +3163,12 @@ body {
       }
       .vyp-box.mizne { opacity: 0; transition: opacity 2s ease-in; }
       .vyp-blk { padding: 4px 0 6px; border-top: 1px solid var(--border-2); }
-      .vyp-blk-h { font-size: 15px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--red-text); padding: 2px 0 3px; }
-      .vyp-det { display: flex; gap: 8px; font-size: 15px; padding: 2px 0; line-height: 1.3; }
+      .vyp-blk-h { font-size: 0.9375rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--red-text); padding: 2px 0 3px; }
+      .vyp-det { display: flex; gap: 8px; font-size: 0.9375rem; padding: 2px 0; line-height: 1.3; }
       .vyp-det-r { flex: 0 0 82px; color: var(--text-3); }
       .vyp-det-m { flex: 1; min-width: 0; font-weight: 600; color: var(--text-1); }
       .vyp-sipka {
-        font-size: 15px;
+        font-size: 0.9375rem;
         transition: transform 0.15s;
       }
       .vyp-box.otvorena .vyp-sipka {
@@ -3209,11 +3200,11 @@ body {
       .card-ic-voz.druh-autobus { --ik-pomer: 171/175; }
 
       .card-title.card-title-md {
-        font-size: 25px;
+        font-size: 1.5625rem;
         white-space: nowrap;
       }
       .card-route.card-miesto {
-        font-size: 18px;
+        font-size: 1.125rem;
         position: relative;
         overflow: visible;
       }
@@ -3248,7 +3239,7 @@ body {
   color: var(--text-3);
 }
 .zf-naz {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 800;
   letter-spacing: 1px;
 }
@@ -3256,7 +3247,7 @@ body {
   flex: 1;
   min-width: 0;
   text-align: left;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-1);
   white-space: nowrap;
@@ -3267,7 +3258,7 @@ body {
   color: var(--red-text);
 }
 .zf-sipka {
-  font-size: 15px;
+  font-size: 0.9375rem;
   transition: transform 0.15s;
 }
 .zf-box.otvorena .zf-sipka {
@@ -3288,7 +3279,7 @@ body {
   border-radius: 10px;
   background: transparent;
   color: var(--text-2);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -3296,7 +3287,7 @@ body {
   display: inline-block;
 }
 .zf-smery {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--text-3);
   padding: 0 0 4px 76px;
 }
@@ -3304,43 +3295,43 @@ body {
 /* Export mesiaca */
 .export-menu{position:fixed;z-index:3000;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:6px;min-width:170px}
 .export-menu[hidden]{display:none}
-.export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1);font:inherit;font-size:15px;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
+.export-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;color:var(--text-1);font:inherit;font-size:0.9375rem;padding:12px 14px;border-radius:8px;cursor:pointer;min-height:44px}
 @media (hover: hover) { .export-menu button:hover {background:var(--red-soft)} }
 #btnExport[hidden]{display:none}
 
 .profil-prepinac{cursor:pointer;align-items:center}
 .profil-prepinac{min-height:48px}
 .profil-prepinac input{width:26px;height:26px;accent-color:var(--red);flex-shrink:0}
-.profil-pozn{font-size: 15px;color:var(--text-3);padding:2px 0 4px;line-height:1.3}
+.profil-pozn{font-size: 0.9375rem;color:var(--text-3);padding:2px 0 4px;line-height:1.3}
 
 /* Hľadať */
 #hladatView{flex:1;overflow-y:auto;padding:12px 14px 16px}
 #hladatView.hidden{display:none}
-.hl-vstup{width:100%;box-sizing:border-box;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-1);font:inherit;font-size: 18px}
+.hl-vstup{width:100%;box-sizing:border-box;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-1);font:inherit;font-size: 1.125rem}
 .hl-vstup:focus{outline:none;border-color:var(--text-3)}
-.hl-pozn{color:var(--text-3);font-size: 18px;padding:18px 4px;line-height:1.4}
-.hl-sek{font-size: 18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);padding:16px 4px 6px}
+.hl-pozn{color:var(--text-3);font-size: 1.125rem;padding:18px 4px;line-height:1.4}
+.hl-sek{font-size: 1.125rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);padding:16px 4px 6px}
 .hl-riadok{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text-1);border-radius:12px;padding:10px 12px;margin-bottom:6px;font:inherit;cursor:pointer;min-height:56px}
 .hl-riadok.hl-minule{opacity:.65}
 .hl-riadok.hl-dnes{border-color:var(--red)}
 .hl-den{display:flex;flex-direction:column;align-items:center;min-width:48px}
-.hl-den b{font-size: 18px}.hl-den span{font-size: 18px;color:var(--text-3);text-transform:uppercase}
-.hl-hlava{font-weight:700;font-size: 18px}
-.hl-info{font-size: 18px;color:var(--text-3);margin-top:2px;line-height:1.3}
+.hl-den b{font-size: 1.125rem}.hl-den span{font-size: 1.125rem;color:var(--text-3);text-transform:uppercase}
+.hl-hlava{font-weight:700;font-size: 1.125rem}
+.hl-info{font-size: 1.125rem;color:var(--text-3);margin-top:2px;line-height:1.3}
 
 .hl-den-nav{display:flex;align-items:center;gap:6px;margin:10px 0 2px}
-.hl-den-nav button{border:1px solid var(--border);background:var(--surface);color:var(--text-1);border-radius:10px;font:inherit;font-size:20px;min-width:44px;min-height:44px;cursor:pointer}
-.hl-den-nav #hladatDatum{flex:1;font-size: 18px;font-weight:600}
+.hl-den-nav button{border:1px solid var(--border);background:var(--surface);color:var(--text-1);border-radius:10px;font:inherit;font-size:1.25rem;min-width:44px;min-height:44px;cursor:pointer}
+.hl-den-nav #hladatDatum{flex:1;font-size: 1.125rem;font-weight:600}
 .hl-riadok{display:flex;justify-content:space-between;align-items:flex-start}
 .hl-text{min-width:0}
-.hl-sluzba{font-size: 18px;margin-top:1px}
-.hl-teraz{color:var(--red);font-size: 18px;font-weight:700;white-space:nowrap;margin-left:8px}
+.hl-sluzba{font-size: 1.125rem;margin-top:1px}
+.hl-teraz{color:var(--red);font-size: 1.125rem;font-weight:700;white-space:nowrap;margin-left:8px}
 
 /* Zmena služby: mini karta vo farbách appky (inverzná ku karte), jemne „dýcha“ */
 .zmena-mini{margin:10px 0 2px;padding:12px 14px;border-radius:14px;background:var(--red);color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:zmenaDych 3.2s ease-in-out infinite}
 .zmena-mini-r + .zmena-mini-r{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.28)}
-.zmena-mini-h{font-size: 15px;font-weight:800;letter-spacing:.01em;line-height:1.25}
-.zmena-mini-t{font-size: 15px;font-weight:500;opacity:.92;margin-top:2px;line-height:1.3}
+.zmena-mini-h{font-size: 0.9375rem;font-weight:800;letter-spacing:.01em;line-height:1.25}
+.zmena-mini-t{font-size: 0.9375rem;font-weight:500;opacity:.92;margin-top:2px;line-height:1.3}
 /* tmavý režim: mini karta je opačne – svetlá */
 :root[data-theme="dark"] .zmena-mini{background:#f1f3f6;color:#1a1c21}
 :root[data-theme="dark"] .zmena-mini-h{color:#e8001a}
@@ -3352,7 +3343,7 @@ body {
   :root:not([data-theme="light"]) .zmena-mini-h{color:#e8001a}
   :root:not([data-theme="light"]) .zmena-mini-r + .zmena-mini-r{border-top-color:rgba(0,0,0,.14)}
 }
-.zmena-mini-hint{font-size: 15px;opacity:.7;margin-top:8px;text-align:right}
+.zmena-mini-hint{font-size: 0.9375rem;opacity:.7;margin-top:8px;text-align:right}
 @keyframes zmenaDych{0%,100%{opacity:.82;box-shadow:0 0 0 0 rgba(232,0,26,0)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(232,0,26,.35)}}
 @media (prefers-reduced-motion:reduce){.zmena-mini{animation:none}}
 
@@ -3365,7 +3356,7 @@ body {
     body { position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
   }
 }
-#profilDiag { font-size: 15px; color: var(--text-3); text-align: center; margin: 14px 0 6px; line-height: 1.5; }
+#profilDiag { font-size: 0.9375rem; color: var(--text-3); text-align: center; margin: 14px 0 6px; line-height: 1.5; }
 
 /* Voľno: menu (tri bodky vpravo hore) */
 .volno-card.volno-s-menu{position:relative}
@@ -3406,8 +3397,8 @@ body {
 
 /* Úzke displeje (≤350 px): dispečing sa zmestí na jeden riadok */
 @media (max-width: 350px) {
-  .dispecing-pas .vyp-hl-nazov { font-size: 13px; letter-spacing: 0; }
-  .dispecing-pas .vyp-hl-cislo { font-size: 15px; }
+  .dispecing-pas .vyp-hl-nazov { font-size: 0.8125rem; letter-spacing: 0; }
+  .dispecing-pas .vyp-hl-cislo { font-size: 0.9375rem; }
 }
 
 /* Široké displeje (rozložená skladačka, tablet, počítač): klasické rozloženie telefónu v stĺpci na stred.
@@ -3417,8 +3408,8 @@ body {
   body { width: 100%; max-width: 480px; margin: 0 auto; transform: translateZ(0); box-shadow: 0 0 0 1px var(--border-2), 0 0 40px rgba(0,0,0,.15); }
 }
 
-.burza-upoz { display: block; font-size: 15px; color: var(--orange, #a35a00); margin-top: 4px; font-weight: 500; }
-.burza-delena { display: block; font-size: 15px; color: var(--text-2); margin-top: 4px; }
+.burza-upoz { display: block; font-size: 0.9375rem; color: var(--orange, #a35a00); margin-top: 4px; font-weight: 500; }
+.burza-delena { display: block; font-size: 0.9375rem; color: var(--text-2); margin-top: 4px; }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .grafikon-direction:not(.np):not(.noc):not(.aktualny) { background: #3a404a; color: #e5e7eb; }
@@ -3431,12 +3422,12 @@ body {
 #cpModal:not(.active) { transform: translateY(calc(100% + 120px)); pointer-events: none; }
 
 /* Odpočet do odchodu (zvonček v pruhu spoja + okno) */
-.odp-btn { display:inline-flex; align-items:center; gap:5px; min-height:36px; min-width:36px; margin:-6px 0; padding:0 8px; border:none; border-radius:18px; background:rgba(255,255,255,.16); color:inherit; font:inherit; font-size:15px; font-weight:700; cursor:pointer; font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent; }
+.odp-btn { display:inline-flex; align-items:center; gap:5px; min-height:36px; min-width:36px; margin:-6px 0; padding:0 8px; border:none; border-radius:18px; background:rgba(255,255,255,.16); color:inherit; font:inherit; font-size:0.9375rem; font-weight:700; cursor:pointer; font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent; }
 .odp-btn.odp-on { background:rgba(255,255,255,.3); }
 .odp-btn.odp-blizko { animation: odpBlik 1s steps(2,start) infinite; }
 @keyframes odpBlik { 50% { opacity:.45; } }
 .odp-cislo.odp-blizko { color: var(--red-text); }
-.odp-pre, .odp-vyp, .odp-zat { flex:1; width:100%; min-height:52px; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text-1); font:inherit; font-size:16px; font-weight:600; cursor:pointer; }
+.odp-pre, .odp-vyp, .odp-zat { flex:1; width:100%; min-height:52px; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text-1); font:inherit; font-size:1rem; font-weight:600; cursor:pointer; }
 .odp-pre-on { border-color:var(--text-3); background:var(--surface-2, var(--surface)); }
 .odp-vyp { margin-bottom:8px; background:var(--red); border-color:var(--red); color:#fff; }
 .odp-zat { color:var(--text-2); font-weight:500; }
@@ -3444,7 +3435,7 @@ body {
 /* v175: riadok s upozornením (dlhé podržanie) */
 [data-odp-cas]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .odp-riadok{box-shadow:inset 3px 0 0 var(--red)}
-.odp-rt{flex:none;margin-left:auto;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--red-text, var(--red));padding:12px 6px 12px 10px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.odp-rt{flex:none;margin-left:auto;font-size:0.8125rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--red-text, var(--red));padding:12px 6px 12px 10px;cursor:pointer;-webkit-user-select:none;user-select:none}
 
 /* v178: nastavenia upozornenia (prilepený panel v okne odpočtu) */
 .odp-nast{position:absolute;top:8px;right:8px;width:44px;height:44px;border:none;border-radius:22px;background:transparent;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -3452,19 +3443,19 @@ body {
 .odp-nast-otv svg{transform:rotate(180deg)}
 .odp-panel{max-height:0;overflow:hidden;transition:max-height .25s ease;background:var(--surface);color:var(--text-1);border-radius:0 0 20px 20px;border-top:1px solid var(--border)}
 .odp-panel-in{padding:16px 20px 18px}
-.odp-panel-t{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:left}
-.odp-panel-h{font-size:13px;color:var(--text-3);margin-top:12px;text-align:left}
+.odp-panel-t{font-size:0.8125rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:left}
+.odp-panel-h{font-size:0.8125rem;color:var(--text-3);margin-top:12px;text-align:left}
 .odp-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.odp-chip{min-height:48px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.odp-chip{min-height:48px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:1rem;font-weight:600;cursor:pointer}
 .odp-chip-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
 
 /* v179: zvonček plánu upozornení na karte */
-.odp-plan{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:15px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+.odp-plan{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:0.9375rem;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
 .odp-plan-on{background:var(--text-1);border-color:var(--text-1);color:var(--surface)}
 .odp-plan-wrap{display:flex;justify-content:center;margin:6px 0 8px}
 
 /* v186: deň mimo dát exportu – oznam namiesto „Voľno“ */
-.volno-card .volno-text-oznam{font-size:20px;font-weight:700;line-height:1.3;letter-spacing:0;color:var(--text-2)}
+.volno-card .volno-text-oznam{font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:0;color:var(--text-2)}
 
 /* v191: nadpis pri swipe – náhľad nového dňa / mesiaca sa prelína s odchádzajúcim */
 .hdr-ghost{position:absolute;flex:none;pointer-events:none;cursor:default;box-sizing:border-box;will-change:transform,opacity}
@@ -3472,7 +3463,7 @@ body {
 .section-header.swipe-anim,.hdr-ghost.swipe-anim,.swipe-slide-ghost.swipe-anim,#servicesContainer.swipe-anim{transition:transform .28s cubic-bezier(.25,.46,.45,.94),opacity .28s ease}
 
 /* v195: chybové hlášky – oranžová + jemné blikanie (štyri záblesky, potom stojí) */
-.chyba-text{color:var(--chyba);font-size:15px;font-weight:600;margin-top:8px;min-height:16px}
+.chyba-text{color:var(--chyba);font-size:0.9375rem;font-weight:600;margin-top:8px;min-height:16px}
 @keyframes chyba-blik{0%,100%{opacity:1}50%{opacity:.35}}
 .chyba-blik{animation:chyba-blik .7s ease-in-out 4}
 @media (prefers-reduced-motion: reduce){.chyba-blik{animation:none}}
@@ -3489,8 +3480,8 @@ body {
 /* v200: karta Dnes – čistejší a elegantnejší vzhľad (rozloženie, obsah a veľkosti písma ostávajú) */
 .service-card{border-radius:20px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);border:1px solid var(--border-2);border-left:4px solid var(--red)}
 .driver-section{background:transparent;border:0;border-bottom:1px solid var(--border-2);border-radius:0;color:var(--text-2)}
-.card-title{font-size:42px;letter-spacing:-.5px}
-.card-time{font-weight:600;font-size:24px}
+.card-title{font-size:2.625rem;letter-spacing:-.5px}
+.card-time{font-weight:600;font-size:1.5625rem}
 .card-route-od,.card-route-do,.card-vehicle{color:var(--text-2)}
 .card-route-od,.card-route-do{font-weight:500}
 .card-ic{color:var(--text-3)}
@@ -3631,7 +3622,7 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .gm-ouska { display: flex; flex-shrink: 0; background: var(--surface); border-bottom: 1px solid var(--border-2); }
 .gm-ouska button {
   flex: 1; padding: 12px 4px; background: none; border: 0; border-bottom: 3px solid transparent;
-  font-size: 15px; font-weight: 700; line-height: 1.15; color: var(--text-2); cursor: pointer;
+  font-size: 0.9375rem; font-weight: 700; line-height: 1.15; color: var(--text-2); cursor: pointer;
 }
 .gm-ouska button.on { color: var(--red); border-bottom-color: var(--red); }
 .gm-pane { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 14px; flex-direction: column; }
@@ -3661,10 +3652,10 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .prs-det{margin:4px 0 0;padding:6px 10px}
 
 /* Pôvod dát: D = dispečing, S = len plán */
-.zdroj-dat { font-size: 9px; font-weight: 600; opacity: .4; margin-left: 4px; letter-spacing: .04em; vertical-align: super; }
+.zdroj-dat { font-size: 0.5625rem; font-weight: 600; opacity: .4; margin-left: 4px; letter-spacing: .04em; vertical-align: super; }
 
 /* v224: mini karta „Plánovaná služba“ – samostatná, nenápadná, v štandardných farbách, jemne „dýcha“ */
-.plan-mini{display:flex;flex-direction:column;align-items:center;gap:1px;margin:0 0 10px;padding:10px 14px;font-size:14px;line-height:1.35;color:var(--text-2);text-align:center;background:var(--surface);border:1px dashed var(--border-2);border-radius:16px;animation:burza-dych-text 3.2s ease-in-out infinite}
+.plan-mini{display:flex;flex-direction:column;align-items:center;gap:1px;margin:0 0 10px;padding:10px 14px;font-size:0.875rem;line-height:1.35;color:var(--text-2);text-align:center;background:var(--surface);border:1px dashed var(--border-2);border-radius:16px;animation:burza-dych-text 3.2s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.plan-mini{animation:none}}
 
 /* v227: mini karta „Plánovaná služba“ – okrová ako upozornenie na odpočinok */
@@ -3673,22 +3664,22 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 /* v230: okno s jednotlivými upozorneniami (dlhé podržanie na „Upozorniť“) */
 .odp-okno-bg{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px}
 .odp-okno{background:var(--surface);color:var(--text-1);border-radius:22px;padding:18px 16px 16px;width:100%;max-width:380px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-.odp-okno-h{font-size:18px;font-weight:700;text-align:center;margin-bottom:10px}
+.odp-okno-h{font-size:1.125rem;font-weight:700;text-align:center;margin-bottom:10px}
 .odp-okno-zoz{overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.odp-okno-r{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-2);border-radius:14px;font-size:16px;cursor:pointer}
+.odp-okno-r{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-2);border-radius:14px;font-size:1rem;cursor:pointer}
 .odp-okno-r input{width:22px;height:22px;flex:none;accent-color:var(--red,#d62828)}
 .odp-okno-r.minule{opacity:.45}
-.odp-okno-zavri{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:600;background:var(--red,#d62828);color:#fff;cursor:pointer}
-.card-pjo{font-size:15px;color:var(--text-2);margin-top:2px}
+.odp-okno-zavri{border:0;border-radius:14px;padding:13px;font-size:1rem;font-weight:600;background:var(--red,#d62828);color:#fff;cursor:pointer}
+.card-pjo{font-size:0.9375rem;color:var(--text-2);margin-top:2px}
 .list-cisty{color:var(--text-2);font-weight:600;min-width:44px;text-align:right}
 
 /* Odkaz na voľné služby z Burzy: nenápadný, červený, jemne dýchajúci text */
-.burza-link-row{background:transparent;border:0;box-shadow:none;padding:12px 4px;font-size:clamp(15px,4.4vw,18px);white-space:nowrap;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
+.burza-link-row{background:transparent;border:0;box-shadow:none;padding:12px 4px;font-size:clamp(0.9375rem,4.4vw,1.125rem);white-space:nowrap;font-weight:600;color:var(--red);animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
 @keyframes burza-dych-text-jemne{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.burza-link-row{animation:none}}
 
 /* ===== Správy ===== */
-.spravy-pas{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--red-soft);color:var(--red-text);font-weight:700;font-size:15px;cursor:pointer;overflow:hidden}
+.spravy-pas{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--red-soft);color:var(--red-text);font-weight:700;font-size:0.9375rem;cursor:pointer;overflow:hidden}
 .spravy-pas.hidden{display:none}
 .spravy-pas-ik{flex:none;animation:burza-dych-text-jemne 2.6s ease-in-out infinite}
 .spravy-pas-okno{overflow:hidden;flex:1;min-width:0}
@@ -3697,56 +3688,56 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .spravy-pas-kopia.sirka{padding-right:4em}
 .spravy-ov{position:fixed;inset:0;z-index:2000;background:rgba(10,12,16,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(64px + env(safe-area-inset-top,0px)) 10px calc(10px + env(safe-area-inset-bottom,0px))}
 .spravy-modal{background:var(--bg);color:var(--text-1);border-radius:22px;box-shadow:var(--sh-lg);width:min(460px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding:14px 12px 12px}
-.spravy-mh{display:flex;align-items:center;gap:8px;margin:2px 4px 10px;font-size:22px}
+.spravy-mh{display:flex;align-items:center;gap:8px;margin:2px 4px 10px;font-size:1.375rem}
 .spravy-mh b{flex:1;min-width:0}
-.spravy-dn{font-size:18px;line-height:1.25}
-.spravy-x,.spravy-spat{border:0;background:none;color:var(--text-2);font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;flex:none}
-.spravy-spat{font-size:30px;line-height:1;margin-left:-8px}
+.spravy-dn{font-size:1.125rem;line-height:1.25}
+.spravy-x,.spravy-spat{border:0;background:none;color:var(--text-2);font-size:1.375rem;width:40px;height:40px;border-radius:50%;cursor:pointer;flex:none}
+.spravy-spat{font-size:1.875rem;line-height:1;margin-left:-8px}
 .spravy-sc{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0}
-.spravy-vsetko{width:100%;border:0;background:var(--red);color:#fff;border-radius:14px;padding:13px 14px;font-weight:700;font-size:16px;display:flex;justify-content:space-between;margin-bottom:8px;cursor:pointer}
+.spravy-vsetko{width:100%;border:0;background:var(--red);color:#fff;border-radius:14px;padding:13px 14px;font-weight:700;font-size:1rem;display:flex;justify-content:space-between;margin-bottom:8px;cursor:pointer}
 .spravy-sek{background:var(--surface);border-radius:14px;margin-bottom:8px;overflow:hidden}
-.spravy-sr{width:100%;border:0;background:none;color:inherit;display:flex;align-items:center;gap:12px;padding:12px 14px;font-size:16px;font-weight:700;cursor:pointer;text-align:left}
+.spravy-sr{width:100%;border:0;background:none;color:inherit;display:flex;align-items:center;gap:12px;padding:12px 14px;font-size:1rem;font-weight:700;cursor:pointer;text-align:left}
 .spravy-i{width:36px;height:36px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;flex:none;color:var(--text-2)}
 .spravy-i svg{width:20px;height:20px}
 .spravy-sn{flex:1;min-width:0}
-.spravy-n{background:var(--red);color:#fff;border-radius:11px;min-width:22px;text-align:center;font-size:13px;padding:2px 7px}
+.spravy-n{background:var(--red);color:#fff;border-radius:11px;min-width:22px;text-align:center;font-size:0.8125rem;padding:2px 7px}
 .spravy-vsetko .spravy-n{background:#fff;color:var(--red)}
 .spravy-n.z{background:var(--surface-2);color:var(--text-3)}
-.spravy-ch{color:var(--text-3);font-size:18px;width:14px;text-align:center}
+.spravy-ch{color:var(--text-3);font-size:1.125rem;width:14px;text-align:center}
 .spravy-box{padding:0 14px 6px}
 .spravy-vsetko+.spravy-box{background:var(--surface);border-radius:14px;margin-bottom:8px;padding-top:4px}
-.spravy-it{width:100%;border:0;border-top:1px solid var(--border-2);background:none;color:inherit;text-align:left;padding:11px 18px 11px 2px;font-size:15px;cursor:pointer;position:relative;display:block}
+.spravy-it{width:100%;border:0;border-top:1px solid var(--border-2);background:none;color:inherit;text-align:left;padding:11px 18px 11px 2px;font-size:0.9375rem;cursor:pointer;position:relative;display:block}
 .spravy-it:first-child{border-top:1px solid var(--border-2)}
-.spravy-it small{display:block;color:var(--text-3);font-size:12.5px;margin-top:2px}
+.spravy-it small{display:block;color:var(--text-3);font-size:0.7812rem;margin-top:2px}
 .spravy-it.un .spravy-it-t{font-weight:700}
 .spravy-it.un::after{content:"";position:absolute;right:4px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:50%;background:var(--red)}
 .spravy-prazdne{text-align:center;color:var(--text-3);padding:30px 10px}
-.spravy-meta{margin:0 4px 6px;font-size:13px;color:var(--text-3)}
+.spravy-meta{margin:0 4px 6px;font-size:0.8125rem;color:var(--text-3)}
 .spravy-prog{height:4px;background:var(--border);border-radius:2px;margin:0 4px 10px}
 .spravy-prog i{display:block;height:4px;width:0;background:var(--red);border-radius:2px;transition:width .15s}
-.spravy-art{background:var(--surface);border-radius:16px;padding:16px;font-size:16px;line-height:1.5}
-.spravy-pozn{margin-top:8px;text-align:center;font-size:13px;color:var(--text-3)}
+.spravy-art{background:var(--surface);border-radius:16px;padding:16px;font-size:1rem;line-height:1.5}
+.spravy-pozn{margin-top:8px;text-align:center;font-size:0.8125rem;color:var(--text-3)}
 @media (prefers-reduced-motion:reduce){.spravy-pas-ik{animation:none}}
-.spravy-znova{display:block;margin:10px auto 2px;border:0;background:none;color:var(--text-3);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px}
+.spravy-znova{display:block;margin:10px auto 2px;border:0;background:none;color:var(--text-3);font-size:0.8125rem;text-decoration:underline;cursor:pointer;padding:8px}
 
 /* ===== Úvod: karty po logu ===== */
 .uvod-ov{position:fixed;inset:0;z-index:3000;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:uvod-vstup .35s ease both;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .uvod-ov.preč{opacity:0;transition:opacity .25s}
 .uvod-karta{text-align:center;padding:24px 26px;max-width:420px;animation:uvod-karta .5s ease both}
 .uvod-logo{width:64px;height:64px;margin:0 auto 26px;color:#fff}.uvod-logo svg{width:100%;height:100%}
-.uvod-em{font-size:60px;line-height:1}
-.uvod-nadpis{font-size:clamp(24px,7.2vw,32px);font-weight:800;line-height:1.15;margin:14px 0 14px}
-.uvod-cislo{font-size:clamp(96px,32vw,150px);font-weight:900;line-height:1;margin:6px 0 8px}
-.uvod-text{font-size:clamp(17px,4.8vw,20px);line-height:1.45;opacity:.96}
-.uvod-pod{margin-top:26px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;opacity:.75}
-.uvod-karta.mala .uvod-nadpis{font-size:clamp(21px,6vw,26px)}
+.uvod-em{font-size:3.75rem;line-height:1}
+.uvod-nadpis{font-size:clamp(1.5625rem,7.2vw,2rem);font-weight:800;line-height:1.15;margin:14px 0 14px}
+.uvod-cislo{font-size:clamp(6rem,32vw,9.375rem);font-weight:900;line-height:1;margin:6px 0 8px}
+.uvod-text{font-size:clamp(1.0625rem,4.8vw,1.25rem);line-height:1.45;opacity:.96}
+.uvod-pod{margin-top:26px;font-size:0.75rem;letter-spacing:1.2px;text-transform:uppercase;opacity:.75}
+.uvod-karta.mala .uvod-nadpis{font-size:clamp(1.3125rem,6vw,1.625rem)}
 .uvod-bodky{position:absolute;bottom:112px;display:flex;gap:8px}.uvod-bodky i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}.uvod-bodky i.on{background:#fff}
 .uvod-prog{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:14px;right:14px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
 .uvod-prog i{display:block;height:100%;width:100%;background:#fff;transform-origin:left;animation:uvod-prog linear forwards}
 @keyframes uvod-prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.uvod-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:6px;width:56px;height:56px;border:0;background:none;color:#fff;opacity:.35;font-size:22px;cursor:pointer;z-index:2}
+.uvod-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:6px;width:56px;height:56px;border:0;background:none;color:#fff;opacity:.35;font-size:1.375rem;cursor:pointer;z-index:2}
 .uvod-tlac{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;gap:12px}
-.uvod-tlac button{border:1.5px solid rgba(255,255,255,.7);background:rgba(255,255,255,.12);color:#fff;font-size:16px;font-weight:700;padding:12px 22px;border-radius:26px;cursor:pointer;min-width:130px}
+.uvod-tlac button{border:1.5px solid rgba(255,255,255,.7);background:rgba(255,255,255,.12);color:#fff;font-size:1rem;font-weight:700;padding:12px 22px;border-radius:26px;cursor:pointer;min-width:130px}
 .uvod-ov.pauza .uvod-prog i,.uvod-ov.pauza .uvod-konf b{animation-play-state:paused}
 .uvod-konf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .uvod-konf b{position:absolute;top:-16px;border-radius:2px;opacity:.9;animation:uvod-pad linear infinite}
@@ -3808,71 +3799,71 @@ img{-webkit-user-drag:none}
 /* v225: bez rámika – oranžová zmena bliká a okraje jemne miznú (rozmazaná žiara) */
 .zm-on{position:relative;border-radius:12px;outline:none;background:rgba(255,159,10,.16);box-shadow:0 0 18px 6px rgba(255,159,10,.2);animation:zmBlik 1s steps(2,start) 60}
 @keyframes zmBlik{50%{background:rgba(255,159,10,.4);box-shadow:0 0 22px 8px rgba(255,159,10,.42)}}
-.zm-tag{position:absolute;right:40px;top:50%;transform:translateY(-50%);background:#ff9f0a;color:#111;font-weight:800;font-size:15px;line-height:1;border-radius:10px;padding:4px 9px;pointer-events:none}
+.zm-tag{position:absolute;right:40px;top:50%;transform:translateY(-50%);background:#ff9f0a;color:#111;font-weight:800;font-size:0.9375rem;line-height:1;border-radius:10px;padding:4px 9px;pointer-events:none}
 /* okno s prideleným vozidlom pred nástupom */
 .voz-okno-bg{position:fixed;inset:0;z-index:10060;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
 .voz-okno{width:100%;max-width:320px;background:var(--surface,#fff);color:var(--text-1,#111);border:2px solid #ff9f0a;border-radius:18px;padding:20px;text-align:center}
-.voz-okno-t{font-size:17px;color:var(--text-2,#555)}
-.voz-okno-v{font-size:48px;font-weight:800;margin:6px 0 14px;font-variant-numeric:tabular-nums}
-.voz-okno-pl{display:flex;align-items:center;justify-content:center;gap:10px;border:2px dashed var(--border,#999);border-radius:14px;padding:12px;font-size:17px;color:var(--text-3,#888);margin-bottom:14px}
-.voz-okno-pl svg{flex:none}.voz-okno-pl.je{border-style:solid;border-color:#ff9f0a;color:var(--text-1,#111);font-weight:700;font-size:19px;line-height:1.25}
-.voz-okno-b{width:100%;min-height:50px;border:0;border-radius:12px;background:#ff9f0a;color:#111;font-size:18px;font-weight:800;font-family:inherit}
+.voz-okno-t{font-size:1.0625rem;color:var(--text-2,#555)}
+.voz-okno-v{font-size:3rem;font-weight:800;margin:6px 0 14px;font-variant-numeric:tabular-nums}
+.voz-okno-pl{display:flex;align-items:center;justify-content:center;gap:10px;border:2px dashed var(--border,#999);border-radius:14px;padding:12px;font-size:1.0625rem;color:var(--text-3,#888);margin-bottom:14px}
+.voz-okno-pl svg{flex:none}.voz-okno-pl.je{border-style:solid;border-color:#ff9f0a;color:var(--text-1,#111);font-weight:700;font-size:1.25rem;line-height:1.25}
+.voz-okno-b{width:100%;min-height:50px;border:0;border-radius:12px;background:#ff9f0a;color:#111;font-size:1.125rem;font-weight:800;font-family:inherit}
 
 /* VS – porovnanie služieb s kolegami */
 .vs-rezim #btnList{display:none}
-.vs-ikona b{font-size:15px;font-weight:800;border:2px solid currentColor;border-radius:6px;padding:0 4px;line-height:17px;letter-spacing:0}
+.vs-ikona b{font-size:0.9375rem;font-weight:800;border:2px solid currentColor;border-radius:6px;padding:0 4px;line-height:17px;letter-spacing:0}
 .vs-wrap{padding:2px 2px 16px}
 .vs-karta{background:var(--surface);border:1px solid var(--border-2,var(--border));border-left:5px solid var(--border);border-radius:16px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding:12px 14px;margin:10px 0}
 .vs-karta.vs-ja{border-left-color:var(--red)}
 .vs-hlava{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.vs-meno{font-size:15px;font-weight:700;color:var(--text-3)}
-.vs-x{border:0;background:var(--border-2,var(--border));color:var(--text-3);border-radius:12px;min-width:36px;min-height:36px;font-size:18px;cursor:pointer}
+.vs-meno{font-size:0.9375rem;font-weight:700;color:var(--text-3)}
+.vs-x{border:0;background:var(--border-2,var(--border));color:var(--text-3);border-radius:12px;min-width:36px;min-height:36px;font-size:1.125rem;cursor:pointer}
 .vs-sluzba{margin-top:6px}
 .vs-sluzba+.vs-sluzba{border-top:1px solid var(--border);padding-top:8px}
-.vs-linka{font-size:22px;font-weight:800;color:var(--text-1)}
-.vs-cas{font-size:19px;font-weight:600;color:var(--text-1)}
-.vs-info{font-size:15px;color:var(--text-3);margin-top:2px}
-.vs-volno{font-size:19px;font-weight:600;color:var(--text-3);margin-top:6px}
+.vs-linka{font-size:1.375rem;font-weight:800;color:var(--text-1)}
+.vs-cas{font-size:1.25rem;font-weight:600;color:var(--text-1)}
+.vs-info{font-size:0.9375rem;color:var(--text-3);margin-top:2px}
+.vs-volno{font-size:1.25rem;font-weight:600;color:var(--text-3);margin-top:6px}
 .vs-pridaj{margin:12px 0}
-.vs-pridaj-btn{width:100%;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);background:var(--surface);color:var(--text-3);border-radius:14px;padding:14px;font:inherit;font-size:17px;font-weight:600;cursor:pointer}
+.vs-pridaj-btn{width:100%;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);background:var(--surface);color:var(--text-3);border-radius:14px;padding:14px;font:inherit;font-size:1.0625rem;font-weight:600;cursor:pointer}
 .vs-panel{margin-top:6px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.12)}
-.vs-hladaj{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--border);padding:14px;font:inherit;font-size:16px;background:var(--surface);color:var(--text-1);outline:none}
+.vs-hladaj{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--border);padding:14px;font:inherit;font-size:1rem;background:var(--surface);color:var(--text-1);outline:none}
 .vs-zoznam{max-height:260px;overflow:auto}
-.vs-pol{display:flex;justify-content:space-between;gap:10px;padding:13px 14px;font-size:16px;font-weight:600;color:var(--text-1);border-bottom:1px solid var(--border);cursor:pointer}
+.vs-pol{display:flex;justify-content:space-between;gap:10px;padding:13px 14px;font-size:1rem;font-weight:600;color:var(--text-1);border-bottom:1px solid var(--border);cursor:pointer}
 .vs-pol:last-child{border-bottom:0}
 .vs-cislo{color:var(--text-3);font-weight:500}
-.vs-pozn{padding:13px 14px;font-size:15px;color:var(--text-3)}
+.vs-pozn{padding:13px 14px;font-size:0.9375rem;color:var(--text-3)}
 
 /* Druhá práca – vlastný kalendár vodiča: iná farba (modrá), len obrázok a časy na stred; karty sa môžu prekrývať */
 .dp-karta{position:relative;background:var(--surface);border:1px solid var(--border-2,var(--border));border-left:5px solid #2f6fed;border-radius:16px;box-shadow:0 1px 2px rgba(15,20,35,.05),0 3px 10px rgba(15,20,35,.06);padding:16px 14px 14px;margin:10px 0;color:var(--text-1);text-align:center}
 .dp-karta::before{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(47,111,237,.10);pointer-events:none}
 .dp-logo{display:flex;align-items:center;justify-content:center;min-height:64px;color:#2f6fed}
 .dp-logo img{max-width:70%;max-height:96px;object-fit:contain}
-.dp-cas{position:relative;display:block;width:100%;margin-top:8px;border:0;background:none;font-family:inherit;font-weight:800;font-size:30px;line-height:1.2;color:var(--text-1);cursor:pointer;padding:6px 0;-webkit-tap-highlight-color:transparent}
+.dp-cas{position:relative;display:block;width:100%;margin-top:8px;border:0;background:none;font-family:inherit;font-weight:800;font-size:1.875rem;line-height:1.2;color:var(--text-1);cursor:pointer;padding:6px 0;-webkit-tap-highlight-color:transparent}
 .dp-prekryv-hore{margin-top:-26px;z-index:2;margin-left:14px;margin-right:0}
 .dp-prekryv-dole{margin-bottom:-26px;z-index:2;margin-left:14px;position:relative}
 .dp-prekryv-dole + *{position:relative;z-index:1}
 :root[data-theme="dark"] .dp-karta{border-left-color:#5b8cff}
 :root[data-theme="dark"] .dp-logo{color:#7aa5ff}
 .dp-edit-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
-.dp-edit{background:var(--surface,#fff);color:var(--text-1,#111);border-radius:18px;padding:18px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;font-size:16px}
-.dp-edit-t{font-size:18px;font-weight:800;text-align:center}
-.dp-edit label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:16px;font-weight:600}
-.dp-edit input[type=time]{font-size:20px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit}
+.dp-edit{background:var(--surface,#fff);color:var(--text-1,#111);border-radius:18px;padding:18px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;font-size:1rem}
+.dp-edit-t{font-size:1.125rem;font-weight:800;text-align:center}
+.dp-edit label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:1rem;font-weight:600}
+.dp-edit input[type=time]{font-size:1.25rem;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit}
 .dp-edit-pjo{justify-content:flex-start!important}
 .dp-edit-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
-.dp-edit-b button{font-size:16px;font-weight:700;border:0;border-radius:12px;padding:10px 14px;background:var(--border-2,#e5e7eb);color:inherit;cursor:pointer;min-height:44px}
+.dp-edit-b button{font-size:1rem;font-weight:700;border:0;border-radius:12px;padding:10px 14px;background:var(--border-2,#e5e7eb);color:inherit;cursor:pointer;min-height:44px}
 .dp-b-hl{background:#2f6fed!important;color:#fff!important}
 .dp-b-zmaz{color:#d62828!important}
 
-.dp-typ{display:block;font-size:22px;font-weight:800;color:#2f6fed;margin-bottom:2px}
+.dp-typ{display:block;font-size:1.375rem;font-weight:800;color:#2f6fed;margin-bottom:2px}
 :root[data-theme="dark"] .dp-typ{color:#7aa5ff}
-.dp-pridat{display:block;margin:10px auto;border:1.5px dashed #2f6fed;color:#2f6fed;background:none;border-radius:14px;font-size:16px;font-weight:700;padding:10px 18px;min-height:44px;cursor:pointer}
+.dp-pridat{display:block;margin:10px auto;border:1.5px dashed #2f6fed;color:#2f6fed;background:none;border-radius:14px;font-size:1rem;font-weight:700;padding:10px 18px;min-height:44px;cursor:pointer}
 :root[data-theme="dark"] .dp-pridat{color:#7aa5ff;border-color:#7aa5ff}
-.dp-edit select{font-size:18px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit;max-width:60%}
+.dp-edit select{font-size:1.125rem;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:inherit;max-width:60%}
 
 /* prepínač zoznamov v hlavičke: číslo alebo logo */
-.zoznam2-cislo{font-size:20px;font-weight:800;line-height:1;color:var(--text-3)}
+.zoznam2-cislo{font-size:1.25rem;font-weight:800;line-height:1;color:var(--text-3)}
 .zoznam2-logo{width:28px;height:28px;object-fit:contain;border-radius:6px}
 
 /* Profil – druhá práca: tlačidlá pod sebou, rovnako veľké */
@@ -3886,41 +3877,41 @@ img{-webkit-user-drag:none}
 body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--red)!important;color:#fff!important}
 
 /* Profil: sekcie (rozbaľovacie) */
-.profil-sekcia > summary { font-size: 17px; font-weight: 700; color: var(--text-1); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.profil-sekcia > summary { font-size: 1.0625rem; font-weight: 700; color: var(--text-1); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
 .profil-sekcia > summary::-webkit-details-marker { display: none; }
 .profil-sekcia > summary::after { content: "▾"; color: var(--text-2); }
 .profil-sekcia[open] > summary { margin-bottom: 10px; }
 .profil-sekcia[open] > summary::after { content: "▴"; }
-.pf-foto { width: 96px; height: 120px; border-radius: 10px; background: var(--surface-2); color: var(--text-2); display: flex; align-items: center; justify-content: center; font-size: 15px; margin: 0 0 10px; }
-.pf-nadpis { font-size: 15px; font-weight: 700; color: var(--text-2); margin: 14px 0 4px; text-transform: uppercase; letter-spacing: .04em; }
+.pf-foto { width: 96px; height: 120px; border-radius: 10px; background: var(--surface-2); color: var(--text-2); display: flex; align-items: center; justify-content: center; font-size: 0.9375rem; margin: 0 0 10px; }
+.pf-nadpis { font-size: 0.9375rem; font-weight: 700; color: var(--text-2); margin: 14px 0 4px; text-transform: uppercase; letter-spacing: .04em; }
 .pf-hod { color: var(--text-1); text-align: right; }
-.pf-tagy { display: flex; flex-wrap: wrap; gap: 6px; font-size: 15px; }
+.pf-tagy { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.9375rem; }
 .pf-tagy .tag { padding: 4px 10px; border-radius: 999px; background: var(--surface-2); }
 .pf-obdobie { display: flex; gap: 6px; margin-bottom: 10px; }
-.pf-obdobie button { flex: 1; padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 15px; }
+.pf-obdobie button { flex: 1; padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 0.9375rem; }
 .pf-obdobie button.on { background: var(--red); color: #fff; border-color: var(--red); }
 /* platnosti: blíži sa koniec = jemné blikanie okrovou, po platnosti = oranžový rámik a blikanie */
 @keyframes pf-blik { 50% { opacity: .45; } }
 .pf-plat.blizi .pf-hod { color: #b8860b; font-weight: 700; animation: pf-blik 1.6s ease-in-out infinite; }
 .pf-plat.po { border: 2px solid #e07b00; border-radius: 10px; padding: 4px 8px; animation: pf-blik 1.2s ease-in-out infinite; }
 .pf-plat.po .pf-hod { color: #e07b00; font-weight: 700; }
-.pf-rok { display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 17px; font-weight: 700; margin: 4px 0 10px; }
-.pf-rok button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 20px; }
+.pf-rok { display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 1.0625rem; font-weight: 700; margin: 4px 0 10px; }
+.pf-rok button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 1.25rem; }
 .pf-vyber { display: grid; gap: 6px; margin-bottom: 10px; }
 .pf-vyber.m12 { grid-template-columns: repeat(4, 1fr); }
 .pf-vyber.q4 { grid-template-columns: repeat(2, 1fr); }
-.pf-vyber button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 15px; }
+.pf-vyber button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 0.9375rem; }
 .pf-vyber button.on { background: var(--red); color: #fff; border-color: var(--red); }
-.pf-rok-btn { width: auto !important; padding: 0 22px; font-size: 20px; font-weight: 700; }
+.pf-rok-btn { width: auto !important; padding: 0 22px; font-size: 1.25rem; font-weight: 700; }
 .pf-rok-btn.on { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 .pf-vyber { grid-template-columns: 1.1fr repeat(3, 1fr) !important; }
 .pf-vyber button.pf-q { font-weight: 700; }
-.pf-zvolene { font-size: 15px; font-weight: 700; color: var(--text-2); margin: 2px 0 8px; text-align: center; }
+.pf-zvolene { font-size: 0.9375rem; font-weight: 700; color: var(--text-2); margin: 2px 0 8px; text-align: center; }
 
 /* Štvrťroky: tmavý štítok vľavo v podfarbenom rade, mesiace v ňom ako svetlé tlačidlá */
 .pf-vyber { display: block !important; }
 .pf-rad { display: grid; grid-template-columns: 1.1fr repeat(3, 1fr); gap: 6px; padding: 6px; margin-bottom: 8px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
-.pf-rad button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-1); font-size: 15px; }
+.pf-rad button { padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-1); font-size: 0.9375rem; }
 .pf-rad button.on { background: var(--red); color: #fff; border-color: var(--red); }
 .pf-rad button.pf-q { background: var(--text-1); color: var(--surface); border-color: var(--text-1); font-weight: 700; letter-spacing: .04em; }
 .pf-rad button.pf-q.on { background: var(--red); color: #fff; border-color: var(--red); }
@@ -3929,19 +3920,19 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pf-klik.maobsah>span:first-child::after{content:" ▾";color:var(--red)}
 .pf-klik.maobsah.otvorene>span:first-child::after{content:" ▴"}
 .pf-ine{margin:0 0 4px 14px;padding-left:10px;border-left:3px solid var(--red)}
-.pf-ine .employer-detail-row span:first-child{font-size:15px}
+.pf-ine .employer-detail-row span:first-child{font-size:0.9375rem}
 
 /* Štatistika: kompaktnejší výber obdobia; názov obdobia vľavo, odkaz na výkaz vpravo */
-.pf-rok { gap: 14px; margin: 0 0 6px; font-size: 16px; }
-.pf-rok button { width: 34px; height: 30px; border-radius: 8px; font-size: 18px; line-height: 1; padding: 0; }
-.pf-rok-btn { height: 30px !important; font-size: 17px !important; padding: 0 18px !important; }
+.pf-rok { gap: 14px; margin: 0 0 6px; font-size: 1rem; }
+.pf-rok button { width: 34px; height: 30px; border-radius: 8px; font-size: 1.125rem; line-height: 1; padding: 0; }
+.pf-rok-btn { height: 30px !important; font-size: 1.0625rem !important; padding: 0 18px !important; }
 .pf-rad { padding: 4px; gap: 4px; margin-bottom: 4px; border-radius: 12px; }
-.pf-rad button { padding: 4px 4px; font-size: 15px; line-height: 1.2; border-radius: 8px; }
+.pf-rad button { padding: 4px 4px; font-size: 0.9375rem; line-height: 1.2; border-radius: 8px; }
 .pf-zvolene { display: flex; align-items: center; justify-content: space-between; text-align: left; margin: 4px 0 6px; }
-.pf-vykaz-odkaz { border: 0; background: transparent; color: var(--red); font-size: 15px; font-weight: 700; padding: 6px 0 6px 12px; }
+.pf-vykaz-odkaz { border: 0; background: transparent; color: var(--red); font-size: 0.9375rem; font-weight: 700; padding: 6px 0 6px 12px; }
 
 /* Grafikon: vozidlo a vodič spoja */
-.g-kto { font-size: 15px; font-weight: 600; color: var(--text-2); padding: 2px 4px 6px; }
+.g-kto { font-size: 0.9375rem; font-weight: 600; color: var(--text-2); padding: 2px 4px 6px; }
 
 /* Karta: pomlčky okolo staníc, zelené zvýraznenie začiatku/konca, šípka vozidiel ako „i“, zarovnanie ikony vozidla */
 .card-route-od::after { content: " –"; }
@@ -3965,7 +3956,7 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
    Zvýraznenie „teraz / dnes / moja služba“ = hrubšia línia, nie červený text. */
 /* klikateľné → červené */
 /* aktuálny deň tučne, iný deň normálne */
-.section-header.je-dnes .date-day, .section-header.je-dnes .date-date { font-weight: 800; }
+.section-header.je-dnes .date-day, .section-header.je-dnes .date-date { font-weight: 700; }
 /* iba informácia → neutrálne */
 .grafikon-row.highlight .g-time, .grafikon-row.nepreprava.highlight .g-time { color: var(--text-1); }
 .grafikon-row.highlight .g-my, .grafikon-row.nepreprava.highlight .g-my { display: none; }
@@ -4012,11 +4003,11 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #pomocOv .pm-n i { width: 6px; height: 6px; border-radius: 3px; background: var(--border); transition: width .2s, background .2s; }
 #pomocOv .pm-n i.ho { background: var(--text-3); opacity: .5; }
 #pomocOv .pm-n i.on { width: 20px; background: var(--red); }
-#pomocOv .pm-h { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; margin: 0 0 6px; }
-#pomocOv .pm-t { font-size: 16px; line-height: 1.5; color: var(--text-2); }
+#pomocOv .pm-h { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.2px; margin: 0 0 6px; }
+#pomocOv .pm-t { font-size: 1rem; line-height: 1.5; color: var(--text-2); }
 #pomocOv .pm-p { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
-#pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 15px; color: var(--text-3); padding: 10px 2px; cursor: pointer; }
-#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 999px; font: inherit; font-size: 16px; font-weight: 700; padding: 12px 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(232, 0, 26, 0.3); white-space: pre; }
+#pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 0.9375rem; color: var(--text-3); padding: 10px 2px; cursor: pointer; }
+#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 999px; font: inherit; font-size: 1rem; font-weight: 700; padding: 12px 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(232, 0, 26, 0.3); white-space: pre; }
 #pomocOv .pm-next:active { transform: scale(.97); }
 @keyframes pmFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pmPop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
@@ -4032,7 +4023,7 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #cpModal .grafikon-header { padding-top: 0; }
 /* Správy: originál príkazu */
 .spravy-orig-ln{display:flex;gap:8px;margin:0 4px 10px}
-.spravy-orig{border:1.5px solid var(--red);background:var(--surface);color:var(--red-text);border-radius:12px;padding:9px 14px;font-size:15px;font-weight:600;cursor:pointer}
+.spravy-orig{border:1.5px solid var(--red);background:var(--surface);color:var(--red-text);border-radius:12px;padding:9px 14px;font-size:0.9375rem;font-weight:600;cursor:pointer}
 .spravy-orig:disabled{opacity:.6}
 .spravy-orig-ov{position:fixed;inset:0;z-index:2100;background:rgba(10,12,16,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(64px + env(safe-area-inset-top,0px)) 10px calc(10px + env(safe-area-inset-bottom,0px))}
 .spravy-orig-ov .spravy-modal{height:100%}
@@ -4052,10 +4043,10 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .spravy-zh{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:rgba(255,255,255,.65);font-size:.78rem;pointer-events:none}
 
 /* body dopravného príkazu: v zozname a ako obsah v detaile */
-.spravy-it-b{display:block;font-size:13px;color:var(--text-2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spravy-it-b{display:block;font-size:0.8125rem;color:var(--text-2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spravy-toc{margin:0 0 14px;padding:4px 0 6px;border-bottom:1px solid var(--border-2)}
-.spravy-toc-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding:2px 0 6px}
-.spravy-toc-i{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-size:15px;line-height:1.35;padding:8px 2px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.spravy-toc-h{font-size:0.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding:2px 0 6px}
+.spravy-toc-i{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-size:0.9375rem;line-height:1.35;padding:8px 2px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .spravy-toc-i:active{background:rgba(128,128,128,.15)}
 .spravy-toc-i b{font-weight:700}
 
@@ -4064,33 +4055,33 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .pr-ov{position:fixed;inset:0;z-index:2100;background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch}
 .pr-ov.pr-rd{display:flex;flex-direction:column;overflow:hidden;z-index:2110}
 .pr-hl{position:sticky;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px;background:var(--surface);border-bottom:1px solid var(--border-2);flex:none}
-.pr-hl b{flex:1;font-size:16px;line-height:1.25}
-.pr-hl button{border:0;background:none;color:inherit;font-size:22px;width:38px;height:38px;border-radius:50%;cursor:pointer}
+.pr-hl b{flex:1;font-size:1rem;line-height:1.25}
+.pr-hl button{border:0;background:none;color:inherit;font-size:1.375rem;width:38px;height:38px;border-radius:50%;cursor:pointer}
 .pr-sr{padding:10px 12px;position:sticky;top:60px;z-index:2;background:var(--bg)}
-.pr-sr input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid var(--border-2);font-size:16px;background:var(--surface);color:inherit}
+.pr-sr input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid var(--border-2);font-size:1rem;background:var(--surface);color:inherit}
 .pr-wr{padding:0 12px calc(30px + env(safe-area-inset-bottom,0px))}
 .pr-cast{background:var(--surface);border-radius:14px;margin:9px 0;overflow:hidden}
 .pr-cast>button{all:unset;box-sizing:border-box;display:flex;width:100%;padding:14px;gap:8px;cursor:pointer;align-items:center}
-.pr-cast>button b{flex:1;font-size:15px}.pr-cast>button small{color:var(--text-3)}
-.pr-pl button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 14px;border-top:1px solid var(--border-2);font-size:15px;cursor:pointer}
+.pr-cast>button b{flex:1;font-size:0.9375rem}.pr-cast>button small{color:var(--text-3)}
+.pr-pl button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 14px;border-top:1px solid var(--border-2);font-size:0.9375rem;cursor:pointer}
 .pr-pl button b{display:inline-block;min-width:48px;color:var(--text-3);font-weight:600}
-.pr-hit{background:var(--surface);border-radius:12px;padding:11px 14px;margin:8px 0;cursor:pointer;font-size:14.5px}
-.pr-hit h6{margin:0 0 3px;font-size:12px;color:var(--text-3);font-weight:600}
+.pr-hit{background:var(--surface);border-radius:12px;padding:11px 14px;margin:8px 0;cursor:pointer;font-size:0.9062rem}
+.pr-hit h6{margin:0 0 3px;font-size:0.75rem;color:var(--text-3);font-weight:600}
 .pr-ov mark{background:#ffd84d;color:#000;border-radius:3px;padding:0 1px}
-.pr-cnt{color:var(--text-3);font-size:13.5px;padding:8px 2px}
+.pr-cnt{color:var(--text-3);font-size:0.8438rem;padding:8px 2px}
 .pr-znova{border:0;background:none;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
 .pr-rdb{flex:1;overflow:auto;padding:8px 12px 14px;-webkit-overflow-scrolling:touch;position:relative}
-.pr-cs{font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin:6px 0 2px}
-.pr-rdb h1{font-size:21px;margin:0 0 10px}
-.pr-art{background:var(--surface);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.5}
+.pr-cs{font-size:0.7812rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);margin:6px 0 2px}
+.pr-rdb h1{font-size:1.3125rem;margin:0 0 10px}
+.pr-art{background:var(--surface);border-radius:14px;padding:14px 16px;font-size:1rem;line-height:1.5}
 .pr-it{margin:0 0 10px;padding-left:34px;text-indent:-34px}.pr-it b{display:inline-block;min-width:30px;text-indent:0;font-weight:700}
 .pr-l2{padding-left:60px;text-indent:-26px}.pr-l3{padding-left:76px;text-indent:-16px;color:var(--text-2)}.pr-l0{padding-left:0;text-indent:0}
 .pr-im{display:block;margin:8px 0 6px;text-align:center;cursor:zoom-in}.pr-im img{max-width:100%;border:1px solid var(--border-2);border-radius:8px;background:#fff}
-.pr-im small{display:block;color:var(--text-3);font-size:12px;margin-top:2px}
+.pr-im small{display:block;color:var(--text-3);font-size:0.75rem;margin-top:2px}
 .pr-nv{flex:none;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border-2)}
-.pr-nv button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--border-2);background:var(--bg);font-size:15px;color:inherit;cursor:pointer}
+.pr-nv button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--border-2);background:var(--bg);font-size:0.9375rem;color:inherit;cursor:pointer}
 .pr-nv button:disabled{opacity:.35}
-.pr-pg{font-size:12px;color:var(--text-3);margin:6px 0 0}
+.pr-pg{font-size:0.75rem;color:var(--text-3);margin:6px 0 0}
 
 /* pruh odchodov na vrchu karty služby: svietia všetky, odbehnuté zhasínajú, prebiehajúca/najbližšia dýcha */
 .dep-strip{display:flex;gap:3px;padding:12px 18px 0;margin-bottom:-4px}

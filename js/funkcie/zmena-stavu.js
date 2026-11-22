@@ -83,14 +83,14 @@
     s.style.marginLeft = "auto";
     var hl = el("div", "display:flex;align-items:center;gap:8px;margin-bottom:4px");
     if (o.spat) {
-      var sp = el("button", "background:none;border:none;font-size:22px;line-height:1;color:var(--red);padding:0 6px 0 0;cursor:pointer", "‹");
+      var sp = el("button", "background:none;border:none;font-size:1.375rem;line-height:1;color:var(--red);padding:0 6px 0 0;cursor:pointer", "‹");
       sp.setAttribute("aria-label", "Späť");
       sp.addEventListener("click", zavriVrch);
       hl.appendChild(sp);
     }
-    hl.appendChild(el("div", "font-size:17px;font-weight:600;flex:1", o.titul || ""));
+    hl.appendChild(el("div", "font-size:1.0625rem;font-weight:600;flex:1", o.titul || ""));
     s.appendChild(hl);
-    if (o.podtitul) s.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:12px", o.podtitul));
+    if (o.podtitul) s.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:12px", o.podtitul));
     else s.appendChild(el("div", "height:10px"));
     var telo = el("div", "");
     s.appendChild(telo);
@@ -98,7 +98,7 @@
     if (o.tlacidla && o.tlacidla.length) {
       var r = el("div", "display:flex;gap:10px;margin-top:16px");
       o.tlacidla.forEach(function (t) {
-        var b = el("button", "flex:1;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;" + (t.primarny ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)"), t.text);
+        var b = el("button", "flex:1;padding:14px;border:none;border-radius:12px;font-size:0.9375rem;font-weight:600;cursor:pointer;" + (t.primarny ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)"), t.text);
         b.addEventListener("click", function () { t.klik && t.klik(b); });
         r.appendChild(b);
       });
@@ -123,15 +123,15 @@
     function kresli() {
       telo.innerHTML = "";
       var hl = el("div", "display:flex;align-items:center;justify-content:space-between;margin-bottom:8px");
-      var pr = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "‹");
-      var dl = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "›");
+      var pr = el("button", "background:none;border:none;color:var(--red);font-size:1.375rem;padding:4px 14px;cursor:pointer", "‹");
+      var dl = el("button", "background:none;border:none;color:var(--red);font-size:1.375rem;padding:4px 14px;cursor:pointer", "›");
       pr.type = dl.type = "button";
       pr.addEventListener("click", function () { mes--; if (mes < 0) { mes = 11; rok--; } kresli(); });
       dl.addEventListener("click", function () { mes++; if (mes > 11) { mes = 0; rok++; } kresli(); });
-      hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:15px", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
+      hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:0.9375rem", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
       telo.appendChild(hl);
       var wd = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px");
-      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:15px;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
+      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:0.9375rem;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
       telo.appendChild(wd);
       var g = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px");
       var zac = (new Date(rok, mes, 1).getDay() + 6) % 7, dni = new Date(rok, mes + 1, 0).getDate();
@@ -172,8 +172,8 @@
     function mkChip(k, nadpis) {
       var b = el("button", "flex:1;min-width:0;text-align:left;padding:8px 12px;border-radius:14px;border:0;background:var(--surface);color:var(--text-1);cursor:pointer;box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .15s");
       b.type = "button";
-      b._n = el("div", "font-size:13px;color:var(--text-2)", nadpis);
-      b._v = el("div", "font-size:16px;font-weight:600;margin-top:1px");
+      b._n = el("div", "font-size:0.8125rem;color:var(--text-2)", nadpis);
+      b._v = el("div", "font-size:1rem;font-weight:600;margin-top:1px");
       b.appendChild(b._n); b.appendChild(b._v);
       b.addEventListener("click", function () { st.akt = st.akt === k ? null : k; if (st.akt) zobraz(st.akt); vykresli(); });
       cipy[k] = b; rad.appendChild(b);
@@ -197,15 +197,15 @@
       if (!st.akt) { panel.style.display = "none"; return; }
       panel.style.display = "block";
       var hl = el("div", "display:flex;align-items:center;justify-content:space-between;margin-bottom:8px");
-      var pr = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "‹");
-      var dl = el("button", "background:none;border:none;color:var(--red);font-size:22px;padding:4px 14px;cursor:pointer", "›");
+      var pr = el("button", "background:none;border:none;color:var(--red);font-size:1.375rem;padding:4px 14px;cursor:pointer", "‹");
+      var dl = el("button", "background:none;border:none;color:var(--red);font-size:1.375rem;padding:4px 14px;cursor:pointer", "›");
       pr.type = dl.type = "button";
       pr.addEventListener("click", function () { mes--; if (mes < 0) { mes = 11; rok--; } vykresli(); });
       dl.addEventListener("click", function () { mes++; if (mes > 11) { mes = 0; rok++; } vykresli(); });
-      hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:15px", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
+      hl.appendChild(pr); hl.appendChild(el("div", "font-weight:600;font-size:0.9375rem", MESIACE[mes] + " " + rok)); hl.appendChild(dl);
       panel.appendChild(hl);
       var wd = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px");
-      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:15px;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
+      ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"].forEach(function (x) { wd.appendChild(el("div", "text-align:center;font-size:0.9375rem;font-weight:600;color:var(--text-3);text-transform:uppercase", x)); });
       panel.appendChild(wd);
       var g = el("div", "display:grid;grid-template-columns:repeat(7,1fr);gap:2px");
       var zac = (new Date(rok, mes, 1).getDay() + 6) % 7, dni = new Date(rok, mes + 1, 0).getDate();
@@ -239,13 +239,13 @@
       }
       panel.appendChild(g);
       if (st.akt === "od" && opt.nepovinneOd) {
-        var bz = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:6px 0", "Bez začiatku (nahlasujem len koniec)");
+        var bz = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:0.9375rem;cursor:pointer;padding:6px 0", "Bez začiatku (nahlasujem len koniec)");
         bz.type = "button";
         bz.addEventListener("click", function () { st.od = ""; st.akt = "do"; zobraz("do"); vykresli(); });
         panel.appendChild(bz);
       }
       if (st.akt === "do" && !opt.doPovinne) {
-        var bk = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:6px 0", "Bez konca (zatiaľ neznáme)");
+        var bk = el("button", "margin-top:8px;background:none;border:none;color:var(--red);font-size:0.9375rem;cursor:pointer;padding:6px 0", "Bez konca (zatiaľ neznáme)");
         bk.type = "button";
         bk.addEventListener("click", function () { st.do = ""; st.akt = null; vykresli(); });
         panel.appendChild(bk);
@@ -292,7 +292,7 @@
       titul: "Hlásenie – náhľad",
       podtitul: nad + " · zatiaľ sa nikam neodosiela, text môžeš upraviť",
       telo: function (t) {
-        var ta = el("textarea", VSTUP_CSS + ";resize:none;font-size:15px;line-height:1.45;min-height:200px");
+        var ta = el("textarea", VSTUP_CSS + ";resize:none;font-size:0.9375rem;line-height:1.45;min-height:200px");
         ta.value = text;
         t.appendChild(ta);
         setTimeout(function () { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight + 4, window.innerHeight * 0.5) + "px"; }, 0);
@@ -312,8 +312,8 @@
     toast("Zdieľanie nie je dostupné", 4000);
     return Promise.resolve();
   }
-  var VOLBA_CSS = "display:block;width:100%;padding:13px 16px;margin-bottom:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:15px;color:var(--text-1);text-align:left;cursor:pointer";
-  var VSTUP_CSS = "width:100%;box-sizing:border-box;padding:10px 12px;font-size:16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none";
+  var VOLBA_CSS = "display:block;width:100%;padding:13px 16px;margin-bottom:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:0.9375rem;color:var(--text-1);text-align:left;cursor:pointer";
+  var VSTUP_CSS = "width:100%;box-sizing:border-box;padding:10px 12px;font-size:1rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none";
 
   function spravaText(ctx, st) {
     var r = window.appState && window.appState.currentDriver;
@@ -351,7 +351,7 @@
         var od = { get: roz.od }, dod = { get: roz.do };
         var pz = null;
         if (v.poznamka) {
-          t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
+          t.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
           pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); t.appendChild(pz);
         }
         var chyba = chybaPole();
@@ -437,14 +437,14 @@
   ];
   function skupina(nadpis, farba, nechcem) {
     var box = el("div", "border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px");
-    box.appendChild(el("div", "font-weight:700;font-size:15px;margin-bottom:6px;color:" + farba, nadpis));
+    box.appendChild(el("div", "font-weight:700;font-size:0.9375rem;margin-bottom:6px;color:" + farba, nadpis));
     var vyber = {}, cipy = {};
     RIADKY.forEach(function (r) {
       vyber[r.k] = {};
       if (nechcem) return;                 // v „Nechcem“ sú len časy, linka a striedač
       var rad = el("div", "display:flex;align-items:center;gap:6px;margin-bottom:6px");
       r.m.forEach(function (m) {
-        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", m);
+        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer", m);
         c.type = "button";
         cipy[r.k + "|" + m] = c;
         c.addEventListener("click", function () {
@@ -462,7 +462,7 @@
     var rc = el("div", "display:flex;gap:10px;margin:4px 0 8px");
     function pole(popis) {
       var w = el("div", "flex:1;min-width:0");
-      w.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", popis));
+      w.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:3px", popis));
       var a = el("input", VSTUP_CSS + ";padding:10px 6px"); a.type = "time";
       w.appendChild(a); rc.appendChild(w);
       st.casy.push([a, popis]);
@@ -473,7 +473,7 @@
     var rl = el("div", "display:flex;gap:8px;align-items:center");
     var lin = el("input", VSTUP_CSS + ";flex:1;min-width:0"); lin.type = "text"; lin.placeholder = "Linka (napr. 1 alebo 3, 9)";
     var striedac = false;
-    var sb = el("button", "padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer;flex-shrink:0", "Striedač");
+    var sb = el("button", "padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer;flex-shrink:0", "Striedač");
     sb.type = "button";
     sb.addEventListener("click", function () {
       striedac = !striedac;
@@ -539,7 +539,7 @@
       titul: nazov + " na " + pekne(ctx.date),
       podtitul: "Aktuálne: voľno",
       telo: function (t) {
-        t.appendChild(el("div", "font-size:16px;font-weight:600;color:var(--chyba);margin-bottom:10px", vetaNemozne(nem)));
+        t.appendChild(el("div", "font-size:1rem;font-weight:600;color:var(--chyba);margin-bottom:10px", vetaNemozne(nem)));
         pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); pz.placeholder = "Ak chceš, napíš výpravcovi poznámku";
         t.appendChild(pz);
         t.appendChild(chybaPole());
@@ -600,8 +600,8 @@
             }
             if (poznamka) {
               var cz = poznamka.split("|"), blok = el("div", "margin-bottom:8px");
-              blok.appendChild(el("div", "font-size:15px;font-weight:600;color:" + (ok.nemozne ? "var(--chyba)" : "var(--text)"), cz[0]));
-              if (cz[1]) blok.appendChild(el("div", "font-size:13px;color:var(--text-2)", cz[1]));
+              blok.appendChild(el("div", "font-size:0.9375rem;font-weight:600;color:" + (ok.nemozne ? "var(--chyba)" : "var(--text)"), cz[0]));
+              if (cz[1]) blok.appendChild(el("div", "font-size:0.8125rem;color:var(--text-2)", cz[1]));
               ch.box.insertBefore(blok, ch.box.children[1]);
             }
           } catch (e) {}
@@ -657,7 +657,7 @@
     var vozRiadky = [];
     ((k.vozidla) || []).forEach(function (x) { var c = x && (x.cislo || x); if (c) vozRiadky.push({ c: String(c), od: hm(x.od), "do": hm(x["do"]) }); });
     if (!vozRiadky.length && vozy.length) vozRiadky.push({ c: vozy[0], od: "", "do": "" });
-    var CHYBA = "font-size:15px;color:var(--text-2);margin-bottom:3px";
+    var CHYBA = "font-size:0.9375rem;color:var(--text-2);margin-bottom:3px";
     function cas() { var i = el("input", VSTUP_CSS + ";padding:10px 6px"); i.type = "time"; return i; }
     function stlpec(popis, prvok) { var w = el("div", "flex:1;min-width:0"); w.appendChild(el("div", CHYBA, popis)); w.appendChild(prvok); return w; }
     var bloky = [];
@@ -670,7 +670,7 @@
           var h = el("label", "display:flex;align-items:center;gap:12px;cursor:pointer");
           var cb = el("input", "width:24px;height:24px;accent-color:var(--red);flex-shrink:0"); cb.type = "checkbox";
           var tx = el("div", "flex:1;min-width:0");
-          tx.appendChild(el("div", "font-size:16px;font-weight:700", titul));
+          tx.appendChild(el("div", "font-size:1rem;font-weight:700", titul));
                     h.appendChild(cb); h.appendChild(tx); w.appendChild(h);
           var telo = el("div", "display:none;margin-top:10px"); w.appendChild(telo);
           cb.addEventListener("change", function () { telo.style.display = cb.checked ? "block" : "none"; w.style.borderColor = cb.checked ? "var(--red)" : "var(--border)"; });
@@ -704,7 +704,7 @@
           var cas2 = [];
           [["Nástup", k.od], ["Ukončenie", k.do]].forEach(function (x) {
             var w = el("div", "flex:1;min-width:0");
-            var l = el("label", "display:flex;align-items:center;gap:8px;font-size:15px;margin-bottom:4px;cursor:pointer");
+            var l = el("label", "display:flex;align-items:center;gap:8px;font-size:0.9375rem;margin-bottom:4px;cursor:pointer");
             var c = el("input", "width:20px;height:20px;accent-color:var(--red)"); c.type = "checkbox";
             l.appendChild(c); l.appendChild(el("span", "", x[0]));
             var i = cas(); i.value = hm(x[1]); i.disabled = true; i.style.opacity = ".5";
@@ -737,7 +737,7 @@
             riadky.push(o); zoz.appendChild(r);
           }
           if (vozRiadky.length) vozRiadky.forEach(riadokVoz); else riadokVoz();
-          var plus = el("button", "padding:9px 14px;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--text-1);font-size:15px;cursor:pointer", "+ Pridať vozidlo");
+          var plus = el("button", "padding:9px 14px;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--text-1);font-size:0.9375rem;cursor:pointer", "+ Pridať vozidlo");
           plus.type = "button"; plus.addEventListener("click", function () { riadokVoz(); });
           bv.telo.appendChild(zoz); bv.telo.appendChild(plus);
           bv.zber = function () {
@@ -831,7 +831,7 @@
       });
     }
     moznosti.forEach(function (m) {
-      var c = el("button", "padding:9px 14px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", m);
+      var c = el("button", "padding:9px 14px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer", m);
       c.type = "button";
       c.addEventListener("click", function () {
         if (jedna) { var bol = vyber[m]; vyber = {}; if (!bol) vyber[m] = true; }
@@ -853,14 +853,14 @@
       titul: "Nahlásiť",
       podtitul: pekne(ctx.date) + (sv.line ? " · " + sv.line : ""),
       telo: function (t) {
-        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
+        t.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:6px", "Čo nahlasuješ?"));
         var co = chipy(t, ["Porucha", "Udalosť"], true, function (v) { vozBox.style.display = v["Porucha"] && voz.length > 1 ? "block" : "none"; });
         var vozBox = el("div", "display:none;margin:-4px 0 12px");
-        vozBox.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
+        vozBox.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:3px", "Ktoré vozidlo?"));
         var vsel = el("select", VSTUP_CSS);
         voz.forEach(function (x) { var o = el("option", "", x); o.value = x; vsel.appendChild(o); });
         vozBox.appendChild(vsel); t.appendChild(vozBox);
-        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-bottom:6px", "Komu hlásiš?"));
+        t.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:6px", "Komu hlásiš?"));
         var komu = chipy(t, ["Dielňa", "Dispečing", "Výpravňa"], false);
         var tx = el("textarea", VSTUP_CSS + ";resize:none;min-height:80px"); tx.placeholder = "Popis (čo sa stalo)";
         t.appendChild(tx);
@@ -906,10 +906,10 @@
     var riadky = [], otvorene = null, aktivny = null;
     TYPY_STAVU.forEach(function (ty) {
       var r = el("div", "margin-bottom:8px;border-radius:14px;background:var(--surface-2);overflow:hidden");
-      var h = el("button", "display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:none;border:0;color:var(--text-1);font-size:16px;font-weight:600;cursor:pointer;text-align:left");
+      var h = el("button", "display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:none;border:0;color:var(--text-1);font-size:1rem;font-weight:600;cursor:pointer;text-align:left");
       h.type = "button";
       var nz = el("span", "", ty.nazov);
-      var sip = el("span", "color:var(--text-3);font-size:20px;transition:transform .15s", "›");
+      var sip = el("span", "color:var(--text-3);font-size:1.25rem;transition:transform .15s", "›");
       h.appendChild(nz); h.appendChild(sip);
       var telo = el("div", "display:none;padding:0 14px 14px");
       var f = null;
@@ -918,10 +918,10 @@
         telo.appendChild(roz.el);
         var pz = null;
         if (ty.poznamka) {
-          telo.appendChild(el("div", "font-size:15px;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
+          telo.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin:12px 0 4px", "Popis dôvodu"));
           pz = el("textarea", VSTUP_CSS + ";resize:none;min-height:70px"); telo.appendChild(pz);
         }
-        if (ty.kod === "pn") telo.appendChild(el("div", "font-size:14px;color:var(--text-2);margin-top:10px", "Zadaj začiatok PN, koniec PN, alebo oboje (aspoň jedno)."));
+        if (ty.kod === "pn") telo.appendChild(el("div", "font-size:0.875rem;color:var(--text-2);margin-top:10px", "Zadaj začiatok PN, koniec PN, alebo oboje (aspoň jedno)."));
         f = { zber: function () {
           var od = roz.od(), dod = roz.do();
           if (ty.nepovinneOd) {
@@ -1024,13 +1024,13 @@
         }
         var _mozeZS = !window.DpbPrava || window.DpbPrava.moze("zmena_sluzby");
         (_mozeZS ? ["Zmena stavu", "Zmena služby"] : ["Zmena stavu"]).forEach(function (n, i) {
-          var b = el("button", "flex:1;padding:12px 6px;background:none;border:0;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:-2px", n);
+          var b = el("button", "flex:1;padding:12px 6px;background:none;border:0;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:-2px", n);
           b.type = "button";
           b.addEventListener("click", function () { ukaz(i); });
           btns.push(b); lista.appendChild(b);
         });
         function tlacidlo(txt, primarny, klik) {
-          var b = el("button", "flex:1;padding:13px 6px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;" + (primarny ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)"), txt);
+          var b = el("button", "flex:1;padding:13px 6px;border:none;border-radius:12px;font-size:0.9375rem;font-weight:600;cursor:pointer;" + (primarny ? "background:var(--red);color:#fff" : "background:var(--surface-2);color:var(--text-1)"), txt);
           b.type = "button";
           b.addEventListener("click", klik);
           tl.appendChild(b);

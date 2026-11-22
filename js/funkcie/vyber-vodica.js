@@ -24,7 +24,7 @@
     inp.setAttribute("spellcheck", "false");
     inp.setAttribute("aria-label", "Hľadať vodiča");
     inp.style.cssText =
-      "width:100%;box-sizing:border-box;padding:14px 16px;font-size:16px;font-weight:600;background:var(--surface);color:var(--text-1);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);outline:none";
+      "width:100%;box-sizing:border-box;padding:14px 16px;font-size:1rem;font-weight:600;background:var(--surface);color:var(--text-1);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);outline:none";
     var list = document.createElement("div");
     list.setAttribute("role", "listbox");
     list.style.cssText =
@@ -61,19 +61,19 @@
       if (!najdene.length) {
         var n = document.createElement("div");
         n.textContent = "Nikto taký";
-        n.style.cssText = "padding:12px 16px;font-size:15px;color:var(--text-3)";
+        n.style.cssText = "padding:12px 16px;font-size:0.9375rem;color:var(--text-3)";
         list.appendChild(n);
       } else {
         najdene.slice(0, 8).forEach(function (o) {
           var r = document.createElement("div");
           r.setAttribute("role", "option");
           r.style.cssText =
-            "padding:12px 16px;font-size:16px;font-weight:600;color:var(--text-1);cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px";
+            "padding:12px 16px;font-size:1rem;font-weight:600;color:var(--text-1);cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px";
           var m = document.createElement("span");
           m.textContent = o.textContent;
           var c = document.createElement("span");
           c.textContent = o.value;
-          c.style.cssText = "font-weight:500;font-size:15px;color:var(--text-3)";
+          c.style.cssText = "font-weight:500;font-size:0.9375rem;color:var(--text-3)";
           r.appendChild(m);
           r.appendChild(c);
           r.addEventListener("click", function () { vyber(o); });
@@ -82,7 +82,7 @@
         if (najdene.length > 8) {
           var d = document.createElement("div");
           d.textContent = "…a ďalších " + (najdene.length - 8) + ", spresni hľadanie";
-          d.style.cssText = "padding:10px 16px;font-size:15px;color:var(--text-3)";
+          d.style.cssText = "padding:10px 16px;font-size:0.9375rem;color:var(--text-3)";
           list.appendChild(d);
         }
       }

@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" href="img/icon-192.png" />
     <link rel="preload" href="fonts/roboto-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/roboto-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=225">
+    <link rel="stylesheet" href="style.css?v=227">
     <script>
       (function () {
         try {
@@ -51,7 +51,7 @@
       </div>
       <div
         style="
-          font-size: 22px;
+          font-size: 1.375rem;
           font-weight: 700;
           color: var(--text-1);
           text-align: center;
@@ -61,7 +61,7 @@
       </div>
       <div
         style="
-          font-size: 15px;
+          font-size: 0.9375rem;
           color: var(--text-2);
           text-align: center;
           max-width: 280px;
@@ -86,7 +86,7 @@
             border-radius: 14px;
             padding: 16px;
             text-align: center;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
           "
         >
@@ -97,14 +97,14 @@
         type="button"
         id="importDiskBtn"
         class="hidden"
-        style="width: 100%; max-width: 320px; background: transparent; color: var(--red); border: 2px solid var(--red); border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer"
+        style="width: 100%; max-width: 320px; background: transparent; color: var(--red); border: 2px solid var(--red); border-radius: 14px; padding: 14px; font-size: 1rem; font-weight: 600; cursor: pointer"
       >
         Načítať z Disku Google
       </button>
       <div
         id="importProgress"
         style="
-          font-size: 15px;
+          font-size: 0.9375rem;
           color: var(--text-2);
           display: none;
           text-align: center;
@@ -164,7 +164,7 @@
           >
             <span
               style="
-                font-size: 11px;
+                font-size: 0.6875rem;
                 font-weight: 700;
                 letter-spacing: 0.03em;
                 white-space: nowrap;
@@ -174,7 +174,7 @@
             >
             <span
               style="
-                font-size: 11px;
+                font-size: 0.6875rem;
                 font-weight: 700;
                 letter-spacing: 0.03em;
                 white-space: nowrap;
@@ -387,7 +387,7 @@
           <div class="employer-detail-row">
             <span>Druhá práca</span><span id="profilDpStav">–</span>
           </div>
-          <label class="employer-detail-row">Denný úväzok (hodiny)<input type="number" id="profilDpUv" min="0.25" max="12" step="0.25" value="4" style="width:80px;font-size:18px;padding:6px;text-align:right"></label>
+          <label class="employer-detail-row">Denný úväzok (hodiny)<input type="number" id="profilDpUv" min="0.25" max="12" step="0.25" value="4" style="width:80px;font-size:1.125rem;padding:6px;text-align:right"></label>
           <label class="profil-nacitat profil-subor-lbl">Nahrať kalendár (.ics)<input type="file" id="profilDpFile" accept=".ics,text/calendar" hidden></label>
           <label class="profil-nacitat profil-subor-lbl">Obrázok na kartu (logo)<input type="file" id="profilDpObr" accept="image/*,.svg" hidden></label>
           <button type="button" id="profilDpObrZmaz" class="profil-nacitat">Zmazať obrázok</button>
@@ -537,19 +537,19 @@
     <script src="js/data/kontakty.js?v=52"></script>
 
     <script src="js/funkcie/notifikacie-model.js?v=4"></script>
-    <script src="js/funkcie/burza.js?v=26"></script>
+    <script src="js/funkcie/burza.js?v=27"></script>
     <script src="js/core/cas.js"></script>
     <script src="js/data/grafikon-parsery.js?v=57"></script>
     <script src="js/data/vypravna-model.js?v=54"></script>
     <script src="js/funkcie/kalendar-znacky.js?v=1"></script>
-    <script src="js/app/hlavna.js?v=126"></script>
+    <script src="js/app/hlavna.js?v=127"></script>
     <script src="js/funkcie/karty-bodky.js?v=2"></script>
 
     <!-- Card builder + overrides -->
-    <script src="js/funkcie/export.js?v=10"></script>
-    <script src="js/funkcie/vykaz.js?v=32"></script>
+    <script src="js/funkcie/export.js?v=11"></script>
+    <script src="js/funkcie/vykaz.js?v=33"></script>
     <script src="js/funkcie/obrazovka.js"></script>
-    <script src="js/funkcie/hladat.js?v=8"></script>
+    <script src="js/funkcie/hladat.js?v=9"></script>
     <script src="js/funkcie/vs.js?v=1"></script>
     <script src="js/funkcie/druha-praca.js?v=10"></script>
     <script src="js/funkcie/cisty-cas.js?v=5"></script>
@@ -573,7 +573,7 @@
       <div class="grafikon-content" id="cpContent">
         <div id="cpZastavkovyPanel" style="padding: 12px 16px">
           <div
-            style="font-size: 15px; color: var(--text-2); margin-bottom: 8px"
+            style="font-size: 0.9375rem; color: var(--text-2); margin-bottom: 8px"
           >
             Zadaj názov zastávky
           </div>
@@ -585,7 +585,7 @@
               width: 100%;
               box-sizing: border-box;
               padding: 10px 14px;
-              font-size: 16px;
+              font-size: 1rem;
               border: 1px solid var(--border);
               border-radius: 10px;
               background: var(--surface);
@@ -604,7 +604,7 @@
         </div>
         <div id="cpSluzobnyPanel" style="display: none; padding: 20px 16px">
           <div
-            style="font-size: 15px; color: var(--text-2); margin: 22px 0 8px"
+            style="font-size: 0.9375rem; color: var(--text-2); margin: 22px 0 8px"
           >
             Alebo zadaj kód služby (napr. 9121 alebo 009121), alebo linku/poradie (napr. 1/3 – berie sa dnešný typ dňa)
           </div>
@@ -616,7 +616,7 @@
               style="
                 flex: 1;
                 padding: 10px 14px;
-                font-size: 16px;
+                font-size: 1rem;
                 border: 1px solid var(--border);
                 border-radius: 10px;
                 background: var(--surface);
@@ -633,7 +633,7 @@
                 color: #fff;
                 border: none;
                 border-radius: 10px;
-                font-size: 15px;
+                font-size: 0.9375rem;
                 font-weight: 600;
                 cursor: pointer;
               "
@@ -645,7 +645,7 @@
             id="cpKurzError"
             style="
               color: var(--red);
-              font-size: 15px;
+              font-size: 0.9375rem;
               margin-top: 6px;
               display: none;
             "
@@ -683,7 +683,7 @@
         <div
           id="ziadostTitle"
           style="
-            font-size: 17px;
+            font-size: 1.0625rem;
             font-weight: 600;
             color: var(--text-1);
             margin-bottom: 16px;
@@ -700,7 +700,7 @@
               color: #fff;
               border: none;
               border-radius: 12px;
-              font-size: 15px;
+              font-size: 0.9375rem;
               font-weight: 600;
               cursor: pointer;
             "
@@ -716,7 +716,7 @@
               color: var(--text-1);
               border: none;
               border-radius: 12px;
-              font-size: 15px;
+              font-size: 0.9375rem;
               cursor: pointer;
             "
           >
@@ -733,17 +733,17 @@
     <script src="js/data/odpocinok.js?v=11"></script>
     <script src="js/data/adapter-csv.js?v=62"></script>
 
-    <script src="js/funkcie/profil.js?v=76"></script>
+    <script src="js/funkcie/profil.js?v=77"></script>
     <script src="js/funkcie/ikony-dopravy.js?v=3"></script>
     <script src="js/funkcie/import-csv.js"></script>
     <script src="js/funkcie/disk-google-config.js?v=2"></script>
     <script src="js/funkcie/disk-google.js?v=13"></script>
 
-    <script src="js/funkcie/cestovne-poriadky.js?v=13"></script>
+    <script src="js/funkcie/cestovne-poriadky.js?v=14"></script>
 
     <script src="js/funkcie/ziadosti.js"></script>
-    <script src="js/funkcie/prestavka.js?v=5"></script>
-    <script src="js/funkcie/zmena-stavu.js?v=39"></script>
+    <script src="js/funkcie/prestavka.js?v=6"></script>
+    <script src="js/funkcie/zmena-stavu.js?v=40"></script>
     <script src="js/funkcie/prava.js?v=100"></script>
     <script src="js/funkcie/spravy.js?v=7"></script>
     <script src="js/funkcie/spravy-ui.js?v=14"></script>
@@ -752,16 +752,16 @@
     <script src="js/funkcie/pomoc.js?v=6"></script>
     <script src="js/funkcie/kurz-obsadenie.js?v=1"></script>
     <script src="js/funkcie/stretnutia.js?v=24"></script>
-    <script src="js/funkcie/mini-grafikon.js?v=15"></script>
-    <script src="js/funkcie/karta-nove.js?v=37"></script>
+    <script src="js/funkcie/mini-grafikon.js?v=16"></script>
+    <script src="js/funkcie/karta-nove.js?v=38"></script>
 
-    <script src="js/funkcie/zastavky.js?v=82"></script>
+    <script src="js/funkcie/zastavky.js?v=83"></script>
   
 
 <!-- =========================
 GRAFIKON SMART LAYER v7
 ========================= -->
-<script src="js/funkcie/grafikon-kurz.js?v=62"></script>
+<script src="js/funkcie/grafikon-kurz.js?v=63"></script>
 
 
 
@@ -769,7 +769,7 @@ GRAFIKON SMART LAYER v7
 
     <script src="js/funkcie/tema.js"></script>
     <script src="js/funkcie/vyber-vodica.js"></script>
-    <script src="js/funkcie/odpocet.js?v=20"></script>
+    <script src="js/funkcie/odpocet.js?v=21"></script>
     <script src="js/funkcie/spat.js?v=3"></script>
     <script src="js/funkcie/pwa.js"></script>
   </body>

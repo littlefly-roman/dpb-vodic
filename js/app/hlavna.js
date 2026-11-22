@@ -249,7 +249,7 @@ function dpbDenJednaNepritomnost(arr) {
           if (!contacts.length)
             content.insertAdjacentHTML(
               "beforeend",
-              '<div style="color:var(--text-3);font-size:15px;padding:12px 2px">Kontakty sa pripravujú.</div>',
+              '<div style="color:var(--text-3);font-size:0.9375rem;padding:12px 2px">Kontakty sa pripravujú.</div>',
             );
 
           contacts.forEach((p) => {
@@ -1467,7 +1467,7 @@ function dpbDenJednaNepritomnost(arr) {
             dir.className = "grafikon-direction" + (_bezCestujucich ? " np" : _nLinky >= 400 && _nLinky < 500 ? " noc" : "");
             dir.style.cssText = "display:flex;justify-content:space-between;align-items:baseline;";
             const _kurzEl = document.createElement("span");
-            _kurzEl.style.cssText = "font-size:17px;font-weight:700;color:inherit;";
+            _kurzEl.style.cssText = "font-size:1.0625rem;font-weight:700;color:inherit;";
             _kurzEl.textContent = popisSpoja(spoj, linka, kurz, _cielBS);
             const _smerEl = document.createElement("span");
             _smerEl.className = "g-ciel";

@@ -13,16 +13,16 @@
     w.appendChild(pad);
     var rows = items.map(function (z) {
       var r = el("div", "display:flex;gap:12px;align-items:center;padding:0 12px;height:" + H + "px;box-sizing:border-box;border-radius:14px;scroll-snap-align:center;will-change:transform,opacity");
-      r.appendChild(el("div", "min-width:58px;font-variant-numeric:tabular-nums;font-size:18px", z.cas));
+      r.appendChild(el("div", "min-width:58px;font-variant-numeric:tabular-nums;font-size:1.125rem", z.cas));
       var t = el("div", "flex:1;min-width:0");
-      t.appendChild(el("div", "font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
+      t.appendChild(el("div", "font-size:1.125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis", z.nazov));
       if (z.meno && window.DpbKartaNove && window.DpbKartaNove.meno) {
-        var pd = el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8");
+        var pd = el("div", "font-size:0.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8");
         if (z.kurz) pd.appendChild(document.createTextNode(z.kurz + "\u2003"));
         pd.appendChild(window.DpbKartaNove.meno(z.meno, { rola: "Vodič kurzu " + (z.kurz || ""), bezFotky: true }));
         if (z.voz) pd.appendChild(document.createTextNode("\u2003" + z.voz));
         t.appendChild(pd);
-      } else if (z.pod) t.appendChild(el("div", "font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
+      } else if (z.pod) t.appendChild(el("div", "font-size:0.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8", z.pod));
       r.appendChild(t);
       w.appendChild(r);
       return r;
@@ -132,7 +132,7 @@
       return true;
     }
     function teloFn(t) {
-      status = el("div", "font-size:15px;color:var(--text-2);margin-bottom:8px", "Načítavam…");
+      status = el("div", "font-size:0.9375rem;color:var(--text-2);margin-bottom:8px", "Načítavam…");
       box = el("div", "");
       t.appendChild(status); t.appendChild(box);
     }
@@ -170,11 +170,11 @@
       }), idx, stavS);
       box.appendChild(kk.el);
       kk.nastav(false);
-      var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:15px;cursor:pointer", "Na najbližšie");
+      var bn = el("button", "margin-top:10px;width:100%;padding:11px;border:none;border-radius:10px;background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer", "Na najbližšie");
       bn.addEventListener("click", function () { kk.nastav(true); });
       box.appendChild(bn);
     }
-    function teloS(t) { info = el("div", "font-size:15px;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); }
+    function teloS(t) { info = el("div", "font-size:0.9375rem;color:var(--text-2)", "Počítam…"); box = el("div", ""); t.appendChild(info); t.appendChild(box); }
     if (kam) teloS(kam);
     else window.DpbOkna.otvor({
       titul: "Koho stretne " + kurz,

@@ -160,7 +160,7 @@ async function openGrafikonStriedac(kurzy, dateKey) {
       dir.className = "grafikon-direction" + (bezCestujucich ? " np" : nLinky >= 400 && nLinky < 500 ? " noc" : "");
       dir.style.cssText = "display:flex;justify-content:space-between;align-items:baseline;";
       const kEl = document.createElement("span");
-      kEl.style.cssText = "font-size:17px;font-weight:700;color:inherit;";
+      kEl.style.cssText = "font-size:1.0625rem;font-weight:700;color:inherit;";
       kEl.textContent = window._popisSpoja(spoj, linka, kurz, cielBS);
       const sEl = document.createElement("span");
       sEl.className = "g-ciel";

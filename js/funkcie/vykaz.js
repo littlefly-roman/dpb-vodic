@@ -156,9 +156,9 @@
   }
 
   var CSS = ".vk{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}.vk tr.vik td{background:#e3f4dc}.vk tr.sv td{color:#d00000;font-weight:700}.vk td.kr{color:#555;font-style:italic}" + ".vk .h{display:inline-block;min-width:2ch;text-align:right}.vk .vc{display:inline-block;min-width:4ch;text-align:right;margin-right:8px}.vk tr.spolu td{border-top:2px solid #000;font-weight:700;background:#f2f2f2}.vk .neg{color:#d00000;font-weight:700}.vk td{white-space:nowrap;font-variant-numeric:tabular-nums}" + ".vk{font:15px/1.3 Arial,Helvetica,sans-serif;color:#111;background:#fff;width:830px;padding:18px;box-sizing:border-box}" +
-    ".vk h1{font-size:20px;margin:0}.vk .kto{font-size:20px;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:15px;color:#333;line-height:1.25}.vk .hd .sumb span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vk .hd .sumb b{display:block;font-size:17px;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:11px;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
-    ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 28%}.vk .tot b{display:block;font-size:18px}" +
-    ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 3px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}" +
+    ".vk h1{font-size:1.25rem;margin:0}.vk .kto{font-size:1.25rem;font-weight:400}.vk .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:6px 16px}.vk .hd>div:first-child{white-space:nowrap}.vk .hd .sumb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.vk .hd .sumb div{box-sizing:border-box;width:100px;border:1px solid #ccc;border-radius:6px;padding:3px 6px;font-size:0.9375rem;color:#333;line-height:1.25}.vk .hd .sumb span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vk .hd .sumb b{display:block;font-size:1.0625rem;color:#000;white-space:nowrap}.vk .hd .sumb small{font-size:0.6875rem;color:#777;font-weight:400}.vk .hd{border-bottom:3px solid #e8001a;padding-bottom:6px;margin-bottom:10px}" +
+    ".vk .tot{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.vk .tot div{border:1px solid #ccc;border-radius:6px;padding:5px 9px;flex:1 1 28%}.vk .tot b{display:block;font-size:1.125rem}" +
+    ".vk table{border-collapse:collapse;width:100%}.vk th,.vk td{padding:5px 3px;border-bottom:1px solid #ddd;text-align:left;font-size:0.9375rem}" +
     ".vk th{background:#222;color:#fff}.vk tr.n td{border-top:2px solid #999}.vk .t{background:#f90;padding:0 5px;border-radius:3px}.vk p{margin:8px 0}" +
     "@page{size:A4 portrait;margin:10mm}.vk tr{page-break-inside:avoid}";
 
@@ -238,7 +238,7 @@
     var D = zber(datum, zdroj);
     var st = document.createElement("style"); st.textContent = CSS +
       ".vk-ov{position:fixed;inset:0;z-index:9990;background:#555;display:flex;flex-direction:column}" +
-      ".vk-bar{display:flex;gap:8px;padding:8px;background:#111;align-items:center}.vk-bar button{font:700 16px system-ui;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#e8001a;color:#fff}.vk-bar .sv{background:#444}.vk-bar span{flex:1;color:#fff;font-size:15px}" +
+      ".vk-bar{display:flex;gap:8px;padding:8px;background:#111;align-items:center}.vk-bar button{font:700 16px system-ui;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#e8001a;color:#fff}.vk-bar .sv{background:#444}.vk-bar span{flex:1;color:#fff;font-size:0.9375rem}" +
       ".vk-ov tr[data-r]{cursor:pointer}.vk-ov tr[data-r]:active td{background:#ffe9a8}.vk-ov{-webkit-text-size-adjust:100%;text-size-adjust:100%}.vk-sc{flex:1;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.vk-in{width:max-content}";
     var ov_ = document.createElement("div"); ov_.className = "vk-ov";
     ov_.innerHTML = '<div class="vk-bar"><button class="sv" data-a="x">Zavrieť</button><span>' + (zdroj === "dp" ? "Výkaz – druhá práca" : "Výkaz") + '</span><button class="sv" data-a="-">−</button><button class="sv" data-a="+">+</button><button data-a="p">Tlačiť</button></div><div class="vk-sc"><div class="vk-in">' + telo(D) + "</div></div>";
@@ -260,7 +260,7 @@
       var bx = document.createElement("div");
       bx.style.cssText = "background:#fff;color:#111;border-radius:16px;width:100%;max-width:340px;padding:16px;font:16px system-ui";
       var dp = r.dkey.split("-"), t = document.createElement("div");
-      t.style.cssText = "font-weight:700;font-size:17px;margin-bottom:10px";
+      t.style.cssText = "font-weight:700;font-size:1.0625rem;margin-bottom:10px";
       t.textContent = parseInt(dp[2], 10) + ". " + parseInt(dp[1], 10) + ". " + dp[0] + (r.sl && !r.prazdny ? " · " + String(r.sl).replace(/<[^>]*>/g, "") : "");
       bx.appendChild(t);
       function tl(txt, fn, pozn) {

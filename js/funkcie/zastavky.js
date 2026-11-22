@@ -621,7 +621,7 @@
           cont._dalsi = null;
           if (!vis.length) {
             cont.innerHTML =
-              '<div style="color:var(--text-3);font-size:15px;padding:8px 0">Žiadne odchody</div>';
+              '<div style="color:var(--text-3);font-size:0.9375rem;padding:8px 0">Žiadne odchody</div>';
             return;
           }
           // nástupište sa ukáže, len ak je v zozname viac ako jedno
@@ -662,7 +662,7 @@
             var cp = o.cas.split(":");
             var cas = document.createElement("span");
             cas.style.cssText =
-              "font-size:15px;min-width:52px;font-variant-numeric:tabular-nums;color:" +
+              "font-size:0.9375rem;min-width:52px;font-variant-numeric:tabular-nums;color:" +
               (isNext ? "var(--red-text)" : "var(--text-1)") +
               (isNext ? ";font-weight:600" : "");
             cas.textContent = cp[0] + ":" + (cp[1] || "00");
@@ -670,14 +670,14 @@
             if (viacNast) {
               var nast = document.createElement("span");
               nast.style.cssText =
-                "font-size:15px;font-weight:600;min-width:20px;text-align:center;color:var(--text-2)";
+                "font-size:0.9375rem;font-weight:600;min-width:20px;text-align:center;color:var(--text-2)";
               nast.textContent = nastLabel(o.nast);
               row.appendChild(nast);
             }
             var c = casti(o);
             var lnk = document.createElement("span");
             lnk.style.cssText =
-              "display:inline-flex;flex:none;font-size:15px;font-weight:600;color:var(--text-1);white-space:nowrap;font-variant-numeric:tabular-nums";
+              "display:inline-flex;flex:none;font-size:0.9375rem;font-weight:600;color:var(--text-1);white-space:nowrap;font-variant-numeric:tabular-nums";
             var l1 = document.createElement("span");
             l1.style.cssText = "min-width:" + sirL + "ch;text-align:right";
             l1.textContent = c[0];
@@ -696,12 +696,12 @@
             if (maVoz) {
               var voz = document.createElement("span");
               voz.style.cssText =
-                "flex:none;min-width:4ch;margin-left:6px;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text-2);text-align:right";
+                "flex:none;min-width:4ch;margin-left:6px;font-size:0.9375rem;font-variant-numeric:tabular-nums;color:var(--text-2);text-align:right";
               voz.textContent = vozMapa.get(o) || "";
               row.appendChild(voz);
             }
             var ciel = document.createElement("span");
-            ciel.style.cssText = "font-size:15px;line-height:1.2;color:var(--text-2);flex:1;min-width:0;margin-left:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word";
+            ciel.style.cssText = "font-size:0.9375rem;line-height:1.2;color:var(--text-2);flex:1;min-width:0;margin-left:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word";
             ciel.textContent = "\u2192 " + (o.ciel || "");
             row.appendChild(ciel);
             // šípka na konci riadku: rozbalí meno vodiča
@@ -713,7 +713,7 @@
             sip.type = "button";
             sip.setAttribute("aria-label", "Vodič");
             sip.setAttribute("aria-expanded", otvorene ? "true" : "false");
-            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 0 4px 2px;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;transition:transform .15s;";
+            sip.style.cssText = "flex:none;border:none;background:transparent;padding:4px 0 4px 2px;cursor:pointer;color:var(--text-3);font-size:0.9375rem;line-height:1;transition:transform .15s;";
             var _sipI = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>', _sipH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>';
             sip.innerHTML = otvorene ? _sipH : _sipI;
             // ikonka: celý kurz spoja v malom okne so zoomom na aktuálny čas (ako v Hľadať)
@@ -735,7 +735,7 @@
             var wrap = document.createElement("div");
             wrap.appendChild(row);
             var det = document.createElement("div");
-            det.style.cssText = "display:" + (otvorene ? "block" : "none") + ";padding:2px 0 8px 62px;font-size:15px;color:var(--text-2);border-bottom:1px solid var(--border);" + (isPast ? "opacity:0.6" : "");
+            det.style.cssText = "display:" + (otvorene ? "block" : "none") + ";padding:2px 0 8px 62px;font-size:0.9375rem;color:var(--text-2);border-bottom:1px solid var(--border);" + (isPast ? "opacity:0.6" : "");
             if (vod && window.DpbKartaNove && window.DpbKartaNove.meno) {
               det.appendChild(document.createTextNode("Vodič: "));
               det.appendChild(window.DpbKartaNove.meno(vod.meno, { rola: "Vodič kurzu", bezFotky: true }));
@@ -790,7 +790,7 @@
           }
           staResults.innerHTML = "";
           staOdchody.innerHTML =
-            '<div style="color:var(--text-3);font-size:15px;padding:8px 0">Načítavam...</div>';
+            '<div style="color:var(--text-3);font-size:0.9375rem;padding:8px 0">Načítavam...</div>';
           _vozIdx = {}; // vozidlá sa načítajú nanovo (nová výprava)
           _vodIdx = {}; _vsetciVodici = false; _vodOtv = {};
           var nastSlub = nacitajNast(grp); // súbežne s odchodmi
@@ -802,13 +802,13 @@
             var chyba = document.createElement("div");
             chyba.style.cssText = "padding:14px 0;text-align:center";
             chyba.innerHTML =
-              '<div style="font-size:15px;font-weight:600;color:var(--text-1);margin-bottom:4px">Odchody sa nepodarilo načítať</div>' +
-              '<div style="font-size:15px;color:var(--text-3);margin-bottom:12px">Skontroluj pripojenie na internet.</div>';
+              '<div style="font-size:0.9375rem;font-weight:600;color:var(--text-1);margin-bottom:4px">Odchody sa nepodarilo načítať</div>' +
+              '<div style="font-size:0.9375rem;color:var(--text-3);margin-bottom:12px">Skontroluj pripojenie na internet.</div>';
             var znova = document.createElement("button");
             znova.type = "button";
             znova.textContent = "Skúsiť znova";
             znova.style.cssText =
-              "height:38px;padding:0 20px;border-radius:19px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--red);background:var(--red);color:#fff";
+              "height:38px;padding:0 20px;border-radius:19px;font-size:0.9375rem;font-weight:600;cursor:pointer;border:1px solid var(--red);background:var(--red);color:#fff";
             znova.addEventListener("click", function () {
               showOdchody(nazov, kodFilter, grp);
             });
@@ -826,14 +826,14 @@
           staOdchody.innerHTML = "";
           var hdr = document.createElement("div");
           hdr.style.cssText =
-            "font-size:15px;font-weight:600;color:var(--text-1);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px";
+            "font-size:0.9375rem;font-weight:600;color:var(--text-1);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px";
           hdr.style.display = "flex";
           hdr.style.justifyContent = "space-between";
           hdr.style.alignItems = "center";
           var spat = document.createElement("button");
           spat.type = "button"; spat.className = "zs-spat";
           spat.textContent = "\u2039 Späť";
-          spat.style.cssText = "border:none;background:transparent;font-size:15px;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
+          spat.style.cssText = "border:none;background:transparent;font-size:0.9375rem;font-weight:600;padding:4px 8px 4px 0;cursor:pointer;color:var(--red-text);flex:none";
           spat.addEventListener("click", spatNaZoznam);
           hdr.appendChild(spat);
           var hdrNaz = document.createElement("span");
@@ -842,7 +842,7 @@
           hdr.appendChild(hdrNaz);
           var hviezda = document.createElement("button");
           hviezda.type = "button"; hviezda.className = "zs-hviezda";
-          hviezda.style.cssText = "border:none;background:transparent;font-size:22px;line-height:1;padding:2px 6px;cursor:pointer;color:var(--red-text)";
+          hviezda.style.cssText = "border:none;background:transparent;font-size:1.375rem;line-height:1;padding:2px 6px;cursor:pointer;color:var(--red-text)";
           var nastavHviezdu = function () {
             var o = jeObluben(grp);
             hviezda.textContent = o ? "\u2605" : "\u2606";
@@ -855,7 +855,7 @@
             nastavHviezdu();
           });
           var vodLab = document.createElement("label"); vodLab.className = "zs-vod";
-          vodLab.style.cssText = "display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:500;color:var(--text-2);margin-right:6px;cursor:pointer;flex:none";
+          vodLab.style.cssText = "display:inline-flex;align-items:center;gap:5px;font-size:0.9375rem;font-weight:500;color:var(--text-2);margin-right:6px;cursor:pointer;flex:none";
           var vodCb = document.createElement("input");
           vodCb.type = "checkbox";
           vodCb.checked = _vsetciVodici;
@@ -961,7 +961,7 @@
               "display:flex;align-items:center;gap:8px;flex-wrap:nowrap;padding:6px 0 2px";
             var lbl = document.createElement("span");
             lbl.style.cssText =
-              "font-size:15px;color:var(--text-3);min-width:68px;flex:none";
+              "font-size:0.9375rem;color:var(--text-3);min-width:68px;flex:none";
             lbl.textContent = popis;
             wrap.appendChild(lbl);
             var scr = document.createElement("div");
@@ -978,7 +978,7 @@
               var btn = document.createElement("button");
               btn.type = "button";
               btn.style.cssText =
-                "flex:none;min-width:44px;height:34px;padding:0 14px;border-radius:17px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid " +
+                "flex:none;min-width:44px;height:34px;padding:0 14px;border-radius:17px;font-size:0.9375rem;font-weight:600;cursor:pointer;border:1px solid " +
                 (on ? "var(--red)" : "var(--border)") +
                 ";background:" +
                 (on ? (vsetko ? "var(--red-soft)" : "var(--red)") : "transparent") +
@@ -1028,7 +1028,7 @@
             b.type = "button"; b.className = "zs-krok";
             b.textContent = text;
             b.style.cssText =
-              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
+              "display:block;width:100%;margin:8px 0;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;font-weight:600;cursor:pointer";
             b.addEventListener("click", krok);
             return b;
           }
@@ -1080,13 +1080,13 @@
         function riadokVyberu(g, n, vedlajsi) {
           var div = document.createElement("div");
           div.style.cssText =
-            "display:flex;justify-content:space-between;gap:10px;font-size:15px;font-weight:500;color:var(--text-1);cursor:pointer;padding:9px 0;border-bottom:1px solid var(--border)";
+            "display:flex;justify-content:space-between;gap:10px;font-size:0.9375rem;font-weight:500;color:var(--text-1);cursor:pointer;padding:9px 0;border-bottom:1px solid var(--border)";
           var a = document.createElement("span");
           a.textContent = n;
           div.appendChild(a);
           if (vedlajsi) {
             var b = document.createElement("span");
-            b.style.cssText = "font-size:15px;color:var(--text-3);flex:none;align-self:center";
+            b.style.cssText = "font-size:0.9375rem;color:var(--text-3);flex:none;align-self:center";
             b.textContent = vedlajsi;
             div.appendChild(b);
           }
@@ -1095,7 +1095,7 @@
         }
         function nadpisSkupiny(t) {
           var h = document.createElement("div");
-          h.style.cssText = "font-size:15px;font-weight:800;letter-spacing:1px;color:var(--text-3);padding:12px 0 2px";
+          h.style.cssText = "font-size:0.9375rem;font-weight:800;letter-spacing:1px;color:var(--text-3);padding:12px 0 2px";
           h.textContent = t;
           return h;
         }
@@ -1105,9 +1105,9 @@
           return Math.hypot(dx, dy);
         }
         async function ukazBlizke(kam) {
-          kam.innerHTML = '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Zisťujem polohu...</div>';
+          kam.innerHTML = '<div style="color:var(--text-3);font-size:0.9375rem;padding:6px 0">Zisťujem polohu...</div>';
           if (!navigator.geolocation) {
-            kam.innerHTML = '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Poloha nie je v tomto zariadení dostupná.</div>';
+            kam.innerHTML = '<div style="color:var(--text-3);font-size:0.9375rem;padding:6px 0">Poloha nie je v tomto zariadení dostupná.</div>';
             return;
           }
           navigator.geolocation.getCurrentPosition(
@@ -1127,7 +1127,7 @@
             },
             function () {
               kam.innerHTML =
-                '<div style="color:var(--text-3);font-size:15px;padding:6px 0">Polohu sa nepodarilo zistiť (povoľ ju v prehliadači; v nezabezpečenom spojení http ju prehliadač nedovolí).</div>';
+                '<div style="color:var(--text-3);font-size:0.9375rem;padding:6px 0">Polohu sa nepodarilo zistiť (povoľ ju v prehliadači; v nezabezpečenom spojení http ju prehliadač nedovolí).</div>';
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
           );
@@ -1147,7 +1147,7 @@
           tl.type = "button";
           tl.textContent = "Zastávky v okolí";
           tl.style.cssText =
-            "width:100%;margin-top:4px;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:15px;font-weight:600;cursor:pointer";
+            "width:100%;margin-top:4px;padding:10px;border-radius:14px;border:0;background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;font-weight:600;cursor:pointer";
           tl.addEventListener("click", function () {
             ukazBlizke(kamBlizke);
             tl.style.display = "none";
@@ -1158,7 +1158,7 @@
         window._zastavkyDomov = ukazDomov;
         async function doSearch(val) {
           staResults.innerHTML =
-            '<div style="color:var(--text-3);font-size:15px">Hľadám...</div>';
+            '<div style="color:var(--text-3);font-size:0.9375rem">Hľadám...</div>';
           staOdchody.innerHTML = "";
           if (_renderInt) {
             clearInterval(_renderInt);
@@ -1167,7 +1167,7 @@
           var sta = await getStanice();
           if (!sta) {
             staResults.innerHTML =
-              '<div style="color:var(--chyba);font-size:15px;font-weight:600">Chyba</div>';
+              '<div style="color:var(--chyba);font-size:0.9375rem;font-weight:600">Chyba</div>';
             return;
           }
           var q = stripDia(val);
@@ -1180,14 +1180,14 @@
             });
           if (!matches.length) {
             staResults.innerHTML =
-              '<div style="color:var(--text-3);font-size:15px;padding:4px 0">Nič nenájdené</div>';
+              '<div style="color:var(--text-3);font-size:0.9375rem;padding:4px 0">Nič nenájdené</div>';
             return;
           }
           staResults.innerHTML = "";
           matches.slice(0, 8).forEach(function (m) {
             var div = document.createElement("div");
             div.style.cssText =
-              "font-size:15px;font-weight:500;color:var(--text-1);cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)";
+              "font-size:0.9375rem;font-weight:500;color:var(--text-1);cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)";
             div.textContent = m.nazov;
             div.addEventListener(
               "click",

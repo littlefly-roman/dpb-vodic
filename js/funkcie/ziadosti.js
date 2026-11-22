@@ -31,7 +31,7 @@
             ].forEach(function (t) {
               var btn = document.createElement("button");
               btn.style.cssText =
-                "padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:15px;color:var(--text-1);text-align:left;cursor:pointer";
+                "padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:0.9375rem;color:var(--text-1);text-align:left;cursor:pointer";
               btn.textContent = t.label;
               if (t.kod === "ine") {
                 btn.addEventListener("click", function () {
@@ -40,7 +40,7 @@
                   var inp = document.createElement("textarea");
                   inp.placeholder = "Popíš dôvod...";
                   inp.style.cssText =
-                    "width:100%;box-sizing:border-box;padding:10px 14px;font-size:15px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:80px";
+                    "width:100%;box-sizing:border-box;padding:10px 14px;font-size:0.9375rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:80px";
                   body.appendChild(inp);
                 });
               } else
@@ -57,7 +57,7 @@
             var inp = document.createElement("textarea");
             inp.placeholder = "Popíš žiadosť...";
             inp.style.cssText =
-              "width:100%;box-sizing:border-box;padding:10px 14px;font-size:15px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:80px";
+              "width:100%;box-sizing:border-box;padding:10px 14px;font-size:0.9375rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-1);outline:none;resize:none;min-height:80px";
             body.appendChild(inp);
           }
           modal.style.display = "flex";

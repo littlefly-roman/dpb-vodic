@@ -30,7 +30,7 @@
         var av = el("div", "width:150px;height:150px;border-radius:50%;background:var(--surface-2);color:var(--text-3);margin:6px auto 12px;display:flex;align-items:center;justify-content:center");
         av.innerHTML = svg("osoba", 90);
         t.appendChild(av);
-        t.appendChild(el("div", "text-align:center;font-size:15px;color:var(--text-2);padding-bottom:4px", "Fotografia nie je dostupná."));
+        t.appendChild(el("div", "text-align:center;font-size:0.9375rem;color:var(--text-2);padding-bottom:4px", "Fotografia nie je dostupná."));
       },
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { window.DpbOkna.zavriVrch(); } }],
     });
@@ -164,7 +164,7 @@
         var g = el("div", "display:grid;grid-template-columns:repeat(3,1fr);gap:8px");
         volby.forEach(function (mm) {
           var on = mm === aktualne;
-          var b = el("button", "min-height:48px;border-radius:12px;font-size:17px;font-weight:700;font-family:inherit;border:2px solid " + (on ? "var(--red)" : "var(--border)") + ";background:" + (on ? "var(--red)" : "var(--surface-2)") + ";color:" + (on ? "#fff" : "var(--text-1)"), mm ? mm + " min" : "V čase");
+          var b = el("button", "min-height:48px;border-radius:12px;font-size:1.0625rem;font-weight:700;font-family:inherit;border:2px solid " + (on ? "var(--red)" : "var(--border)") + ";background:" + (on ? "var(--red)" : "var(--surface-2)") + ";color:" + (on ? "#fff" : "var(--text-1)"), mm ? mm + " min" : "V čase");
           b.type = "button";
           b.addEventListener("click", function () { hotovo(mm); window.DpbOkna.zavriVrch(); });
           g.appendChild(b);
@@ -188,9 +188,9 @@
       telo: function (t) {
         var cele = el("div", "");
         t.appendChild(cele);
-        var hl = function (txt) { return el("div", "font-size:15px;letter-spacing:.08em;font-weight:700;color:var(--text-3);text-transform:uppercase;margin:12px 0 6px", txt); };
+        var hl = function (txt) { return el("div", "font-size:0.9375rem;letter-spacing:.08em;font-weight:700;color:var(--text-3);text-transform:uppercase;margin:12px 0 6px", txt); };
         function tlac(txt, zap, minule) {
-          var b = el("button", "flex:1;min-height:52px;border-radius:12px;font-size:17px;font-weight:700;font-family:inherit;line-height:1.1;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-2)") + (minule ? ";opacity:.4" : ""));
+          var b = el("button", "flex:1;min-height:52px;border-radius:12px;font-size:1.0625rem;font-weight:700;font-family:inherit;line-height:1.1;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-2)") + (minule ? ";opacity:.4" : ""));
           b.type = "button"; b.innerHTML = '<div style="display:flex;justify-content:center;margin-bottom:2px">' + svg("zvonec", 16) + '</div>' + txt;
           return b;
         }
@@ -213,25 +213,25 @@
           if (m.vyj) riadok("Pred výjazdom", "vyj", u.vyj, VOLBY_VYJ, vyjSec);
           var ma_zoz = m.konecna || m.prestavka || m.striedac;
           if (!ma_zoz) return;
-          if (!dnes) { cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:14px", "Odchody z konečnej a koniec prestávky sa dajú zapnúť v deň služby.")); return; }
-          if (!nacitane) { cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:14px", "Načítavam časy…")); return; }
+          if (!dnes) { cele.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:14px", "Odchody z konečnej a koniec prestávky sa dajú zapnúť v deň služby.")); return; }
+          if (!nacitane) { cele.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:14px", "Načítavam časy…")); return; }
           skupiny.forEach(function (g) {
             cele.appendChild(hl(g.nazov));
             var box = el("div", "display:flex;flex-direction:column;gap:6px;" + (g.items.length > 4 ? "max-height:220px;overflow-y:auto" : ""));
             g.items.forEach(function (it) {
               var minule = !!(O && O.zostavaSek(it.cas) <= 0);
               var zap = !!(O && O.planZapnuta(g.kind, it, g.typ));
-              var r = el("button", "display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:17px;font-family:inherit;text-align:left;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-1)") + (minule ? ";opacity:.4" : ""));
+              var r = el("button", "display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:1.0625rem;font-family:inherit;text-align:left;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-1)") + (minule ? ";opacity:.4" : ""));
               r.type = "button";
               r.appendChild(el("span", "font-weight:700;font-variant-numeric:tabular-nums", String(it.cas).split(":").slice(0, 2).join(":")));
-              r.appendChild(el("span", "flex:1;text-align:right;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap", it.nazov || ""));
+              r.appendChild(el("span", "flex:1;text-align:right;font-size:0.9375rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap", it.nazov || ""));
               podrz(r, function () { if (minule || !O) return; O.planPolozka(g.kind, it, g.typ, g.pop, !zap); kresli(); if (service._zvonecObnov) service._zvonecObnov(); },
                 function () { if (O) O.predstihOkno(g.typ); });
               box.appendChild(r);
             });
             cele.appendChild(box);
           });
-          cele.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:12px", "Ťuk = zapnúť / vypnúť, podržanie = zmena minút."));
+          cele.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:12px", "Ťuk = zapnúť / vypnúť, podržanie = zmena minút."));
         }
         kresli();
         if (dnes && (m.konecna || m.prestavka || m.striedac)) nacitajSkupiny(service).then(function (g) { skupiny = g; nacitane = true; if (cele.isConnected) kresli(); });
@@ -357,13 +357,13 @@
         var lista = el("div", "display:flex;border-bottom:2px solid var(--border-2)");
         [["Zmena stavu", function () { window.DpbZmenaStavu.otvor(ctx); }],
          ["Zmena služby", function () { window.DpbZiadostSluzby.otvor({ date: service.date, service: service, zmena: true }); }]].filter(function (x) { return x[0] !== "Zmena služby" || !window.DpbPrava || window.DpbPrava.moze("zmena_sluzby"); }).forEach(function (x) {
-          var b = el("button", "flex:1;padding:14px 6px;background:none;border:0;font-size:16px;font-weight:700;color:var(--red);cursor:pointer", x[0]);
+          var b = el("button", "flex:1;padding:14px 6px;background:none;border:0;font-size:1rem;font-weight:700;color:var(--red);cursor:pointer", x[0]);
           b.type = "button";
           b.addEventListener("click", function () { window.DpbOkna.zavriVsetko(); x[1](); });
           lista.appendChild(b);
         });
         t.appendChild(lista);
-        t.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:10px", "Vyber, čo chceš žiadať."));
+        t.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:10px", "Vyber, čo chceš žiadať."));
       },
       tlacidla: [{ text: "Zrušiť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); } }],
     });
@@ -384,8 +384,8 @@
          ["Všetky dostupné", "Všetky voľné služby, ktoré môžeš teoreticky robiť.", { burza: true }]].forEach(function (x) {
           var b = el("button", "display:block;width:100%;text-align:left;padding:14px 16px;margin:0 0 10px;border:1px solid var(--border-2);border-radius:14px;background:var(--surface);color:var(--text-1);cursor:pointer");
           b.type = "button";
-          b.appendChild(el("div", "font-size:17px;font-weight:700", x[0]));
-          b.appendChild(el("div", "font-size:15px;color:var(--text-2);margin-top:2px", x[1]));
+          b.appendChild(el("div", "font-size:1.0625rem;font-weight:700", x[0]));
+          b.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:2px", x[1]));
           b.addEventListener("click", function () { ist(x[2]); });
           t.appendChild(b);
         });
@@ -550,7 +550,7 @@
         s.paneK.innerHTML = "";
         var tu = ctx.segmenty ? terazUsek(ctx) : null;
         if (tu && !jeLinka(tu.kurz)) {
-          s.paneK.appendChild(el("div", "padding:14px 4px;font-size:15px;color:var(--text-2)", "Teraz jazdíš na kurze " + tu.kurz + ", pre ktorý sa „Koho stretávam“ nepočíta."));
+          s.paneK.appendChild(el("div", "padding:14px 4px;font-size:0.9375rem;color:var(--text-2)", "Teraz jazdíš na kurze " + tu.kurz + ", pre ktorý sa „Koho stretávam“ nepočíta."));
         } else if (tu) window.DpbMiniGrafikon.stretnutia(tu.kurz, ctx.date, tu.prebera, tu.odovzdava, "", s.paneK);
         else window.DpbMiniGrafikon.stretnutia(ctx.kurz, ctx.date, ctx.od, ctx.do, "", s.paneK);
       }

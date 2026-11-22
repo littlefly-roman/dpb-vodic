@@ -88,7 +88,7 @@
         m.style.cssText = "margin:-4px 12px 10px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden";
         var it = document.createElement("div");
         it.textContent = "Grafikon";
-        it.style.cssText = "padding:12px 16px;font-size:15px;color:var(--red);font-weight:600;cursor:pointer";
+        it.style.cssText = "padding:12px 16px;font-size:0.9375rem;color:var(--red);font-weight:600;cursor:pointer";
         it.addEventListener("click", function (e) {
           e.stopPropagation();
           if (!window.DpbMiniGrafikon) return;
