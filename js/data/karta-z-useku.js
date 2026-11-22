@@ -87,19 +87,34 @@
     var kon = poh.reduce(function (a, b) {
       return b.do_min > a.do_min ? b : a;
     });
-    return [
-      Object.assign({}, poh[0], {
-        od: zac.od, do: kon.do, od_min: zac.od_min, do_min: kon.do_min,
-        pjo: poh.reduce(function (a, k) { return maxPjo(a, k.pjo); }, null), // PJO sa nekumuluje
-        // vozidlá zo všetkých úsekov pohotovosti (nielen z prvého), bez duplicít
-        vozidla: poh.reduce(function (acc, k) {
-          (k.vozidla || []).forEach(function (v) {
-            if (!acc.some(function (x) { return x.cislo === v.cislo && x.od === v.od && x.do === v.do; })) acc.push(v);
-          });
-          return acc;
-        }, []),
-      }),
-    ].concat(other);
+    // Zlúčená karta vychádza z NAJSKORŠIEHO úseku (začiatok, miesto nástupu, predchodca); koniec, miesto konca
+    // a nasledovník sú z NAJNESKORŠIEHO. Nič z ostatných úsekov sa nestráca (vozidlá, zásahy, príznaky).
+    var prvy = function (pole, f) {
+      for (var i = 0; i < pole.length; i++) if (f(pole[i])) return f(pole[i]);
+      return undefined;
+    };
+    var zluc = Object.assign({}, zac, {
+      do: kon.do,
+      od_min: zac.od_min,
+      do_min: kon.do_min,
+      stan_do: kon.stan_do,
+      graf_do: kon.graf_do,
+      nasl: kon.nasl,
+      pjo: poh.reduce(function (a, k) { return maxPjo(a, k.pjo); }, null), // PJO sa nekumuluje
+      plan: poh.some(function (k) { return k.plan; }),
+      zdrojS: poh.some(function (k) { return k.zdrojS; }),
+      zacvikSkym: prvy(poh, function (k) { return k.zacvikSkym; }) || zac.zacvikSkym,
+      // vozidlá zo všetkých úsekov pohotovosti (nielen z prvého), bez duplicít
+      vozidla: poh.reduce(function (acc, k) {
+        (k.vozidla || []).forEach(function (v) {
+          if (!acc.some(function (x) { return x.cislo === v.cislo && x.od === v.od && x.do === v.do; })) acc.push(v);
+        });
+        return acc;
+      }, []),
+      segmenty: poh.reduce(function (acc, k) { return acc.concat(k.segmenty || []); }, []),
+      striedaci: poh.reduce(function (acc, k) { return acc.concat(k.striedaci || []); }, []),
+    });
+    return [zluc].concat(other);
   }
 
   // Pohotovosť tvorí „obálku“ (od najskoršieho začiatku po najneskorší koniec úsekov). Služba, ktorú vodič
