@@ -437,7 +437,7 @@ function dpbDenJednaNepritomnost(arr) {
               const r = document.createElement("button");
               r.type = "button";
               r.className = "burza-link-row";
-              r.textContent = "Sú dostupné voľné služby  ›";
+              r.textContent = "Sú dostupné voľné služby";
               r.addEventListener("click", () => otvorBurzuPreDen());
               container.appendChild(r);
             }
@@ -612,7 +612,7 @@ function dpbDenJednaNepritomnost(arr) {
                 var g = document.createElement("button");
                 g.type = "button";
                 g.className = "burza-link-row";
-                g.textContent = "Sú dostupné voľné služby  ›";
+                g.textContent = "Sú dostupné voľné služby";
                 g.addEventListener("click", function () { otvorBurzuPreDen(); });
                 container.appendChild(g);
               }
@@ -726,7 +726,7 @@ function dpbDenJednaNepritomnost(arr) {
 
         // „K dispozícii je 1 voľná služba“ / „K dispozícii sú 2 voľné služby“ / „K dispozícii je 5 voľných služieb“
         function burzaVolneText(n) {
-          return "Sú dostupné voľné služby  ›";
+          return "Sú dostupné voľné služby";
         }
 
         // Zoznam dní jedného mesiaca (používa ho zoznam aj náhľad pri swipe)

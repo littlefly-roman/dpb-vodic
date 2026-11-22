@@ -4131,3 +4131,26 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .card-zvonec.zap{color:var(--red-text)}
 .card-zvonec.zap svg{stroke:currentColor}
 .card-zvonec{right:0 !important}
+
+/* Jednotné karty: Dopravný dispečing, Výpravňa, Sú dostupné voľné služby – rovnaké písmo, veľkosť, štýl; bez tučného */
+.dispecing-pas,.vypravna-pas{background:transparent;border:0;padding:8px 14px 0}
+.dispecing-pas .vyp-hlavicka,.vypravna-pas .vyp-box,.burza-link-row{
+  background:var(--surface);border:1px solid var(--border-2);border-radius:16px;box-shadow:none;
+  font-size:0.9375rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--red-text);animation:none}
+.dispecing-pas .vyp-hlavicka{min-height:48px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;text-decoration:none}
+.dispecing-pas .vyp-hl-nazov,.dispecing-pas .vyp-hl-cislo,.vyp-nadpis{font-size:0.9375rem;font-weight:400;letter-spacing:0;color:var(--red-text)}
+.vypravna-pas .vyp-box{padding:0 16px 2px}
+.vyp-nadpis{min-height:46px;padding:0}
+.vyp-sipka{color:var(--red-text)}
+.vypravna-pas .vyp-box.otvorena .vyp-nadpis{border-bottom:1px solid var(--border-2);margin-bottom:6px}
+.vypravna-pas *{font-weight:400 !important;letter-spacing:0}
+.vypravna-pas .vyp-os .vyp-typ,.vypravna-pas .vyp-os .vyp-teraz{font-weight:400 !important}
+.burza-link-row{display:flex;align-items:center;justify-content:space-between;width:calc(100% - 28px);margin:10px 14px 0;min-height:48px;padding:0 16px;text-align:left;white-space:nowrap;cursor:pointer}
+.burza-link-row::after{content:"";width:22px;height:22px;flex:none;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 6 15 12 9 18'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 6 15 12 9 18'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* dátum: menej miesta, menej dominantný */
+.day-header{margin-bottom:4px}
+.section-header{padding:0 8px}
+.day-icon{min-height:34px;height:34px}

@@ -144,7 +144,7 @@
       disp.innerHTML =
         '<a class="vyp-hlavicka" href="' +
         tel(CISLA.dispecing.cisla[0]) +
-        '"><span class="vyp-hl-nazov">DOPRAVNÝ DISPEČING</span><span class="vyp-hl-cislo">' +
+        '"><span class="vyp-hl-nazov">Dopravný dispečing</span><span class="vyp-hl-cislo">' +
         CISLA.dispecing.cisla[0] +
         "</span></a>";
     posledneR = r;
@@ -159,7 +159,7 @@
     pas.innerHTML =
       '<div class="vyp-box' + (otvorene ? " otvorena" : "") + (otvorene && mizne ? " mizne" : "") + '"><button type="button" class="vyp-nadpis" aria-expanded="' +
       (otvorene ? "true" : "false") +
-      '"><span>VÝPRAVŇA</span><span class="vyp-sipka"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button>' +
+      '"><span>Výpravňa</span><span class="vyp-sipka"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button>' +
       (otvorene
         ? (posledneM
             ? podrobne(posledneKluc, posledneM)
