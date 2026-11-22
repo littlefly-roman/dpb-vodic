@@ -4115,4 +4115,5 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 
 /* pás odchodov: základné čiarky tenšie a jemnejšie (zvýraznená aktuálna zostáva 8 px) */
 .dep-strip i{height:1px;border-radius:1px}
+.dep-strip i.str{height:3px;border-radius:2px}
 .dep-strip i.bezi{height:8px;border-radius:4px}
