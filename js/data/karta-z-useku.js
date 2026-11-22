@@ -91,6 +91,13 @@
       Object.assign({}, poh[0], {
         od: zac.od, do: kon.do, od_min: zac.od_min, do_min: kon.do_min,
         pjo: poh.reduce(function (a, k) { return maxPjo(a, k.pjo); }, null), // PJO sa nekumuluje
+        // vozidlá zo všetkých úsekov pohotovosti (nielen z prvého), bez duplicít
+        vozidla: poh.reduce(function (acc, k) {
+          (k.vozidla || []).forEach(function (v) {
+            if (!acc.some(function (x) { return x.cislo === v.cislo && x.od === v.od && x.do === v.do; })) acc.push(v);
+          });
+          return acc;
+        }, []),
       }),
     ].concat(other);
   }
