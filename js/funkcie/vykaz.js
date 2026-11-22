@@ -181,7 +181,7 @@
         var subs = [];
         if (vz === "POHOTOVOSŤ" && k.segmenty && k.segmenty.length) subs = k.segmenty.map(function (sg) { return { sl: sg.kurz, od: sg.od, do: sg.do, voz: sg.vozidla || [] }; });
         else if (vz === "944" && k.hradenia && k.hradenia.length) subs = k.hradenia.map(function (h) { return { sl: h.kurz, od: h.od, do: h.do, voz: h.vozidla || [] }; });
-        var casti = subs.length ? rozpisCasti(a, b, subs, k.vozidla || [], vz === "POHOTOVOSŤ" && !k._dp ? vnoreneI : [], cisty, tmin) : null;
+        var casti = subs.length || (vz === "POHOTOVOSŤ" && !k._dp && vnoreneI.length) ? rozpisCasti(a, b, subs, k.vozidla || [], vz === "POHOTOVOSŤ" && !k._dp ? vnoreneI : [], cisty, tmin) : null;
         if (casti && casti.length) {
           mal = true;
           if (vz !== "POHOTOVOSŤ" && !dp) casy.push([a, b]);
@@ -196,7 +196,7 @@
             pushS.call(rows, s, {
               dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
               znacka: prvy ? (sviatok ? "sviatok" : "") : "",
-              sl: q.sl || (vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || "")), cas: ft(q.a % 1440) + " – " + ft(q.b % 1440), cisty: q.cisty, voz: q.voz, noc: qn, oddych: qi === 0 ? oddych : null,
+              sl: q.sl || (vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || "")), _a: q.a, cas: ft(q.a % 1440) + " – " + ft(q.b % 1440), cisty: q.cisty, voz: q.voz, noc: qn, oddych: qi === 0 ? oddych : null,
             });
             prvy = false;
           });
@@ -252,11 +252,22 @@
         pushS.call(rows, s, {
           dat: prvy ? d + "." + (m + 1) + ". " + DNI[dt.getDay()] : "", prvy: prvy,
           znacka: prvy ? (sviatok ? "sviatok" : "") : "",
-          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc, oddych: oddych,
+          sl: vz === "POHOTOVOSŤ" ? "Pohotovosť" : (s.line || k.kurz || ""), _a: a, cas: ft(a % 1440) + " – " + ft(b % 1440), cisty: cisty, voz: voz, noc: noc, oddych: oddych,
         });
         prvy = false;
       });
       if (d < 1) continue;
+      if (rows.length - r0 > 1) { // riadky dňa podľa času začiatku (rozpis pohotovosti okolo samostatných služieb)
+        var dr = rows.slice(r0), f0 = dr[0], hlav = { dat: f0.dat, prvy: f0.prvy, znacka: f0.znacka, oddych: f0.oddych };
+        var ix = dr.map(function (x, i) { return [x._a != null ? x._a : 1e9, i, x]; });
+        ix.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
+        ix.forEach(function (e, i) {
+          var x = e[2];
+          if (i === 0) { x.dat = hlav.dat; x.prvy = hlav.prvy; x.znacka = hlav.znacka; x.oddych = hlav.oddych; }
+          else if (x === f0) { x.dat = ""; x.prvy = false; x.znacka = ""; x.oddych = null; }
+          rows[r0 + i] = x;
+        });
+      }
       if (rows.length === r0) rows.push({ dat: d + "." + (m + 1) + ". " + DNI[dt.getDay()], prvy: true, prazdny: true,
         znacka: sviatok ? "sviatok" : "", voz: [] });
       for (var qi = r0; qi < rows.length; qi++) { rows[qi].dkey = kluc(dt); rows[qi].dow = dt.getDay(); rows[qi].vik = dt.getDay() === 0 || dt.getDay() === 6; rows[qi].sv = sviatok; if (sviatok && !rows[qi].nepr && rows[qi].cisty) rows[qi].svh = rows[qi].cisty; }
