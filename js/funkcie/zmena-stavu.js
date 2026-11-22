@@ -220,7 +220,7 @@
           if (window.Calendar && Calendar.isHoliday && Calendar.isHoliday(dt)) c.classList.add("is-holiday");
           var zakaz = st.akt === "do" && st.od && key < st.od;
           if (st.od && st.do && key >= st.od && key <= st.do) c.style.background = "rgba(120,120,128,.2)";
-          if (key === st[st.akt]) c.classList.add("selected");
+          if (key === st[st.akt]) { c.classList.add("selected"); c.style.setProperty("background", "var(--red)", "important"); c.style.setProperty("color", "#fff", "important"); }
           if (window.DpbKalZnacky) DpbKalZnacky.pridaj(c, DpbKalZnacky.nacitaj(rid, key));
           if (zakaz) c.style.opacity = "0.3";
           else c.addEventListener("click", function () {
@@ -444,7 +444,7 @@
       if (nechcem) return;                 // v „Nechcem“ sú len časy, linka a striedač
       var rad = el("div", "display:flex;align-items:center;gap:6px;margin-bottom:6px");
       r.m.forEach(function (m) {
-        var c = el("button", "padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer", m);
+        var c = el("button", "flex:1;min-width:0;text-align:center;padding:9px 12px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;cursor:pointer", m);
         c.type = "button";
         cipy[r.k + "|" + m] = c;
         c.addEventListener("click", function () {
