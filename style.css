@@ -4154,3 +4154,9 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 .day-header{margin-bottom:4px}
 .section-header{padding:0 8px}
 .day-icon{min-height:34px;height:34px}
+
+/* karta voľných služieb rovnako široká ako ostatné; Výpravňa a voľné služby čiernym písmom (dispečing zostáva červený, je to telefón) */
+.burza-link-row{width:100%;margin:10px 0 0}
+.vypravna-pas .vyp-nadpis,.vypravna-pas .vyp-nadpis span,.burza-link-row{color:var(--text-1)}
+.vyp-sipka{color:var(--text-2)}
+.service-card{border-left:1px solid var(--border-2) !important}
