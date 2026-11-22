@@ -4250,3 +4250,6 @@ html{background:var(--surface) !important}
 :root:not([data-theme=dark]){--surface-2:#e4e7ec}
 :root:not([data-theme=dark]) body{background:#e4e7ec !important}
 #pomocOv .pm-next{box-shadow:0 2px 8px rgba(0,0,0,.25) !important}
+
+/* logo DPB ostáva červené */
+#dpbToggle svg,#dpbToggle svg *{color:#e8001a !important}
