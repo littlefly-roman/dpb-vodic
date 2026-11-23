@@ -26,7 +26,9 @@
             s.style.cssText = "display:flex;flex-direction:column;gap:8px";
             [
               { kod: "lekar", label: "Lekár" },
+              { kod: "sprievod", label: "Sprievod" },
               { kod: "pn", label: "PN" },
+              { kod: "ocr", label: "OČR" },
               { kod: "ine", label: "Iné" },
             ].forEach(function (t) {
               var btn = document.createElement("button");

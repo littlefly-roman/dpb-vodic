@@ -402,28 +402,9 @@
 
   function otvorZmenuStavu(ctx) {
     if (!ctx || !ctx.date) return;
-    var k = (ctx.service && ctx.service._karta) || {};
-    var popis = "";
-    if (ctx.service && ctx.service._vzor === "NEPRÍTOMNOSŤ" && k.kod) popis = k.popis || "neprítomnosť";
-    var aktualne = popis || (ctx.volno ? "Voľno" : (ctx.service ? "Služba " + (ctx.service.line || "") : ""));
-    otvor({
-      titul: "Zmena stavu",
-      podtitul: pekne(ctx.date) + (aktualne ? " · teraz: " + aktualne : ""),
-      telo: function (t) {
-        function volba(text, klik) {
-          var b = el("button", VOLBA_CSS, text);
-          b.addEventListener("click", klik);
-          t.appendChild(b);
-        }
-        if (popis) volba("Ukončiť " + popis + " (späť do práce)", function () { koniecNepritomnosti(ctx, popis); });
-        volba("Dovolenka", function () { formular(ctx, { kod: "dovolenka", nazov: "Dovolenka", doPovinne: true }); });
-        volba("PN", function () { formular(ctx, { kod: "pn", nazov: "PN", doPovinne: false }); });
-        volba("Lekár", function () { dokonci(ctx, { kind: "lekar", nazov: "Lekár" }); });
-        volba("Voľno", function () { formular(ctx, { kod: "volno", nazov: "Voľno", doPovinne: true }); });
-        volba("Iné", function () { formular(ctx, { kod: "ine", nazov: "Iné", doPovinne: false, poznamka: true }); });
-      },
-      tlacidla: [{ text: "Zrušiť", klik: zavriVsetko }],
-    });
+    var sv = ctx.service || { date: ctx.date, _vzor: "VOĽNO", line: "" };
+    if (!sv.date) sv.date = ctx.date;
+    ziadostiZalozky(sv);
   }
 
 
@@ -641,7 +622,7 @@
 
   // ---------- Reklamácia (minulý deň) ----------
   // Štyri bloky: Stav, Časy služby, Vozidlá, Zácvik (+ hradenie pri 944). Zaškrtneš, čo reklamuješ, a doplníš správnu hodnotu.
-  var STAVY = ["Služba", "Dovolenka", "PN", "Lekár", "Voľno", "Iné"];
+  var STAVY = ["Služba", "Dovolenka", "Voľno", "Lekár", "Sprievod", "PN", "OČR", "Iné"];
   function reklamacia(ctx) {
     var sv = ctx.service || null, k = (sv && sv._karta) || {};
     var vzor = sv ? sv._vzor : "";
@@ -1045,7 +1026,17 @@
         }
         function zostav() {
           obsah.innerHTML = ""; chyba.textContent = "";
-          if (tab === 0) { panel = stavPanel(ctx, function () { chyba.textContent = ""; }); obsah.appendChild(panel.el); }
+          if (tab === 0) {
+            var kz = (service && service._karta) || {};
+            if (service && service._vzor === "NEPRÍTOMNOSŤ" && kz.kod) {
+              var pp = kz.popis || "neprítomnosť";
+              var ub = el("button", "width:100%;padding:12px 14px;margin-bottom:10px;border:0;border-radius:12px;background:var(--surface-2);color:var(--text-1);font-size:0.9375rem;font-weight:600;cursor:pointer;text-align:left", "Ukončiť " + pp + " (späť do práce)");
+              ub.type = "button";
+              ub.addEventListener("click", function () { koniecNepritomnosti(ctx, pp); });
+              obsah.appendChild(ub);
+            }
+            panel = stavPanel(ctx, function () { chyba.textContent = ""; }); obsah.appendChild(panel.el);
+          }
           else {
             panel = {};
             var z = { telo: obsah };

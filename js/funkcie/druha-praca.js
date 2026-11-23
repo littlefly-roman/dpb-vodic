@@ -5,12 +5,14 @@
 (function () {
   var PREF = "dpb_dp_";
 
-  var TYPY = [["sluzba", "Služba"], ["dov", "Dovolenka"], ["pn", "Práceneschopnosť"], ["lekar", "Lekár"], ["nahr", "Náhradné voľno"], ["ine", "Iná neprítomnosť"]];
+  var TYPY = [["sluzba", "Služba"], ["dov", "Dovolenka"], ["pn", "Práceneschopnosť"], ["lekar", "Lekár"], ["sprievod", "Sprievod"], ["ocr", "OČR"], ["nahr", "Náhradné voľno"], ["ine", "Iná neprítomnosť"]];
   function typNazov(t) { for (var i = 0; i < TYPY.length; i++) if (TYPY[i][0] === t) return TYPY[i][1]; return "Služba"; }
   function typZTextu(t) {
     t = String(t || "");
     if (/dovolen|^dov$/i.test(t)) return "dov";
     if (/\bPN\b|prácenesch|pracenesch/i.test(t)) return "pn";
+    if (/\bOČR\b|\bOCR\b|ošetrovan|osetrovan/i.test(t)) return "ocr";
+    if (/sprievod|doprovod/i.test(t)) return "sprievod";
     if (/lek[aá]r|ošetrenie|osetrenie/i.test(t)) return "lekar";
     return "sluzba";
   }
