@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" href="img/icon-192.png" />
     <link rel="preload" href="fonts/roboto-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/roboto-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=253">
+    <link rel="stylesheet" href="style.css?v=255">
     <script>
       (function () {
         try {
@@ -212,8 +212,13 @@
         </button>
       </div>
     </header>
-    <div id="dispecingPas" class="dispecing-pas hidden" aria-label="Dopravný dispečing"></div>
-    <div id="vypravnaPas" class="vypravna-pas hidden" aria-label="Výpravňa"></div>
+    <div id="kontaktyRiadok" class="kontakty-riadok hidden">
+      <div id="dispecingPas" class="dispecing-pas hidden" aria-label="Dopravný dispečing"></div>
+      <div class="kontakty-stlpec">
+        <div id="vypravnaPas" class="vypravna-pas hidden" aria-label="Výpravňa"></div>
+        <div id="dielnaPas" class="dielna-pas hidden" aria-label="Dielňa"></div>
+      </div>
+    </div>
 
     <div id="notifPanel" class="notif-panel hidden">
       <div class="notif-panel-header">
@@ -559,7 +564,7 @@
     <script src="js/app/render-hook.js"></script>
 
     <!-- Login + Splash init -->
-    <script src="js/funkcie/vypravna-pas.js?v=59"></script>
+    <script src="js/funkcie/vypravna-pas.js?v=60"></script>
     <script src="js/funkcie/prihlasenie.js?v=4"></script>
 
     <div id="cpModal" class="grafikon-modal" role="dialog" aria-modal="true">

@@ -11,13 +11,16 @@
       KR: { nazov: "Výpravňa Krasňany (KR)", cisla: ["+421 2 5950 3429", "+421 908 297 006"] },
       TR: { nazov: "Výpravňa Trnávka (TR)", cisla: ["+421 2 5950 2410", "+421 908 297 011"] },
     },
-    osetrenie: { nazov: "Denné ošetrenie", cisla: [] },   // číslo doplníme
+    dielne: {                                              // čísla doplníme
+      KR: { nazov: "Dielňa Krasňany", cisla: [] },
+      TR: { nazov: "Dielňa Trnávka", cisla: [] },
+    },
     zamestnanci: {},
     nahrad: function (d) {
       if (!d) return;
       if (d.dispecing) K.dispecing = d.dispecing;
       if (d.vypravne) K.vypravne = d.vypravne;
-      if (d.osetrenie) K.osetrenie = d.osetrenie;
+      if (d.dielne) K.dielne = d.dielne;
       if (d.zamestnanci) K.zamestnanci = d.zamestnanci;
     },
     zamestnanciPre: function (op, wp) {

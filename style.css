@@ -4298,3 +4298,30 @@ html{background:var(--surface) !important}
 :root[data-theme=dark] .bottom-nav button{background:#2a2e38!important;border-color:#3b404c!important}
 :root[data-theme=dark] .bottom-nav button.active{background:#3a3f4b!important;border-color:rgba(255,255,255,.45)!important}
 :root[data-theme=dark] .dispecing-pas .vyp-hlavicka,:root[data-theme=dark] .vypravna-pas .vyp-box,:root[data-theme=dark] .burza-link-row,:root[data-theme=dark] .section-header,:root[data-theme=dark] .day-icon{background:#2a2e38!important;border-color:#3b404c!important}
+
+/* ===== Riadok kontaktov: Dispečing (2 riadky) | Výpravňa + Dielňa (menu sa rozbaľuje cez kartu) ===== */
+.kontakty-riadok{position:relative;display:flex;gap:4px;padding:4px 14px 0;flex-shrink:0;z-index:150}
+.kontakty-riadok.hidden{display:none!important}
+.kontakty-riadok .dispecing-pas{flex:1 1 0;min-width:0;padding:0!important;margin:0}
+.kontakty-riadok .dispecing-pas .vyp-hlavicka{height:90px;min-height:90px!important;box-sizing:border-box;flex-direction:column!important;justify-content:center!important;gap:3px;padding:0 8px!important}
+.kontakty-riadok .dispecing-pas .vyp-hl-nazov{display:flex;align-items:center;gap:6px}
+.kontakty-riadok .dispecing-pas .vyp-hl-nazov svg{width:18px;height:18px}
+.kontakty-stlpec{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:4px}
+.kontakty-stlpec .vypravna-pas,.kontakty-stlpec .dielna-pas{padding:0!important;margin:0;background:transparent;border:0}
+.kontakty-stlpec .dielna-pas.hidden,.kontakty-stlpec .vypravna-pas.hidden{display:none}
+.kontakty-stlpec .vyp-box{height:43px;box-sizing:border-box;padding:0 12px!important;background:var(--surface);border:1px solid var(--border-2);border-radius:16px;position:static}
+.kontakty-stlpec .vyp-nadpis{width:100%;height:100%;min-height:0!important;display:flex;align-items:center;justify-content:center;gap:6px;border:0!important;margin:0!important;background:none;font-family:inherit;color:var(--text-1);cursor:pointer}
+.kontakty-stlpec .vyp-nadpis span{color:var(--text-1)}
+.kontakty-stlpec .vyp-menu{position:absolute;z-index:300;left:14px;right:14px;background:var(--surface);border:1px solid var(--border-2);border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.18);overflow:hidden}
+.kontakty-stlpec .vypravna-pas .vyp-menu{top:51px}
+.kontakty-stlpec .dielna-pas .vyp-menu{top:98px}
+.kontakty-stlpec .vyp-box.mizne{opacity:0;transition:opacity 2s ease-in}
+.vm-blk{display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:0;border-top:1px solid var(--border-2);font-family:inherit;color:var(--text-1)}
+.vyp-menu>.vm-blk:first-child{border-top:0}
+.vm-h{display:block;font-size:.75rem;letter-spacing:.06em;color:var(--text-3);font-weight:700!important}
+.vm-n{display:block;font-size:1.0625rem;margin-top:2px;color:var(--text-1)}
+.vm-s{display:block;font-size:.8125rem;color:var(--text-3);margin-top:1px}
+.vyp-menu .vyp-blk{padding:8px 14px}
+:root[data-theme=dark] .kontakty-stlpec .vyp-box,:root[data-theme=dark] .kontakty-stlpec .vyp-menu{background:#2a2e38!important;border-color:#3b404c!important}
+:root[data-theme=dark] .kontakty-riadok .dispecing-pas .vyp-hlavicka{background:#2a2e38!important;border-color:#3b404c!important}
+.kontakty-riadok .dispecing-pas .vyp-hl-nazov,.kontakty-riadok .dispecing-pas .vyp-hl-cislo{flex:0 0 auto!important;width:auto;margin:0;text-align:center}
