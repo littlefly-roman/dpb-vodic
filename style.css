@@ -4402,3 +4402,6 @@ html{background:var(--surface) !important}
 #grafikonModal .grafikon-footer { padding-bottom: 10px; }
 /* zatvorené okno grafikonu sa schová úplne pod displej (nesmie presvitať za spodným menu) */
 #grafikonModal:not(.active), .grafikon-modal.gm-sheet:not(.active) { transform: translateY(calc(100% + var(--nav-h, 80px) + 60px)); pointer-events: none; visibility: hidden; transition: transform .28s cubic-bezier(.32,.72,0,1), visibility 0s .28s; }
+
+/* nová notifikácia / správa: jemný červený 1px rámik na príslušnej ikone */
+.notif-btn.ma-nove { border: 1px solid var(--red) !important; box-shadow: none !important; }

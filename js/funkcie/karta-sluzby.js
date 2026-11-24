@@ -1098,15 +1098,37 @@
                     det.appendChild(kurz);
                     // Celý riadok rozbaľuje meno striedača (okrem aktívnej ikony prestávky)
                     row.style.cursor = "pointer";
-                    row.addEventListener("click", function (e) {
-                      if (e.target.closest && e.target.closest(".klik")) return;
-                      e.stopPropagation();
-                      var otv = det.style.display === "none";
+                    var nastavDet = function (otv) {
                       det.style.display = otv ? "flex" : "none";
                       sip.classList.toggle("open", otv);
                       sip.setAttribute("aria-expanded", otv ? "true" : "false");
+                    };
+                    var rucne = false;
+                    row.addEventListener("click", function (e) {
+                      if (e.target.closest && e.target.closest(".klik")) return;
+                      e.stopPropagation();
+                      rucne = true;   // ručné rozbalenie/zbalenie vypne automatiku
+                      nastavDet(det.style.display === "none");
                     });
                     row.appendChild(sip);
+                    // Automaticky: 15 min pred prevzatím striedačom až do odovzdania je riadok rozbalený, potom sa zbalí
+                    (function () {
+                      var dnesKey = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
+                      if (!service.date || service.date !== dnesKey) return;
+                      var mn = function (t) { var q = String(t || "").split(":"); return parseInt(q[0], 10) * 60 + parseInt(q[1] || 0, 10); };
+                      var od = mn(p.prebera) - 15, dod = mn(p.odovzdava);
+                      if (isNaN(od) || isNaN(dod)) return;
+                      var posl = null;
+                      var kontrola = function () {
+                        if (!document.body.contains(row) && posl !== null) { clearInterval(tm); return; }
+                        if (rucne) { clearInterval(tm); return; }
+                        var n = new Date(), m = n.getHours() * 60 + n.getMinutes();
+                        var v = m >= od && m < dod;
+                        if (v !== posl) { posl = v; nastavDet(v); }
+                      };
+                      var tm = setInterval(kontrola, 20000);
+                      setTimeout(kontrola, 0);
+                    })();
                   }
                   pb.appendChild(row);
                   if (det) pb.appendChild(det);

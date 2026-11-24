@@ -112,6 +112,7 @@
           const count = neprec();
           badge.textContent = count > 9 ? "9+" : count;
           badge.classList.toggle("hidden", count === 0);
+          var nb = document.getElementById("notifBtn"); if (nb) nb.classList.toggle("ma-nove", count > 0);
         }
 
         // ── FORMAT ──────────────────────────────────────────────────

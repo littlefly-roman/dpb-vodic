@@ -69,6 +69,7 @@
     var n = S() ? S().pocetNovych() : 0, b = $("spravyBadge"), btn = $("spravyBtn");
     if (btn) btn.style.display = S() && S().zoznam().length ? "" : "none";
     if (b) { b.textContent = n > 99 ? "99+" : String(n); b.classList.toggle("hidden", !n); }
+    if (btn) btn.classList.toggle("ma-nove", n > 0);
     var pas = $("spravyPas");
     if (pas) {
       var d = S() ? S().dolezite() : [];
