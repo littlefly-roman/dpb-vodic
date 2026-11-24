@@ -4274,5 +4274,6 @@ html{background:var(--surface) !important}
 .day-icon{min-width:43px;width:43px;height:43px;min-height:43px;background:var(--surface)!important;border:1px solid var(--border-2);border-radius:16px;color:var(--text-1);box-sizing:border-box}
 .day-icon svg{width:21px;height:21px}
 
-/* medzera medzi Výpravňou a dátumom = 4px (app-content má vlastných 14px) */
-#servicesView .day-header{padding-top:0;margin-top:-10px}
+/* medzera medzi Výpravňou a dátumom = 4px: odstránený horný okraj okna (nie záporný okraj, ten orezával dátum) */
+.app-content:has(#servicesView:not(.hidden)){padding-top:0}
+#servicesView .day-header{padding-top:4px;margin-top:0}
