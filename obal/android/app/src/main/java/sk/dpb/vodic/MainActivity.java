@@ -3,6 +3,7 @@ package sk.dpb.vodic;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -24,6 +25,7 @@ public class MainActivity extends BridgeActivity {
     public void onStart() {
         super.onStart();
         final WebView wv = getBridge().getWebView();
+        wv.setOverScrollMode(View.OVER_SCROLL_NEVER); // žiadne „pružné“ naťahovanie na okrajoch
         final WebSettings s = wv.getSettings();
         s.setSupportMultipleWindows(true);
         s.setJavaScriptCanOpenWindowsAutomatically(true);
