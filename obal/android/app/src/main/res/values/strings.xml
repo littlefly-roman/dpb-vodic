@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DPB</string>
+    <string name="title_activity_main">DPB</string>
+    <string name="package_name">sk.dpb.vodic</string>
+    <string name="custom_url_scheme">sk.dpb.vodic</string>
+</resources>

@@ -1,0 +1,24 @@
+name: Postaviť APK
+on:
+  workflow_dispatch:
+  push:
+    paths: ["obal/**", ".github/workflows/apk.yml"]
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: obal } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: android-actions/setup-android@v3
+      - run: npm install --no-audit --no-fund
+      - run: npx cap sync android
+      - run: ./gradlew assembleDebug
+        working-directory: obal/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DPB-apk
+          path: obal/android/app/build/outputs/apk/debug/app-debug.apk
