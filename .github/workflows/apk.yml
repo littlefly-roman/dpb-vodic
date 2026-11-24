@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     paths: ["obal/**", ".github/workflows/apk.yml"]
+permissions:
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -21,3 +23,10 @@ jobs:
         with:
           name: DPB-apk
           path: obal/android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Zverejniť APK na stiahnutie
+        working-directory: .
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          cp obal/android/app/build/outputs/apk/debug/app-debug.apk DPB.apk
+          gh release delete apk-obal --yes --cleanup-tag || true
+          gh release create apk-obal DPB.apk --target "$GITHUB_SHA" --title "DPB – Android APK" --notes "Posledná zostava Android obalu. Stiahni DPB.apk a nainštaluj."
