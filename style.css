@@ -3418,7 +3418,7 @@ body {
 
 /* Cestovné poriadky sú súčasťou appky: spodné menu ostáva viditeľné, vlastné „Zavrieť“ netreba */
 #cpModal { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
-#cpModal .grafikon-footer { display: none; }
+#cpModal .grafikon-footer { display: block; flex: 0 0 auto; }
 #cpModal:not(.active) { transform: translateY(calc(100% + 120px)); pointer-events: none; }
 
 /* Odpočet do odchodu (zvonček v pruhu spoja + okno) */
@@ -4392,3 +4392,7 @@ html{background:var(--surface) !important}
 .podrz::after{content:"";position:absolute;right:3px;bottom:3px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;pointer-events:none}
 .card-ic.podrz::after{right:-3px;bottom:-1px}
 .card-zvonec.podrz::after{right:4px;bottom:4px}
+
+/* Cestovné poriadky: tlačidlo Zavrieť je vidieť tesne nad spodným menu (menu už pokrýva spodný okraj displeja) */
+#cpModal .grafikon-footer { padding-bottom: 10px; padding-top: 10px; }
+#cpModal .grafikon-footer button { padding: 11px; }
