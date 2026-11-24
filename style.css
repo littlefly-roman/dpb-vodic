@@ -4371,3 +4371,8 @@ html{background:var(--surface) !important}
 .burza-pas{flex-shrink:0;padding:4px 0 0}
 .burza-pas.hidden{display:none}
 .burza-pas .burza-link-row{margin:0!important;width:100%!important}
+
+/* pri automatickom zatváraní stmieva len rozbalené menu, kontajner ostáva viditeľný */
+.kontakty-stlpec .vyp-box.mizne{opacity:1!important}
+.kontakty-stlpec .vyp-menu{transition:opacity 2s ease-in}
+.kontakty-stlpec .vyp-box.mizne .vyp-menu{opacity:0}

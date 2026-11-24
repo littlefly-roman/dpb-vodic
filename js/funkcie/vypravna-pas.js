@@ -167,7 +167,7 @@
         if (!bolo) {
           if (ktora === "v") otvorene = true; else dielnaOtv = true;
           // otvorené menu po 10 sekundách pomaly zmizne (posledné ~2 s postupné stmievanie)
-          casovac2 = setTimeout(function () { mizne = true; vykresli(); }, 8000);
+          casovac2 = setTimeout(function () { mizne = true; var b = document.querySelector("#kontaktyRiadok .vyp-box.otvorena"); if (b) b.classList.add("mizne"); }, 8000);
           casovac = setTimeout(zavriMenu, 10000);
         }
         vykresli();
