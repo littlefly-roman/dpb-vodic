@@ -4277,3 +4277,12 @@ html{background:var(--surface) !important}
 /* medzera medzi Výpravňou a dátumom = 4px: odstránený horný okraj okna (nie záporný okraj, ten orezával dátum) */
 .app-content:has(#servicesView:not(.hidden)){padding-top:0}
 #servicesView .day-header{padding-top:4px;margin-top:0}
+
+/* spodné menu: každá položka vo vlastnom kontajneri */
+.bottom-nav{background:transparent!important;border-top:0!important;box-shadow:none!important;padding:0 11px env(safe-area-inset-bottom,0px)!important}
+.bottom-nav button{background:var(--surface)!important;border:1px solid var(--border-2)!important;border-radius:16px!important;margin:4px 3px 6px!important;box-sizing:border-box}
+.bottom-nav button.active{background:var(--red-soft,rgba(232,0,26,.08))!important;border-color:var(--red)!important}
+:root[data-theme=dark] .bottom-nav button.active{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.35)!important}
+.bottom-nav{padding-left:8px!important;padding-right:8px!important}
+.bottom-nav button{margin:4px 2px 6px!important;padding:6px 2px!important;min-width:0}
+.bottom-nav button .nav-label{font-size:.6875rem!important;letter-spacing:-.1px;white-space:nowrap}
