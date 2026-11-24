@@ -4376,3 +4376,10 @@ html{background:var(--surface) !important}
 .kontakty-stlpec .vyp-box.mizne{opacity:1!important}
 .kontakty-stlpec .vyp-menu{transition:opacity 2s ease-in}
 .kontakty-stlpec .vyp-box.mizne .vyp-menu{opacity:0}
+
+/* prestávka: pin zarovno s hodinami v riadkoch */
+.service-card .card-prs-blk{padding-left:12px!important}
+.service-card .card-prs-hdr{gap:6px!important}
+.service-card .card-prs-hdr .prs-z-ik{width:18px;display:inline-flex;justify-content:center}
+.service-card .card-prs-row.prs-nova{margin-left:18px}
+.service-card .prs-det{margin-left:18px}
