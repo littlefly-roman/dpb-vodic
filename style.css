@@ -4286,3 +4286,15 @@ html{background:var(--surface) !important}
 .bottom-nav{padding-left:8px!important;padding-right:8px!important}
 .bottom-nav button{margin:4px 2px 6px!important;padding:6px 2px!important;min-width:0}
 .bottom-nav button .nav-label{font-size:.6875rem!important;letter-spacing:-.1px;white-space:nowrap}
+
+/* hlavička: logo a ikony v kontajneroch */
+.app-header{background:transparent!important;border-bottom:0!important;box-shadow:none!important;height:auto!important;padding:calc(4px + env(safe-area-inset-top,0px)) 14px 0!important;gap:4px}
+.app-header button{background:var(--surface)!important;border:1px solid var(--border-2)!important;border-radius:16px!important;box-sizing:border-box;height:43px;min-height:43px;width:43px;min-width:43px;padding:0;display:flex;align-items:center;justify-content:center;position:relative}
+.app-header .header-logo-btn{flex:1 1 auto;min-width:0;width:auto;justify-content:flex-start;padding:0 10px 0 10px;margin-right:0}
+.app-header .header-logo-btn svg{height:28px;width:auto}
+.app-header>div{gap:4px!important}
+:root[data-theme=dark] .app-header button{background:#2a2e38!important;border-color:#3b404c!important}
+/* tmavý režim: svetlejší podklad kontajnerov */
+:root[data-theme=dark] .bottom-nav button{background:#2a2e38!important;border-color:#3b404c!important}
+:root[data-theme=dark] .bottom-nav button.active{background:#3a3f4b!important;border-color:rgba(255,255,255,.45)!important}
+:root[data-theme=dark] .dispecing-pas .vyp-hlavicka,:root[data-theme=dark] .vypravna-pas .vyp-box,:root[data-theme=dark] .burza-link-row,:root[data-theme=dark] .section-header,:root[data-theme=dark] .day-icon{background:#2a2e38!important;border-color:#3b404c!important}
