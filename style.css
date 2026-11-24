@@ -4257,3 +4257,8 @@ html{background:var(--surface) !important}
 /* spodné menu: výška sa prispôsobí obsahu (v obale/WebView so zväčšeným písmom sa ikony orezávali) */
 .bottom-nav { height: auto; min-height: calc(64px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; }
 .bottom-nav button { overflow: visible; }
+
+/* okno Cestovných poriadkov sa drží medzi skutočnou hlavičkou a skutočným spodným menu (nie podľa pevných 64 px) */
+#cpModal { top: var(--hdr-h, calc(64px + env(safe-area-inset-top, 0px))); bottom: var(--nav-h, calc(64px + env(safe-area-inset-bottom, 0px))); }
+.bottom-nav { position: relative; z-index: 250; }
+.toast { bottom: calc(var(--nav-h, 64px) + 16px); }
