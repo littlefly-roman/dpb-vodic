@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" href="img/icon-192.png" />
     <link rel="preload" href="fonts/roboto-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/roboto-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=259">
+    <link rel="stylesheet" href="style.css?v=260">
     <script>
       (function () {
         try {
@@ -413,6 +413,10 @@
           </label>
           <div id="profilObrazovkaPozn" class="profil-pozn">Kým je appka otvorená, displej nezhasne. Zvyšuje spotrebu batérie.</div>
         </div>
+        <div class="employer-card profil-card" id="profilVzhladKarta">
+          <button type="button" id="profilVzhladBtn" class="profil-nacitat">Vzhľad: svetlý, tmavý, automaticky</button>
+          <div class="profil-pozn">Môžeš nastaviť, kedy sa appka sama prepne z denného na nočný režim a späť. Okno otvoríš aj dlhým podržaním ikony slnka alebo mesiaca hore.</div>
+        </div>
         <div class="employer-card profil-card" id="profilSkuskaKarta">
           <div class="employer-detail-row">
             <span>Skúška upozornení</span><span id="profilSkuskaStav">–</span>
@@ -756,7 +760,7 @@
     <script src="js/funkcie/spravy-ui.js?v=14"></script>
     <script src="js/funkcie/predpis.js?v=3"></script>
     <script src="js/funkcie/uvod.js?v=9"></script>
-    <script src="js/funkcie/pomoc.js?v=6"></script>
+    <script src="js/funkcie/pomoc.js?v=7"></script>
     <script src="js/funkcie/kurz-obsadenie.js?v=1"></script>
     <script src="js/funkcie/stretnutia.js?v=24"></script>
     <script src="js/funkcie/mini-grafikon.js?v=16"></script>
@@ -774,7 +778,8 @@ GRAFIKON SMART LAYER v7
 
 
 
-    <script src="js/funkcie/tema.js"></script>
+    <script src="js/funkcie/tema.js?v=2"></script>
+    <script>(function(){var b=document.getElementById("profilVzhladBtn");if(b)b.addEventListener("click",function(){if(window.DpbTema)DpbTema.otvor();});})();</script>
     <script src="js/funkcie/vyber-vodica.js"></script>
     <script src="js/funkcie/odpocet.js?v=21"></script>
     <script src="js/funkcie/spat.js?v=3"></script>

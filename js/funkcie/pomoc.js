@@ -10,6 +10,7 @@
 
   var KROKY = {
     today: [
+      { sel: ["#themeBtn"], nadpis: "Svetlý a tmavý režim", text: "Ťuknutím prepneš svetlý a tmavý vzhľad. Dlhým podržaním nastavíš, kedy sa appka sama prepne z denného na nočný režim a späť." },
       { sel: ["#todayDate"], nadpis: "Dátum", text: "Ťukni na dátum a otvorí sa kalendár. V kalendári potiahni prstom doľava alebo doprava a prepneš mesiac." },
       { sel: ["#swipeWrapper"], nadpis: "Potiahni kartu", text: "Potiahnutím karty doľava alebo doprava prepneš na ďalší alebo predchádzajúci deň. V zozname mesiaca tým istým gestom prepínaš mesiace." },
       { sel: ["#btnList"], nadpis: "Zoznam mesiaca", text: "Prepne na zoznam služieb celého mesiaca. Potiahnutím doľava alebo doprava prepneš mesiac. Tam nájdeš aj výkaz: ťuknutím na riadok dňa otvoríš jeho menu a dvoma prstami výkaz priblížiš alebo oddiališ." },
