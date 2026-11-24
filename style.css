@@ -4383,3 +4383,6 @@ html{background:var(--surface) !important}
 .service-card .card-prs-hdr .prs-z-ik{width:18px;display:inline-flex;justify-content:center}
 .service-card .card-prs-row.prs-nova{margin-left:18px}
 .service-card .prs-det{margin-left:18px}
+
+/* karta striedača: pin zarovno s hodinami (rovnaký stĺpec vľavo) */
+.str-zastávka.s-ikonou{position:relative}
