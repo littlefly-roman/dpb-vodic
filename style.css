@@ -4262,3 +4262,14 @@ html{background:var(--surface) !important}
 #cpModal { top: var(--hdr-h, calc(64px + env(safe-area-inset-top, 0px))); bottom: var(--nav-h, calc(64px + env(safe-area-inset-bottom, 0px))); }
 .bottom-nav { position: relative; z-index: 250; }
 .toast { bottom: calc(var(--nav-h, 64px) + 16px); }
+
+/* kontajnery: jednotná výška 43px (-10 %), rovnaké medzery 6px, dátum vypĺňa voľné miesto */
+.dispecing-pas,.vypravna-pas{padding:4px 14px 0!important}
+.dispecing-pas .vyp-hlavicka{min-height:43px!important}
+.vyp-nadpis{min-height:39px!important}
+.burza-link-row{min-height:43px!important;margin-top:4px!important}
+.day-header{gap:4px;padding:4px 0 0;justify-content:flex-start;margin-top:0;margin-bottom:4px}
+.section-header{flex:1 1 auto;min-width:0;margin-right:0;flex-wrap:nowrap;white-space:nowrap;align-items:center;height:43px;min-height:43px;padding:0 16px;
+  background:var(--surface)!important;border:1px solid var(--border-2);border-radius:16px;box-sizing:border-box}
+.day-icon{min-width:43px;width:43px;height:43px;min-height:43px;background:var(--surface)!important;border:1px solid var(--border-2);border-radius:16px;color:var(--text-1);box-sizing:border-box}
+.day-icon svg{width:21px;height:21px}
