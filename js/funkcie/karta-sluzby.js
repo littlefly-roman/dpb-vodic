@@ -262,7 +262,25 @@
               var _pi = window.DpbPrestavka.ikona(service, k);
               if (_pi) main.appendChild(_pi);
             }
-            main.addEventListener("click", () => row.classList.toggle("open"));
+            var _rucneStr = false;
+            main.addEventListener("click", () => { _rucneStr = true; row.classList.toggle("open"); });
+            // Automaticky: striedanie je rozbalené od konca predchádzajúceho (u prvého 15 min pred začiatkom) do svojho konca
+            (function () {
+              var dnesKey = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
+              if (!service.date || service.date !== dnesKey) return;
+              var mn = function (t) { var q = String(t || "").split(":"); return parseInt(q[0], 10) * 60 + parseInt(q[1] || 0, 10); };
+              var od = i > 0 ? mn(kurzy[i - 1].odovzdava) : mn(k.prebera) - 15, dod = mn(k.odovzdava);
+              if (isNaN(od) || isNaN(dod)) return;
+              var posl = null;
+              var kontrola = function () {
+                if (_rucneStr || (posl !== null && !document.body.contains(row))) { clearInterval(tm); return; }
+                var n = new Date(), m = n.getHours() * 60 + n.getMinutes();
+                var v = m >= od && m < dod;
+                if (v !== posl) { posl = v; row.classList.toggle("open", v); }
+              };
+              var tm = setInterval(kontrola, 20000);
+              setTimeout(kontrola, 0);
+            })();
 
             const det = document.createElement("div");
             det.className = "str-detail" + (k.trasa ? " hrad" : "");
