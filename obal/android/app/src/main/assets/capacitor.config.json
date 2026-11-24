@@ -1,0 +1,15 @@
+{
+	"appId": "sk.dpb.vodic",
+	"appName": "DPB",
+	"webDir": "www",
+	"server": {
+		"url": "https://littlefly-roman.github.io/dpb-vodic/dpb_app_v11.html",
+		"allowNavigation": [
+			"littlefly-roman.github.io"
+		],
+		"androidScheme": "https"
+	},
+	"android": {
+		"backgroundColor": "#ffffff"
+	}
+}

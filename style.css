@@ -4253,3 +4253,7 @@ html{background:var(--surface) !important}
 
 /* logo DPB ostáva červené */
 #dpbToggle svg,#dpbToggle svg *{color:#e8001a !important}
+
+/* spodné menu: výška sa prispôsobí obsahu (v obale/WebView so zväčšeným písmom sa ikony orezávali) */
+.bottom-nav { height: auto; min-height: calc(64px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; }
+.bottom-nav button { overflow: visible; }
