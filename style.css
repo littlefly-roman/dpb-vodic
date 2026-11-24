@@ -4396,3 +4396,7 @@ html{background:var(--surface) !important}
 /* Cestovné poriadky: tlačidlo Zavrieť je vidieť tesne nad spodným menu (menu už pokrýva spodný okraj displeja) */
 #cpModal .grafikon-footer { padding-bottom: 10px; padding-top: 10px; }
 #cpModal .grafikon-footer button { padding: 11px; }
+
+/* Grafikon / cestovný poriadok služby: tlačidlo Zavrieť ostáva nad spodným menu (menu je nad oknom) */
+#grafikonModal, .grafikon-modal.gm-sheet { bottom: var(--nav-h, calc(64px + env(safe-area-inset-bottom, 0px))); }
+#grafikonModal .grafikon-footer { padding-bottom: 10px; }
