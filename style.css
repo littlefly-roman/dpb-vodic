@@ -4386,3 +4386,9 @@ html{background:var(--surface) !important}
 
 /* karta striedača: pin zarovno s hodinami (rovnaký stĺpec vľavo) */
 .str-zastávka.s-ikonou{position:relative}
+
+/* ikony, ktoré sa dajú podržať, majú v dolnom rohu malú bodku */
+.theme-btn.podrz,.odp-plan.podrz{position:relative}
+.podrz::after{content:"";position:absolute;right:3px;bottom:3px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;pointer-events:none}
+.card-ic.podrz::after{right:-3px;bottom:-1px}
+.card-zvonec.podrz::after{right:4px;bottom:4px}

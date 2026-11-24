@@ -10,12 +10,13 @@
 
   var KROKY = {
     today: [
+      { sel: [".podrz"], nadpis: "Ikony s bodkou", text: "Ikona s malou bodkou v rohu sa dá podržať. Ťuknutie urobí jednu vec a dlhé podržanie otvorí ďalšie možnosti, napríklad nastavenie vzhľadu, jednotlivé upozornenia alebo pridelenie vozidla." },
       { sel: ["#themeBtn"], nadpis: "Svetlý a tmavý režim", text: "Ťuknutím prepneš svetlý a tmavý vzhľad. Dlhým podržaním nastavíš, kedy sa appka sama prepne z denného na nočný režim a späť." },
       { sel: ["#todayDate"], nadpis: "Dátum", text: "Ťukni na dátum a otvorí sa kalendár. V kalendári potiahni prstom doľava alebo doprava a prepneš mesiac." },
       { sel: ["#swipeWrapper"], nadpis: "Potiahni kartu", text: "Potiahnutím karty doľava alebo doprava prepneš na ďalší alebo predchádzajúci deň. V zozname mesiaca tým istým gestom prepínaš mesiace." },
       { sel: ["#btnList"], nadpis: "Zoznam mesiaca", text: "Prepne na zoznam služieb celého mesiaca. Potiahnutím doľava alebo doprava prepneš mesiac. Tam nájdeš aj výkaz: ťuknutím na riadok dňa otvoríš jeho menu a dvoma prstami výkaz priblížiš alebo oddiališ." },
       { sel: [".clickable-line", ".card-title"], nadpis: "Služba", text: "Ťukni na linku alebo čas služby a otvorí sa grafikon s odchodmi." },
-      { sel: [".card-zvonec"], nadpis: "Upozornenia", text: "Budík ti pripomenie odchod. Ťukni naň a vyber, kedy ťa má appka upozorniť." },
+      { sel: [".card-zvonec"], nadpis: "Upozornenia", text: "Budík ti pripomenie odchod. Ťuknutím zapneš alebo vypneš všetky upozornenia a dlhým podržaním vyberieš jednotlivé." },
       { sel: [".str-chevron", ".card-vehicle .ik-i", ".card-vehicle"], nadpis: "Doplňujúce informácie", text: "Ikona „i“ rozbalí podrobnosti: vozidlo, vodiča a ďalšie údaje. Meno vodiča môžeš ťuknúť a zobrazí sa fotka alebo telefón." },
       { sel: [".card-menu-btn"], nadpis: "Menu karty", text: "Šípka dole otvorí menu karty. Nájdeš v ňom grafikon, zmenu stavu (nahlásenie alebo žiadosť o neprítomnosť), reklamáciu, žiadosť o službu, prehľad voľných služieb a nastavenie upozornení k aktuálnej službe." },
       { sel: [".bottom-nav"], nadpis: "Dolné menu", text: "Prepínaš nimi medzi obrazovkami. Aktívna je červená." }

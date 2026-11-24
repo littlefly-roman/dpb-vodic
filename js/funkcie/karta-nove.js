@@ -295,7 +295,7 @@
   // Zvonček: ťuk = zapne / vypne všetko, podržanie = nastavenie
   function zvonec(service) {
     var b = el("button", "");
-    b.type = "button"; b.className = "card-zvonec"; b.setAttribute("aria-label", "Upozornenia");
+    b.type = "button"; b.className = "card-zvonec podrz"; b.setAttribute("aria-label", "Upozornenia");
     b.innerHTML = svg("budik", 20);
     var k = (service && service._karta) || {}, t = null;
     function koniecSek() { var q = String(k.do || "").split(":"), od = sekOd(k.od), d = q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null; return d != null && d > od ? d : null; }

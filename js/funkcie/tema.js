@@ -117,6 +117,7 @@
     document.body.appendChild(ov);
   }
   window.DpbTema = { otvor: otvor };
+  btn.classList.add("podrz"); // značka: dá sa podržať
 
   // ťuknutie = prepnutie, dlhé podržanie = okno
   var tm = null, dlhe = false, x0 = 0, y0 = 0;

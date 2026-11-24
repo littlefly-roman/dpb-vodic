@@ -404,7 +404,7 @@
   function planTlacidlo(kind, items, typ, pop) {
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "odp-plan";
+    b.className = "odp-plan podrz";
     b.setAttribute("data-kind", kind);
     b.setAttribute("aria-label", "Upozornenia");
     b.innerHTML = IK_PLAN + '<span class="odp-pt">Upozorniť</span>';

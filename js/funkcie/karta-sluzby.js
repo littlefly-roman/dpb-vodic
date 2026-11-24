@@ -126,6 +126,7 @@
           (function () {
             var tm = null, pot = false, x0 = 0, y0 = 0, KN = window.DpbKartaNove;
             if (!service || !KN || !KN.vozOkno) return;
+            if (KN.vozOknoMozne && KN.vozOknoMozne(service)) { var _ikv = d.querySelector(".card-ic"); if (_ikv) _ikv.classList.add("podrz"); } // značka: dá sa podržať
             var zrus = function () { if (tm) { clearTimeout(tm); tm = null; } };
             d.addEventListener("pointerdown", function (e) {
               if (e.pointerType === "mouse" && e.button !== 0) return;
