@@ -1034,7 +1034,8 @@
               var _kn = window.DpbKartaNove;
               if (_kn) {
                 // ikony: káva + výmena (prestávku zabezpečuje striedač) vľavo, zvonček upozornení vpravo
-                ph.innerHTML = '<span class="prs-h-ik prs-h-kava">' + _kn.svg("kava", 22) + '</span><span class="prs-h-ik prs-h-vym">' + _kn.svg("swap", 18) + '</span><span class="prs-h-t">PRESTÁVKA</span>';
+                ph.setAttribute("aria-label", "Prestávka");
+                ph.innerHTML = '<span class="prs-h-ik prs-h-kava">' + _kn.svg("kava", 22) + '</span>';
               } else ph.textContent = "PRESTÁVKA";
               pb.appendChild(ph);
               service._upoz = service._upoz || {};
@@ -1044,7 +1045,7 @@
               pz.className = "card-prs-zas";
               if (_kn) pz.innerHTML = '<span class="prs-h-ik prs-z-ik">' + _kn.svg("poloha", 18) + '</span>';
               pz.appendChild(document.createTextNode(_rel[0].zastávka || ""));
-              pb.appendChild(pz);
+              if (_kn) ph.appendChild(pz); else pb.appendChild(pz);
               _rel.forEach(function (p) {
                 var row = document.createElement("div");
                 row.className = "card-prs-row";
@@ -1073,6 +1074,11 @@
                   ik.className = "prs-ik";
                   ik.innerHTML = window.DpbKartaNove.svg("cas", 18);
                   row.appendChild(ik);
+                  var vym = document.createElement("span");
+                  vym.className = "prs-ik sw-ik";
+                  vym.setAttribute("aria-label", "Striedanie");
+                  vym.innerHTML = window.DpbKartaNove.svg("swap", 16);
+                  row.appendChild(vym);
                   row.appendChild(cas);
                   if (_pk) row.appendChild(_pk);
                   var det = null;

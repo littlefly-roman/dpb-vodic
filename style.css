@@ -4325,3 +4325,49 @@ html{background:var(--surface) !important}
 :root[data-theme=dark] .kontakty-stlpec .vyp-box,:root[data-theme=dark] .kontakty-stlpec .vyp-menu{background:#2a2e38!important;border-color:#3b404c!important}
 :root[data-theme=dark] .kontakty-riadok .dispecing-pas .vyp-hlavicka{background:#2a2e38!important;border-color:#3b404c!important}
 .kontakty-riadok .dispecing-pas .vyp-hl-nazov,.kontakty-riadok .dispecing-pas .vyp-hl-cislo{flex:0 0 auto!important;width:auto;margin:0;text-align:center}
+
+/* ===== Tri rovnaké kontajnery v jednom riadku: Dispečing | Výpravňa | Dielňa ===== */
+.kontakty-riadok .dispecing-pas .vyp-hlavicka{height:43px!important;min-height:43px!important}
+.kontakty-riadok .dispecing-pas .vyp-hl-cislo{display:none!important}
+.kontakty-stlpec{flex:2 1 0!important;flex-direction:row!important}
+.kontakty-stlpec>div{flex:1 1 0;min-width:0}
+.kontakty-stlpec .dielna-pas .vyp-menu{top:51px!important}
+.kontakty-riadok .vyp-nadpis{font-size:.9375rem}
+
+/* ===== Hlavná karta: bloky Služba / Prestávka / Striedajúci, bez čiar ===== */
+:root{--in:#f1f3f6}
+:root[data-theme=dark]{--in:#262a33}
+.service-card{padding:6px 8px 4px!important;border-left-width:1px!important}
+.service-card .dep-strip{padding:8px 10px 0;margin-bottom:6px}
+.service-card .card-body{padding:0!important}
+.service-card .card-head{background:var(--in);border-radius:16px;padding:12px 12px 10px!important;margin:0!important;border:0!important;position:relative}
+.service-card .card-head .card-ic svg{width:26px;height:26px}
+.service-card .card-head .card-ic{width:28px}
+.service-card .card-prs-blk{background:var(--in);border-radius:16px;margin:6px 0 0!important;padding:10px 12px!important;border:0!important}
+.service-card .card-prs-blk .prs-h-ik svg{width:18px;height:18px}
+.service-card .prs-nova .prs-ik svg{width:15px;height:15px}
+.service-card .card-prs-row.prs-nova{background:var(--surface)!important;border:1px solid var(--border-2);border-radius:12px;padding:6px 10px!important}
+.service-card .driver-section{background:var(--in)!important;border:0!important;border-radius:16px!important;margin:6px 0 0!important;padding:10px 12px!important}
+.service-card .card-zvonec{background:var(--surface)!important;border:1px solid var(--border-2)!important;border-radius:12px!important;width:36px!important;height:36px!important;right:0!important}
+.service-card .card-head{padding-left:26px!important;padding-right:12px!important}
+.service-card .card-prs-blk{padding-left:26px!important;padding-right:12px!important}
+.service-card .card-menu-btn,.service-card .chev-pod{border:0!important;border-top:0!important}
+.service-card .service-menu-trigger{box-shadow:none!important;background:transparent!important}
+.service-card .card-body{border:0!important}
+.service-card .card-prs-blk .prs-h-t{display:none!important}
+.service-card .card-prs-blk .prs-h-kava svg{width:26px!important;height:26px!important}
+.service-card .card-prs-blk .prs-h-vym svg,.service-card .card-prs-blk .prs-z-ik svg{width:16px!important;height:16px!important}
+.service-card .card-prs-hdr{justify-content:flex-start!important;gap:10px;align-items:center}
+.service-card .card-prs-zas{text-align:left!important;font-size:1rem;font-weight:700}
+.service-card .card-prs-hdr .card-prs-zas{margin:0!important;padding:0!important;display:flex;align-items:center;gap:6px;text-align:left}
+.service-card .sw-ik svg{width:15px!important;height:15px!important}
+.service-card .sw-ik{width:20px!important;color:var(--text-3)}
+.service-card .card-prs-hdr{display:flex!important;align-items:center;gap:10px;position:static!important;padding:0!important}
+.service-card .card-prs-hdr .prs-h-ik,.service-card .card-prs-hdr .prs-z-ik{position:static!important;transform:none!important;margin:0!important;flex:none}
+.service-card .card-prs-hdr .card-prs-zas{text-transform:none!important;letter-spacing:0!important;font-size:1rem!important;font-weight:700!important;color:var(--text-1)!important}
+.service-card .card-prs-hdr .prs-z-ik svg{width:18px!important;height:18px!important;color:var(--text-3)}
+
+/* pás Voľné služby pripnutý nad spodným menu */
+.burza-pas{flex-shrink:0;padding:4px 0 0}
+.burza-pas.hidden{display:none}
+.burza-pas .burza-link-row{margin:0!important;width:100%!important}
