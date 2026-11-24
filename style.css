@@ -4400,3 +4400,5 @@ html{background:var(--surface) !important}
 /* Grafikon / cestovný poriadok služby: tlačidlo Zavrieť ostáva nad spodným menu (menu je nad oknom) */
 #grafikonModal, .grafikon-modal.gm-sheet { bottom: var(--nav-h, calc(64px + env(safe-area-inset-bottom, 0px))); }
 #grafikonModal .grafikon-footer { padding-bottom: 10px; }
+/* zatvorené okno grafikonu sa schová úplne pod displej (nesmie presvitať za spodným menu) */
+#grafikonModal:not(.active), .grafikon-modal.gm-sheet:not(.active) { transform: translateY(calc(100% + var(--nav-h, 80px) + 60px)); pointer-events: none; visibility: hidden; transition: transform .28s cubic-bezier(.32,.72,0,1), visibility 0s .28s; }
