@@ -53,6 +53,7 @@ public class MainActivity extends BridgeActivity {
         final WebView wv = getBridge().getWebView();
         wv.setOverScrollMode(View.OVER_SCROLL_NEVER); // žiadne „pružné“ naťahovanie na okrajoch
         final WebSettings s = wv.getSettings();
+        s.setTextZoom(100); // nepreberať veľkosť písma z nastavení telefónu (inak je všetko väčšie než v Chrome)
         s.setSupportMultipleWindows(true);
         s.setJavaScriptCanOpenWindowsAutomatically(true);
         final String ua = bezWv(s.getUserAgentString());
