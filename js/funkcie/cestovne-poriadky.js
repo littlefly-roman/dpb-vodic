@@ -154,7 +154,7 @@
             var w = mk("div", "flex:" + sirka + ";min-width:0");
             w.appendChild(mk("div", "text-align:center;font-size:0.9375rem;font-weight:700;letter-spacing:.5px;color:var(--text-3);margin-bottom:4px", nadpis));
             var okno = mk("div", "position:relative;height:" + RIADKY * H + "px;border-radius:12px;background:" + (cervene ? "var(--red)" : "var(--surface-2)") + ";overflow:hidden");
-            var pas = mk("div", "position:absolute;left:4px;right:4px;top:" + (2 * H) + "px;height:" + H + "px;border-radius:10px;background:" + (cervene ? "rgba(255,255,255,.22)" : "rgba(220,40,40,.14)") + ";border:1px solid " + (cervene ? "#fff" : "var(--red)") + ";pointer-events:none");
+            var pas = mk("div", "position:absolute;left:4px;right:4px;top:" + (2 * H) + "px;height:" + H + "px;border-radius:10px;background:" + (cervene ? "rgba(255,255,255,.22)" : "var(--surface)") + ";border:1px solid " + (cervene ? "#fff" : "var(--border-2)") + ";box-shadow:" + (cervene ? "none" : "0 1px 3px rgba(15,20,35,.14)") + ";pointer-events:none");
             var sc = mk("div", "position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-padding:" + (2 * H) + "px 0;padding:" + (2 * H) + "px 0;box-sizing:border-box;scrollbar-width:none;-webkit-overflow-scrolling:touch");
             okno.appendChild(pas); okno.appendChild(sc); w.appendChild(okno);
             var st = { items: [], idx: 0, potlac: false, t: null, riadky: [] };
