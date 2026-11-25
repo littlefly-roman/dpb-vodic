@@ -68,12 +68,12 @@
     var s = document.createElement("div"); s.className = "hl-sluzba";
     s.textContent = r.nepr ? r.line + (r.time ? "  ·  " + r.time : "") : r.line + (r.time ? "  ·  " + r.time : "");
     t.appendChild(h); t.appendChild(s);
+    if (r.route && !r.nepr) { var tr = document.createElement("div"); tr.className = "hl-info hl-trasa"; tr.textContent = r.route; t.appendChild(tr); }
     if (r.voz.length) {
       var v = document.createElement("div"); v.className = "hl-info";
       v.textContent = "Vozidlo: " + r.voz.map(function (x) { return x.c + (x.t && r.voz.length > 1 ? " (" + x.t + ")" : ""); }).join(", ");
       t.appendChild(v);
     }
-    if (r.route && !r.nepr) { var tr = document.createElement("div"); tr.className = "hl-info"; tr.textContent = r.route; t.appendChild(tr); }
     d.appendChild(t);
     // Ťuknutie na výsledok (okrem neprítomností) otvorí pod kartou malé menu s grafikonom
     if (!r.nepr && /^\d+\/\d+$/.test(r.line)) {
