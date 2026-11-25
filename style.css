@@ -4405,3 +4405,25 @@ html{background:var(--surface) !important}
 
 /* nová notifikácia / správa: jemný červený 1px rámik na príslušnej ikone */
 .notif-btn.ma-nove { border: 1px solid var(--red) !important; box-shadow: none !important; }
+
+/* Burza: každá služba vlastný kontajnerik (nie jeden veľký blok); rozbalená ostáva v tom istom kontajneri */
+.burza-group { background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; margin-bottom: 4px; }
+.burza-group .burza-row { background: var(--surface); border: 1px solid var(--border-2) !important; border-radius: 14px; margin-bottom: 6px; overflow: hidden; }
+.burza-group .burza-row:last-child { margin-bottom: 0; }
+.burza-group .burza-row.expanded { background: var(--surface) !important; }
+/* Burza: nadpisy dní čitateľné a výrazné (celý názov dňa + dátum), menej prázdneho miesta */
+.burza-day-header { text-transform: none !important; letter-spacing: 0 !important; font-size: 1.0625rem !important; font-weight: 800 !important; color: var(--text-1) !important; padding: 10px 6px 5px !important; }
+
+/* Cestovné poriadky: prepínač Zastávkový | Službový v rovnakom dizajne ako Voľné služby | Rezervácie */
+#cpModal .grafikon-header { display: flex !important; gap: 4px; background: var(--border-2) !important; border: 0 !important; box-shadow: none !important; border-radius: 14px !important; padding: 4px !important; margin: 10px 14px 4px !important; min-height: 0 !important; }
+#cpModal .cp-type-btn { flex: 1; border: 0 !important; background: transparent !important; color: var(--text-3) !important; border-radius: 11px !important; padding: 10px 6px !important; font-size: 0.9375rem; font-weight: 600 !important; box-shadow: none; }
+#cpModal .cp-type-btn.cp-type-active { background: var(--surface) !important; color: var(--text-1) !important; font-weight: 700 !important; box-shadow: 0 1px 3px rgba(15,20,35,.12) !important; }
+
+/* otvorená klávesnica: spodné menu sa skryje a okná siahnu na spodok */
+body.kb-otvorena .bottom-nav { display: none !important; }
+body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .grafikon-modal.gm-sheet { bottom: 0 !important; }
+
+/* Prestávka: čas a meno striedača v jednom bloku (bez čiary) */
+.service-card .card-prs-row.prs-nova:has(.open){border-bottom-left-radius:0!important;border-bottom-right-radius:0!important;border-bottom-color:transparent!important}
+.service-card .prs-nova:has(.open)+.prs-det{background:var(--surface)!important;border:1px solid var(--border-2);border-top-color:transparent;border-radius:0 0 12px 12px;margin-top:0!important;margin-left:18px;padding:3px 10px 8px!important}
+.service-card .prs-det .meno-v{font-weight:700;color:var(--text-1)}

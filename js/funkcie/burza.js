@@ -366,7 +366,8 @@
             const dnes = new Date();
             dnes.setHours(0, 0, 0, 0);
             const jeDnes = skupina.datum.getTime() === dnes.getTime();
-            hdr.textContent = jeDnes ? "Dnes" : formatDatum(skupina.datum);
+            var _dn = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"], _d = skupina.datum;
+            hdr.textContent = (jeDnes ? "Dnes · " : "") + _dn[_d.getDay()] + "  " + _d.getDate() + "." + (_d.getMonth() + 1) + "." + _d.getFullYear();
             frag.appendChild(hdr);
 
             // Karty skupiny
