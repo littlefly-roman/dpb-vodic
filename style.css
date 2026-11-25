@@ -4431,3 +4431,6 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 .hl-trasa { font-size: 0.9375rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Profil: Odhlásiť sa je nad sekciami */
 #profilView .profil-odhlasit { margin: 0 0 12px; }
+/* Štatistika: kvartály sivé, čierna len pri výbere */
+.pf-rad button.pf-q { background: var(--border) !important; color: var(--text-2) !important; border-color: var(--border) !important; }
+.pf-rad button.pf-q.on { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
