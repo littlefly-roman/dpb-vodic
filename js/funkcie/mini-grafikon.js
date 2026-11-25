@@ -40,7 +40,7 @@
         r.style.background = on ? "var(--red)" : "transparent";
         r.style.color = on ? "#fff" : "var(--text-1)";
         r.style.fontWeight = on ? "700" : "400";
-        r.style.boxShadow = on ? "0 2px 10px rgba(232,0,26,.28)" : "none";
+        r.style.boxShadow = on ? "0 2px 10px rgba(15,20,35,.2)" : "none";
       });
     }
     w.addEventListener("scroll", function () { stav.top = w.scrollTop; styl(); }, { passive: true });

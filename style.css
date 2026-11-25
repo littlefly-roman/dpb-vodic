@@ -121,7 +121,7 @@
         padding: 0 14px;
         padding-top: env(safe-area-inset-top);
         z-index: 100;
-        box-shadow: 0 2px 8px rgba(232, 0, 26, 0.3);
+        box-shadow: 0 2px 8px rgba(15,20,35,.2);
       }
 
       .header-logo-btn {
@@ -1092,7 +1092,7 @@
         border-radius: 12px;
         margin: 2px 6px;
         transform: scale(1.03);
-        box-shadow: 0 4px 14px rgba(232, 0, 26, 0.25);
+        box-shadow: 0 4px 14px rgba(15,20,35,.2);
         opacity: 1;
       }
       .grafikon-row.teraz .g-time,
@@ -2250,7 +2250,7 @@
         border: none;
         border-radius: 12px;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(232, 0, 26, 0.3);
+        box-shadow: 0 4px 12px rgba(15,20,35,.2);
         transition: opacity 0.15s;
       }
       .login-btn:disabled {
@@ -3344,7 +3344,7 @@ body {
   :root:not([data-theme="light"]) .zmena-mini-r + .zmena-mini-r{border-top-color:rgba(0,0,0,.14)}
 }
 .zmena-mini-hint{font-size: 0.9375rem;opacity:.7;margin-top:8px;text-align:right}
-@keyframes zmenaDych{0%,100%{opacity:.82;box-shadow:0 0 0 0 rgba(232,0,26,0)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(232,0,26,.35)}}
+@keyframes zmenaDych{0%,100%{opacity:.82;box-shadow:0 0 0 0 rgba(15,20,35,.2)}50%{opacity:1;box-shadow:0 0 14px 2px rgba(15,20,35,.2)}}
 @media (prefers-reduced-motion:reduce){.zmena-mini{animation:none}}
 
 #profilDiskKarta.hidden, #importDiskBtn.hidden { display: none !important; }
@@ -3536,14 +3536,14 @@ body {
 .grafikon-direction{margin:12px 10px 4px;border-radius:14px;border-bottom:0}
 #grafikonContent .grafikon-row,#cpContent .grafikon-row{margin-left:10px;margin-right:10px;border-bottom-color:var(--border-2)}
 #grafikonContent .grafikon-row.nepreprava{border-radius:10px;margin-bottom:2px}
-#grafikonContent .grafikon-row.teraz{transform:none;margin:4px 10px;border-radius:14px;box-shadow:0 2px 10px rgba(232,0,26,.28)}
+#grafikonContent .grafikon-row.teraz{transform:none;margin:4px 10px;border-radius:14px;box-shadow:0 2px 10px rgba(15,20,35,.2)}
 .g-time{color:var(--text-2);font-weight:600}
 .grafikon-footer button{border-radius:16px}
 /* moja služba: jemný podklad a tenký pásik namiesto červených časov a bodiek */
-#grafikonContent .grafikon-row.my-service{background:linear-gradient(rgba(232,0,26,.05),rgba(232,0,26,.05)),var(--surface);box-shadow:inset 3px 0 0 var(--red);border-radius:0}
+#grafikonContent .grafikon-row.my-service{background:linear-gradient(rgba(15,20,35,.04),rgba(15,20,35,.04)),var(--surface);box-shadow:inset 3px 0 0 var(--red);border-radius:0}
 #grafikonContent .grafikon-row.my-service .g-time{color:var(--text-1);font-weight:700}
 #grafikonContent .grafikon-row.my-service .g-my{display:none}
-#grafikonContent .grafikon-row.my-service.teraz{background:var(--red);box-shadow:0 2px 10px rgba(232,0,26,.28);border-radius:14px}
+#grafikonContent .grafikon-row.my-service.teraz{background:var(--red);box-shadow:0 2px 10px rgba(15,20,35,.2);border-radius:14px}
 #grafikonContent .grafikon-row.my-service.teraz .g-time{color:#fff}
 
 /* v207 menu ⋮ a okná */
@@ -3563,7 +3563,7 @@ body > div[style*="10000"] textarea{border-radius:14px!important;border:0!import
 .calendar-grid,.calendar-weekdays{gap:4px!important}
 .calendar-cell{border-radius:14px!important}
 .calendar-cell.today:not(.selected){box-shadow:inset 0 0 0 1.5px var(--red)}
-.calendar-cell.selected{box-shadow:0 2px 8px rgba(232,0,26,.3)}
+.calendar-cell.selected{box-shadow:0 2px 8px rgba(15,20,35,.2)}
 
 /* ── v210: karta Dnes – šípka pod kartou, ikony osôb, zvonček, prestávka s rozbalením ── */
 .service-menu-trigger.chev-under, .service-menu-trigger.chev-pod {
@@ -4007,7 +4007,7 @@ body > div[style*="10000"] button.chip-on[style*="1px solid"]{background:var(--r
 #pomocOv .pm-t { font-size: 1rem; line-height: 1.5; color: var(--text-2); }
 #pomocOv .pm-p { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
 #pomocOv .pm-skip { background: none; border: 0; font: inherit; font-size: 0.9375rem; color: var(--text-3); padding: 10px 2px; cursor: pointer; }
-#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 999px; font: inherit; font-size: 1rem; font-weight: 700; padding: 12px 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(232, 0, 26, 0.3); white-space: pre; }
+#pomocOv .pm-next { background: var(--red); color: #fff; border: 0; border-radius: 999px; font: inherit; font-size: 1rem; font-weight: 700; padding: 12px 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(15,20,35,.2); white-space: pre; }
 #pomocOv .pm-next:active { transform: scale(.97); }
 @keyframes pmFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pmPop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
