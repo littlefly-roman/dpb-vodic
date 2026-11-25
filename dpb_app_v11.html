@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" href="img/icon-192.png" />
     <link rel="preload" href="fonts/roboto-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/roboto-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=272">
+    <link rel="stylesheet" href="style.css?v=273">
     <script>
       (function () {
         try {
@@ -316,6 +316,9 @@
             <span>Trakcia</span><span id="profilTrakcia"></span>
           </div>
         </div>
+        <button type="button" id="profilOdhlasit" class="profil-odhlasit">
+          Odhlásiť sa
+        </button>
         <details class="employer-card profil-card profil-sekcia" id="profilOsobne">
           <summary>Osobné údaje</summary>
           <div class="pf-foto" id="profilFoto" aria-label="Fotka">Fotka</div>
@@ -373,9 +376,6 @@
           <div class="employer-detail-row"><span>Iné neprítomnosti</span><span class="pf-hod" data-pf="st_ine">–</span></div>
           </div>
         </details>
-        <button type="button" id="profilOdhlasit" class="profil-odhlasit">
-          Odhlásiť sa
-        </button>
       </div>
       <div id="nastaveniaView" class="hidden">
         <div class="employer-card profil-card" id="profilDataKarta">
@@ -784,5 +784,17 @@ GRAFIKON SMART LAYER v7
     <script src="js/funkcie/odpocet.js?v=22"></script>
     <script src="js/funkcie/spat.js?v=3"></script>
     <script src="js/funkcie/pwa.js"></script>
-  </body>
+      <script>
+      // Profil: rozbalená je naraz len jedna sekcia – otvorením inej sa predošlá zavrie
+      (function () {
+        var d = document.querySelectorAll("#profilView details.profil-sekcia");
+        d.forEach(function (x) {
+          x.addEventListener("toggle", function () {
+            if (!x.open) return;
+            d.forEach(function (y) { if (y !== x && y.open) y.open = false; });
+          });
+        });
+      })();
+    </script>
+</body>
 </html>

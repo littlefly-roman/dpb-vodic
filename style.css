@@ -4429,3 +4429,5 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 .service-card .prs-det .meno-v{font-weight:700;color:var(--text-1)}
 /* Hľadať: trasa na jednom riadku (pred vozidlom) */
 .hl-trasa { font-size: 0.9375rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Profil: Odhlásiť sa je nad sekciami */
+#profilView .profil-odhlasit { margin: 0 0 12px; }
