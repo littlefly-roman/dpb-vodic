@@ -42,6 +42,12 @@
     if (!cache[key]) cache[key] = window.obratiskaKurzu ? window.obratiskaKurzu(z.kurz, z.d, z.od, z.do) : Promise.resolve([]);
     return cache[key];
   }
+  function skoncila(z) {
+    var od = sekHms(z.od ? z.od + ":00" : "0:00:00"), q = String(z.do || "").split(":"), kon = q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 : null;
+    if (kon == null || kon <= od) return false;
+    var n = new Date(); return z.d === dnesKey() && n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds() >= kon;
+  }
+  function skoncilaS(s) { var k = (s && s._karta) || {}; return skoncila({ d: s.date, od: k.od, do: k.do }); }
   function zapnute() { return !!NAST.on; }
   function obnovBtn() { btns.forEach(function (b) { if (b._fn) b._fn(); }); }
 
@@ -155,11 +161,13 @@
     var b = el("button", ""); b.type = "button"; b.className = "card-zvonec card-obrat podrz";
     b.setAttribute("aria-label", "Upozornenie na prejazd obratiskom"); b.hidden = true;
     b.innerHTML = IK.replace(/\{S\}/g, "20");
-    b._fn = function () { b.classList.toggle("zap", zapnute()); };
+    b._fn = function () { var sk = skoncilaS(s); b.disabled = sk; b.classList.toggle("off", sk); b.classList.toggle("zap", !sk && zapnute()); };
+    var _t = setInterval(function () { if (!b.isConnected) { clearInterval(_t); return; } b._fn(); }, 30000);
     var k = (s && s._karta) || {};
     if (s.date !== dnesKey() || !k.kurz) return b;
     priechody(s).then(function (arr) { if (arr && arr.length) { b.hidden = false; b._fn(); if (b._poloz) b._poloz(); registruj(s); } });
     podrz(b, function () {
+      if (skoncilaS(s)) return;
       var zap = !zapnute(); prepni(zap);
       if (window._showToast) window._showToast(zap ? "Upozornenie na obratisko zapnuté" : "Upozornenie na obratisko vypnuté", 2200);
     }, nastavenia);
@@ -178,12 +186,13 @@
       var r = el("button", "width:100%;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:12px;font-size:1.0625rem;font-family:inherit;text-align:left;border:2px solid var(--border);background:transparent;color:var(--text-1)");
       r.type = "button";
       function kresli() {
-        var zap = zapnute();
+        var sk = skoncilaS(s), zap = zapnute() && !sk;
+        r.disabled = sk; r.style.opacity = sk ? ".4" : "";
         r.style.borderColor = zap ? "var(--red)" : "var(--border)";
-        r.innerHTML = '<span style="font-weight:700">' + (zap ? "Zapnuté" : "Vypnuté") + ' · ' + (NAST.predstih.map(function (p) { return p >= 60 ? (p / 60 + "").replace(".", ",") + " min" : p + " s"; }).join(", ") || "bez času") + ' pred koncom jazdy</span>';
+        r.innerHTML = '<span style="font-weight:700">' + (sk ? "Služba skončila" : zap ? "Zapnuté" : "Vypnuté") + ' · ' + (NAST.predstih.map(function (p) { return p >= 60 ? (p / 60 + "").replace(".", ",") + " min" : p + " s"; }).join(", ") || "bez času") + ' pred koncom jazdy</span>';
       }
       kresli();
-      podrz(r, function () { prepni(!zapnute()); kresli(); }, nastavenia);
+      podrz(r, function () { if (skoncilaS(s)) return; prepni(!zapnute()); kresli(); }, nastavenia);
       kam.appendChild(r);
       kam.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:8px", "Platí pre všetky jazdy. Ťuk = zapnúť / vypnúť, podržanie = zmena času."));
     });
@@ -202,6 +211,7 @@
     Object.keys(NAST.reg).forEach(function (key) {
       var z = NAST.reg[key];
       if (!z || z.d !== dnes) { delete NAST.reg[key]; zmena = true; return; }
+      if (skoncila(z)) return;
       priechodyKey(key, z).then(function (arr) {
         (arr || []).forEach(function (a) {
           var zo = zostava(a.cas);
