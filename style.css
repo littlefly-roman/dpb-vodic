@@ -4434,3 +4434,6 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 /* Štatistika: kvartály sivé, čierna len pri výbere */
 .pf-rad button.pf-q { background: var(--border) !important; color: var(--text-2) !important; border-color: var(--border) !important; }
 .pf-rad button.pf-q.on { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
+
+/* Obratisko: ikona pod budíkom na karte */
+.card-obrat{top:calc(50% + 36px) !important}

@@ -582,6 +582,7 @@
             const dnesKlucZ = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
             if ((service.date || "") < dnesKlucZ) return;
             tr.appendChild(window.DpbKartaNove.zvonec(service));
+            if (window.DpbObratisko) tr.appendChild(window.DpbObratisko.tlacidlo(service));
           }
           card.className = "service-card";
 

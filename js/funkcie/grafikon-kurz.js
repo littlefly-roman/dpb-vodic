@@ -265,3 +265,51 @@ function toMin(t) {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 }
+
+// Obratiská kurzu: spoje kurzu, ktoré končia v rozsahu služby a majú v grafikone poznámku o prejazde obratiskom (koľaj).
+// Vráti [{ cas: "H:MM:SS" (príchod na konečnú), nazov (konečná), kolaj (text koľaje) }] zoradené podľa času.
+window.obratiskaKurzu = async function (kurz, dateKey, od, do_) {
+  try {
+    const p = String(kurz).split("/");
+    if (!p[1] || !window.getKolajInfo) return [];
+    const linka = parseInt(p[0]), kn = String(parseInt(p[1])).padStart(2, "0");
+    const folders = window._dataFolders ? window._dataFolders() : [];
+    const folder = window.Calendar && window.Calendar.findDataFolder ? window.Calendar.findDataFolder(dateKey, folders) : null;
+    if (!folder) return [];
+    const base = "data/" + folder + "/";
+    const d = new Date(+dateKey.slice(0, 4), +dateKey.slice(5, 7) - 1, +dateKey.slice(8, 10));
+    const typDna = window.Calendar.getDayType(d);
+    const sek = (t) => { if (typeof t === "number") return t; const q = String(t || "").split(":"); return q.length > 1 ? (+q[0]) * 3600 + (+q[1]) * 60 + (+q[2] || 0) : null; };
+    let odS = sek(od), doS = sek(do_);
+    if (odS == null || doS == null) return [];
+    if (doS <= odS) doS += 86400;
+    const kod = String(linka).padStart(3, "0") + kn + typDna;
+    const [staniceText, jr, sm] = await Promise.all([
+      window._loadText(base + "STANICE.ZS"),
+      window._loadJR(base, linka, [kod]),
+      window._loadText(base + linka + ".SM"),
+    ]);
+    if (!staniceText || !jr || !sm) return [];
+    const stanice = window._parseKV(staniceText);
+    const smMapa = window._parseSM(sm);
+    const spoje = window._parseSpoje(window._extractObeh(jr, "#" + String(linka).padStart(3, "0") + kn + typDna));
+    if (!spoje.length) return [];
+    await window._doplnSM(base, smMapa, spoje);
+    const out = [];
+    spoje.forEach((spoj) => {
+      if (!spoj.zastavky.length) return;
+      const prva = spoj.zastavky[0], last = spoj.zastavky[spoj.zastavky.length - 1];
+      let t = sek(last.time);
+      if (t == null) return;
+      if (t < odS && t + 86400 <= doS + 60) t += 86400;
+      if (t < odS || t > doS) return;
+      const nazov = stanice[last.kod] || last.kod;
+      const kolaj = window.getKolajInfo(linka, parseInt(kn), typDna, nazov, prva.time.substring(0, 5), stanice[prva.kod] || "");
+      if (!kolaj) return;
+      const tt = t % 86400;
+      out.push({ t, cas: Math.floor(tt / 3600) + ":" + String(Math.floor((tt % 3600) / 60)).padStart(2, "0") + ":" + String(tt % 60).padStart(2, "0"), nazov, kolaj });
+    });
+    out.sort((a, b) => a.t - b.t);
+    return out.map((x) => ({ cas: x.cas, nazov: x.nazov, kolaj: x.kolaj }));
+  } catch (e) { return []; }
+};

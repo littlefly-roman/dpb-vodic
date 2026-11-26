@@ -188,6 +188,7 @@
       telo: function (t) {
         var cele = el("div", "");
         t.appendChild(cele);
+        var obDiv = el("div", ""); t.appendChild(obDiv);
         var hl = function (txt) { return el("div", "font-size:0.9375rem;letter-spacing:.08em;font-weight:700;color:var(--text-3);text-transform:uppercase;margin:12px 0 6px", txt); };
         function tlac(txt, zap, minule) {
           var b = el("button", "flex:1;min-height:52px;border-radius:12px;font-size:1.0625rem;font-weight:700;font-family:inherit;line-height:1.1;border:2px solid " + (zap ? "var(--red)" : "var(--border)") + ";background:" + (zap ? "var(--red)" : "var(--surface-2)") + ";color:" + (zap ? "#fff" : "var(--text-2)") + (minule ? ";opacity:.4" : ""));
@@ -234,6 +235,7 @@
           cele.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:12px", "Ťuk = zapnúť / vypnúť, podržanie = zmena minút."));
         }
         kresli();
+        if (window.DpbObratisko) window.DpbObratisko.sekcia(service, obDiv, hl);
         if (dnes && (m.konecna || m.prestavka || m.striedac)) nacitajSkupiny(service).then(function (g) { skupiny = g; nacitane = true; if (cele.isConnected) kresli(); });
       },
       tlacidla: [{ text: "Zavrieť", primarny: true, klik: function () { window.DpbOkna.zavriVsetko(); if (service._zvonecObnov) service._zvonecObnov(); } }]

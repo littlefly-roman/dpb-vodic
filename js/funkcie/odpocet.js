@@ -24,7 +24,7 @@
   var plan = null;         // plán dňa: { d, items:[{cas,nazov,typ,pop,kind}], skip:{} }
   var planTik = null;
   var akt = null;          // { key, dep (s od polnoci), nazov, cas, spustene:{120,60,30,0} }
-  var tik = null, wl = null, ctx = null, ov = null;
+  var tik = null, wl = null, ctx = null, ov = null, ovBox = null;
 
   var IK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>';
 
@@ -184,7 +184,7 @@
   }
 
   // ── okno ──
-  function zavriOkno() { if (ov) { ov.remove(); ov = null; } }
+  function zavriOkno() { if (ov) { if (window.DpbObratisko) window.DpbObratisko.odpoj(); ov.remove(); ov = null; } }
   function otvorOkno() {
     if (!akt || ov) return;
     ov = document.createElement("div");
@@ -251,6 +251,8 @@
     wrap.appendChild(box); wrap.appendChild(panel);
     ov.appendChild(wrap);
     document.body.appendChild(ov);
+    ovBox = box;
+    if (window.DpbObratisko) window.DpbObratisko.pripoj(wrap, box);
     ov.addEventListener("click", function (e) { if (e.target === ov) zavriOkno(); });
     obnov();
   }
@@ -562,5 +564,7 @@
     planZapnuta: planZapnuta, planPolozka: planPolozka, planVypniKind: planVypniKind, planJe: planJe, predstihOkno: predstihOkno, zostavaSek: function (c) { return zostava(sekHms(c)); },
     planTlacidlo: planTlacidlo,
     nastav: nastav,
+    ovWrap: function () { return ov ? ov.firstChild : null; }, ovBox: function () { return ov ? ovBox : null; },
+    signal: function (st, zvuk, vibr) { if (!STUPNE[st]) return; if (zvuk) { audio(); STUPNE[st].zvuk(); } if (vibr && navigator.vibrate) { try { navigator.vibrate(STUPNE[st].vibr); } catch (e) {} } },
     obnov: obnov, tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };
 })();
