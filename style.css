@@ -4436,4 +4436,4 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 .pf-rad button.pf-q.on { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 
 /* Obratisko: ikona pod budíkom na karte */
-.card-obrat{top:calc(50% + 36px) !important}
+.card-obrat{top:50% !important}

@@ -582,7 +582,13 @@
             const dnesKlucZ = window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : "";
             if ((service.date || "") < dnesKlucZ) return;
             tr.appendChild(window.DpbKartaNove.zvonec(service));
-            if (window.DpbObratisko) tr.appendChild(window.DpbObratisko.tlacidlo(service));
+            var _tt = tr.previousElementSibling;
+            if (window.DpbObratisko && _tt && _tt.classList.contains("card-title")) {
+              var _c = _tt.parentElement, _ob = window.DpbObratisko.tlacidlo(service);
+              _c.style.position = "relative"; _c.appendChild(_ob);
+              var _poloz = function () { _ob.style.setProperty("top", (_tt.offsetTop + _tt.offsetHeight / 2) + "px", "important"); };
+              _poloz(); requestAnimationFrame(_poloz); setTimeout(_poloz, 400); _ob._poloz = _poloz;
+            }
           }
           card.className = "service-card";
 

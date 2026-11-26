@@ -9,13 +9,14 @@
   var CHIPS = [[180, "3 min"], [120, "2 min"], [90, "1,5 min"], [60, "1 min"], [30, "30 s"]];
   var POP = { 180: "3 minúty", 120: "2 minúty", 90: "1,5 minúty", 60: "1 minútu", 30: "30 sekúnd" };
   var IK = '<svg width="{S}" height="{S}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21 9 3M20 21 15 3M6.5 9h11M5.2 15h13.6"/></svg>';
-  var NAST = { zvuk: true, vibr: false, predstih: [120], zap: {} };
+  var NAST = { zvuk: true, vibr: false, predstih: [120], on: false, reg: {} };
   try {
     var u = JSON.parse(localStorage.getItem(KL) || "{}");
     if (typeof u.zvuk === "boolean") NAST.zvuk = u.zvuk;
     if (typeof u.vibr === "boolean") NAST.vibr = u.vibr;
     if (Array.isArray(u.predstih)) NAST.predstih = u.predstih.filter(function (x) { return typeof x === "number"; });
-    if (u.zap && typeof u.zap === "object") NAST.zap = u.zap;
+    if (typeof u.on === "boolean") NAST.on = u.on;
+    if (u.reg && typeof u.reg === "object") NAST.reg = u.reg;
   } catch (e) {}
   function uloz() { try { localStorage.setItem(KL, JSON.stringify(NAST)); } catch (e) {} }
   function el(tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text != null) e.textContent = text; return e; }
@@ -41,7 +42,7 @@
     if (!cache[key]) cache[key] = window.obratiskaKurzu ? window.obratiskaKurzu(z.kurz, z.d, z.od, z.do) : Promise.resolve([]);
     return cache[key];
   }
-  function zapnute(s) { return !!NAST.zap[kluc(s)]; }
+  function zapnute() { return !!NAST.on; }
   function obnovBtn() { btns.forEach(function (b) { if (b._fn) b._fn(); }); }
 
   // ── zvuk ──
@@ -106,23 +107,13 @@
     var bg = el("div", ""); bg.className = "odp-okno-bg"; bg.style.zIndex = "100002";
     var ok = el("div", ""); ok.className = "odp-okno";
     function kresli() {
-      ok.innerHTML = '<div class="odp-okno-h">Obratisko – koľko pred</div>' +
-        '<div style="display:flex;gap:10px;margin-bottom:14px"><button type="button" class="odp-pre' + (NAST.zvuk ? " odp-pre-on" : "") + '" data-p="zvuk">Zvuk: ' + (NAST.zvuk ? "zap." : "vyp.") + '</button>' +
-        '<button type="button" class="odp-pre' + (NAST.vibr ? " odp-pre-on" : "") + '" data-p="vibr">Vibrácia: ' + (NAST.vibr ? "zap." : "vyp.") + '</button></div>' +
+      ok.innerHTML = '<div class="odp-okno-h">Obratisko – koľko pred koncom jazdy</div>' +
         '<div class="odp-chips" style="margin-bottom:14px">' + CHIPS.map(function (c) { return '<button type="button" class="odp-chip' + (NAST.predstih.indexOf(c[0]) >= 0 ? " odp-chip-on" : "") + '" data-st="' + c[0] + '">' + c[1] + '</button>'; }).join("") + '</div>' +
         '<button type="button" class="odp-okno-zavri">Hotovo</button>';
-      ok.querySelectorAll(".odp-pre").forEach(function (b) {
-        b.addEventListener("click", function () {
-          var k = b.getAttribute("data-p"); NAST[k] = !NAST[k]; uloz();
-          if (k === "zvuk" && NAST.zvuk) signal(120, true);
-          if (k === "vibr" && NAST.vibr && navigator.vibrate) navigator.vibrate(150);
-          kresli();
-        });
-      });
       ok.querySelectorAll(".odp-chip").forEach(function (b) {
         b.addEventListener("click", function () {
-          var st = +b.getAttribute("data-st"), i = NAST.predstih.indexOf(st);
-          if (i >= 0) NAST.predstih.splice(i, 1); else { NAST.predstih.push(st); NAST.predstih.sort(function (a, c) { return c - a; }); signal(st); }
+          var st = +b.getAttribute("data-st");
+          NAST.predstih = [st]; signal(st, true);
           uloz(); kresli();
         });
       });
@@ -148,11 +139,15 @@
     b.addEventListener("click", function (e) { e.stopPropagation(); if (pot) { pot = false; e.preventDefault(); return; } tap(e); });
   }
 
-  function prepni(s, zap) {
-    var key = kluc(s), k = (s && s._karta) || {};
-    if (zap) NAST.zap[key] = { kurz: k.kurz, d: s.date, od: k.od, do: k.do }; else delete NAST.zap[key];
-    uloz(); obnovBtn();
-    if (zap) tik();
+  function prepni(zap) {
+    NAST.on = !!zap; uloz(); obnovBtn(); if (zap) tik();
+  }
+  function registruj(s) {
+    var k = (s && s._karta) || {};
+    if (s.date !== dnesKey() || !k.kurz) return;
+    var key = kluc(s);
+    if (!NAST.reg[key]) { NAST.reg[key] = { kurz: k.kurz, d: s.date, od: k.od, do: k.do }; uloz(); }
+    if (NAST.on) tik();
   }
 
   // ── ikona na karte (pod budíkom) ──
@@ -160,19 +155,19 @@
     var b = el("button", ""); b.type = "button"; b.className = "card-zvonec card-obrat podrz";
     b.setAttribute("aria-label", "Upozornenie na prejazd obratiskom"); b.hidden = true;
     b.innerHTML = IK.replace(/\{S\}/g, "20");
-    b._fn = function () { b.classList.toggle("zap", zapnute(s)); };
+    b._fn = function () { b.classList.toggle("zap", zapnute()); };
     var k = (s && s._karta) || {};
     if (s.date !== dnesKey() || !k.kurz) return b;
-    priechody(s).then(function (arr) { if (arr && arr.length) { b.hidden = false; b._fn(); } });
+    priechody(s).then(function (arr) { if (arr && arr.length) { b.hidden = false; b._fn(); if (b._poloz) b._poloz(); registruj(s); } });
     podrz(b, function () {
-      var zap = !zapnute(s); prepni(s, zap);
+      var zap = !zapnute(); prepni(zap);
       if (window._showToast) window._showToast(zap ? "Upozornenie na obratisko zapnuté" : "Upozornenie na obratisko vypnuté", 2200);
     }, nastavenia);
     btns.push(b); b._fn();
     return b;
   }
 
-  // ── sekcia v okne Upozornenia (lokálne menu) ──
+  // ── sekcia v okne Upozornenia (lokálne menu): globálne zapnúť / vypnúť, podržanie = čas ──
   function sekcia(s, kam, hl) {
     var k = (s && s._karta) || {};
     if (s.date !== dnesKey() || !k.kurz) return;
@@ -183,15 +178,14 @@
       var r = el("button", "width:100%;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:12px;font-size:1.0625rem;font-family:inherit;text-align:left;border:2px solid var(--border);background:transparent;color:var(--text-1)");
       r.type = "button";
       function kresli() {
-        var zap = zapnute(s);
+        var zap = zapnute();
         r.style.borderColor = zap ? "var(--red)" : "var(--border)";
-        r.innerHTML = '<span style="font-weight:700">' + (zap ? "Zapnuté" : "Vypnuté") + ' · ' + (NAST.predstih.map(function (p) { return p >= 60 ? (p / 60 + "").replace(".", ",") + " min" : p + " s"; }).join(", ") || "bez času") + ' pred koncom jazdy</span>' +
-          arr.map(function (a) { return '<span style="font-size:0.9375rem;color:var(--text-2)">' + hm(a.cas) + ' · ' + velke(a.kolaj) + '</span>'; }).join("");
+        r.innerHTML = '<span style="font-weight:700">' + (zap ? "Zapnuté" : "Vypnuté") + ' · ' + (NAST.predstih.map(function (p) { return p >= 60 ? (p / 60 + "").replace(".", ",") + " min" : p + " s"; }).join(", ") || "bez času") + ' pred koncom jazdy</span>';
       }
       kresli();
-      podrz(r, function () { prepni(s, !zapnute(s)); kresli(); }, nastavenia);
+      podrz(r, function () { prepni(!zapnute()); kresli(); }, nastavenia);
       kam.appendChild(r);
-      kam.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:8px", "Ťuk = zapnúť / vypnúť, podržanie = zmena minút."));
+      kam.appendChild(el("div", "font-size:0.9375rem;color:var(--text-2);margin-top:8px", "Platí pre všetky jazdy. Ťuk = zapnúť / vypnúť, podržanie = zmena času."));
     });
   }
 
@@ -203,10 +197,11 @@
     vykonaj();
   }
   function vykonaj() {
-    var dnes = dnesKey(), kluce = Object.keys(NAST.zap), zmena = false;
-    kluce.forEach(function (key) {
-      var z = NAST.zap[key];
-      if (!z || z.d !== dnes) { delete NAST.zap[key]; zmena = true; return; }
+    if (!NAST.on) { clearInterval(tm); tm = null; return; }
+    var dnes = dnesKey(), zmena = false;
+    Object.keys(NAST.reg).forEach(function (key) {
+      var z = NAST.reg[key];
+      if (!z || z.d !== dnes) { delete NAST.reg[key]; zmena = true; return; }
       priechodyKey(key, z).then(function (arr) {
         (arr || []).forEach(function (a) {
           var zo = zostava(a.cas);
@@ -219,10 +214,9 @@
         });
       });
     });
-    if (zmena) { uloz(); obnovBtn(); }
-    if (!Object.keys(NAST.zap).length) { clearInterval(tm); tm = null; }
+    if (zmena) uloz();
   }
-  if (Object.keys(NAST.zap).length) setTimeout(tik, 1500);
+  if (NAST.on) setTimeout(tik, 1500);
 
   window.DpbObratisko = { tlacidlo: tlacidlo, sekcia: sekcia, pripoj: pripoj, odpoj: odpoj, nastavenia: nastavenia, _ukaz: ukazOkno };
 })();
