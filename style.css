@@ -4437,3 +4437,7 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 
 /* Obratisko: ikona pod budíkom na karte */
 .card-obrat{top:50% !important}
+
+/* Budík v riadku spoja (CP služby): ikona a čas musia byť na tmavom podklade biele, nie text-1 */
+.grafikon-direction .odp-btn,.grafikon-direction .odp-btn *{color:#fff !important}
+.grafikon-direction .odp-btn.odp-on{background:var(--red)}
