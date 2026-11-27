@@ -228,5 +228,11 @@
   }
   if (NAST.on) setTimeout(tik, 1500);
 
-  window.DpbObratisko = { tlacidlo: tlacidlo, sekcia: sekcia, pripoj: pripoj, odpoj: odpoj, nastavenia: nastavenia, _ukaz: ukazOkno };
+  function zrusVsetko() {
+    NAST.on = false; NAST.reg = {}; odpal = {}; uloz();
+    if (tm) { clearInterval(tm); tm = null; }
+    zavriOkno(); obnovBtn();
+  }
+
+  window.DpbObratisko = { zrusVsetko: zrusVsetko, tlacidlo: tlacidlo, sekcia: sekcia, pripoj: pripoj, odpoj: odpoj, nastavenia: nastavenia, _ukaz: ukazOkno };
 })();

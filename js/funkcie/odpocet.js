@@ -564,6 +564,7 @@
     planZapnuta: planZapnuta, planPolozka: planPolozka, planVypniKind: planVypniKind, planJe: planJe, predstihOkno: predstihOkno, zostavaSek: function (c) { return zostava(sekHms(c)); },
     planTlacidlo: planTlacidlo,
     nastav: nastav,
+    zrusVsetko: function () { plan = null; planUloz(); if (planTik) { clearInterval(planTik); planTik = null; } akt = null; if (tik) { clearInterval(tik); tik = null; } vypniObrazovku(); zavriOkno(); obnov(); },
     ovWrap: function () { return ov ? ov.firstChild : null; }, ovBox: function () { return ov ? ovBox : null; },
     signal: function (st, zvuk, vibr) { if (!STUPNE[st]) return; if (zvuk) { audio(); STUPNE[st].zvuk(); } if (vibr && navigator.vibrate) { try { navigator.vibrate(STUPNE[st].vibr); } catch (e) {} } },
     obnov: obnov, tlacidlo: tlacidlo, vypni: vypni, jeAktivny: function () { return !!akt; }, _t: { zostava: zostava, fmt: fmt } };

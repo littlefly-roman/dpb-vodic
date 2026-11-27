@@ -58,6 +58,8 @@
 
   function odhlas() {
     try { localStorage.removeItem("dpb_relacia"); } catch (e) {}
+    // upozornenia (budíky, obratisko) patria vodičovi: po odhlásení sa vypnú
+    try { if (window.DpbOdpocet && DpbOdpocet.zrusVsetko) DpbOdpocet.zrusVsetko(); if (window.DpbObratisko) DpbObratisko.zrusVsetko(); localStorage.removeItem("dpb_alarm_vodic"); } catch (e) {}
     // zavri všetko, čo môže byť otvorené
     ["cpModal", "grafikonModal"].forEach(function (id) {
       var m = el(id);

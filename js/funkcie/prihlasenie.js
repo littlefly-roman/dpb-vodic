@@ -29,6 +29,14 @@
           if (!sel.value) return;
           window.appState.currentDriver = sel.value;
           try {
+            // upozornenia iného vodiča sa nesmú preniesť
+            if (localStorage.getItem("dpb_alarm_vodic") !== sel.value) {
+              if (window.DpbOdpocet && DpbOdpocet.zrusVsetko) DpbOdpocet.zrusVsetko();
+              if (window.DpbObratisko) DpbObratisko.zrusVsetko();
+            }
+            localStorage.setItem("dpb_alarm_vodic", sel.value);
+          } catch (e) {}
+          try {
             localStorage.setItem(
               "dpb_relacia",
               JSON.stringify({ rid: sel.value, ts: Date.now() }),
