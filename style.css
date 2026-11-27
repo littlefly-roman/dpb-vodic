@@ -4441,3 +4441,8 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 /* Budík v riadku spoja (CP služby): ikona a čas musia byť na tmavom podklade biele, nie text-1 */
 .grafikon-direction .odp-btn,.grafikon-direction .odp-btn *{color:#fff !important}
 .grafikon-direction .odp-btn.odp-on{background:var(--red)}
+
+/* Budík v riadku spoja: ikona vycentrovaná v kruhu (prázdny čas nezaberá miesto) */
+.odp-btn{justify-content:center}
+.odp-btn .odp-t:empty{display:none}
+.odp-btn:has(.odp-t:empty){gap:0;width:36px;padding:0}
