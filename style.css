@@ -4449,3 +4449,5 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 
 /* Odpočet: šípka nastavení dole vpravo pod tlačidlami */
 .odp-nast.odp-nast-dolu{position:static;margin:4px -8px -10px auto}
+.odp-nast.odp-nast-dolu svg{transform:rotate(180deg)}
+.odp-nast.odp-nast-dolu.odp-nast-otv svg{transform:rotate(0deg)}
