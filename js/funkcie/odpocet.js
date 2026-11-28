@@ -185,6 +185,15 @@
 
   // ── okno ──
   function zavriOkno() { if (ov) { if (window.DpbObratisko) window.DpbObratisko.odpoj(); ov.remove(); ov = null; } }
+  // 4. pád názvu zastávky pre „odchod na …“ (ženské prídavné mená a podstatné mená: -á → -ú, -a → -u)
+  function akuzativ(n) {
+    return String(n || "").replace(/[A-Za-zÀ-ž]+/g, function (w) {
+      if (w.length < 4 || w === w.toUpperCase()) return w;
+      if (/á$/.test(w)) return w.slice(0, -1) + "ú";
+      if (/[^ií]a$/.test(w)) return w.slice(0, -1) + "u";
+      return w;
+    });
+  }
   function otvorOkno() {
     if (!akt || ov) return;
     ov = document.createElement("div");
@@ -196,11 +205,19 @@
     box.style.cssText = "position:relative;background:var(--surface);color:var(--text-1);border-radius:20px;width:100%;padding:22px 20px 20px;box-sizing:border-box;text-align:center";
     box.innerHTML =
       '<button type="button" class="odp-nast" aria-label="Nastavenia upozornenia" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg></button>' +
-      '<div style="font-size:0.9375rem;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
-      '<div style="font-size:1.0625rem;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>' +
+      (akt.pop === "Odchod o" && akt.typ === "konecna"
+        ? '<div style="font-size:1.0625rem;color:var(--text-2);margin:2px 0 6px">Nasledujúci odchod na <b style="color:var(--text-1)">' + akuzativ(akt.nazov) + '</b>:</div>'
+        : '<div style="font-size:0.9375rem;color:var(--text-3)">' + (akt.pop || "Odchod o") + ' ' + akt.cas + '</div>' +
+          '<div style="font-size:1.0625rem;font-weight:700;margin:2px 0 6px;padding:0 36px">' + akt.nazov + '</div>') +
       '<div class="odp-cislo" style="font-size:4.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 14px"></div>' +
       '<button type="button" class="odp-vyp">' + (akt.plan ? "Preskočiť toto upozornenie" : "Vypnúť odpočet") + '</button>' +
       '<button type="button" class="odp-zat">Zavrieť (odpočet beží ďalej)</button>';
+    var nb = box.querySelector(".odp-nast");
+    nb.classList.add("odp-nast-dolu"); box.appendChild(nb);
+    function polomer(o) {
+      var st = !!(box.previousElementSibling && box.previousElementSibling.classList.contains("obr-okno"));
+      return st ? (o ? "0" : "0 0 20px 20px") : (o ? "20px 20px 0 0" : "20px");
+    }
     var panel = document.createElement("div");
     panel.className = "odp-panel";
     var CHIPS = [[180, "3 min"], [120, "2 min"], [90, "1,5 min"], [60, "1 min"], [30, "30 s"], [0, "V čase"]];
@@ -243,7 +260,7 @@
       otv = !otv;
       this.setAttribute("aria-expanded", otv ? "true" : "false");
       this.classList.toggle("odp-nast-otv", otv);
-      box.style.borderRadius = otv ? "20px 20px 0 0" : "20px";
+      box.style.borderRadius = polomer(otv);
       panel.style.maxHeight = otv ? panel.scrollHeight + "px" : "0px";
     });
     box.querySelector(".odp-vyp").addEventListener("click", vypni);

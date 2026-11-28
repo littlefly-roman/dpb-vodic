@@ -4446,3 +4446,6 @@ body.kb-otvorena #cpModal, body.kb-otvorena #grafikonModal, body.kb-otvorena .gr
 .odp-btn{justify-content:center}
 .odp-btn .odp-t:empty{display:none}
 .odp-btn:has(.odp-t:empty){gap:0;width:36px;padding:0}
+
+/* Odpočet: šípka nastavení dole vpravo pod tlačidlami */
+.odp-nast.odp-nast-dolu{position:static;margin:4px -8px -10px auto}

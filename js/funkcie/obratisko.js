@@ -23,7 +23,7 @@
   function dnesKey() { return window.DpbCas ? window.DpbCas.formatDateKey(new Date()) : new Date().toISOString().slice(0, 10); }
   function kluc(s) { var k = (s && s._karta) || {}; return (s.date || "") + "|" + (k.kurz || "") + "|" + (k.od || ""); }
   function hm(t) { return String(t).split(":").slice(0, 2).join(":"); }
-  function velke(kolaj) { return String(kolaj || "").toUpperCase().replace(/Č\.\s*(\d)/, "Č. $1"); }
+  function velke(kolaj) { return String(kolaj || "").toUpperCase().replace(/Č\.\s*(\d)/, "Č. $1").replace("VONKAJŠIA", "VONKAJŠIU").replace("VNÚTORNÁ", "VNÚTORNÚ"); }
   function sekHms(t) { var q = String(t).split(":"); return (+q[0] || 0) * 3600 + (+q[1] || 0) * 60 + (+q[2] || 0); }
   function zostava(cas) {
     var n = new Date(), now = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(), d = sekHms(cas);
@@ -60,13 +60,12 @@
   // ── okno upozornenia ──
   var okno = null;   // { ov, box }
   function radius(box, v) { box.style.borderRadius = v; }
-  function zavriOkno() { if (!okno) return; try { if (okno.ov) okno.ov.remove(); else okno.box.remove(); } catch (e) {} okno = null; var O = window.DpbOdpocet; if (O && O.ovWrap && O.ovWrap()) { /* odpočet zostáva */ var b = O.ovBox && O.ovBox(); if (b) { b.style.borderRadius = "20px"; b.style.borderTop = ""; } } }
+  function zavriOkno() { if (!okno) return; try { if (okno.ov) okno.ov.remove(); else okno.box.remove(); } catch (e) {} okno = null; var O = window.DpbOdpocet; if (O && O.ovWrap && O.ovWrap()) { /* odpočet zostáva */ var b = O.ovBox && O.ovBox(); if (b) { b.style.borderRadius = "20px";  } } }
   function naplnBox(box, p) {
     box.innerHTML =
       '<div style="width:52px;height:52px;border-radius:16px;background:var(--surface-2);display:inline-flex;align-items:center;justify-content:center;color:var(--red-text,var(--red));margin-bottom:6px">' + IK.replace(/\{S\}/g, "30") + '</div>' +
-      '<div style="font-size:0.9375rem;color:var(--text-3)">O ' + (POP[p.pred] || "chvíľu") + ' koniec jazdy</div>' +
-      '<div style="font-size:1.0625rem;font-weight:700;margin:2px 0 0">' + (p.nazov || "") + '</div>' +
-      '<div style="font-size:1.75rem;font-weight:800;line-height:1.15;margin:10px 0 16px">Prejazd obratiskom<br>' + velke(p.kolaj) + '</div>';
+      '<div style="font-size:1.0625rem;color:var(--text-2);margin:2px 0 0">Nasledujúci prejazd obratiskom <b style="color:var(--text-1)">' + (p.nazov || "") + '</b></div>' +
+      '<div style="font-size:1.75rem;font-weight:800;line-height:1.15;margin:10px 0 16px">cez ' + velke(p.kolaj) + '.</div>';
     var b = el("button", "width:100%;min-height:52px;border-radius:14px;border:0;background:var(--red);color:#fff;font:inherit;font-size:1rem;font-weight:600;cursor:pointer", "Rozumiem");
     b.type = "button"; b.className = "obr-rozumiem";
     b.addEventListener("click", zavriOkno);
@@ -81,7 +80,7 @@
     if (w) {
       w.insertBefore(box, w.firstChild);
       radius(box, "20px 20px 0 0");
-      var ob = O.ovBox && O.ovBox(); if (ob) { ob.style.borderRadius = "0 0 20px 20px"; ob.style.borderTop = "1px solid var(--border)"; }
+      var ob = O.ovBox && O.ovBox(); if (ob) { ob.style.borderRadius = "0 0 20px 20px"; }
       okno = { ov: null, box: box };
     } else {
       var ov = el("div", "position:fixed;inset:0;z-index:10051;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box");
@@ -95,7 +94,7 @@
     if (!okno || !okno.box.isConnected) return;
     var star = okno.ov; wrap.insertBefore(okno.box, wrap.firstChild);
     radius(okno.box, "20px 20px 0 0");
-    if (odpBox) { odpBox.style.borderRadius = "0 0 20px 20px"; odpBox.style.borderTop = "1px solid var(--border)"; }
+    if (odpBox) { odpBox.style.borderRadius = "0 0 20px 20px"; }
     if (star) { star.remove(); okno.ov = null; }
   }
   // volá odpocet.js pred zatvorením svojho okna: obratisko ostane samostatne
