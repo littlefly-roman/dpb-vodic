@@ -63,9 +63,9 @@
   function zavriOkno() { if (!okno) return; try { if (okno.ov) okno.ov.remove(); else okno.box.remove(); } catch (e) {} okno = null; var O = window.DpbOdpocet; if (O && O.ovWrap && O.ovWrap()) { /* odpočet zostáva */ var b = O.ovBox && O.ovBox(); if (b) { b.style.borderRadius = "20px";  } } }
   function naplnBox(box, p) {
     box.innerHTML =
-      '<div style="width:52px;height:52px;border-radius:16px;background:var(--surface-2);display:inline-flex;align-items:center;justify-content:center;color:var(--red-text,var(--red));margin-bottom:6px">' + IK.replace(/\{S\}/g, "30") + '</div>' +
-      '<div style="font-size:1.0625rem;color:var(--text-2);margin:2px 0 0">Nasledujúci prejazd obratiskom <b style="color:var(--text-1)">' + (p.nazov || "") + '</b></div>' +
-      '<div style="font-size:1.75rem;font-weight:800;line-height:1.15;margin:10px 0 16px">cez ' + velke(p.kolaj) + '.</div>';
+      '<div style="font-size:1.0625rem;color:var(--text-2)">Nasledujúci prejazd obratiskom</div>' +
+      '<div style="font-size:1.375rem;font-weight:700;margin:2px 0 0">' + (p.nazov || "") + '</div>' +
+      '<div style="font-size:1.75rem;font-weight:800;line-height:1.15;margin:12px 0 16px">cez ' + velke(p.kolaj) + '.</div>';
     var b = el("button", "width:100%;min-height:52px;border-radius:14px;border:0;background:var(--red);color:#fff;font:inherit;font-size:1rem;font-weight:600;cursor:pointer", "Rozumiem");
     b.type = "button"; b.className = "obr-rozumiem";
     b.addEventListener("click", zavriOkno);
